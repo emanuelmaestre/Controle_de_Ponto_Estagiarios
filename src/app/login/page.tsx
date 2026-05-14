@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,7 +18,6 @@ function PinPad({ pin, onDigit, onDelete }: {
   const keys = ['1','2','3','4','5','6','7','8','9','','0','⌫']
   return (
     <div className="space-y-3">
-      {/* Pontos do PIN */}
       <div className="flex justify-center gap-3 py-2">
         {Array.from({ length: 6 }).map((_, i) => (
           <div
@@ -31,7 +30,6 @@ function PinPad({ pin, onDigit, onDelete }: {
           />
         ))}
       </div>
-      {/* Grade de dígitos */}
       <div className="grid grid-cols-3 gap-2">
         {keys.map((k, i) => (
           <button
@@ -57,9 +55,9 @@ function PinPad({ pin, onDigit, onDelete }: {
 }
 
 // ──────────────────────────────────────────────────────────
-// Página de Login
+// Conteúdo interno (usa useSearchParams — precisa de Suspense)
 // ──────────────────────────────────────────────────────────
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect') || ''
@@ -81,7 +79,6 @@ export default function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) })
 
-  // Login por e-mail + senha
   const onSubmitEmail = async (data: LoginInput) => {
     setError(null)
     const { error } = await supabase.auth.signInWithPassword({
@@ -96,7 +93,6 @@ export default function LoginPage() {
     router.refresh()
   }
 
-  // Login por PIN
   const handlePinSubmit = async () => {
     if (pin.length < 4 || !pinEmail) return
     setLoading(true)
@@ -123,116 +119,118 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 to-blue-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="bg-blue-900 px-6 py-8 text-center">
-          <div className="w-16 h-16 bg-white/20 rounded-2xl mx-auto mb-3 flex items-center justify-center">
-            <span className="text-3xl">🔬</span>
-          </div>
-          <h1 className="text-white font-bold text-xl">Controle de Ponto</h1>
-          <p className="text-blue-200 text-sm mt-1">Laboratório</p>
+    <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
+      {/* Header */}
+      <div className="bg-blue-900 px-6 py-8 text-center">
+        <div className="w-16 h-16 bg-white/20 rounded-2xl mx-auto mb-3 flex items-center justify-center">
+          <span className="text-3xl">🔬</span>
         </div>
+        <h1 className="text-white font-bold text-xl">Controle de Ponto</h1>
+        <p className="text-blue-200 text-sm mt-1">Laboratório</p>
+      </div>
 
-        {/* Alerta de erro */}
-        {error && (
-          <div className="mx-4 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-            {error}
-          </div>
+      {error && (
+        <div className="mx-4 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          {error}
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div className="flex border-b border-gray-100 mx-4 mt-4">
+        {(['email', 'pin'] as const).map((m) => (
+          <button
+            key={m}
+            onClick={() => { setMode(m); setError(null); setPin('') }}
+            className={`flex-1 py-2 text-sm font-medium transition-colors ${
+              mode === m
+                ? 'text-blue-900 border-b-2 border-blue-900'
+                : 'text-gray-400 hover:text-gray-600'
+            }`}
+          >
+            {m === 'email' ? 'E-mail + Senha' : 'PIN'}
+          </button>
+        ))}
+      </div>
+
+      <div className="p-6">
+        {mode === 'email' && (
+          <form onSubmit={handleSubmit(onSubmitEmail)} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+              <input
+                {...register('email')}
+                type="email"
+                autoComplete="email"
+                placeholder="seu@email.com"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+              <input
+                {...register('password')}
+                type="password"
+                autoComplete="current-password"
+                placeholder="••••••"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+            </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg transition-colors disabled:opacity-60"
+            >
+              {isSubmitting ? 'Entrando...' : 'Entrar'}
+            </button>
+          </form>
         )}
 
-        {/* Tabs */}
-        <div className="flex border-b border-gray-100 mx-4 mt-4">
-          {(['email', 'pin'] as const).map((m) => (
-            <button
-              key={m}
-              onClick={() => { setMode(m); setError(null); setPin('') }}
-              className={`flex-1 py-2 text-sm font-medium transition-colors ${
-                mode === m
-                  ? 'text-blue-900 border-b-2 border-blue-900'
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              {m === 'email' ? 'E-mail + Senha' : 'PIN'}
-            </button>
-          ))}
-        </div>
-
-        <div className="p-6">
-          {/* ── Modo e-mail + senha ── */}
-          {mode === 'email' && (
-            <form onSubmit={handleSubmit(onSubmitEmail)} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  E-mail
-                </label>
-                <input
-                  {...register('email')}
-                  type="email"
-                  autoComplete="email"
-                  placeholder="seu@email.com"
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Senha
-                </label>
-                <input
-                  {...register('password')}
-                  type="password"
-                  autoComplete="current-password"
-                  placeholder="••••••"
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {errors.password && (
-                  <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
-                )}
-              </div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? 'Entrando...' : 'Entrar'}
-              </button>
-            </form>
-          )}
-
-          {/* ── Modo PIN ── */}
-          {mode === 'pin' && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  E-mail
-                </label>
-                <input
-                  type="email"
-                  value={pinEmail}
-                  onChange={(e) => setPinEmail(e.target.value)}
-                  placeholder="seu@email.com"
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <PinPad
-                pin={pin}
-                onDigit={(d) => setPin((p) => (p.length < 6 ? p + d : p))}
-                onDelete={() => setPin((p) => p.slice(0, -1))}
+        {mode === 'pin' && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+              <input
+                type="email"
+                value={pinEmail}
+                onChange={(e) => setPinEmail(e.target.value)}
+                placeholder="seu@email.com"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <button
-                onClick={handlePinSubmit}
-                disabled={pin.length < 4 || !pinEmail || loading}
-                className="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Verificando...' : 'Entrar com PIN'}
-              </button>
             </div>
-          )}
-        </div>
+            <PinPad
+              pin={pin}
+              onDigit={(d) => setPin((p) => (p.length < 6 ? p + d : p))}
+              onDelete={() => setPin((p) => p.slice(0, -1))}
+            />
+            <button
+              onClick={handlePinSubmit}
+              disabled={pin.length < 4 || !pinEmail || loading}
+              className="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg transition-colors disabled:opacity-40"
+            >
+              {loading ? 'Verificando...' : 'Entrar com PIN'}
+            </button>
+          </div>
+        )}
       </div>
+    </div>
+  )
+}
+
+// ──────────────────────────────────────────────────────────
+// Página exportada — envolve em Suspense (obrigatório Next.js 14+)
+// ──────────────────────────────────────────────────────────
+export default function LoginPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-950 to-blue-800 flex items-center justify-center p-4">
+      <Suspense fallback={
+        <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8 text-center">
+          <div className="w-12 h-12 border-4 border-blue-900 border-t-transparent rounded-full animate-spin mx-auto" />
+        </div>
+      }>
+        <LoginContent />
+      </Suspense>
     </div>
   )
 }
