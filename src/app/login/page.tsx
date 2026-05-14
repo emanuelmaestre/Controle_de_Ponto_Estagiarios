@@ -76,6 +76,18 @@ function LoginContent() {
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) })
 
+  const getRedirectUrl = async () => {
+    if (redirect) return redirect
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return '/login'
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle()
+    return profile?.role === 'manager' ? '/admin' : '/dashboard'
+  }
+
   const onSubmitEmail = async (data: LoginInput) => {
     setError(null)
     const { error } = await supabase.auth.signInWithPassword({
@@ -86,7 +98,8 @@ function LoginContent() {
       setError('E-mail ou senha incorretos.')
       return
     }
-    router.push(redirect || '/dashboard')
+    const url = await getRedirectUrl()
+    router.push(url)
     router.refresh()
   }
 
@@ -106,7 +119,8 @@ function LoginContent() {
         setPin('')
         return
       }
-      router.push(redirect || '/dashboard')
+      const url = await getRedirectUrl()
+      router.push(url)
       router.refresh()
     } catch {
       setError('Erro de conexão. Tente novamente.')
