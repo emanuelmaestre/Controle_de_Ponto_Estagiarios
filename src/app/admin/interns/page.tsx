@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Profile } from '@/types/database'
+import AdminNav from '@/components/AdminNav'
 
 export default async function InternsPage() {
   const supabase = await createSupabaseServerClient()
@@ -20,36 +21,66 @@ export default async function InternsPage() {
   const active = interns?.filter(i => i.is_active) ?? []
   const inactive = interns?.filter(i => !i.is_active) ?? []
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-blue-900 text-white px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/admin" className="text-blue-200 hover:text-white text-sm">← Painel</Link>
-          <div>
-            <h1 className="font-bold text-xl">Estagiários</h1>
-            <p className="text-blue-200 text-sm">{active.length} ativo{active.length !== 1 ? 's' : ''}</p>
-          </div>
-        </div>
-        <Link
-          href="/admin/interns/new"
-          className="bg-white text-blue-900 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors"
-        >
-          + Cadastrar
-        </Link>
-      </header>
+  const avatarColors = [
+    'bg-blue-100 text-blue-700',
+    'bg-purple-100 text-purple-700',
+    'bg-rose-100 text-rose-700',
+    'bg-emerald-100 text-emerald-700',
+    'bg-amber-100 text-amber-700',
+    'bg-cyan-100 text-cyan-700',
+  ]
 
-      <main className="max-w-4xl mx-auto p-6 space-y-8">
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <AdminNav />
+
+      {/* Page header */}
+      <div className="bg-white border-b border-slate-100 shadow-sm">
+        <div className="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/admin" className="text-slate-400 hover:text-slate-600 text-sm flex items-center gap-1 transition-colors">
+              ← Início
+            </Link>
+            <span className="text-slate-200">|</span>
+            <div>
+              <h1 className="font-bold text-slate-800 text-xl">Estagiários</h1>
+              <p className="text-slate-400 text-xs">{active.length} ativo{active.length !== 1 ? 's' : ''} · {inactive.length} inativo{inactive.length !== 1 ? 's' : ''}</p>
+            </div>
+          </div>
+          <Link
+            href="/admin/interns/new"
+            className="flex items-center gap-2 bg-blue-700 hover:bg-blue-600 text-white font-semibold text-sm px-4 py-2.5 rounded-xl hover:shadow-lg transition-all"
+          >
+            + Novo estagiário
+          </Link>
+        </div>
+      </div>
+
+      <main className="max-w-4xl mx-auto px-6 py-8 space-y-8">
         {/* Ativos */}
         <section>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-            Ativos ({active.length})
-          </h2>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-2 h-2 bg-emerald-400 rounded-full" />
+            <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+              Ativos — {active.length}
+            </h2>
+            <div className="flex-1 h-px bg-slate-100" />
+          </div>
+
           <div className="space-y-2">
-            {active.map(intern => (
-              <InternRow key={intern.id} intern={intern} />
+            {active.map((intern, idx) => (
+              <InternCard
+                key={intern.id}
+                intern={intern}
+                colorClass={avatarColors[idx % avatarColors.length]}
+                isActive
+              />
             ))}
             {active.length === 0 && (
-              <p className="text-gray-400 text-sm py-4 text-center">Nenhum estagiário ativo.</p>
+              <div className="py-10 text-center text-slate-400">
+                <p className="text-3xl mb-2">👤</p>
+                <p className="text-sm">Nenhum estagiário ativo.</p>
+              </div>
             )}
           </div>
         </section>
@@ -57,12 +88,22 @@ export default async function InternsPage() {
         {/* Inativos */}
         {inactive.length > 0 && (
           <section>
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
-              Inativos ({inactive.length})
-            </h2>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-2 h-2 bg-slate-300 rounded-full" />
+              <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Inativos — {inactive.length}
+              </h2>
+              <div className="flex-1 h-px bg-slate-100" />
+            </div>
+
             <div className="space-y-2 opacity-60">
-              {inactive.map(intern => (
-                <InternRow key={intern.id} intern={intern} />
+              {inactive.map((intern, idx) => (
+                <InternCard
+                  key={intern.id}
+                  intern={intern}
+                  colorClass={avatarColors[(active.length + idx) % avatarColors.length]}
+                  isActive={false}
+                />
               ))}
             </div>
           </section>
@@ -72,34 +113,58 @@ export default async function InternsPage() {
   )
 }
 
-function InternRow({ intern }: {
+function InternCard({
+  intern,
+  colorClass,
+  isActive,
+}: {
   intern: Pick<Profile, 'id' | 'full_name' | 'email' | 'course' | 'internship_start' | 'internship_end' | 'is_active' | 'photo_url'>
+  colorClass: string
+  isActive: boolean
 }) {
   return (
     <Link
       href={`/admin/interns/${intern.id}`}
-      className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all px-5 py-4"
+      className="group flex items-center gap-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200 px-5 py-4"
     >
       {intern.photo_url ? (
-        <img src={intern.photo_url} alt={intern.full_name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+        <img
+          src={intern.photo_url}
+          alt={intern.full_name}
+          className="w-11 h-11 rounded-xl object-cover flex-shrink-0 ring-2 ring-slate-100 group-hover:ring-blue-100 transition-all"
+        />
       ) : (
-        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-900 font-bold text-sm flex-shrink-0">
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 ${colorClass}`}>
           {intern.full_name.charAt(0).toUpperCase()}
         </div>
       )}
+
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-gray-800">{intern.full_name}</p>
-        <p className="text-sm text-gray-400 truncate">{intern.email}</p>
+        <p className="font-semibold text-slate-800 group-hover:text-blue-700 transition-colors">{intern.full_name}</p>
+        <p className="text-xs text-slate-400 truncate">{intern.email}</p>
       </div>
-      <div className="text-right hidden sm:block">
-        {intern.course && <p className="text-sm text-gray-600">{intern.course}</p>}
+
+      <div className="text-right hidden sm:block flex-shrink-0">
+        {intern.course && (
+          <p className="text-sm text-slate-600 font-medium">{intern.course}</p>
+        )}
         {intern.internship_start && (
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-slate-400">
             Desde {new Date(intern.internship_start).toLocaleDateString('pt-BR')}
           </p>
         )}
       </div>
-      <span className="text-gray-300 text-lg">›</span>
+
+      <div className="flex items-center gap-2">
+        <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
+          isActive
+            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+            : 'bg-slate-100 text-slate-500 border-slate-200'
+        }`}>
+          {isActive ? 'Ativo' : 'Inativo'}
+        </span>
+        <span className="text-slate-300 text-base group-hover:text-blue-400 transition-colors">›</span>
+      </div>
     </Link>
   )
 }

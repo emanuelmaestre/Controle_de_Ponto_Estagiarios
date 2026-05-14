@@ -4,12 +4,10 @@ import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { motion, AnimatePresence } from 'framer-motion'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { loginSchema, type LoginInput } from '@/lib/validations'
 
-// ──────────────────────────────────────────────────────────
-// Componente: teclado de PIN
-// ──────────────────────────────────────────────────────────
 function PinPad({ pin, onDigit, onDelete }: {
   pin: string
   onDigit: (d: string) => void
@@ -17,46 +15,45 @@ function PinPad({ pin, onDigit, onDelete }: {
 }) {
   const keys = ['1','2','3','4','5','6','7','8','9','','0','⌫']
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex justify-center gap-3 py-2">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div
+          <motion.div
             key={i}
-            className={`w-3 h-3 rounded-full border-2 transition-colors ${
-              i < pin.length
-                ? 'bg-blue-900 border-blue-900'
-                : 'border-gray-300 bg-white'
-            }`}
+            animate={{
+              scale: i === pin.length - 1 ? [1.3, 1] : 1,
+              backgroundColor: i < pin.length ? '#1d4ed8' : '#e2e8f0',
+            }}
+            transition={{ duration: 0.15 }}
+            className="w-3.5 h-3.5 rounded-full"
           />
         ))}
       </div>
       <div className="grid grid-cols-3 gap-2">
         {keys.map((k, i) => (
-          <button
+          <motion.button
             key={i}
             type="button"
+            whileTap={{ scale: k !== '' ? 0.9 : 1 }}
             disabled={k === '' || pin.length >= 6}
             onClick={() => k === '⌫' ? onDelete() : k !== '' && onDigit(k)}
             className={`
-              h-14 rounded-xl text-xl font-semibold transition-all
+              h-14 rounded-2xl text-xl font-semibold transition-colors
               ${k === '' ? 'invisible' : ''}
               ${k === '⌫'
-                ? 'bg-gray-100 text-red-500 hover:bg-red-50 active:scale-95'
-                : 'bg-gray-50 hover:bg-blue-50 active:scale-95 active:bg-blue-100 text-gray-800 shadow-sm'}
+                ? 'bg-slate-100 text-red-500 hover:bg-red-50'
+                : 'bg-white/60 hover:bg-blue-50 text-slate-800 shadow-sm border border-slate-100'}
               disabled:opacity-40 disabled:cursor-not-allowed
             `}
           >
             {k}
-          </button>
+          </motion.button>
         ))}
       </div>
     </div>
   )
 }
 
-// ──────────────────────────────────────────────────────────
-// Conteúdo interno (usa useSearchParams — precisa de Suspense)
-// ──────────────────────────────────────────────────────────
 function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -119,114 +116,197 @@ function LoginContent() {
   }
 
   return (
-    <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
-      {/* Header */}
-      <div className="bg-blue-900 px-6 py-8 text-center">
-        <div className="w-16 h-16 bg-white/20 rounded-2xl mx-auto mb-3 flex items-center justify-center">
-          <span className="text-3xl">🔬</span>
-        </div>
-        <h1 className="text-white font-bold text-xl">Controle de Ponto</h1>
-        <p className="text-blue-200 text-sm mt-1">Laboratório</p>
+    <div className="w-full max-w-sm">
+      {/* Decorative circles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-800/10 rounded-full blur-3xl" />
       </div>
 
-      {error && (
-        <div className="mx-4 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-          {error}
-        </div>
-      )}
-
-      {/* Tabs */}
-      <div className="flex border-b border-gray-100 mx-4 mt-4">
-        {(['email', 'pin'] as const).map((m) => (
-          <button
-            key={m}
-            onClick={() => { setMode(m); setError(null); setPin('') }}
-            className={`flex-1 py-2 text-sm font-medium transition-colors ${
-              mode === m
-                ? 'text-blue-900 border-b-2 border-blue-900'
-                : 'text-gray-400 hover:text-gray-600'
-            }`}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="relative glass rounded-3xl overflow-hidden shadow-2xl border border-white/30"
+      >
+        {/* Header */}
+        <div className="bg-gradient-to-br from-blue-900/90 to-blue-700/90 px-8 py-8 text-center">
+          <motion.div
+            initial={{ scale: 0, rotate: -10 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ duration: 0.5, delay: 0.2, type: 'spring', stiffness: 200 }}
+            className="w-18 h-18 bg-white/20 rounded-2xl mx-auto mb-4 flex items-center justify-center w-[72px] h-[72px] float-anim"
           >
-            {m === 'email' ? 'E-mail + Senha' : 'PIN'}
-          </button>
-        ))}
-      </div>
+            <span className="text-4xl">🔬</span>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+          >
+            <h1 className="text-white font-bold text-xl">Controle de Ponto</h1>
+            <p className="text-blue-200 text-sm mt-1">Laboratório — acesso seguro</p>
+          </motion.div>
+        </div>
 
-      <div className="p-6">
-        {mode === 'email' && (
-          <form onSubmit={handleSubmit(onSubmitEmail)} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-              <input
-                {...register('email')}
-                type="email"
-                autoComplete="email"
-                placeholder="seu@email.com"
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-              <input
-                {...register('password')}
-                type="password"
-                autoComplete="current-password"
-                placeholder="••••••"
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-            </div>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg transition-colors disabled:opacity-60"
+        {/* Error */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mx-6 mt-5 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-start gap-2"
             >
-              {isSubmitting ? 'Entrando...' : 'Entrar'}
-            </button>
-          </form>
-        )}
+              <span>⚠️</span>
+              <span>{error}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {mode === 'pin' && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-              <input
-                type="email"
-                value={pinEmail}
-                onChange={(e) => setPinEmail(e.target.value)}
-                placeholder="seu@email.com"
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <PinPad
-              pin={pin}
-              onDigit={(d) => setPin((p) => (p.length < 6 ? p + d : p))}
-              onDelete={() => setPin((p) => p.slice(0, -1))}
-            />
+        {/* Tabs */}
+        <div className="relative flex mx-6 mt-5 bg-slate-100 rounded-xl p-1">
+          <motion.div
+            className="absolute top-1 bottom-1 bg-white rounded-lg shadow-sm"
+            animate={{ left: mode === 'email' ? '4px' : '50%', width: 'calc(50% - 4px)' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          />
+          {(['email', 'pin'] as const).map((m) => (
             <button
-              onClick={handlePinSubmit}
-              disabled={pin.length < 4 || !pinEmail || loading}
-              className="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg transition-colors disabled:opacity-40"
+              key={m}
+              onClick={() => { setMode(m); setError(null); setPin('') }}
+              className={`relative flex-1 py-2 text-sm font-semibold transition-colors rounded-lg z-10 ${
+                mode === m ? 'text-blue-900' : 'text-slate-400 hover:text-slate-600'
+              }`}
             >
-              {loading ? 'Verificando...' : 'Entrar com PIN'}
+              {m === 'email' ? '✉️ E-mail' : '🔢 PIN'}
             </button>
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+
+        <div className="px-6 py-6">
+          <AnimatePresence mode="wait">
+            {mode === 'email' ? (
+              <motion.form
+                key="email"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.2 }}
+                onSubmit={handleSubmit(onSubmitEmail)}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">E-mail</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">✉️</span>
+                    <input
+                      {...register('email')}
+                      type="email"
+                      autoComplete="email"
+                      placeholder="seu@email.com"
+                      className="w-full pl-9 pr-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50 transition-all"
+                    />
+                  </div>
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Senha</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">🔒</span>
+                    <input
+                      {...register('password')}
+                      type="password"
+                      autoComplete="current-password"
+                      placeholder="••••••••"
+                      className="w-full pl-9 pr-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50 transition-all"
+                    />
+                  </div>
+                  {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+                </div>
+                <motion.button
+                  type="submit"
+                  disabled={isSubmitting}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full py-3.5 bg-gradient-to-r from-blue-800 to-blue-600 hover:from-blue-700 hover:to-blue-500 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-blue-500/25 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                      />
+                      Entrando...
+                    </>
+                  ) : (
+                    'Entrar'
+                  )}
+                </motion.button>
+              </motion.form>
+            ) : (
+              <motion.div
+                key="pin"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1.5">E-mail</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">✉️</span>
+                    <input
+                      type="email"
+                      value={pinEmail}
+                      onChange={(e) => setPinEmail(e.target.value)}
+                      placeholder="seu@email.com"
+                      className="w-full pl-9 pr-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50 transition-all"
+                    />
+                  </div>
+                </div>
+                <PinPad
+                  pin={pin}
+                  onDigit={(d) => setPin((p) => (p.length < 6 ? p + d : p))}
+                  onDelete={() => setPin((p) => p.slice(0, -1))}
+                />
+                <motion.button
+                  onClick={handlePinSubmit}
+                  disabled={pin.length < 4 || !pinEmail || loading}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full py-3.5 bg-gradient-to-r from-blue-800 to-blue-600 hover:from-blue-700 hover:to-blue-500 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-blue-500/25 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                      />
+                      Verificando...
+                    </>
+                  ) : (
+                    'Entrar com PIN'
+                  )}
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
     </div>
   )
 }
 
-// ──────────────────────────────────────────────────────────
-// Página exportada — envolve em Suspense (obrigatório Next.js 14+)
-// ──────────────────────────────────────────────────────────
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 to-blue-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-800 flex items-center justify-center p-4 relative">
       <Suspense fallback={
-        <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8 text-center">
-          <div className="w-12 h-12 border-4 border-blue-900 border-t-transparent rounded-full animate-spin mx-auto" />
+        <div className="w-full max-w-sm glass rounded-3xl shadow-2xl p-10 text-center">
+          <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-blue-200 text-sm mt-4">Carregando...</p>
         </div>
       }>
         <LoginContent />

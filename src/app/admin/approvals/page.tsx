@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { formatDateTime, minutesToHours } from '@/lib/utils'
 import ApprovalActions from './ApprovalActions'
+import AdminNav from '@/components/AdminNav'
 
 export default async function ApprovalsPage() {
   const supabase = await createSupabaseServerClient()
@@ -14,92 +15,123 @@ export default async function ApprovalsPage() {
     .select('*')
   const pending = pendingRaw as import('@/types/database').PendingApproval[] | null
 
+  const count = pending?.length ?? 0
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-blue-900 text-white px-6 py-4 flex items-center gap-4">
-        <Link href="/admin" className="text-blue-200 hover:text-white text-sm">← Painel</Link>
-        <div>
-          <h1 className="font-bold text-xl">Fila de Aprovações</h1>
-          <p className="text-blue-200 text-sm">{pending?.length ?? 0} registro(s) pendente(s)</p>
+    <div className="min-h-screen bg-slate-50">
+      <AdminNav pending={count} />
+
+      {/* Page header */}
+      <div className="bg-white border-b border-slate-100 shadow-sm">
+        <div className="max-w-3xl mx-auto px-6 py-5 flex items-center gap-4">
+          <Link href="/admin" className="text-slate-400 hover:text-slate-600 text-sm transition-colors">
+            ← Início
+          </Link>
+          <span className="text-slate-200">|</span>
+          <div className="flex items-center gap-3">
+            <h1 className="font-bold text-slate-800 text-xl">Aprovações</h1>
+            {count > 0 ? (
+              <span className="bg-red-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
+                {count}
+              </span>
+            ) : (
+              <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                0
+              </span>
+            )}
+          </div>
         </div>
-      </header>
+      </div>
 
-      <main className="max-w-3xl mx-auto p-6 space-y-4">
-        {pending?.map((record) => (
-          <div key={record.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-            {/* Cabeçalho do card */}
-            <div className="px-5 py-4 flex items-center gap-3 border-b border-gray-50">
-              {record.photo_url ? (
-                <img src={record.photo_url} alt={record.intern_name}
-                  className="w-9 h-9 rounded-full object-cover" />
-              ) : (
-                <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-900 font-bold text-sm">
-                  {record.intern_name.charAt(0)}
+      <main className="max-w-3xl mx-auto px-6 py-8 space-y-4">
+        {pending && pending.length > 0 ? (
+          pending.map((record) => (
+            <div key={record.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+              {/* Card header */}
+              <div className="px-5 py-4 flex items-center gap-3 border-b border-slate-50">
+                {record.photo_url ? (
+                  <img
+                    src={record.photo_url}
+                    alt={record.intern_name}
+                    className="w-10 h-10 rounded-xl object-cover ring-2 ring-slate-100"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-sm">
+                    {record.intern_name.charAt(0)}
+                  </div>
+                )}
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-800">{record.intern_name}</p>
+                  <p className="text-xs text-slate-400">{formatDateTime(record.clock_in)}</p>
                 </div>
-              )}
-              <div>
-                <p className="font-semibold text-gray-800">{record.intern_name}</p>
-                <p className="text-xs text-gray-400">{formatDateTime(record.clock_in)}</p>
+                <span className="text-xs bg-amber-50 text-amber-600 border border-amber-200 px-2.5 py-1 rounded-full font-semibold">
+                  ⏳ Pendente
+                </span>
               </div>
-            </div>
 
-            {/* Dados do turno */}
-            <div className="px-5 py-4 space-y-3">
-              <div className="grid grid-cols-3 gap-4 text-sm">
+              {/* Stats */}
+              <div className="px-5 py-4 grid grid-cols-3 gap-4 text-sm border-b border-slate-50">
                 <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-wide">Entrada</p>
-                  <p className="font-semibold">
+                  <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Entrada</p>
+                  <p className="font-bold text-slate-700">
                     {new Date(record.clock_in).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' })}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-wide">Saída</p>
-                  <p className="font-semibold">
+                  <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Saída</p>
+                  <p className="font-bold text-slate-700">
                     {record.clock_out
                       ? new Date(record.clock_out).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' })
                       : '—'}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-wide">Duração</p>
-                  <p className="font-semibold">
+                  <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Duração</p>
+                  <p className="font-bold text-slate-700">
                     {record.duration_minutes ? minutesToHours(record.duration_minutes) : '—'}
                   </p>
                 </div>
               </div>
 
-              {/* Atividades */}
+              {/* Activities */}
               {Array.isArray(record.activities) && record.activities.length > 0 && (
-                <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Atividades</p>
-                  <ul className="space-y-0.5">
+                <div className="px-5 py-4 border-b border-slate-50">
+                  <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">Atividades</p>
+                  <ul className="space-y-1.5">
                     {(record.activities as string[]).map((a, i) => (
-                      <li key={i} className="text-sm text-gray-700">• {a}</li>
+                      <li key={i} className="text-sm text-slate-700 flex items-start gap-2">
+                        <span className="text-slate-300 mt-0.5">•</span>
+                        {a}
+                      </li>
                     ))}
                   </ul>
                 </div>
               )}
 
               {record.notes && (
-                <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Observações</p>
-                  <p className="text-sm text-gray-600 italic">{record.notes}</p>
+                <div className="px-5 py-3 border-b border-slate-50 bg-slate-50">
+                  <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Observações</p>
+                  <p className="text-sm text-slate-600 italic">{record.notes}</p>
                 </div>
               )}
-            </div>
 
-            {/* Ações */}
-            <div className="px-5 py-4 bg-gray-50 border-t border-gray-100">
-              <ApprovalActions recordId={record.id} approverId={user.id} />
+              {/* Actions */}
+              <div className="px-5 py-4 bg-slate-50/50">
+                <ApprovalActions recordId={record.id} approverId={user.id} />
+              </div>
             </div>
-          </div>
-        ))}
-
-        {(!pending || pending.length === 0) && (
-          <div className="text-center py-20 text-gray-400">
-            <p className="text-4xl mb-3">✅</p>
-            <p className="font-medium text-lg">Tudo em dia!</p>
-            <p className="text-sm mt-1">Nenhum registro aguardando aprovação.</p>
+          ))
+        ) : (
+          <div className="text-center py-24 text-slate-400">
+            <div className="text-6xl mb-4">✅</div>
+            <p className="font-bold text-slate-700 text-xl">Tudo em dia!</p>
+            <p className="text-sm mt-2">Nenhum registro aguardando aprovação.</p>
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-2 mt-6 px-4 py-2 bg-blue-700 text-white rounded-xl text-sm font-semibold hover:bg-blue-600 transition-all"
+            >
+              ← Voltar ao painel
+            </Link>
           </div>
         )}
       </main>

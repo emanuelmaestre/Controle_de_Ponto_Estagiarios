@@ -3,140 +3,169 @@ import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { minutesToHours, formatTime } from '@/lib/utils'
 import type { TodayStatus } from '@/types/database'
+import AdminNav from '@/components/AdminNav'
+import StatCard from '@/components/ui/StatCard'
 
 export default async function AdminPage() {
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // Status de todos os estagiários hoje
   const { data: internsRaw } = await supabase
     .from('v_today_status')
     .select('*')
     .order('full_name')
-  const interns = internsRaw as import('@/types/database').TodayStatus[] | null
+  const interns = internsRaw as TodayStatus[] | null
 
-  // Total de pendências
   const totalPending = interns?.reduce((acc, i) => acc + (i.pending_count ?? 0), 0) ?? 0
+  const activeCount = interns?.filter((i) => i.today_status === 'ativo').length ?? 0
+  const totalCount = interns?.length ?? 0
 
   const statusColor: Record<string, string> = {
-    ativo:   'bg-green-100 text-green-700 border-green-200',
+    ativo:   'bg-emerald-100 text-emerald-700 border-emerald-200',
     saiu:    'bg-blue-50 text-blue-700 border-blue-200',
-    ausente: 'bg-gray-100 text-gray-500 border-gray-200',
+    ausente: 'bg-slate-100 text-slate-500 border-slate-200',
   }
   const statusLabel: Record<string, string> = {
-    ativo: 'No laboratório',
-    saiu: 'Saiu hoje',
-    ausente: 'Ausente hoje',
+    ativo: '● No laboratório',
+    saiu: '● Saiu hoje',
+    ausente: '● Ausente',
+  }
+  const statusDot: Record<string, string> = {
+    ativo: 'text-emerald-500',
+    saiu: 'text-blue-400',
+    ausente: 'text-slate-300',
   }
 
+  const avatarColors = [
+    'bg-blue-100 text-blue-700',
+    'bg-purple-100 text-purple-700',
+    'bg-rose-100 text-rose-700',
+    'bg-emerald-100 text-emerald-700',
+    'bg-amber-100 text-amber-700',
+    'bg-cyan-100 text-cyan-700',
+  ]
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-blue-900 text-white px-6 py-4 flex items-center justify-between">
-        <div>
-          <h1 className="font-bold text-xl">Painel do Chefe</h1>
-          <p className="text-blue-200 text-sm">
-            {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}
-          </p>
-        </div>
-        <nav className="flex items-center gap-4 text-sm">
-          {totalPending > 0 && (
-            <Link href="/admin/approvals"
-              className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 px-3 py-1.5 rounded-full font-medium transition-colors">
-              <span>⏳</span>
-              <span>{totalPending} pendente{totalPending > 1 ? 's' : ''}</span>
-            </Link>
-          )}
-          <Link href="/admin/interns" className="text-blue-200 hover:text-white">Estagiários</Link>
-          <Link href="/admin/reports" className="text-blue-200 hover:text-white">Relatórios</Link>
-          <Link href="/admin/settings" className="text-blue-200 hover:text-white">Config</Link>
-        </nav>
-      </header>
+    <div className="min-h-screen bg-slate-50">
+      <AdminNav pending={totalPending} />
 
-      <main className="max-w-5xl mx-auto p-6">
-        {/* Resumo rápido */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">No laboratório</p>
-            <p className="text-3xl font-bold text-green-600 mt-1">
-              {interns?.filter((i) => i.today_status === 'ativo').length ?? 0}
-            </p>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Estagiários ativos</p>
-            <p className="text-3xl font-bold text-blue-900 mt-1">{interns?.length ?? 0}</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Pendentes</p>
-            <p className={`text-3xl font-bold mt-1 ${totalPending > 0 ? 'text-amber-600' : 'text-gray-400'}`}>
-              {totalPending}
-            </p>
-          </div>
+      <main className="max-w-6xl mx-auto px-6 py-8">
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <StatCard
+            label="No laboratório agora"
+            value={activeCount}
+            icon="🧪"
+            color="green"
+            sub="estagiários presentes"
+            delay={0}
+          />
+          <StatCard
+            label="Total de estagiários"
+            value={totalCount}
+            icon="👥"
+            color="blue"
+            sub="cadastrados no sistema"
+            delay={0.05}
+          />
+          <StatCard
+            label="Pendentes de aprovação"
+            value={totalPending}
+            icon="⏳"
+            color={totalPending > 0 ? 'amber' : 'gray'}
+            sub={totalPending > 0 ? 'clique para revisar' : 'tudo em dia'}
+            delay={0.1}
+          />
         </div>
 
-        {/* Grid de estagiários */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {interns?.map((intern) => (
+        {/* Section title */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold text-slate-700">Estagiários hoje</h2>
+          <span className="text-xs text-slate-400 font-medium uppercase tracking-widest">
+            {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+          </span>
+        </div>
+
+        {/* Intern grid */}
+        {interns && interns.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {interns.map((intern, idx) => {
+              const colorClass = avatarColors[idx % avatarColors.length]
+              return (
+                <Link
+                  key={intern.id}
+                  href={`/admin/interns/${intern.id}`}
+                  className="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200 p-5 flex flex-col gap-4"
+                >
+                  <div className="flex items-start gap-3">
+                    {intern.photo_url ? (
+                      <img
+                        src={intern.photo_url}
+                        alt={intern.full_name}
+                        className="w-11 h-11 rounded-xl object-cover flex-shrink-0 ring-2 ring-slate-100 group-hover:ring-blue-100 transition-all"
+                      />
+                    ) : (
+                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 ${colorClass}`}>
+                        {intern.full_name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-800 truncate group-hover:text-blue-800 transition-colors">
+                        {intern.full_name}
+                      </p>
+                      <span className={`inline-flex mt-1 text-xs px-2 py-0.5 rounded-full border font-medium ${statusColor[intern.today_status]}`}>
+                        {statusLabel[intern.today_status]}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-50">
+                    <div>
+                      <p className="text-xs text-slate-400 font-medium">Hoje</p>
+                      <p className="font-bold text-slate-700 text-sm">{minutesToHours(intern.today_minutes)}</p>
+                    </div>
+                    {intern.today_status === 'ativo' && intern.clock_in && (
+                      <div className="text-right">
+                        <p className="text-xs text-slate-400 font-medium">Entrada</p>
+                        <p className="font-bold text-emerald-600 text-sm">{formatTime(intern.clock_in)}</p>
+                      </div>
+                    )}
+                    {intern.pending_count > 0 && (
+                      <div className="text-right">
+                        <span className="inline-flex items-center gap-1 text-xs bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded-full font-semibold">
+                          ⏳ {intern.pending_count}
+                        </span>
+                      </div>
+                    )}
+                    <span className="text-slate-300 text-base group-hover:text-blue-400 transition-colors">›</span>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-24 text-slate-400">
+            <div className="text-6xl mb-4 float-anim inline-block">👥</div>
+            <p className="font-semibold text-slate-600 text-lg">Nenhum estagiário cadastrado</p>
+            <p className="text-sm mt-2 mb-6">Comece adicionando o primeiro estagiário ao sistema.</p>
             <Link
-              key={intern.id}
-              href={`/admin/interns/${intern.id}`}
-              className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all p-4"
+              href="/admin/interns/new"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-700 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold transition-all hover:shadow-lg hover:-translate-y-0.5"
             >
-              <div className="flex items-start gap-3">
-                {intern.photo_url ? (
-                  <img
-                    src={intern.photo_url}
-                    alt={intern.full_name}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-900 font-bold text-sm">
-                    {intern.full_name.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-gray-800 truncate">{intern.full_name}</p>
-                  <span className={`inline-flex mt-1 text-xs px-2 py-0.5 rounded-full border font-medium ${statusColor[intern.today_status]}`}>
-                    {statusLabel[intern.today_status]}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-3 flex justify-between text-sm">
-                <div>
-                  <p className="text-xs text-gray-400">Hoje</p>
-                  <p className="font-semibold text-gray-700">{minutesToHours(intern.today_minutes)}</p>
-                </div>
-                {intern.today_status === 'ativo' && intern.clock_in && (
-                  <div className="text-right">
-                    <p className="text-xs text-gray-400">Entrada</p>
-                    <p className="font-semibold text-green-600">{formatTime(intern.clock_in)}</p>
-                  </div>
-                )}
-                {intern.pending_count > 0 && (
-                  <div className="text-right">
-                    <p className="text-xs text-amber-500 font-medium">
-                      {intern.pending_count} pendente{intern.pending_count > 1 ? 's' : ''}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {(!interns || interns.length === 0) && (
-          <div className="text-center py-16 text-gray-400">
-            <p className="text-4xl mb-3">👥</p>
-            <p className="font-medium">Nenhum estagiário cadastrado ainda.</p>
-            <Link href="/admin/interns/new"
-              className="mt-4 inline-block px-4 py-2 bg-blue-900 text-white rounded-lg text-sm font-medium hover:bg-blue-800">
-              Cadastrar estagiário
+              + Cadastrar primeiro estagiário
             </Link>
           </div>
         )}
       </main>
+
+      {/* FAB */}
+      <Link
+        href="/admin/interns/new"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-blue-700 hover:bg-blue-600 text-white px-5 py-3 rounded-2xl shadow-xl font-semibold text-sm transition-all hover:shadow-2xl hover:-translate-y-1 active:scale-95"
+      >
+        <span className="text-lg">+</span> Novo estagiário
+      </Link>
     </div>
   )
 }
