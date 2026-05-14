@@ -5,7 +5,7 @@ import type { Database } from '@/types/database'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    const body: Record<string, unknown> = await request.json()
     const parsed = internSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json({ error: 'Dados inválidos.' }, { status: 400 })
@@ -37,6 +37,9 @@ export async function POST(request: NextRequest) {
 
     const userId = authData.user.id
 
+    // Pegar photo_url do body original (não validado pelo schema do internSchema)
+    const photoUrl: string | null = (body.photo_url as string | null) ?? null
+
     // Criar/atualizar perfil (o trigger já cria um perfil básico, mas atualizamos com os dados completos)
     const { error: profileError } = await supabaseAdmin
       .from('profiles')
@@ -49,6 +52,7 @@ export async function POST(request: NextRequest) {
         internship_end: data.internship_end || null,
         is_active: data.is_active ?? true,
         role: 'intern',
+        ...(photoUrl ? { photo_url: photoUrl } : {}),
       })
 
     if (profileError) {

@@ -76,6 +76,7 @@ export default async function ReportsPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <style>{`@media print { header { display: none !important; } .print\\:hidden { display: none !important; } body { background: white !important; } nav { display: none !important; } }`}</style>
       <header className="bg-blue-900 text-white px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/admin" className="text-blue-200 hover:text-white text-sm">← Painel</Link>
@@ -84,7 +85,7 @@ export default async function ReportsPage({ searchParams }: Props) {
             <p className="text-blue-200 text-sm">Horas por estagiário</p>
           </div>
         </div>
-        <ReportExport data={reportData} month={selectedMonth} />
+        <ReportExport data={reportData} month={selectedMonth} monthLabel={monthOptions.find(o => o.value === selectedMonth)?.label ?? selectedMonth} />
       </header>
 
       <main className="max-w-5xl mx-auto p-6">
