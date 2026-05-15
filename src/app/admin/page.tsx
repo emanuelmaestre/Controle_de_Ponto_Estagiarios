@@ -150,22 +150,15 @@ export default async function AdminPage() {
             <p className="font-semibold text-slate-600 text-lg">Nenhum estagiário cadastrado</p>
             <p className="text-sm mt-2 mb-6">Comece adicionando o primeiro estagiário ao sistema.</p>
             <Link
-              href="/admin/interns/new"
+              href="/admin/interns"
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-700 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold transition-all hover:shadow-lg hover:-translate-y-0.5"
             >
-              + Cadastrar primeiro estagiário
+              Estagiários
             </Link>
           </div>
         )}
       </main>
 
-      {/* FAB */}
-      <Link
-        href="/admin/interns/new"
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-blue-700 hover:bg-blue-600 text-white px-5 py-3 rounded-2xl shadow-xl font-semibold text-sm transition-all hover:shadow-2xl hover:-translate-y-1 active:scale-95"
-      >
-        <span className="text-lg">+</span> Novo estagiário
-      </Link>
     </div>
   )
 }
