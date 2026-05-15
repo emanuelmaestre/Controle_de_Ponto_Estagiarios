@@ -1,13 +1,21 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const type = searchParams.get('type') || 'monthly'
 
-  const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  // Verificar autenticação com cliente normal
+  const authClient = await createSupabaseServerClient()
+  const { data: { user } } = await authClient.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+
+  // Usar service client para bypassar RLS e ver todos os registros
+  const supabase = createSupabaseServiceClient()
+
+  // Fuso horário de São Paulo: UTC-3
+  // Converter datas locais para UTC corretamente
+  const SP_OFFSET = 3 * 60 * 60 * 1000 // 3 horas em ms
 
   let startDate: string
   let endDate: string
@@ -17,14 +25,16 @@ export async function GET(request: Request) {
     const now = new Date()
     const month = searchParams.get('month') || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
     const [year, mon] = month.split('-').map(Number)
-    startDate = new Date(Date.UTC(year, mon - 1, 1)).toISOString()
-    endDate   = new Date(Date.UTC(year, mon, 1)).toISOString()
-    label = new Date(Date.UTC(year, mon - 1, 1)).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+    // Início e fim do mês em São Paulo (adiciona 3h para converter SP→UTC)
+    startDate = new Date(Date.UTC(year, mon - 1, 1, 0, 0, 0) + SP_OFFSET).toISOString()
+    endDate   = new Date(Date.UTC(year, mon,     1, 0, 0, 0) + SP_OFFSET).toISOString()
+    label = new Date(Date.UTC(year, mon - 1, 15)).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
   } else if (type === 'daily') {
     const date = searchParams.get('date') || new Date().toISOString().slice(0, 10)
-    startDate = `${date}T00:00:00.000Z`
-    endDate   = `${date}T23:59:59.999Z`
-    label = new Date(date + 'T12:00:00Z').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    const [y, m, d] = date.split('-').map(Number)
+    startDate = new Date(Date.UTC(y, m - 1, d, 0, 0, 0) + SP_OFFSET).toISOString()
+    endDate   = new Date(Date.UTC(y, m - 1, d, 23, 59, 59) + SP_OFFSET).toISOString()
+    label = new Date(Date.UTC(y, m - 1, d, 12, 0, 0)).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' })
   } else if (type === 'weekly') {
     const date = searchParams.get('date') || new Date().toISOString().slice(0, 10)
     const d = new Date(date + 'T12:00:00Z')
@@ -34,18 +44,24 @@ export async function GET(request: Request) {
     monday.setUTCDate(d.getUTCDate() + diffToMonday)
     const sunday = new Date(monday)
     sunday.setUTCDate(monday.getUTCDate() + 6)
-    startDate = monday.toISOString().slice(0, 10) + 'T00:00:00.000Z'
-    endDate   = sunday.toISOString().slice(0, 10) + 'T23:59:59.999Z'
-    const fmt = (d: Date) => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'UTC' })
-    label = `${fmt(monday)} a ${fmt(sunday)}`
+    const [my, mm, md] = monday.toISOString().slice(0, 10).split('-').map(Number)
+    const [sy, sm, sd] = sunday.toISOString().slice(0, 10).split('-').map(Number)
+    startDate = new Date(Date.UTC(my, mm - 1, md, 0, 0, 0) + SP_OFFSET).toISOString()
+    endDate   = new Date(Date.UTC(sy, sm - 1, sd, 23, 59, 59) + SP_OFFSET).toISOString()
+    const fmt = (y: number, m: number, d: number) =>
+      new Date(Date.UTC(y, m - 1, d, 12)).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'UTC' })
+    label = `${fmt(my, mm, md)} a ${fmt(sy, sm, sd)}`
   } else {
     // custom
     const start = searchParams.get('start') || new Date().toISOString().slice(0, 10)
     const end   = searchParams.get('end')   || new Date().toISOString().slice(0, 10)
-    startDate = `${start}T00:00:00.000Z`
-    endDate   = `${end}T23:59:59.999Z`
-    const fmt = (s: string) => new Date(s + 'T12:00:00Z').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
-    label = `${fmt(start)} a ${fmt(end)}`
+    const [sy, sm, sd] = start.split('-').map(Number)
+    const [ey, em, ed] = end.split('-').map(Number)
+    startDate = new Date(Date.UTC(sy, sm - 1, sd, 0, 0, 0) + SP_OFFSET).toISOString()
+    endDate   = new Date(Date.UTC(ey, em - 1, ed, 23, 59, 59) + SP_OFFSET).toISOString()
+    const fmt = (y: number, m: number, d: number) =>
+      new Date(Date.UTC(y, m - 1, d, 12)).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' })
+    label = `${fmt(sy, sm, sd)} a ${fmt(ey, em, ed)}`
   }
 
   // Estagiários ativos
@@ -56,12 +72,12 @@ export async function GET(request: Request) {
     .eq('is_active', true)
     .order('full_name')
 
-  // Registros do período
+  // Registros do período (sem RLS — vê todos os estagiários)
   const { data: records } = await supabase
     .from('time_records')
     .select('intern_id, duration_minutes, status')
     .gte('clock_in', startDate)
-    .lte('clock_in', endDate)
+    .lt('clock_in', endDate)
 
   // Agregar por estagiário
   const internMap = new Map<string, {
