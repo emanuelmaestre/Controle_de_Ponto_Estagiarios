@@ -250,6 +250,11 @@ export default function InternForm({ mode, intern }: Props) {
         </div>
       </div>
 
+      {/* Redefinição de senha — apenas no modo edição */}
+      {mode === 'edit' && intern && (
+        <PasswordResetSection internId={intern.id} />
+      )}
+
       <div className="flex gap-3 pt-1">
         <button
           type="button"
@@ -267,5 +272,138 @@ export default function InternForm({ mode, intern }: Props) {
         </button>
       </div>
     </form>
+  )
+}
+
+// ── Componente de redefinição de senha ──────────────────────
+function PasswordResetSection({ internId }: { internId: string }) {
+  const [mode, setMode] = useState<'idle' | 'email' | 'manual'>('idle')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'err'>('idle')
+  const [message, setMessage] = useState('')
+
+  const submit = async () => {
+    if (mode === 'manual' && newPassword !== confirmPassword) {
+      setMessage('As senhas não coincidem.')
+      setStatus('err')
+      return
+    }
+    setStatus('loading')
+    const res = await fetch('/api/admin/reset-intern-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        intern_id: internId,
+        action: mode === 'email' ? 'send_reset_email' : 'set_password',
+        new_password: mode === 'manual' ? newPassword : undefined,
+      }),
+    })
+    const json = await res.json()
+    if (res.ok) {
+      setStatus('ok')
+      setMessage(json.message || 'Concluído!')
+      setNewPassword('')
+      setConfirmPassword('')
+      setTimeout(() => { setStatus('idle'); setMode('idle'); setMessage('') }, 3000)
+    } else {
+      setStatus('err')
+      setMessage(json.error || 'Erro. Tente novamente.')
+    }
+  }
+
+  return (
+    <div className="bg-amber-50 rounded-2xl p-5 border border-amber-100 shadow-sm space-y-3">
+      <h3 className="text-sm font-semibold text-amber-800 flex items-center gap-2">
+        🔑 Redefinição de senha
+      </h3>
+      <p className="text-xs text-amber-700">
+        Como administrador, você pode redefinir a senha do estagiário de duas formas:
+      </p>
+
+      {status === 'ok' && (
+        <div className="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3">
+          ✅ {message}
+        </div>
+      )}
+      {status === 'err' && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+          ⚠️ {message}
+        </div>
+      )}
+
+      {mode === 'idle' && (
+        <div className="flex gap-2 flex-wrap">
+          <button
+            type="button"
+            onClick={() => setMode('email')}
+            className="flex items-center gap-1.5 px-4 py-2 bg-white border border-amber-200 text-amber-800 text-sm font-medium rounded-xl hover:bg-amber-50 transition-colors"
+          >
+            ✉️ Enviar link por e-mail
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('manual')}
+            className="flex items-center gap-1.5 px-4 py-2 bg-white border border-amber-200 text-amber-800 text-sm font-medium rounded-xl hover:bg-amber-50 transition-colors"
+          >
+            🔒 Definir nova senha
+          </button>
+        </div>
+      )}
+
+      {mode === 'email' && (
+        <div className="space-y-3">
+          <p className="text-xs text-amber-700">
+            Um e-mail com link de redefinição será enviado ao estagiário.
+          </p>
+          <div className="flex gap-2">
+            <button type="button" onClick={() => setMode('idle')}
+              className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50">
+              Cancelar
+            </button>
+            <button type="button" onClick={submit} disabled={status === 'loading'}
+              className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-sm font-semibold disabled:opacity-50">
+              {status === 'loading' ? 'Enviando...' : 'Enviar e-mail'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {mode === 'manual' && (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-amber-800 mb-1">Nova senha</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={e => setNewPassword(e.target.value)}
+              placeholder="Mínimo 6 caracteres"
+              className="w-full px-3 py-2.5 border border-amber-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-amber-800 mb-1">Confirmar nova senha</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              placeholder="Repita a senha"
+              className="w-full px-3 py-2.5 border border-amber-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+            />
+          </div>
+          <div className="flex gap-2">
+            <button type="button" onClick={() => { setMode('idle'); setNewPassword(''); setConfirmPassword('') }}
+              className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50">
+              Cancelar
+            </button>
+            <button type="button" onClick={submit}
+              disabled={status === 'loading' || newPassword.length < 6 || newPassword !== confirmPassword}
+              className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-sm font-semibold disabled:opacity-50">
+              {status === 'loading' ? 'Salvando...' : 'Salvar nova senha'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

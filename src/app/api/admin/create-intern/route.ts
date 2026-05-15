@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createSupabaseServiceClient } from '@/lib/supabase/server'
 import { internSchema } from '@/lib/validations'
-import type { Database } from '@/types/database'
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://controle-de-ponto-estagiarios.vercel.app'
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,42 +12,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Dados inválidos.' }, { status: 400 })
     }
     const data = parsed.data
+    const supabaseAdmin = createSupabaseServiceClient()
 
-    const supabaseAdmin = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { autoRefreshToken: false, persistSession: false } },
+    // Convidar estagiário via e-mail — ele vai definir a própria senha no primeiro acesso
+    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.inviteUserByEmail(
+      data.email.toLowerCase(),
+      { redirectTo: `${APP_URL}/set-password` }
     )
 
-    // Gerar senha temporária aleatória — o estagiário vai redefinir via e-mail
-    const tempPassword = Math.random().toString(36).slice(-10) + 'A1!'
-
-    // Criar usuário no Supabase Auth
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email: data.email.toLowerCase(),
-      password: tempPassword,
-      email_confirm: true, // já confirma o e-mail
-    })
-
     if (authError || !authData.user) {
-      const msg = authError?.message?.includes('already registered')
+      const msg = authError?.message?.includes('already registered') || authError?.message?.includes('already been registered')
         ? 'Este e-mail já está cadastrado.'
-        : 'Erro ao criar usuário.'
+        : `Erro ao criar usuário: ${authError?.message}`
       return NextResponse.json({ error: msg }, { status: 400 })
     }
 
     const userId = authData.user.id
-
-    // Pegar photo_url do body original (não validado pelo schema do internSchema)
     const photoUrl: string | null = (body.photo_url as string | null) ?? null
+    const nickname: string | null = (body.nickname as string | null) ?? null
 
-    // Criar/atualizar perfil (o trigger já cria um perfil básico, mas atualizamos com os dados completos)
+    // Criar perfil completo
     const { error: profileError } = await supabaseAdmin
       .from('profiles')
       .upsert({
         id: userId,
         full_name: data.full_name,
         email: data.email.toLowerCase(),
+        nickname: nickname,
         course: data.course || null,
         internship_start: data.internship_start || null,
         internship_end: data.internship_end || null,
@@ -56,17 +48,9 @@ export async function POST(request: NextRequest) {
       })
 
     if (profileError) {
-      // Rollback: deletar usuário criado
       await supabaseAdmin.auth.admin.deleteUser(userId)
       return NextResponse.json({ error: 'Erro ao salvar perfil.' }, { status: 500 })
     }
-
-    // Enviar e-mail de redefinição de senha para o estagiário definir sua própria
-    await supabaseAdmin.auth.admin.generateLink({
-      type: 'recovery',
-      email: data.email.toLowerCase(),
-    })
-    // (o link de recovery é enviado automaticamente pelo Supabase Auth com o template configurado)
 
     return NextResponse.json({ success: true, userId })
   } catch (err) {
