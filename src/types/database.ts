@@ -22,6 +22,7 @@ export type Database = {
           email: string
           photo_url: string | null
           course: string | null
+          nickname: string | null
           internship_start: string | null
           internship_end: string | null
           pin: string | null
@@ -35,6 +36,7 @@ export type Database = {
           email: string
           photo_url?: string | null
           course?: string | null
+          nickname?: string | null
           internship_start?: string | null
           internship_end?: string | null
           pin?: string | null
@@ -47,6 +49,7 @@ export type Database = {
           email?: string
           photo_url?: string | null
           course?: string | null
+          nickname?: string | null
           internship_start?: string | null
           internship_end?: string | null
           pin?: string | null

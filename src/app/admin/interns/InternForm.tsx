@@ -11,6 +11,7 @@ import type { Profile } from '@/types/database'
 type InternFormValues = {
   full_name: string
   email: string
+  nickname?: string
   course?: string
   internship_start?: string
   internship_end?: string
@@ -39,6 +40,7 @@ export default function InternForm({ mode, intern }: Props) {
     defaultValues: intern ? {
       full_name: intern.full_name,
       email: intern.email,
+      nickname: intern.nickname ?? '',
       course: intern.course ?? '',
       internship_start: intern.internship_start ?? '',
       internship_end: intern.internship_end ?? '',
@@ -78,7 +80,7 @@ export default function InternForm({ mode, intern }: Props) {
       const res = await fetch('/api/admin/create-intern', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, photo_url: photoUrl }),
+        body: JSON.stringify({ ...data, nickname: data.nickname || null, photo_url: photoUrl }),
       })
       const json = await res.json()
       if (!res.ok) {
@@ -94,6 +96,7 @@ export default function InternForm({ mode, intern }: Props) {
         .update({
           full_name: data.full_name,
           email: data.email,
+          nickname: data.nickname || null,
           course: data.course || null,
           internship_start: data.internship_start || null,
           internship_end: data.internship_end || null,
@@ -167,6 +170,17 @@ export default function InternForm({ mode, intern }: Props) {
             className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Apelido</label>
+          <input
+            {...register('nickname')}
+            type="text"
+            placeholder="Ex: João"
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          {errors.nickname && <p className="text-red-500 text-xs mt-1">{errors.nickname.message}</p>}
         </div>
 
         <div>
