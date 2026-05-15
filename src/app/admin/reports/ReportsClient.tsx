@@ -198,7 +198,7 @@ export default function ReportsClient() {
                 <input
                   type="date"
                   value={dailyDate}
-                  onChange={e => setDailyDate(e.target.value)}
+                  onChange={e => setDailyDate(e.target.value || getTodayStr())}
                   className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                 />
               </div>
@@ -210,12 +210,14 @@ export default function ReportsClient() {
                 <input
                   type="date"
                   value={weeklyDate}
-                  onChange={e => setWeeklyDate(e.target.value)}
+                  onChange={e => setWeeklyDate(e.target.value || getTodayStr())}
                   className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                 />
-                <p className="text-xs text-slate-400 mt-1">
-                  Semana: {new Date(weekStart + 'T12:00:00Z').toLocaleDateString('pt-BR')} — {new Date(weekEnd + 'T12:00:00Z').toLocaleDateString('pt-BR')}
-                </p>
+                {weeklyDate && (
+                  <p className="text-xs text-slate-400 mt-1">
+                    Semana: {new Date(weekStart + 'T12:00:00Z').toLocaleDateString('pt-BR')} — {new Date(weekEnd + 'T12:00:00Z').toLocaleDateString('pt-BR')}
+                  </p>
+                )}
               </div>
             )}
 
@@ -241,7 +243,7 @@ export default function ReportsClient() {
                   <input
                     type="date"
                     value={customStart}
-                    onChange={e => setCustomStart(e.target.value)}
+                    onChange={e => setCustomStart(e.target.value || getTodayStr())}
                     className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   />
                 </div>
@@ -251,7 +253,7 @@ export default function ReportsClient() {
                     type="date"
                     value={customEnd}
                     min={customStart}
-                    onChange={e => setCustomEnd(e.target.value)}
+                    onChange={e => setCustomEnd(e.target.value || getTodayStr())}
                     className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   />
                 </div>
