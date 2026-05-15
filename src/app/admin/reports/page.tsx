@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { minutesToHours } from '@/lib/utils'
 import ReportExport from './ReportExport'
+import MonthSelector from './MonthSelector'
 import type { Profile, MonthlyHours } from '@/types/database'
 
 interface SearchParams {
@@ -92,22 +93,7 @@ export default async function ReportsPage({ searchParams }: Props) {
         {/* Seletor de mês */}
         <div className="flex items-center gap-4 mb-6">
           <label className="text-sm font-medium text-gray-600">Período:</label>
-          <form method="GET">
-            <select
-              name="month"
-              defaultValue={selectedMonth}
-              onChange={(e) => {
-                if (typeof window !== 'undefined') {
-                  window.location.href = `?month=${(e.target as HTMLSelectElement).value}`
-                }
-              }}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              {monthOptions.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-          </form>
+          <MonthSelector selectedMonth={selectedMonth} options={monthOptions} />
         </div>
 
         {/* Cards resumo */}
