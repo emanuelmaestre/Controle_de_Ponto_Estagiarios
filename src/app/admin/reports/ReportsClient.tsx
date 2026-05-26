@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { minutesToHours } from '@/lib/utils'
 import ReportExport from './ReportExport'
 
@@ -304,19 +305,32 @@ export default function ReportsClient() {
         )}
 
         {/* ── Cards de resumo ── */}
+        <AnimatePresence>
         {data && !loading && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            <SummaryCard label="Total de horas" value={minutesToHours(totalMinutes)} color="blue" icon="⏱️" />
-            <SummaryCard label="Sessões" value={totalSessions} color="gray" icon="📋" />
-            <SummaryCard label="Aprovadas" value={totalApproved} color="green" icon="✅" />
-            <SummaryCard label="Pendentes" value={totalPending} color="amber" icon="⏳" />
-            <SummaryCard label="Reprovadas" value={totalRejected} color="red" icon="❌" />
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+          >
+            <SummaryCard label="Total de horas" value={minutesToHours(totalMinutes)} color="blue" icon="⏱️" delay={0} />
+            <SummaryCard label="Sessões" value={totalSessions} color="gray" icon="📋" delay={0.05} />
+            <SummaryCard label="Aprovadas" value={totalApproved} color="green" icon="✅" delay={0.1} />
+            <SummaryCard label="Pendentes" value={totalPending} color="amber" icon="⏳" delay={0.15} />
+            <SummaryCard label="Reprovadas" value={totalRejected} color="red" icon="❌" delay={0.2} />
+          </motion.div>
         )}
+        </AnimatePresence>
 
         {/* ── Tabela ── */}
         {data && !loading && (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+          >
             {data.interns.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -385,7 +399,7 @@ export default function ReportsClient() {
                 <p className="text-sm mt-1">Não há registros para o período selecionado.</p>
               </div>
             )}
-          </div>
+          </motion.div>
         )}
 
         {/* Estado inicial */}
@@ -401,11 +415,12 @@ export default function ReportsClient() {
   )
 }
 
-function SummaryCard({ label, value, color, icon }: {
+function SummaryCard({ label, value, color, icon, delay = 0 }: {
   label: string
   value: string | number
   color: 'blue' | 'green' | 'amber' | 'red' | 'gray'
   icon: string
+  delay?: number
 }) {
   const colors = {
     blue:  'text-blue-700 bg-blue-50 border-blue-100',
@@ -415,11 +430,16 @@ function SummaryCard({ label, value, color, icon }: {
     gray:  'text-slate-700 bg-white border-slate-100',
   }
   return (
-    <div className={`rounded-2xl border p-3 sm:p-4 shadow-sm ${colors[color]}`}>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3, delay }}
+      className={`rounded-2xl border p-3 sm:p-4 shadow-sm ${colors[color]}`}
+    >
       <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide opacity-70 flex items-center gap-1">
         <span>{icon}</span> {label}
       </p>
       <p className="text-xl sm:text-2xl font-bold mt-1 sm:mt-2">{value}</p>
-    </div>
+    </motion.div>
   )
 }

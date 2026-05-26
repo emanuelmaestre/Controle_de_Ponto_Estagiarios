@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!profile.pin) {
-      return NextResponse.json({ error: 'PIN não configurado. Use e-mail e senha.' }, { status: 400 })
+      return NextResponse.json({ error: 'PIN não configurado. Faça login com e-mail e senha, depois configure o PIN em Configurações.' }, { status: 400 })
     }
 
     // Verificar PIN com bcrypt (delay intencional de ~300ms)

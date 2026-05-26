@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { formatDateTime, minutesToHours } from '@/lib/utils'
 import ApprovalActions from './ApprovalActions'
 import AdminNav from '@/components/AdminNav'
+import { StaggerContainer, StaggerItem, FadeIn } from '@/components/ui/MotionWrappers'
 
 export default async function ApprovalsPage() {
   const supabase = await createSupabaseServerClient()
@@ -45,8 +46,10 @@ export default async function ApprovalsPage() {
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8 space-y-4">
         {pending && pending.length > 0 ? (
-          pending.map((record) => (
-            <div key={record.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <StaggerContainer className="space-y-4">
+          {pending.map((record) => (
+            <StaggerItem key={record.id}>
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               {/* Card header */}
               <div className="px-5 py-4 flex items-center gap-3 border-b border-slate-50">
                 {record.photo_url ? (
@@ -120,9 +123,11 @@ export default async function ApprovalsPage() {
                 <ApprovalActions recordId={record.id} approverId={user.id} />
               </div>
             </div>
-          ))
+            </StaggerItem>
+          ))}
+          </StaggerContainer>
         ) : (
-          <div className="text-center py-24 text-slate-400">
+          <FadeIn><div className="text-center py-24 text-slate-400">
             <div className="text-6xl mb-4">✅</div>
             <p className="font-bold text-slate-700 text-xl">Tudo em dia!</p>
             <p className="text-sm mt-2">Nenhum registro aguardando aprovação.</p>
@@ -132,7 +137,7 @@ export default async function ApprovalsPage() {
             >
               ← Voltar ao painel
             </Link>
-          </div>
+          </div></FadeIn>
         )}
       </main>
     </div>

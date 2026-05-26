@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Profile } from '@/types/database'
 import AdminNav from '@/components/AdminNav'
+import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 
 export default async function InternsPage() {
   const supabase = await createSupabaseServerClient()
@@ -67,22 +68,25 @@ export default async function InternsPage() {
             <div className="flex-1 h-px bg-slate-100" />
           </div>
 
-          <div className="space-y-2">
+          <StaggerContainer className="space-y-2">
             {active.map((intern, idx) => (
-              <InternCard
-                key={intern.id}
-                intern={intern}
-                colorClass={avatarColors[idx % avatarColors.length]}
-                isActive
-              />
+              <StaggerItem key={intern.id}>
+                <InternCard
+                  intern={intern}
+                  colorClass={avatarColors[idx % avatarColors.length]}
+                  isActive
+                />
+              </StaggerItem>
             ))}
             {active.length === 0 && (
-              <div className="py-10 text-center text-slate-400">
-                <p className="text-3xl mb-2">👤</p>
-                <p className="text-sm">Nenhum estagiário ativo.</p>
-              </div>
+              <FadeIn>
+                <div className="py-10 text-center text-slate-400">
+                  <p className="text-3xl mb-2">👤</p>
+                  <p className="text-sm">Nenhum estagiário ativo.</p>
+                </div>
+              </FadeIn>
             )}
-          </div>
+          </StaggerContainer>
         </section>
 
         {/* Inativos */}
@@ -96,16 +100,17 @@ export default async function InternsPage() {
               <div className="flex-1 h-px bg-slate-100" />
             </div>
 
-            <div className="space-y-2 opacity-60">
+            <StaggerContainer className="space-y-2 opacity-60">
               {inactive.map((intern, idx) => (
-                <InternCard
-                  key={intern.id}
-                  intern={intern}
-                  colorClass={avatarColors[(active.length + idx) % avatarColors.length]}
-                  isActive={false}
-                />
+                <StaggerItem key={intern.id}>
+                  <InternCard
+                    intern={intern}
+                    colorClass={avatarColors[(active.length + idx) % avatarColors.length]}
+                    isActive={false}
+                  />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           </section>
         )}
       </main>

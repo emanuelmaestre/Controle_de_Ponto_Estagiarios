@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { formatTime, minutesToHours, STATUS_CONFIG } from '@/lib/utils'
 import ClockButton from '@/components/ClockButton'
 import StatusBadge from '@/components/StatusBadge'
+import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/MotionWrappers'
 
 export default async function DashboardPage() {
   const supabase = await createSupabaseServerClient()
@@ -75,34 +76,41 @@ export default async function DashboardPage() {
       <main className="flex-1 max-w-lg mx-auto w-full px-4 py-6 space-y-5">
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-lg p-1.5 bg-blue-50 rounded-lg">📅</span>
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Hoje</p>
+          <FadeIn delay={0}>
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg p-1.5 bg-blue-50 rounded-lg">📅</span>
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Hoje</p>
+              </div>
+              <p className="text-2xl font-bold text-slate-800">{minutesToHours(todayMinutes)}</p>
             </div>
-            <p className="text-2xl font-bold text-slate-800">{minutesToHours(todayMinutes)}</p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-lg p-1.5 bg-purple-50 rounded-lg">📊</span>
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Mês</p>
+          </FadeIn>
+          <FadeIn delay={0.08}>
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg p-1.5 bg-purple-50 rounded-lg">📊</span>
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Mês</p>
+              </div>
+              <p className="text-2xl font-bold text-slate-800">{minutesToHours(monthMinutes)}</p>
+              {(monthData?.pending_sessions ?? 0) > 0 && (
+                <p className="text-xs text-amber-500 mt-1 font-medium">
+                  {monthData?.pending_sessions} pendente(s)
+                </p>
+              )}
             </div>
-            <p className="text-2xl font-bold text-slate-800">{minutesToHours(monthMinutes)}</p>
-            {(monthData?.pending_sessions ?? 0) > 0 && (
-              <p className="text-xs text-amber-500 mt-1 font-medium">
-                {monthData?.pending_sessions} pendente(s)
-              </p>
-            )}
-          </div>
+          </FadeIn>
         </div>
 
         {/* Clock button */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-          <ClockButton openRecord={openRecord ?? null} />
-        </div>
+        <ScaleIn delay={0.15}>
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+            <ClockButton openRecord={openRecord ?? null} />
+          </div>
+        </ScaleIn>
 
         {/* Today records */}
         {todayRecords && todayRecords.length > 0 && (
+          <FadeIn delay={0.25}>
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-slate-50 flex items-center justify-between">
               <h2 className="font-semibold text-slate-800 text-sm">Registros de hoje</h2>
@@ -138,6 +146,7 @@ export default async function DashboardPage() {
               </div>
             </div>
           </div>
+          </FadeIn>
         )}
       </main>
 

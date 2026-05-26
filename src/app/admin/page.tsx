@@ -5,6 +5,7 @@ import { minutesToHours, formatTime } from '@/lib/utils'
 import type { TodayStatus } from '@/types/database'
 import AdminNav from '@/components/AdminNav'
 import StatCard from '@/components/ui/StatCard'
+import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 
 export default async function AdminPage() {
   const supabase = await createSupabaseServerClient()
@@ -80,21 +81,23 @@ export default async function AdminPage() {
         </div>
 
         {/* Section title */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold text-slate-700">Estagiários hoje</h2>
-          <span className="text-xs text-slate-400 font-medium uppercase tracking-widest">
-            {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-          </span>
-        </div>
+        <FadeIn delay={0.2}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-semibold text-slate-700">Estagiários hoje</h2>
+            <span className="text-xs text-slate-400 font-medium uppercase tracking-widest">
+              {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+            </span>
+          </div>
+        </FadeIn>
 
         {/* Intern grid */}
         {interns && interns.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {interns.map((intern, idx) => {
               const colorClass = avatarColors[idx % avatarColors.length]
               return (
+                <StaggerItem key={intern.id}>
                 <Link
-                  key={intern.id}
                   href={`/admin/interns/${intern.id}`}
                   className="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200 p-5 flex flex-col gap-4"
                 >
@@ -141,9 +144,10 @@ export default async function AdminPage() {
                     <span className="text-slate-300 text-base group-hover:text-blue-400 transition-colors">›</span>
                   </div>
                 </Link>
+                </StaggerItem>
               )
             })}
-          </div>
+          </StaggerContainer>
         ) : (
           <div className="text-center py-24 text-slate-400">
             <div className="text-6xl mb-4 float-anim inline-block">👥</div>

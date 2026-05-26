@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { formatDate, formatTime, minutesToHours } from '@/lib/utils'
 import StatusBadge from '@/components/StatusBadge'
 import type { RecordStatus } from '@/types/database'
+import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 
 export default async function HistoryPage() {
   const supabase = await createSupabaseServerClient()
@@ -65,6 +66,7 @@ export default async function HistoryPage() {
 
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-6 space-y-5">
         {/* Monthly summary */}
+        <FadeIn>
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
           <div className="px-5 py-3 border-b border-slate-50">
             <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Este mês</h2>
@@ -89,15 +91,17 @@ export default async function HistoryPage() {
           </div>
         </div>
 
+        </FadeIn>
+
         {/* Timeline */}
         {records && records.length > 0 ? (
           <div className="relative">
             {/* Vertical timeline line */}
             <div className="absolute left-5 top-0 bottom-0 w-px bg-slate-200" style={{ marginLeft: '1px' }} />
 
-            <div className="space-y-3 pl-12 relative">
-              {records.map((record, idx) => (
-                <div key={record.id} className="relative">
+            <StaggerContainer className="space-y-3 pl-12 relative">
+              {records.map((record) => (
+                <StaggerItem key={record.id} className="relative">
                   {/* Timeline dot */}
                   <div
                     className={`absolute -left-7 top-4 w-3 h-3 rounded-full border-2 border-white shadow-sm ${
@@ -142,9 +146,9 @@ export default async function HistoryPage() {
                       </div>
                     )}
                   </div>
-                </div>
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
           </div>
         ) : (
           <div className="text-center py-20 text-slate-400">
