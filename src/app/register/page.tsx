@@ -86,22 +86,22 @@ function RegisterContent() {
             >
               <span className="text-4xl">✅</span>
             </motion.div>
-            <h1 className="text-white font-bold text-xl">Cadastro enviado!</h1>
+            <h1 className="text-white font-bold text-xl">Cadastro realizado!</h1>
             <p className="text-emerald-200 text-sm mt-2">
-              Sua conta foi criada e está aguardando aprovação do administrador do laboratório.
+              Sua conta foi criada com sucesso. Já pode acessar o sistema!
             </p>
           </div>
           <div className="px-8 py-7 text-center space-y-4">
-            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-              <p className="text-amber-700 text-sm font-medium">
-                ⏳ Você receberá acesso assim que o administrador aprovar seu cadastro.
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3">
+              <p className="text-emerald-700 text-sm font-medium">
+                🎉 Faça login para configurar seu PIN e começar a usar o sistema.
               </p>
             </div>
             <Link
               href="/login"
               className="block w-full py-3 bg-gradient-to-r from-blue-800 to-blue-600 text-white font-bold rounded-xl text-center text-sm"
             >
-              ← Voltar para o login
+              Fazer login →
             </Link>
           </div>
         </motion.div>

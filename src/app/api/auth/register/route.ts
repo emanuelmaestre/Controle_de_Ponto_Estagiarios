@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       email: email.toLowerCase(),
       course: course || null,
       role: 'intern',
-      is_active: false, // Inativo até admin aprovar
+      is_active: true,
     }, { onConflict: 'id' })
 
     if (profileError) {
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Erro ao criar perfil.' }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true, message: 'Cadastro realizado! Aguardando aprovação.' })
+    return NextResponse.json({ success: true, message: 'Cadastro realizado!' })
   } catch (err) {
     console.error('[register]', err)
     return NextResponse.json({ error: 'Erro interno.' }, { status: 500 })
