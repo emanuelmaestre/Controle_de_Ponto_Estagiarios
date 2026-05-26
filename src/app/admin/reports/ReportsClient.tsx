@@ -139,21 +139,26 @@ export default function ReportsClient() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Print styles */}
+    <div className="min-h-screen pb-24 md:pb-6" style={{ background: 'var(--bg)' }}>
       <style>{`@media print { .no-print { display: none !important; } body { background: white !important; } }`}</style>
 
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 no-print">
+      <header className="no-print" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-            <a href="/admin" className="text-slate-400 hover:text-slate-600 text-sm font-medium transition-colors flex-shrink-0">← <span className="hidden sm:inline">Painel</span></a>
-            <div className="w-px h-5 bg-slate-200 hidden sm:block" />
+            <a
+              href="/admin"
+              className="text-sm font-medium transition-colors flex-shrink-0 hover:opacity-70"
+              style={{ color: 'var(--text-3)' }}
+            >
+              &larr; <span className="hidden sm:inline">Painel</span>
+            </a>
+            <div className="w-px h-5 hidden sm:block" style={{ background: 'var(--border)' }} />
             <div className="min-w-0">
-              <h1 className="font-bold text-slate-800 text-base sm:text-lg leading-tight">Relatórios</h1>
+              <h1 className="font-bold text-base sm:text-lg leading-tight" style={{ color: 'var(--text)' }}>Relatorios</h1>
               {data && applied && (
-                <p className="text-xs text-slate-400 mt-0.5 truncate">
-                  {periodTypeLabels[data.type]} · {data.label}
+                <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-3)' }}>
+                  {periodTypeLabels[data.type]} &middot; {data.label}
                 </p>
               )}
             </div>
@@ -166,57 +171,60 @@ export default function ReportsClient() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 pb-24 md:pb-6 space-y-4 sm:space-y-6">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
 
-        {/* ── Painel de Filtros ── */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 no-print">
-          <h2 className="text-sm font-bold text-slate-700 mb-3 sm:mb-4 flex items-center gap-2">
-            <span className="text-base">🔍</span> Filtrar por período
+        {/* Filtros */}
+        <div
+          className="rounded-2xl p-4 sm:p-5 no-print"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
+        >
+          <h2 className="text-sm font-bold mb-3 sm:mb-4 flex items-center gap-2" style={{ color: 'var(--text)' }}>
+            <span>&#128269;</span> Filtrar por periodo
           </h2>
 
-          {/* Tipo de período */}
           <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-5">
             {(['daily', 'weekly', 'monthly', 'custom'] as PeriodType[]).map(t => (
               <button
                 key={t}
                 onClick={() => setPeriodType(t)}
-                className={`px-2 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border text-center ${
-                  periodType === t
-                    ? 'bg-blue-700 text-white border-blue-700 shadow-sm'
-                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-700'
-                }`}
+                className="px-2 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border text-center"
+                style={periodType === t
+                  ? { background: 'var(--primary)', color: 'white', borderColor: 'var(--primary)' }
+                  : { background: 'var(--bg)', color: 'var(--text-2)', borderColor: 'var(--border)' }
+                }
               >
                 {periodTypeLabels[t]}
               </button>
             ))}
           </div>
 
-          {/* Campos dinâmicos */}
           <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-3 sm:gap-4">
             {periodType === 'daily' && (
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Data</label>
+                <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Data</label>
                 <input
                   type="date"
                   value={dailyDate}
                   onChange={e => setDailyDate(e.target.value || getTodayStr())}
-                  className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  className="px-3 py-2 rounded-xl text-sm focus:outline-none"
+                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
                 />
               </div>
             )}
 
             {periodType === 'weekly' && (
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Qualquer dia da semana</label>
+                <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Qualquer dia da semana</label>
                 <input
                   type="date"
                   value={weeklyDate}
                   onChange={e => setWeeklyDate(e.target.value || getTodayStr())}
-                  className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                  className="px-3 py-2 rounded-xl text-sm focus:outline-none"
+                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
                 />
                 {weeklyDate && (
-                  <p className="text-xs text-slate-400 mt-1">
-                    Semana: {new Date(weekStart + 'T12:00:00Z').toLocaleDateString('pt-BR')} — {new Date(weekEnd + 'T12:00:00Z').toLocaleDateString('pt-BR')}
+                  <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+                    Semana: {new Date(weekStart + 'T12:00:00Z').toLocaleDateString('pt-BR')} &mdash; {new Date(weekEnd + 'T12:00:00Z').toLocaleDateString('pt-BR')}
                   </p>
                 )}
               </div>
@@ -224,11 +232,12 @@ export default function ReportsClient() {
 
             {periodType === 'monthly' && (
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Mês e Ano</label>
+                <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Mes e Ano</label>
                 <select
                   value={month}
                   onChange={e => setMonth(e.target.value)}
-                  className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent min-w-[180px]"
+                  className="px-3 py-2 rounded-xl text-sm focus:outline-none min-w-[180px]"
+                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
                 >
                   {monthOptions.map(o => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -240,163 +249,158 @@ export default function ReportsClient() {
             {periodType === 'custom' && (
               <>
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Data inicial</label>
+                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Data inicial</label>
                   <input
-                    type="date"
-                    value={customStart}
+                    type="date" value={customStart}
                     onChange={e => setCustomStart(e.target.value || getTodayStr())}
-                    className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                    className="px-3 py-2 rounded-xl text-sm focus:outline-none"
+                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Data final</label>
+                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Data final</label>
                   <input
-                    type="date"
-                    value={customEnd}
-                    min={customStart}
+                    type="date" value={customEnd} min={customStart}
                     onChange={e => setCustomEnd(e.target.value || getTodayStr())}
-                    className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                    className="px-3 py-2 rounded-xl text-sm focus:outline-none"
+                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
                   />
                 </div>
               </>
             )}
 
-            {/* Botões */}
             <div className="flex gap-2 sm:ml-auto w-full sm:w-auto">
               {applied && (
                 <button
                   onClick={handleClear}
-                  className="px-4 py-2 rounded-xl text-sm font-semibold border border-slate-200 text-slate-500 hover:bg-slate-50 transition-all"
+                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-70"
+                  style={{ border: '1px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}
                 >
                   Limpar
                 </button>
               )}
               <button
-                onClick={fetchData}
-                disabled={loading}
-                className="px-5 py-2 rounded-xl text-sm font-bold bg-blue-700 hover:bg-blue-600 text-white transition-all shadow-sm disabled:opacity-60 flex items-center gap-2"
+                onClick={fetchData} disabled={loading}
+                className="px-5 py-2 rounded-xl text-sm font-bold transition-all shadow-sm disabled:opacity-60 flex items-center gap-2 hover:opacity-90"
+                style={{ background: 'var(--primary)', color: 'white' }}
               >
                 {loading ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
-                    Carregando...
-                  </>
-                ) : '🔎 Aplicar filtro'}
+                  <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" /> Carregando...</>
+                ) : '&#128270; Aplicar filtro'}
               </button>
             </div>
           </div>
         </div>
 
-        {/* ── Estado de erro ── */}
+        {/* Erro */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 flex items-center gap-2">
-            <span>⚠️</span> {error}
-            <button onClick={fetchData} className="ml-auto underline text-red-600 hover:text-red-800">Tentar novamente</button>
+          <div className="text-sm rounded-xl px-4 py-3 flex items-center gap-2"
+            style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: 'var(--danger)' }}>
+            <span>&#9888;&#65039;</span> {error}
+            <button onClick={fetchData} className="ml-auto underline hover:opacity-70">Tentar novamente</button>
           </div>
         )}
 
-        {/* ── Skeleton / Loading ── */}
+        {/* Skeleton */}
         {loading && !data && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-slate-100 p-4 animate-pulse h-20 sm:h-24" />
+              <div key={i} className="rounded-2xl p-4 animate-pulse h-20 sm:h-24"
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }} />
             ))}
           </div>
         )}
 
-        {/* ── Cards de resumo ── */}
+        {/* Cards de resumo */}
         <AnimatePresence>
-        {data && !loading && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
-          >
-            <SummaryCard label="Total de horas" value={minutesToHours(totalMinutes)} color="blue" icon="⏱️" delay={0} />
-            <SummaryCard label="Sessões" value={totalSessions} color="gray" icon="📋" delay={0.05} />
-            <SummaryCard label="Aprovadas" value={totalApproved} color="green" icon="✅" delay={0.1} />
-            <SummaryCard label="Pendentes" value={totalPending} color="amber" icon="⏳" delay={0.15} />
-            <SummaryCard label="Reprovadas" value={totalRejected} color="red" icon="❌" delay={0.2} />
-          </motion.div>
-        )}
+          {data && !loading && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+            >
+              <SummaryCard label="Total de horas" value={minutesToHours(totalMinutes)} color="blue"  icon="&#9203;&#65039;" delay={0} />
+              <SummaryCard label="Sessoes"         value={totalSessions}               color="gray"  icon="&#128203;" delay={0.05} />
+              <SummaryCard label="Aprovadas"       value={totalApproved}               color="green" icon="&#9989;" delay={0.1} />
+              <SummaryCard label="Pendentes"       value={totalPending}                color="amber" icon="&#9203;" delay={0.15} />
+              <SummaryCard label="Reprovadas"      value={totalRejected}               color="red"   icon="&#10060;" delay={0.2} />
+            </motion.div>
+          )}
         </AnimatePresence>
 
-        {/* ── Tabela ── */}
+        {/* Tabela */}
         {data && !loading && (
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.15 }}
+            className="rounded-2xl overflow-hidden"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
           >
             {data.interns.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-50 border-b border-slate-100">
-                      <th className="text-left px-5 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wide">Estagiário</th>
-                      <th className="text-center px-4 py-3.5 text-xs font-bold text-blue-600 uppercase tracking-wide">Horas</th>
-                      <th className="text-center px-4 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wide">Sessões</th>
-                      <th className="text-center px-4 py-3.5 text-xs font-bold text-green-600 uppercase tracking-wide">Aprov.</th>
-                      <th className="text-center px-4 py-3.5 text-xs font-bold text-amber-500 uppercase tracking-wide">Pend.</th>
-                      <th className="text-center px-4 py-3.5 text-xs font-bold text-red-500 uppercase tracking-wide">Reprov.</th>
+                    <tr style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
+                      <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Estagiario</th>
+                      <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--info)' }}>Horas</th>
+                      <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Sessoes</th>
+                      <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--success)' }}>Aprov.</th>
+                      <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--warning)' }}>Pend.</th>
+                      <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--danger)' }}>Reprov.</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {data.interns.map(intern => (
-                      <tr key={intern.id} className="hover:bg-slate-50 transition-colors">
+                  <tbody>
+                    {data.interns.map((intern, i) => (
+                      <tr
+                        key={intern.id}
+                        style={{ borderTop: '1px solid var(--border)', background: i % 2 !== 0 ? 'rgba(0,0,0,0.02)' : 'transparent' }}
+                      >
                         <td className="px-5 py-4">
-                          <p className="font-semibold text-slate-800">
+                          <p className="font-semibold" style={{ color: 'var(--text)' }}>
                             {intern.full_name}
-                            {intern.nickname && (
-                              <span className="ml-2 text-xs font-normal text-slate-400">({intern.nickname})</span>
-                            )}
+                            {intern.nickname && <span className="ml-2 text-xs font-normal" style={{ color: 'var(--text-3)' }}>({intern.nickname})</span>}
                           </p>
-                          {intern.course && <p className="text-xs text-slate-400 mt-0.5">{intern.course}</p>}
+                          {intern.course && <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{intern.course}</p>}
                         </td>
-                        <td className="px-4 py-4 text-center">
-                          <span className={`font-bold ${intern.total_minutes > 0 ? 'text-blue-700' : 'text-slate-300'}`}>
-                            {intern.total_minutes > 0 ? minutesToHours(intern.total_minutes) : '—'}
-                          </span>
+                        <td className="px-4 py-4 text-center font-bold" style={{ color: intern.total_minutes > 0 ? 'var(--info)' : 'var(--text-3)' }}>
+                          {intern.total_minutes > 0 ? minutesToHours(intern.total_minutes) : '—'}
                         </td>
-                        <td className="px-4 py-4 text-center text-slate-600 font-medium">{intern.total_sessions || '—'}</td>
+                        <td className="px-4 py-4 text-center font-medium" style={{ color: 'var(--text-2)' }}>{intern.total_sessions || '—'}</td>
                         <td className="px-4 py-4 text-center">
                           {intern.approved_sessions > 0
-                            ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-green-50 text-green-700">{intern.approved_sessions}</span>
-                            : <span className="text-slate-300">—</span>}
+                            ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700">{intern.approved_sessions}</span>
+                            : <span style={{ color: 'var(--text-3)' }}>—</span>}
                         </td>
                         <td className="px-4 py-4 text-center">
                           {intern.pending_sessions > 0
                             ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-600">{intern.pending_sessions}</span>
-                            : <span className="text-slate-300">—</span>}
+                            : <span style={{ color: 'var(--text-3)' }}>—</span>}
                         </td>
                         <td className="px-4 py-4 text-center">
                           {intern.rejected_sessions > 0
                             ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600">{intern.rejected_sessions}</span>
-                            : <span className="text-slate-300">—</span>}
+                            : <span style={{ color: 'var(--text-3)' }}>—</span>}
                         </td>
                       </tr>
                     ))}
                   </tbody>
-                  <tfoot className="border-t-2 border-slate-100 bg-slate-50">
+                  <tfoot style={{ borderTop: '2px solid var(--border)', background: 'var(--bg)' }}>
                     <tr>
-                      <td className="px-5 py-3 text-xs font-bold text-slate-500 uppercase">Total</td>
-                      <td className="px-4 py-3 text-center font-bold text-blue-700">{minutesToHours(totalMinutes)}</td>
-                      <td className="px-4 py-3 text-center font-bold text-slate-700">{totalSessions}</td>
-                      <td className="px-4 py-3 text-center font-bold text-green-700">{totalApproved}</td>
-                      <td className="px-4 py-3 text-center font-bold text-amber-600">{totalPending}</td>
-                      <td className="px-4 py-3 text-center font-bold text-red-600">{totalRejected}</td>
+                      <td className="px-5 py-3 text-xs font-bold uppercase" style={{ color: 'var(--text-3)' }}>Total</td>
+                      <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--info)' }}>{minutesToHours(totalMinutes)}</td>
+                      <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--text)' }}>{totalSessions}</td>
+                      <td className="px-4 py-3 text-center font-bold text-emerald-600">{totalApproved}</td>
+                      <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--warning)' }}>{totalPending}</td>
+                      <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--danger)' }}>{totalRejected}</td>
                     </tr>
                   </tfoot>
                 </table>
               </div>
             ) : (
-              <div className="py-20 text-center text-slate-400">
-                <div className="text-5xl mb-4">📊</div>
-                <p className="font-semibold text-slate-600">Nenhum dado encontrado</p>
-                <p className="text-sm mt-1">Não há registros para o período selecionado.</p>
+              <div className="py-20 text-center" style={{ color: 'var(--text-3)' }}>
+                <div className="text-5xl mb-4">&#128202;</div>
+                <p className="font-semibold" style={{ color: 'var(--text)' }}>Nenhum dado encontrado</p>
+                <p className="text-sm mt-1">Nao ha registros para o periodo selecionado.</p>
               </div>
             )}
           </motion.div>
@@ -404,9 +408,9 @@ export default function ReportsClient() {
 
         {/* Estado inicial */}
         {!data && !loading && !error && (
-          <div className="py-20 text-center text-slate-400">
-            <div className="text-5xl mb-4">🔍</div>
-            <p className="font-semibold text-slate-600">Selecione um período</p>
+          <div className="py-20 text-center" style={{ color: 'var(--text-3)' }}>
+            <div className="text-5xl mb-4">&#128269;</div>
+            <p className="font-semibold" style={{ color: 'var(--text)' }}>Selecione um periodo</p>
             <p className="text-sm mt-1">Configure o filtro acima e clique em Aplicar filtro.</p>
           </div>
         )}
@@ -422,24 +426,19 @@ function SummaryCard({ label, value, color, icon, delay = 0 }: {
   icon: string
   delay?: number
 }) {
-  const colors = {
-    blue:  'text-blue-700 bg-blue-50 border-blue-100',
-    green: 'text-green-700 bg-green-50 border-green-100',
-    amber: 'text-amber-600 bg-amber-50 border-amber-100',
-    red:   'text-red-600 bg-red-50 border-red-100',
-    gray:  'text-slate-700 bg-white border-slate-100',
-  }
+  const textColor = { blue: 'var(--info)', green: 'var(--success)', amber: 'var(--warning)', red: 'var(--danger)', gray: 'var(--text)' }
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.92 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, delay }}
-      className={`rounded-2xl border p-3 sm:p-4 shadow-sm ${colors[color]}`}
+      transition={{ duration: 0.25, delay }}
+      className="rounded-2xl p-3 sm:p-4"
+      style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
     >
-      <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide opacity-70 flex items-center gap-1">
+      <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide flex items-center gap-1" style={{ color: 'var(--text-3)' }}>
         <span>{icon}</span> {label}
       </p>
-      <p className="text-xl sm:text-2xl font-bold mt-1 sm:mt-2">{value}</p>
+      <p className="text-xl sm:text-2xl font-bold mt-1 sm:mt-2" style={{ color: textColor[color] }}>{value}</p>
     </motion.div>
   )
 }

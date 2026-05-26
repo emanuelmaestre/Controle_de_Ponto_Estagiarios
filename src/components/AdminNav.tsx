@@ -34,13 +34,17 @@ export default async function AdminNav({ pending = 0 }: { pending?: number }) {
 
           {/* Logo */}
           <Link href="/admin" className="flex items-center flex-shrink-0 group">
-            <div className="relative h-9 w-[160px]">
+            <div className="relative h-11 w-[200px]">
               <Image src="/logo.svg" alt="ChronosLab" fill className="object-contain object-left" />
             </div>
-            <p className="hidden lg:block text-[10px] leading-none ml-1 mt-0.5 border-l pl-3"
-              style={{ color: 'var(--nav-muted)', borderColor: 'rgba(255,255,255,0.12)' }}>
-              Controle de Ponto
-            </p>
+            <div className="hidden lg:flex flex-col ml-3 pl-3 border-l" style={{ borderColor: 'rgba(255,255,255,0.15)' }}>
+              <p className="text-[10px] font-bold uppercase tracking-widest leading-none" style={{ color: 'var(--nav-muted)' }}>
+                Controle de Ponto
+              </p>
+              <p className="text-[9px] leading-none mt-0.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
+                IFGoiano — Campus Urutaí
+              </p>
+            </div>
           </Link>
 
           {/* Nav desktop */}
