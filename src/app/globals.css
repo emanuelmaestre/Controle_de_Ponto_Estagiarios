@@ -46,3 +46,14 @@ body {
 .float-anim {
   animation: float 3s ease-in-out infinite;
 }
+
+/* Esconder ícone de olho nativo do navegador */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+input::-webkit-credentials-auto-fill-button,
+input::-webkit-textfield-decoration-container {
+  visibility: hidden;
+  pointer-events: none;
+}
