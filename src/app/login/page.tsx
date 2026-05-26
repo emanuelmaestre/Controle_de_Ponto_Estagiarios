@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { loginSchema, type LoginInput } from '@/lib/validations'
 
@@ -78,14 +79,27 @@ function LoginContent() {
   } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) })
 
   const getRedirectUrl = async () => {
-    if (redirect) return redirect
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return '/login'
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, pin, is_active')
       .eq('id', user.id)
       .maybeSingle()
+
+    // Conta inativa → erro
+    if (profile && !profile.is_active) {
+      await supabase.auth.signOut()
+      setError('Conta aguardando aprovação do administrador.')
+      return ''
+    }
+
+    // Sem PIN configurado → redirecionar para criar PIN
+    if (profile && !profile.pin) {
+      return '/setup-pin'
+    }
+
+    if (redirect) return redirect
     return profile?.role === 'manager' ? '/admin' : '/dashboard'
   }
 
@@ -100,6 +114,7 @@ function LoginContent() {
       return
     }
     const url = await getRedirectUrl()
+    if (!url) return // Conta inativa - erro já exibido
     router.push(url)
     router.refresh()
   }
@@ -326,6 +341,13 @@ function LoginContent() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          <p className="text-center text-xs text-slate-400 mt-2">
+            Não tem conta?{' '}
+            <Link href="/register" className="text-blue-600 hover:text-blue-800 font-semibold transition-colors">
+              Criar conta
+            </Link>
+          </p>
         </div>
       </motion.div>
     </div>
