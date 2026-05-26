@@ -1,15 +1,16 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'framer-motion'
 import { ReactNode } from 'react'
 
-// Fade-in com slide para cima
+const ease = [0.16, 1, 0.3, 1] as const
+
 export function FadeIn({ children, delay = 0, className = '' }: { children: ReactNode; delay?: number; className?: string }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay, ease: 'easeOut' }}
+      transition={{ duration: 0.4, delay, ease }}
       className={className}
     >
       {children}
@@ -17,13 +18,12 @@ export function FadeIn({ children, delay = 0, className = '' }: { children: Reac
   )
 }
 
-// Fade-in com scale
 export function ScaleIn({ children, delay = 0, className = '' }: { children: ReactNode; delay?: number; className?: string }) {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.92 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.35, delay, ease: 'easeOut' }}
+      transition={{ duration: 0.38, delay, ease }}
       className={className}
     >
       {children}
@@ -31,15 +31,14 @@ export function ScaleIn({ children, delay = 0, className = '' }: { children: Rea
   )
 }
 
-// Container que anima os filhos em cascata (stagger)
-export function StaggerContainer({ children, className = '', stagger = 0.06 }: { children: ReactNode; className?: string; stagger?: number }) {
+export function StaggerContainer({ children, className = '', stagger = 0.07 }: { children: ReactNode; className?: string; stagger?: number }) {
   return (
     <motion.div
       initial="hidden"
       animate="visible"
       variants={{
         hidden: {},
-        visible: { transition: { staggerChildren: stagger } },
+        visible: { transition: { staggerChildren: stagger, delayChildren: 0.04 } },
       }}
       className={className}
     >
@@ -48,13 +47,12 @@ export function StaggerContainer({ children, className = '', stagger = 0.06 }: {
   )
 }
 
-// Item filho do StaggerContainer
 export function StaggerItem({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
     <motion.div
       variants={{
-        hidden: { opacity: 0, y: 12 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
+        hidden:  { opacity: 0, y: 14, scale: 0.98 },
+        visible: { opacity: 1, y: 0,  scale: 1,    transition: { duration: 0.36, ease } },
       }}
       className={className}
     >
@@ -63,13 +61,12 @@ export function StaggerItem({ children, className = '' }: { children: ReactNode;
   )
 }
 
-// Slide da esquerda
-export function SlideIn({ children, delay = 0, className = '' }: { children: ReactNode; delay?: number; className?: string }) {
+export function SlideIn({ children, delay = 0, from = 'left', className = '' }: { children: ReactNode; delay?: number; from?: 'left' | 'right'; className?: string }) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
+      initial={{ opacity: 0, x: from === 'left' ? -20 : 20 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.4, delay, ease: 'easeOut' }}
+      transition={{ duration: 0.38, delay, ease }}
       className={className}
     >
       {children}
@@ -77,13 +74,13 @@ export function SlideIn({ children, delay = 0, className = '' }: { children: Rea
   )
 }
 
-// Wrapper para páginas inteiras
 export function PageTransition({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
+      initial={{ opacity: 0, y: 16, scale: 0.99 }}
+      animate={{ opacity: 1, y: 0,  scale: 1    }}
+      exit={{    opacity: 0, y: -8, scale: 0.99  }}
+      transition={{ duration: 0.38, ease }}
       className={className}
     >
       {children}

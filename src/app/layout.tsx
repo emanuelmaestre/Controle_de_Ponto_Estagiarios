@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { Toaster } from 'sonner'
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
+import NavigationProgress from '@/components/NavigationProgress'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${inter.variable} font-sans min-h-full`}>
         <ThemeProvider>
+          <NavigationProgress />
           {children}
           <Toaster
             richColors

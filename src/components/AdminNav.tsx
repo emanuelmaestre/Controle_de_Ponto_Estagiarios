@@ -33,14 +33,14 @@ export default async function AdminNav({ pending = 0 }: { pending?: number }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
 
           {/* Logo */}
-          <Link href="/admin" className="flex items-center gap-3 flex-shrink-0 group">
-            <div className="relative w-8 h-8 flex-shrink-0">
-              <Image src="/logo.svg" alt="ChronosLab" fill className="object-contain" />
+          <Link href="/admin" className="flex items-center flex-shrink-0 group">
+            <div className="relative h-9 w-[160px]">
+              <Image src="/logo.svg" alt="ChronosLab" fill className="object-contain object-left" />
             </div>
-            <div className="hidden sm:block">
-              <p className="text-sm font-bold leading-none" style={{ color: 'var(--nav-fg)' }}>ChronosLab</p>
-              <p className="text-[10px] leading-none mt-0.5" style={{ color: 'var(--nav-muted)' }}>Controle de Ponto</p>
-            </div>
+            <p className="hidden lg:block text-[10px] leading-none ml-1 mt-0.5 border-l pl-3"
+              style={{ color: 'var(--nav-muted)', borderColor: 'rgba(255,255,255,0.12)' }}>
+              Controle de Ponto
+            </p>
           </Link>
 
           {/* Nav desktop */}
