@@ -32,9 +32,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const t = localStorage.getItem('cl-theme');
-                if (t) document.documentElement.setAttribute('data-theme', t);
-              } catch(e) {}
+                const t = localStorage.getItem('cl-theme') || 'lab';
+                document.documentElement.setAttribute('data-theme', t);
+              } catch(e) { document.documentElement.setAttribute('data-theme','lab'); }
             `,
           }}
         />

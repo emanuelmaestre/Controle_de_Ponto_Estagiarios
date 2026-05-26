@@ -49,10 +49,7 @@ export default async function AdminNav({ pending = 0 }: { pending?: number }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className="relative flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-150 hover:opacity-100"
-                style={{ color: 'var(--nav-muted)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--nav-hover)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                className="nav-link relative flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-150"
               >
                 <span>{item.icon}</span>
                 <span>{item.label}</span>

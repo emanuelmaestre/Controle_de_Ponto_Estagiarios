@@ -225,6 +225,17 @@ input::-webkit-textfield-decoration-container {
 }
 
 /* ══════════════════════════════════════════════════════
+   NAV LINK HOVER (Server Component safe — no JS handlers)
+══════════════════════════════════════════════════════ */
+.nav-link {
+  color: var(--nav-muted);
+}
+.nav-link:hover {
+  background: var(--nav-hover);
+  color: var(--nav-fg);
+}
+
+/* ══════════════════════════════════════════════════════
    NPROGRESS BAR
 ══════════════════════════════════════════════════════ */
 #nprogress .bar {
