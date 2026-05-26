@@ -5,11 +5,62 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { formatTime, minutesToHours } from '@/lib/utils'
 import ClockButton from '@/components/ClockButton'
 import StatusBadge from '@/components/StatusBadge'
+import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/MotionWrappers'
-import { Home, ClipboardList, LogOut } from 'lucide-react'
+import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, AlertTriangle, CheckCircle } from 'lucide-react'
 import ThemeToggle from '@/components/ThemeToggle'
+import type { RecordStatus } from '@/types/database'
 
 export const dynamic = 'force-dynamic'
+
+// ─── Helpers de gamificação ─────────────────────────────────
+function getHourStatus(pct: number) {
+  if (pct >= 100) return {
+    label: 'CARGA CONCLUIDA',
+    color: 'var(--success)',
+    bg: 'rgba(22,163,74,0.10)',
+    border: 'rgba(22,163,74,0.25)',
+    emoji: '🏆',
+    msg: 'Parabens! Voce completou sua carga horaria do mes.',
+    sub: 'Continue sendo um exemplo de dedicacao e compromisso.',
+  }
+  if (pct >= 80) return {
+    label: 'QUASE LA',
+    color: 'var(--info)',
+    bg: 'rgba(14,165,233,0.10)',
+    border: 'rgba(14,165,233,0.25)',
+    emoji: '🚀',
+    msg: 'Voce esta quase la! Falta pouco para completar sua meta.',
+    sub: 'Mantenha o ritmo — voce esta indo muito bem!',
+  }
+  if (pct >= 50) return {
+    label: 'EM DIA',
+    color: 'var(--primary)',
+    bg: 'rgba(30,92,45,0.10)',
+    border: 'rgba(30,92,45,0.25)',
+    emoji: '💪',
+    msg: 'Otimo progresso! Voce esta na metade do caminho.',
+    sub: 'Continue comparecendo para manter sua carga em dia.',
+  }
+  if (pct >= 25) return {
+    label: 'ATENCAO',
+    color: 'var(--warning)',
+    bg: 'rgba(217,119,6,0.10)',
+    border: 'rgba(217,119,6,0.25)',
+    emoji: '⚡',
+    msg: 'Voce esta progredindo, mas ainda ha horas a cumprir.',
+    sub: 'Organize sua agenda para manter o ritmo e evitar pendencias.',
+  }
+  return {
+    label: 'HORAS PENDENTES',
+    color: 'var(--danger)',
+    bg: 'rgba(220,38,38,0.10)',
+    border: 'rgba(220,38,38,0.25)',
+    emoji: '🎯',
+    msg: 'Atencao: suas horas precisam de dedicacao agora.',
+    sub: 'Cada presenca conta. Voce ainda pode regularizar sua situacao!',
+  }
+}
 
 export default async function DashboardPage() {
   const supabase = await createSupabaseServerClient()
@@ -39,14 +90,15 @@ export default async function DashboardPage() {
     .gte('clock_in', `${today}T00:00:00Z`)
     .order('clock_in', { ascending: false })
 
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
   const { data: monthData } = await supabase
     .from('v_monthly_hours')
     .select('total_minutes, approved_sessions, pending_sessions')
     .eq('intern_id', user.id)
-    .gte('month', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
+    .gte('month', monthStart)
     .maybeSingle()
 
-  // Schedule for today
+  // Horario de hoje
   const todayDow = new Date().getDay()
   const { data: todaySchedule } = await supabase
     .from('intern_schedules')
@@ -58,16 +110,11 @@ export default async function DashboardPage() {
 
   const todayMinutes = todayRecords?.reduce((acc, r) => acc + (r.duration_minutes ?? 0), 0) ?? 0
   const monthMinutes = monthData?.total_minutes ?? 0
-  const totalRequired = (profile?.total_hours_required ?? 120) * 60
-  const pct = totalRequired > 0 ? Math.min(100, Math.round((monthMinutes / totalRequired) * 100)) : 0
+  const totalRequiredMins = (profile?.total_hours_required ?? 120) * 60
+  const pct = totalRequiredMins > 0 ? Math.min(100, Math.round((monthMinutes / totalRequiredMins) * 100)) : 0
+  const remainingMins = Math.max(0, totalRequiredMins - monthMinutes)
 
-  const motivational = (() => {
-    if (pct >= 100) return { msg: 'META ATINGIDA! EXCELENTE TRABALHO!', color: 'var(--success)', emoji: '🏆' }
-    if (pct >= 80) return { msg: 'QUASE LA! VOCE ESTA INDO MUITO BEM!', color: 'var(--info)', emoji: '🚀' }
-    if (pct >= 50) return { msg: 'METADE DO CAMINHO! CONTINUE ASSIM!', color: 'var(--primary)', emoji: '💪' }
-    if (pct >= 25) return { msg: 'BOM INICIO! MANTENHA O RITMO!', color: 'var(--warning)', emoji: '⚡' }
-    return { msg: 'VAMOS COMECAR! CADA HORA CONTA!', color: 'var(--text-3)', emoji: '🎯' }
-  })()
+  const status = getHourStatus(pct)
 
   const greeting = (() => {
     const h = new Date().getHours()
@@ -76,9 +123,13 @@ export default async function DashboardPage() {
     return 'BOA NOITE'
   })()
 
+  const weekDay = new Date().toLocaleDateString('pt-BR', { weekday: 'long' }).toUpperCase()
+  const dateStr = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()
+
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
-      {/* Header */}
+
+      {/* ── Header ─────────────────────────────────────── */}
       <header className="shadow-lg" style={{ background: 'var(--nav-bg)' }}>
         <div className="max-w-lg mx-auto px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -86,17 +137,15 @@ export default async function DashboardPage() {
               <Image src="/logo.svg" alt="ChronosLab" fill className="object-contain" />
             </div>
             <div>
-              <p className="text-[11px] font-medium" style={{ color: 'var(--nav-muted)' }}>{greeting},</p>
-              <h1 className="font-bold text-base leading-tight" style={{ color: 'var(--nav-fg)' }}>
-                {firstName}
-              </h1>
+              <p className="text-[10px] font-bold" style={{ color: 'var(--nav-muted)' }}>{greeting}, {firstName}</p>
+              <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{weekDay}, {dateStr}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle compact />
             <form action="/api/auth/signout" method="POST">
               <button
-                className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
+                className="text-[10px] font-bold px-3 py-1.5 rounded-lg border transition-all"
                 style={{ color: 'var(--nav-muted)', borderColor: 'rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)' }}
               >
                 SAIR
@@ -104,127 +153,195 @@ export default async function DashboardPage() {
             </form>
           </div>
         </div>
-
-        {/* Date strip */}
-        <div className="max-w-lg mx-auto px-5 pb-3">
-          <p className="text-[11px]" style={{ color: 'var(--nav-muted)' }}>
-            {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()}
-          </p>
-        </div>
       </header>
 
       <main className="flex-1 max-w-lg mx-auto w-full px-4 py-5 space-y-4 pb-24">
 
-        {/* Hour progress card */}
+        {/* ── Hero: Anel de progresso ─────────────────── */}
         <FadeIn delay={0}>
           <div
-            className="rounded-2xl p-5"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
+            className="rounded-3xl p-6"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow-md)' }}
           >
-            <div className="flex items-center justify-between mb-1">
+            {/* Status badge */}
+            <div className="flex items-center justify-between mb-5">
               <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>PROGRESSO DO MES</p>
-              <span className="text-[10px] font-bold" style={{ color: motivational.color }}>
-                {motivational.emoji} {pct}%
+              <span
+                className="text-[10px] font-bold px-2.5 py-1 rounded-full"
+                style={{ background: status.bg, color: status.color, border: `1px solid ${status.border}` }}
+              >
+                {status.label}
               </span>
             </div>
 
-            {/* Progress bar */}
-            <div className="h-2.5 rounded-full overflow-hidden mb-2" style={{ background: 'var(--bg)' }}>
-              <div
-                className="h-full rounded-full transition-all duration-1000"
-                style={{ width: `${pct}%`, background: motivational.color }}
-              />
+            {/* Ring + info */}
+            <div className="flex items-center gap-6">
+              <ProgressRing pct={pct} size={120} strokeWidth={11} color={status.color}>
+                <div className="text-center">
+                  <p className="text-2xl font-black leading-none" style={{ color: status.color }}>{pct}%</p>
+                  <p className="text-[9px] font-bold mt-0.5" style={{ color: 'var(--text-3)' }}>CUMPRIDO</p>
+                </div>
+              </ProgressRing>
+
+              <div className="flex-1 space-y-3">
+                <div>
+                  <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>HORAS CUMPRIDAS</p>
+                  <p className="text-xl font-black" style={{ color: 'var(--text)' }}>{minutesToHours(monthMinutes)}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>META TOTAL</p>
+                  <p className="text-base font-bold" style={{ color: 'var(--text-2)' }}>{profile?.total_hours_required ?? 120}h</p>
+                </div>
+                {remainingMins > 0 && (
+                  <div>
+                    <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>FALTAM</p>
+                    <p className="text-base font-bold" style={{ color: status.color }}>{minutesToHours(remainingMins)}</p>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <p className="text-[10px]" style={{ color: motivational.color, fontWeight: 700 }}>
-                {motivational.msg}
-              </p>
-              <p className="text-[10px] font-bold tabular-nums" style={{ color: 'var(--text-3)' }}>
-                {minutesToHours(monthMinutes)} / {profile?.total_hours_required ?? 120}H
-              </p>
+            {/* Motivational message */}
+            <div
+              className="mt-5 rounded-2xl p-3.5 flex items-start gap-3"
+              style={{ background: status.bg, border: `1px solid ${status.border}` }}
+            >
+              <span className="text-xl flex-shrink-0">{status.emoji}</span>
+              <div>
+                <p className="text-xs font-bold leading-snug" style={{ color: status.color }}>{status.msg}</p>
+                <p className="text-[10px] mt-0.5 leading-relaxed" style={{ color: status.color, opacity: 0.75 }}>{status.sub}</p>
+              </div>
             </div>
           </div>
         </FadeIn>
 
-        {/* Stats grid */}
-        <div className="grid grid-cols-2 gap-3">
-          <FadeIn delay={0.06}>
-            <div
-              className="rounded-2xl p-4"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-base p-1.5 rounded-lg" style={{ background: 'rgba(14,165,233,0.1)' }}>&#128197;</span>
-                <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>HOJE</p>
+        {/* ── Stats row ───────────────────────────────── */}
+        <div className="grid grid-cols-3 gap-2.5">
+          {[
+            {
+              icon: <Calendar size={14} />,
+              label: 'HOJE',
+              value: minutesToHours(todayMinutes),
+              color: 'var(--info)',
+              bg: 'rgba(14,165,233,0.08)',
+              delay: 0.06,
+            },
+            {
+              icon: <TrendingUp size={14} />,
+              label: 'MES',
+              value: `${monthData?.approved_sessions ?? 0} SESS.`,
+              color: 'var(--success)',
+              bg: 'rgba(22,163,74,0.08)',
+              delay: 0.1,
+            },
+            {
+              icon: <Clock size={14} />,
+              label: 'PENDENTES',
+              value: `${monthData?.pending_sessions ?? 0}`,
+              color: (monthData?.pending_sessions ?? 0) > 0 ? 'var(--warning)' : 'var(--text-3)',
+              bg: (monthData?.pending_sessions ?? 0) > 0 ? 'rgba(217,119,6,0.08)' : 'var(--bg)',
+              delay: 0.14,
+            },
+          ].map(s => (
+            <FadeIn key={s.label} delay={s.delay}>
+              <div
+                className="rounded-2xl p-3 text-center"
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
+              >
+                <div className="flex justify-center mb-1.5 p-1.5 rounded-xl w-fit mx-auto" style={{ background: s.bg, color: s.color }}>
+                  {s.icon}
+                </div>
+                <p className="text-xs font-black leading-none" style={{ color: s.color }}>{s.value}</p>
+                <p className="text-[9px] font-bold mt-1" style={{ color: 'var(--text-3)' }}>{s.label}</p>
               </div>
-              <p className="text-xl font-black" style={{ color: 'var(--info)' }}>{minutesToHours(todayMinutes)}</p>
-              {todaySchedule && (
-                <p className="text-[10px] mt-1" style={{ color: 'var(--text-3)' }}>
-                  PREVISTO: {(todaySchedule.expected_hours ?? 0).toFixed(1)}H
-                </p>
-              )}
-            </div>
-          </FadeIn>
-          <FadeIn delay={0.1}>
-            <div
-              className="rounded-2xl p-4"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-base p-1.5 rounded-lg" style={{ background: 'rgba(30,92,45,0.1)' }}>&#128202;</span>
-                <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>MES</p>
-              </div>
-              <p className="text-xl font-black" style={{ color: 'var(--primary)' }}>{minutesToHours(monthMinutes)}</p>
-              {(monthData?.pending_sessions ?? 0) > 0 && (
-                <p className="text-[10px] mt-1 font-semibold" style={{ color: 'var(--warning)' }}>
-                  {monthData?.pending_sessions} PENDENTE(S)
-                </p>
-              )}
-            </div>
-          </FadeIn>
+            </FadeIn>
+          ))}
         </div>
 
-        {/* Today schedule hint */}
+        {/* ── Horario de hoje ─────────────────────────── */}
         {todaySchedule && (
-          <FadeIn delay={0.13}>
+          <FadeIn delay={0.16}>
             <div
               className="rounded-2xl px-4 py-3 flex items-center gap-3"
               style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
             >
-              <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: openRecord ? 'var(--success)' : 'var(--text-3)' }} />
-              <div>
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: openRecord ? 'rgba(22,163,74,0.12)' : 'var(--bg)' }}
+              >
+                {openRecord
+                  ? <CheckCircle size={18} style={{ color: 'var(--success)' }} />
+                  : <Clock size={18} style={{ color: 'var(--text-3)' }} />
+                }
+              </div>
+              <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-bold" style={{ color: 'var(--text)' }}>
-                  HORARIO DE HOJE: {todaySchedule.expected_start?.slice(0, 5)} &mdash; {todaySchedule.expected_end?.slice(0, 5)}
+                  HORARIO PREVISTO HOJE
                 </p>
-                <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>
-                  PREVISTO {(todaySchedule.expected_hours ?? 0).toFixed(1)}H &middot; REALIZADO {minutesToHours(todayMinutes)}
+                <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
+                  {todaySchedule.expected_start?.slice(0, 5)} &mdash; {todaySchedule.expected_end?.slice(0, 5)}
+                  &nbsp;&middot;&nbsp;{(todaySchedule.expected_hours ?? 0).toFixed(1)}h previstas
+                  &nbsp;&middot;&nbsp;{minutesToHours(todayMinutes)} realizadas
+                </p>
+              </div>
+              {openRecord && (
+                <span
+                  className="text-[9px] font-bold px-2 py-1 rounded-full flex-shrink-0"
+                  style={{ background: 'rgba(22,163,74,0.12)', color: 'var(--success)', border: '1px solid rgba(22,163,74,0.25)' }}
+                >
+                  EM ANDAMENTO
+                </span>
+              )}
+            </div>
+          </FadeIn>
+        )}
+
+        {/* ── Alertas de pendencia ─────────────────────── */}
+        {(monthData?.pending_sessions ?? 0) > 0 && (
+          <FadeIn delay={0.18}>
+            <div
+              className="rounded-2xl px-4 py-3 flex items-center gap-3"
+              style={{ background: 'rgba(217,119,6,0.08)', border: '1px solid rgba(217,119,6,0.25)' }}
+            >
+              <AlertTriangle size={18} style={{ color: 'var(--warning)', flexShrink: 0 }} />
+              <div>
+                <p className="text-[10px] font-bold" style={{ color: 'var(--warning)' }}>
+                  {monthData!.pending_sessions} {monthData!.pending_sessions === 1 ? 'REGISTRO PENDENTE' : 'REGISTROS PENDENTES'} DE APROVACAO
+                </p>
+                <p className="text-[10px] mt-0.5" style={{ color: 'var(--warning)', opacity: 0.75 }}>
+                  Aguardando revisao do administrador. Suas horas serao contabilizadas apos aprovacao.
                 </p>
               </div>
             </div>
           </FadeIn>
         )}
 
-        {/* Clock button */}
-        <ScaleIn delay={0.16}>
+        {/* ── Botao de ponto ──────────────────────────── */}
+        <ScaleIn delay={0.2}>
           <div
-            className="rounded-2xl p-5"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
+            className="rounded-3xl p-5"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow-md)' }}
           >
             <ClockButton openRecord={openRecord ?? null} />
           </div>
         </ScaleIn>
 
-        {/* Today records */}
+        {/* ── Registros de hoje ───────────────────────── */}
         {todayRecords && todayRecords.length > 0 && (
-          <FadeIn delay={0.22}>
+          <FadeIn delay={0.26}>
             <div
               className="rounded-2xl overflow-hidden"
               style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
             >
-              <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border)' }}>
-                <h2 className="font-bold text-sm" style={{ color: 'var(--text)' }}>REGISTROS DE HOJE</h2>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: 'var(--bg-secondary)', color: 'var(--text-2)' }}>
+              <div
+                className="px-5 py-3.5 flex items-center justify-between"
+                style={{ borderBottom: '1px solid var(--border)' }}
+              >
+                <h2 className="text-xs font-bold" style={{ color: 'var(--text)' }}>REGISTROS DE HOJE</h2>
+                <span
+                  className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                  style={{ background: 'var(--bg)', color: 'var(--text-3)', border: '1px solid var(--border)' }}
+                >
                   {todayRecords.length}
                 </span>
               </div>
@@ -232,20 +349,23 @@ export default async function DashboardPage() {
                 {todayRecords.map(r => (
                   <StaggerItem key={r.id}>
                     <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: r.clock_out ? 'var(--text-3)' : 'var(--success)' }} />
+                      <div
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ background: r.clock_out ? 'var(--text-3)' : 'var(--success)' }}
+                      />
                       <div className="flex-1">
-                        <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+                        <p className="text-sm font-bold" style={{ color: 'var(--text)' }}>
                           {formatTime(r.clock_in)}
                           {r.clock_out
                             ? <span style={{ color: 'var(--text-3)', fontWeight: 400 }}> &rarr; {formatTime(r.clock_out)}</span>
-                            : <span style={{ color: 'var(--success)', fontWeight: 400 }}> &rarr; EM ANDAMENTO</span>
+                            : <span style={{ color: 'var(--success)', fontWeight: 400 }}> &rarr; em andamento</span>
                           }
                         </p>
                         {r.duration_minutes && (
-                          <p className="text-xs" style={{ color: 'var(--text-3)' }}>{minutesToHours(r.duration_minutes)}</p>
+                          <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>{minutesToHours(r.duration_minutes)}</p>
                         )}
                       </div>
-                      <StatusBadge status={r.status as 'pending' | 'approved' | 'rejected'} />
+                      <StatusBadge status={r.status as RecordStatus} />
                     </div>
                   </StaggerItem>
                 ))}
@@ -253,24 +373,25 @@ export default async function DashboardPage() {
             </div>
           </FadeIn>
         )}
+
       </main>
 
-      {/* Bottom nav */}
+      {/* ── Bottom nav ──────────────────────────────────── */}
       <nav
         className="fixed bottom-0 left-0 right-0 border-t"
         style={{ background: 'var(--surface)', borderColor: 'var(--border)', boxShadow: '0 -4px 20px rgba(0,0,0,0.08)' }}
       >
         <div className="max-w-lg mx-auto flex">
-          <Link href="/dashboard" className="flex-1 flex flex-col items-center gap-1 py-3 transition-colors" style={{ color: 'var(--primary)' }}>
+          <Link href="/dashboard" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--primary)' }}>
             <Home size={18} />
             <span className="text-[10px] font-bold">INICIO</span>
           </Link>
-          <Link href="/history" className="flex-1 flex flex-col items-center gap-1 py-3 transition-colors" style={{ color: 'var(--text-3)' }}>
+          <Link href="/history" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
             <ClipboardList size={18} />
             <span className="text-[10px] font-bold">HISTORICO</span>
           </Link>
           <form action="/api/auth/signout" method="POST" className="flex-1">
-            <button type="submit" className="w-full flex flex-col items-center gap-1 py-3 transition-colors" style={{ color: 'var(--text-3)' }}>
+            <button type="submit" className="w-full flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
               <LogOut size={18} />
               <span className="text-[10px] font-bold">SAIR</span>
             </button>
