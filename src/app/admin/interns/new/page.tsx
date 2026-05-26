@@ -1,7 +1,10 @@
-import { redirect } from 'next/navigation'
+﻿import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import InternForm from '../InternForm'
+import AdminNav from '@/components/AdminNav'
+
+export const dynamic = 'force-dynamic'
 
 export default async function NewInternPage() {
   const supabase = await createSupabaseServerClient()
@@ -9,17 +12,32 @@ export default async function NewInternPage() {
   if (!user) redirect('/login')
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-blue-900 text-white px-6 py-4 flex items-center gap-4">
-        <Link href="/admin/interns" className="text-blue-200 hover:text-white text-sm">← Estagiários</Link>
-        <div>
-          <h1 className="font-bold text-xl">Cadastrar Estagiário</h1>
-          <p className="text-blue-200 text-sm">Preencha os dados do novo membro</p>
+    <div className="flex flex-col" style={{ height: '100dvh', background: 'var(--bg)', overflow: 'hidden' }}>
+      <AdminNav />
+
+      {/* Header compacto */}
+      <div className="flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
+          <Link href="/admin/interns" className="text-sm font-bold hover:opacity-70" style={{ color: 'var(--text-3)' }}>
+            &larr; ESTAGIARIOS
+          </Link>
+          <div className="w-px h-4 flex-shrink-0" style={{ background: 'var(--border)' }} />
+          <div>
+            <h1 className="font-bold text-sm" style={{ color: 'var(--text)' }}>CADASTRAR ESTAGIARIO</h1>
+            <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>PREENCHA OS DADOS DO NOVO MEMBRO</p>
+          </div>
         </div>
-      </header>
-      <main className="max-w-2xl mx-auto p-6">
-        <InternForm mode="create" />
-      </main>
+      </div>
+
+      {/* Form area - scrollavel internamente sem barra visivel */}
+      <div
+        className="flex-1 min-h-0 overflow-y-auto"
+        style={{ scrollbarWidth: 'none' }}
+      >
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-5">
+          <InternForm mode="create" />
+        </div>
+      </div>
     </div>
   )
 }

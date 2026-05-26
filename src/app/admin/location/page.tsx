@@ -90,28 +90,28 @@ export default async function LocationPage() {
   const totalAttempts = attempts.length
 
   return (
-    <div className="min-h-screen pb-24 md:pb-8" style={{ background: 'var(--bg)' }}>
+    <div className="flex flex-col" style={{ height: '100dvh', background: 'var(--bg)', overflow: 'hidden' }}>
       <AdminNav />
 
-      {/* Header */}
-      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
-          <Link href="/admin" className="text-sm transition-colors hover:opacity-70" style={{ color: 'var(--text-3)' }}>
-            ← Painel
+      {/* Header compacto */}
+      <div className="flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
+          <Link href="/admin" className="text-sm font-bold hover:opacity-70" style={{ color: 'var(--text-3)' }}>
+            &larr; PAINEL
           </Link>
           <span style={{ color: 'var(--border)' }}>/</span>
           <div>
-            <h1 className="font-bold text-lg" style={{ color: 'var(--text)' }}>
-              Histórico de Localização
+            <h1 className="font-bold text-sm" style={{ color: 'var(--text)' }}>
+              HISTORICO DE LOCALIZACAO
             </h1>
-            <p className="text-xs" style={{ color: 'var(--text-3)' }}>
-              Registros e tentativas de ponto com dados de geolocalização
+            <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+              REGISTROS E TENTATIVAS DE PONTO COM DADOS DE GEOLOCALIZACAO
             </p>
           </div>
         </div>
       </div>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 space-y-4">
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -292,7 +292,7 @@ export default async function LocationPage() {
           </div>
         </FadeIn>
 
-      </main>
+      </div></main>
     </div>
   )
 }

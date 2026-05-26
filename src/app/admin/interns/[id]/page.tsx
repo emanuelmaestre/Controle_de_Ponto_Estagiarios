@@ -57,7 +57,7 @@ export default async function InternDetailPage({ params }: Props) {
   const statusColor = pct >= 100 ? 'var(--success)' : pct >= 75 ? 'var(--info)' : pct >= 40 ? 'var(--primary)' : 'var(--warning)'
 
   return (
-    <div className="min-h-screen pb-24 md:pb-8" style={{ background: 'var(--bg)' }}>
+    <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
       <AdminNav />
 
       {/* Page header */}
@@ -85,7 +85,7 @@ export default async function InternDetailPage({ params }: Props) {
         </div>
       </div>
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-6 space-y-5">
+      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-2xl mx-auto px-4 sm:px-6 py-4 space-y-4">
 
         {/* Hour progress */}
         <div className="rounded-2xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
@@ -177,7 +177,7 @@ export default async function InternDetailPage({ params }: Props) {
           <InternForm mode="edit" intern={intern} />
         </div>
 
-      </main>
+      </div></main>
     </div>
   )
 }

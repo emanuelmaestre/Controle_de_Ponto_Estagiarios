@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+﻿import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import AdminNav from '@/components/AdminNav'
@@ -81,7 +81,7 @@ export default async function WorkloadPage() {
   const avatarColors = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#06b6d4']
 
   return (
-    <div className="min-h-screen pb-24 md:pb-8" style={{ background: 'var(--bg)' }}>
+    <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
       <AdminNav />
 
       {/* Header */}
@@ -116,7 +116,7 @@ export default async function WorkloadPage() {
         </div>
       </div>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-3">
+      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 space-y-4">
         {rows.length === 0 && (
           <div className="text-center py-16" style={{ color: 'var(--text-3)' }}>
             <p className="text-4xl mb-3">&#128200;</p>
@@ -197,7 +197,8 @@ export default async function WorkloadPage() {
             </Link>
           )
         })}
-      </main>
+      </div></main>
     </div>
   )
 }
+
