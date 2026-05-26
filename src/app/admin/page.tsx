@@ -18,6 +18,15 @@ export default async function AdminPage() {
     .order('full_name')
   const interns = internsRaw as TodayStatus[] | null
 
+  // Buscar cadastros pendentes de aprovação (contas inativas)
+  const { data: pendingRegistrations } = await supabase
+    .from('profiles')
+    .select('id, full_name, email, course, created_at')
+    .eq('role', 'intern')
+    .eq('is_active', false)
+    .order('created_at', { ascending: false })
+  const pendingCount = pendingRegistrations?.length ?? 0
+
   const totalPending = interns?.reduce((acc, i) => acc + (i.pending_count ?? 0), 0) ?? 0
   const activeCount = interns?.filter((i) => i.today_status === 'ativo').length ?? 0
   const totalCount = interns?.length ?? 0
@@ -52,6 +61,31 @@ export default async function AdminPage() {
       <AdminNav pending={totalPending} />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8">
+        {/* Banner de cadastros pendentes */}
+        {pendingCount > 0 && (
+          <FadeIn>
+            <Link
+              href="/admin/interns"
+              className="block mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl px-5 py-4 hover:shadow-md transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+                  👤
+                </div>
+                <div className="flex-1">
+                  <p className="font-bold text-amber-800 text-sm">
+                    {pendingCount} cadastro{pendingCount !== 1 ? 's' : ''} aguardando aprovação
+                  </p>
+                  <p className="text-amber-600 text-xs mt-0.5">
+                    {pendingRegistrations?.map(p => p.full_name).join(', ')}
+                  </p>
+                </div>
+                <span className="text-amber-400 text-xl group-hover:text-amber-600 transition-colors">›</span>
+              </div>
+            </Link>
+          </FadeIn>
+        )}
+
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <StatCard
