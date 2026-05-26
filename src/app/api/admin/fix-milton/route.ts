@@ -5,28 +5,22 @@ import { createSupabaseServiceClient } from '@/lib/supabase/server'
 export async function GET() {
   const supabaseAdmin = createSupabaseServiceClient()
 
-  // Buscar usuário pelo email diretamente
-  const { data, error: listError } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 })
-  if (listError) return NextResponse.json({ error: listError.message, detail: 'listUsers failed' }, { status: 500 })
+  // UUID do Milton obtido diretamente do banco
+  const miltonId = 'caf3242d-85ed-4767-9af0-2abf74d9d5ca'
 
-  const milton = data.users.find((u: { email?: string }) => u.email === 'milton@chronoslab.com.br')
-  if (!milton) {
-    // Tentar criar se não existir
-    const { data: created, error: createError } = await supabaseAdmin.auth.admin.createUser({
-      email: 'milton@chronoslab.com.br',
-      password: 'Milton157@',
-      email_confirm: true,
-    })
-    if (createError) return NextResponse.json({ error: createError.message, detail: 'createUser failed' }, { status: 500 })
-    await supabaseAdmin.from('profiles').upsert({ id: created.user.id, role: 'manager', is_active: true, full_name: 'Milton', email: 'milton@chronoslab.com.br' })
-    return NextResponse.json({ ok: true, action: 'created', userId: created.user.id })
-  }
+  // Definir senha diretamente pelo ID
+  const { error } = await supabaseAdmin.auth.admin.updateUserById(miltonId, {
+    password: 'Milton157@',
+    email: 'milton@chronoslab.com.br',
+  })
 
-  // Atualizar senha
-  const { error } = await supabaseAdmin.auth.admin.updateUserById(milton.id, { password: 'Milton157@' })
-  if (error) return NextResponse.json({ error: error.message, detail: 'updateUser failed' }, { status: 500 })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  await supabaseAdmin.from('profiles').update({ role: 'manager', is_active: true }).eq('id', milton.id)
+  // Garantir profile como manager ativo
+  await supabaseAdmin
+    .from('profiles')
+    .update({ role: 'manager', is_active: true })
+    .eq('id', miltonId)
 
-  return NextResponse.json({ ok: true, action: 'updated', userId: milton.id, email: milton.email })
+  return NextResponse.json({ ok: true, message: 'Senha do Milton redefinida com sucesso!' })
 }
