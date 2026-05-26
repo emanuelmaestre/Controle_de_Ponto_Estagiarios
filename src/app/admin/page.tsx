@@ -26,109 +26,120 @@ export default async function AdminPage() {
   const ausenteCount = interns?.filter(i => i.today_status === 'ausente').length ?? 0
   const totalCount   = interns?.length ?? 0
 
-  // Hora / saudacao
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'BOM DIA' : hour < 18 ? 'BOA TARDE' : 'BOA NOITE'
   const dateStr = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).toUpperCase()
 
   const avatarColors = ['#3b82f6','#8b5cf6','#ec4899','#10b981','#f59e0b','#06b6d4']
 
-  const statusCfg: Record<string, { label: string; color: string; bg: string; border: string; dot: string }> = {
-    ativo:   { label: 'NO LABORATORIO',  color: 'var(--success)', bg: 'rgba(22,163,74,0.10)',  border: 'rgba(22,163,74,0.25)',  dot: 'var(--success)' },
-    saiu:    { label: 'SAIU HOJE',       color: 'var(--info)',    bg: 'rgba(14,165,233,0.10)', border: 'rgba(14,165,233,0.25)', dot: 'var(--info)'    },
-    ausente: { label: 'AUSENTE',         color: 'var(--text-3)',  bg: 'var(--bg)',             border: 'var(--border)',         dot: 'var(--text-3)'  },
+  const statusCfg: Record<string, { label: string; color: string; bg: string; border: string }> = {
+    ativo:   { label: 'NO LABORATORIO', color: 'var(--success)', bg: 'rgba(22,163,74,0.10)',  border: 'rgba(22,163,74,0.25)'  },
+    saiu:    { label: 'SAIU HOJE',      color: 'var(--info)',    bg: 'rgba(14,165,233,0.10)', border: 'rgba(14,165,233,0.25)' },
+    ausente: { label: 'AUSENTE',        color: 'var(--text-3)',  bg: 'var(--bg)',             border: 'var(--border)'         },
   }
 
+  const stats = [
+    {
+      icon: <Activity size={16} />,
+      label: 'PRESENTES',
+      value: activeCount,
+      sub: 'no laboratorio',
+      color: 'var(--success)',
+      bg: 'rgba(22,163,74,0.08)',
+    },
+    {
+      icon: <Users size={16} />,
+      label: 'ESTAGIARIOS',
+      value: totalCount,
+      sub: `${saiuCount} sairam hoje`,
+      color: 'var(--info)',
+      bg: 'rgba(14,165,233,0.08)',
+    },
+    {
+      icon: <Clock size={16} />,
+      label: 'PENDENTES',
+      value: totalPending,
+      sub: totalPending > 0 ? 'aguardam revisao' : 'tudo em dia',
+      color: totalPending > 0 ? 'var(--warning)' : 'var(--text-3)',
+      bg: totalPending > 0 ? 'rgba(217,119,6,0.08)' : 'var(--bg)',
+    },
+    {
+      icon: <AlertTriangle size={16} />,
+      label: 'AUSENTES',
+      value: ausenteCount,
+      sub: ausenteCount > 0 ? 'verificar hoje' : 'todos presentes',
+      color: ausenteCount > 0 ? 'var(--danger)' : 'var(--text-3)',
+      bg: ausenteCount > 0 ? 'rgba(220,38,38,0.08)' : 'var(--bg)',
+    },
+  ]
+
   return (
-    <div className="min-h-screen pb-24 md:pb-8" style={{ background: 'var(--bg)' }}>
+    <div className="flex flex-col" style={{ height: '100dvh', background: 'var(--bg)', overflow: 'hidden' }}>
       <AdminNav pending={totalPending} />
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8">
+      <div className="flex-1 min-h-0 flex flex-col max-w-6xl mx-auto w-full px-4 sm:px-6 py-4 gap-3">
 
-        {/* Saudacao */}
+        {/* Saudacao compacta */}
         <FadeIn delay={0}>
-          <div>
-            <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>{greeting} &mdash; {dateStr}</p>
-            <h1 className="text-2xl font-black mt-0.5" style={{ color: 'var(--text)' }}>PAINEL ADMINISTRATIVO</h1>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>
+                {greeting} &mdash; {dateStr}
+              </p>
+              <h1 className="text-xl font-black leading-tight" style={{ color: 'var(--text)' }}>
+                PAINEL ADMINISTRATIVO
+              </h1>
+            </div>
+            <Link
+              href="/admin/interns/new"
+              className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold px-3 py-2 rounded-xl transition-all hover:opacity-90"
+              style={{ background: 'var(--primary)', color: 'white' }}
+            >
+              + NOVO ESTAGIARIO
+            </Link>
           </div>
         </FadeIn>
 
-        {/* Stats cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            {
-              icon: <Activity size={18} />,
-              label: 'PRESENTES AGORA',
-              value: activeCount,
-              sub: 'no laboratorio',
-              color: 'var(--success)',
-              bg: 'rgba(22,163,74,0.08)',
-              delay: 0,
-            },
-            {
-              icon: <Users size={18} />,
-              label: 'TOTAL ESTAGIARIOS',
-              value: totalCount,
-              sub: `${saiuCount} sairam hoje`,
-              color: 'var(--info)',
-              bg: 'rgba(14,165,233,0.08)',
-              delay: 0.05,
-            },
-            {
-              icon: <Clock size={18} />,
-              label: 'APROVACOES PENDENTES',
-              value: totalPending,
-              sub: totalPending > 0 ? 'necessitam revisao' : 'tudo em dia',
-              color: totalPending > 0 ? 'var(--warning)' : 'var(--text-3)',
-              bg: totalPending > 0 ? 'rgba(217,119,6,0.08)' : 'var(--bg)',
-              delay: 0.10,
-            },
-            {
-              icon: <AlertTriangle size={18} />,
-              label: 'AUSENTES HOJE',
-              value: ausenteCount,
-              sub: ausenteCount > 0 ? 'verificar pendencias' : 'todos presentes',
-              color: ausenteCount > 0 ? 'var(--danger)' : 'var(--text-3)',
-              bg: ausenteCount > 0 ? 'rgba(220,38,38,0.08)' : 'var(--bg)',
-              delay: 0.15,
-            },
-          ].map(s => (
-            <FadeIn key={s.label} delay={s.delay}>
+        {/* Stats row */}
+        <div className="grid grid-cols-4 gap-3 flex-shrink-0">
+          {stats.map((s, i) => (
+            <FadeIn key={s.label} delay={i * 0.04}>
               <div
-                className="rounded-2xl p-4"
+                className="rounded-2xl p-3.5"
                 style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="p-2 rounded-xl" style={{ background: s.bg, color: s.color }}>
-                    {s.icon}
-                  </div>
+                <div className="p-1.5 rounded-lg w-fit mb-2" style={{ background: s.bg, color: s.color }}>
+                  {s.icon}
                 </div>
-                <p className="text-2xl font-black" style={{ color: s.color }}>{s.value}</p>
-                <p className="text-[9px] font-bold mt-0.5 uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>{s.label}</p>
+                <p className="text-2xl font-black leading-none" style={{ color: s.color }}>{s.value}</p>
+                <p className="text-[9px] font-bold mt-1 leading-none" style={{ color: 'var(--text-3)' }}>{s.label}</p>
                 <p className="text-[9px] mt-0.5" style={{ color: 'var(--text-3)' }}>{s.sub}</p>
               </div>
             </FadeIn>
           ))}
         </div>
 
-        {/* Alerta de pendencias */}
+        {/* Banner de pendencias */}
         {totalPending > 0 && (
-          <FadeIn delay={0.2}>
+          <FadeIn delay={0.18}>
             <Link href="/admin/approvals">
               <div
-                className="rounded-2xl px-5 py-4 flex items-center gap-4 transition-all hover:shadow-md"
+                className="rounded-2xl px-4 py-3 flex items-center gap-3 transition-all hover:shadow-md flex-shrink-0"
                 style={{ background: 'rgba(217,119,6,0.08)', border: '1px solid rgba(217,119,6,0.3)' }}
               >
-                <Clock size={20} style={{ color: 'var(--warning)', flexShrink: 0 }} />
-                <div className="flex-1">
-                  <p className="text-sm font-bold" style={{ color: 'var(--warning)' }}>
+                <Clock size={16} style={{ color: 'var(--warning)', flexShrink: 0 }} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold" style={{ color: 'var(--warning)' }}>
                     {totalPending} {totalPending === 1 ? 'REGISTRO PENDENTE' : 'REGISTROS PENDENTES'} DE APROVACAO
                   </p>
-                  <p className="text-[10px] mt-0.5" style={{ color: 'var(--warning)', opacity: 0.75 }}>
-                    Clique para revisar e aprovar os registros de ponto aguardando sua analise.
+                  <p className="text-[10px] truncate" style={{ color: 'var(--warning)', opacity: 0.75 }}>
+                    Clique para revisar e aprovar os registros aguardando sua analise.
                   </p>
                 </div>
-                <span className="text-[10px] font-bold px-3 py-1.5 rounded-xl" style={{ background: 'var(--warning)', color: 'white' }}>
+                <span
+                  className="text-[10px] font-bold px-3 py-1.5 rounded-xl flex-shrink-0"
+                  style={{ background: 'var(--warning)', color: 'white' }}
+                >
                   REVISAR
                 </span>
               </div>
@@ -136,17 +147,19 @@ export default async function AdminPage() {
           </FadeIn>
         )}
 
-        {/* Lista de estagiarios */}
-        <div>
+        {/* Estagiarios — ocupa o espaco restante */}
+        <div className="flex-1 min-h-0 flex flex-col">
           <FadeIn delay={0.22}>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3 flex-shrink-0">
               <div className="flex items-center gap-2">
-                <TrendingUp size={16} style={{ color: 'var(--primary)' }} />
-                <h2 className="text-xs font-bold" style={{ color: 'var(--text)' }}>ESTAGIARIOS &mdash; HOJE</h2>
+                <TrendingUp size={14} style={{ color: 'var(--primary)' }} />
+                <h2 className="text-[10px] font-bold" style={{ color: 'var(--text)' }}>
+                  ESTAGIARIOS &mdash; HOJE
+                </h2>
               </div>
               <Link
                 href="/admin/interns"
-                className="text-[10px] font-bold px-3 py-1.5 rounded-xl transition-all hover:opacity-80"
+                className="text-[9px] font-bold px-2.5 py-1.5 rounded-xl"
                 style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text-3)' }}
               >
                 VER TODOS
@@ -155,91 +168,86 @@ export default async function AdminPage() {
           </FadeIn>
 
           {interns && interns.length > 0 ? (
-            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {interns.map((intern, idx) => {
-                const cfg = statusCfg[intern.today_status] ?? statusCfg.ausente
-                const initials = intern.full_name.split(' ').slice(0, 2).map(w => w[0]).join('')
-                const avatarBg = avatarColors[idx % avatarColors.length]
-                return (
-                  <StaggerItem key={intern.id}>
-                    <Link
-                      href={`/admin/interns/${intern.id}`}
-                      className="group block rounded-2xl p-4 transition-all hover:shadow-md"
-                      style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
-                    >
-                      <div className="flex items-center gap-3 mb-3">
+            <div className="flex-1 min-h-0 overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin' }}>
+              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 pb-2">
+                {interns.map((intern, idx) => {
+                  const cfg = statusCfg[intern.today_status] ?? statusCfg.ausente
+                  const initials = intern.full_name.split(' ').slice(0, 2).map((w: string) => w[0]).join('')
+                  const avatarBg = avatarColors[idx % avatarColors.length]
+                  return (
+                    <StaggerItem key={intern.id}>
+                      <Link
+                        href={`/admin/interns/${intern.id}`}
+                        className="group flex items-center gap-3 rounded-2xl p-3.5 transition-all hover:shadow-md"
+                        style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
+                      >
+                        {/* Avatar */}
                         {intern.photo_url ? (
                           <img
                             src={intern.photo_url}
                             alt={intern.full_name}
-                            className="w-10 h-10 rounded-xl object-cover flex-shrink-0"
-                            style={{ border: `2px solid ${cfg.color}30` }}
+                            className="w-9 h-9 rounded-xl object-cover flex-shrink-0"
                           />
                         ) : (
                           <div
-                            className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0 text-white"
+                            className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs flex-shrink-0 text-white"
                             style={{ background: avatarBg }}
                           >
                             {initials}
                           </div>
                         )}
+
+                        {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <p className="font-bold text-sm truncate" style={{ color: 'var(--text)' }}>{intern.full_name}</p>
+                          <p className="font-bold text-xs truncate" style={{ color: 'var(--text)' }}>
+                            {intern.full_name}
+                          </p>
                           <span
-                            className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full mt-0.5"
+                            className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full mt-0.5"
                             style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}
                           >
-                            <span className="w-1.5 h-1.5 rounded-full" style={{ background: cfg.dot }} />
+                            <span className="w-1 h-1 rounded-full" style={{ background: cfg.color }} />
                             {cfg.label}
                           </span>
                         </div>
-                      </div>
 
-                      <div
-                        className="flex items-center justify-between pt-3"
-                        style={{ borderTop: '1px solid var(--border)' }}
-                      >
-                        <div>
-                          <p className="text-[9px] font-bold" style={{ color: 'var(--text-3)' }}>HOJE</p>
-                          <p className="text-sm font-black" style={{ color: 'var(--text)' }}>
+                        {/* Right side */}
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-xs font-black" style={{ color: 'var(--text)' }}>
                             {minutesToHours(intern.today_minutes)}
                           </p>
+                          {intern.today_status === 'ativo' && intern.clock_in && (
+                            <p className="text-[9px] font-bold" style={{ color: 'var(--success)' }}>
+                              {formatTime(intern.clock_in)}
+                            </p>
+                          )}
+                          {intern.pending_count > 0 && (
+                            <p className="text-[9px] font-bold" style={{ color: 'var(--warning)' }}>
+                              &#9203; {intern.pending_count}
+                            </p>
+                          )}
+                          {intern.today_status === 'saiu' && intern.pending_count === 0 && (
+                            <CheckCircle size={12} style={{ color: 'var(--info)', marginLeft: 'auto' }} />
+                          )}
                         </div>
-                        {intern.today_status === 'ativo' && intern.clock_in && (
-                          <div className="text-right">
-                            <p className="text-[9px] font-bold" style={{ color: 'var(--text-3)' }}>ENTRADA</p>
-                            <p className="text-sm font-black" style={{ color: 'var(--success)' }}>{formatTime(intern.clock_in)}</p>
-                          </div>
-                        )}
-                        {intern.pending_count > 0 && (
-                          <span
-                            className="text-[9px] font-bold px-2 py-1 rounded-full"
-                            style={{ background: 'rgba(217,119,6,0.12)', color: 'var(--warning)', border: '1px solid rgba(217,119,6,0.25)' }}
-                          >
-                            &#9203; {intern.pending_count} PEND.
-                          </span>
-                        )}
-                        {intern.today_status === 'saiu' && (
-                          <CheckCircle size={16} style={{ color: 'var(--info)' }} />
-                        )}
-                      </div>
-                    </Link>
-                  </StaggerItem>
-                )
-              })}
-            </StaggerContainer>
+                      </Link>
+                    </StaggerItem>
+                  )
+                })}
+              </StaggerContainer>
+            </div>
           ) : (
             <FadeIn>
               <div
-                className="rounded-3xl py-20 text-center"
+                className="flex-1 rounded-3xl flex flex-col items-center justify-center py-10"
                 style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
-                <div className="text-5xl mb-4 float-anim inline-block">&#128100;</div>
+                <div className="text-4xl mb-3 float-anim inline-block">&#128100;</div>
                 <p className="font-bold text-sm mb-1" style={{ color: 'var(--text)' }}>NENHUM ESTAGIARIO CADASTRADO</p>
-                <p className="text-xs mb-5" style={{ color: 'var(--text-3)' }}>Comece adicionando o primeiro estagiario ao sistema.</p>
+                <p className="text-xs mb-4" style={{ color: 'var(--text-3)' }}>Comece adicionando o primeiro estagiario.</p>
                 <Link
                   href="/admin/interns/new"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90"
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold transition-all hover:opacity-90"
                   style={{ background: 'var(--primary)', color: 'white' }}
                 >
                   + ADICIONAR ESTAGIARIO
@@ -249,7 +257,7 @@ export default async function AdminPage() {
           )}
         </div>
 
-      </main>
+      </div>
     </div>
   )
 }
