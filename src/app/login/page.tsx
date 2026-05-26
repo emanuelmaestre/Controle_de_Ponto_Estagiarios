@@ -521,7 +521,7 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative" style={{ background: 'var(--bg)' }}>
+    <div className="flex items-center justify-center p-4 relative" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
       <Suspense fallback={
         <div className="w-full max-w-sm rounded-3xl p-10 text-center" style={{ background: 'var(--surface)' }}>
           <Loader2 size={32} className="animate-spin mx-auto" style={{ color: 'var(--primary)' }} />

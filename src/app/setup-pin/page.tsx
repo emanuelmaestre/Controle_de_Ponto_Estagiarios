@@ -90,7 +90,7 @@ function SetupPinContent() {
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫']
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'var(--bg)' }}>
+    <div className="flex items-center justify-center p-4" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full blur-3xl opacity-30" style={{ background: 'var(--primary)' }} />
         <div className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full blur-3xl opacity-20" style={{ background: 'var(--accent)' }} />
@@ -214,7 +214,7 @@ function SetupPinContent() {
 export default function SetupPinPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-800 flex items-center justify-center">
+      <div className="flex items-center justify-center" style={{ height: '100dvh', background: 'linear-gradient(135deg, #172554, #1e3a8a, #312e81)' }}>
         <div className="w-10 h-10 border-4 border-blue-400 border-t-transparent rounded-full animate-spin" />
       </div>
     }>

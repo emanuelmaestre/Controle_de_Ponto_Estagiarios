@@ -35,20 +35,24 @@ export default async function CheckoutPage({ searchParams }: Props) {
     .limit(20)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-blue-900 text-white px-4 py-4">
-        <h1 className="font-bold text-lg">Registrar Saída</h1>
-        <p className="text-blue-200 text-sm mt-0.5">
-          Entrada às {formatTime(record.clock_in)}
-        </p>
+    <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
+      <header className="flex-shrink-0" style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="max-w-lg mx-auto px-4 py-4">
+          <h1 className="font-bold text-base" style={{ color: 'white' }}>REGISTRAR SAIDA</h1>
+          <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            Entrada as {formatTime(record.clock_in)}
+          </p>
+        </div>
       </header>
 
-      <main className="max-w-lg mx-auto p-4">
-        <CheckoutForm
-          recordId={record.id}
-          clockIn={record.clock_in}
-          favorites={favorites ?? []}
-        />
+      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+        <div className="max-w-lg mx-auto p-4">
+          <CheckoutForm
+            recordId={record.id}
+            clockIn={record.clock_in}
+            favorites={favorites ?? []}
+          />
+        </div>
       </main>
     </div>
   )

@@ -63,14 +63,14 @@ function SetPasswordContent() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-800 flex items-center justify-center">
+      <div className="flex items-center justify-center" style={{ height: '100dvh', background: 'linear-gradient(135deg, #172554, #1e3a8a, #312e81)' }}>
         <div className="w-10 h-10 border-4 border-blue-400 border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-800 flex items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4" style={{ height: '100dvh', overflow: 'hidden', background: 'linear-gradient(135deg, #172554, #1e3a8a, #312e81)' }}>
       {/* Decorative blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl" />
@@ -200,7 +200,7 @@ function SetPasswordContent() {
 export default function SetPasswordPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-800 flex items-center justify-center">
+      <div className="flex items-center justify-center" style={{ height: '100dvh', background: 'linear-gradient(135deg, #172554, #1e3a8a, #312e81)' }}>
         <div className="w-10 h-10 border-4 border-blue-400 border-t-transparent rounded-full animate-spin" />
       </div>
     }>

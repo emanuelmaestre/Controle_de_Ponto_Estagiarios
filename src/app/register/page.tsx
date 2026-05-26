@@ -282,7 +282,7 @@ function RegisterContent() {
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative" style={{ background: 'var(--bg)' }}>
+    <div className="flex items-center justify-center p-4 relative" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
       <Suspense fallback={
         <div className="w-full max-w-sm rounded-3xl shadow-2xl p-10 text-center" style={{ background: 'var(--surface)' }}>
           <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent' }} />
