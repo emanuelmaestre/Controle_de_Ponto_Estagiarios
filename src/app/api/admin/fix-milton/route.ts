@@ -5,22 +5,27 @@ import { createSupabaseServiceClient } from '@/lib/supabase/server'
 export async function GET() {
   const supabaseAdmin = createSupabaseServiceClient()
 
-  // UUID do Milton obtido diretamente do banco
-  const miltonId = 'caf3242d-85ed-4767-9af0-2abf74d9d5ca'
-
-  // Definir senha diretamente pelo ID
-  const { error } = await supabaseAdmin.auth.admin.updateUserById(miltonId, {
-    password: 'Milton157@',
+  // Criar usuário do Milton no auth (com confirmação de email automática)
+  const { data, error } = await supabaseAdmin.auth.admin.createUser({
     email: 'milton@chronoslab.com.br',
+    password: 'Milton157@',
+    email_confirm: true,
   })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    return NextResponse.json({ error: error.message, hint: 'Se já existe, tente o endpoint /fix-milton-update' }, { status: 500 })
+  }
 
-  // Garantir profile como manager ativo
-  await supabaseAdmin
-    .from('profiles')
-    .update({ role: 'manager', is_active: true })
-    .eq('id', miltonId)
+  const userId = data.user.id
 
-  return NextResponse.json({ ok: true, message: 'Senha do Milton redefinida com sucesso!' })
+  // Atualizar (ou criar) profile como manager
+  await supabaseAdmin.from('profiles').upsert({
+    id: userId,
+    full_name: 'Milton',
+    email: 'milton@chronoslab.com.br',
+    role: 'manager',
+    is_active: true,
+  }, { onConflict: 'id' })
+
+  return NextResponse.json({ ok: true, message: 'Milton criado com sucesso!', userId })
 }
