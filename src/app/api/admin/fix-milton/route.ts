@@ -5,22 +5,28 @@ import { createSupabaseServiceClient } from '@/lib/supabase/server'
 export async function GET() {
   const supabaseAdmin = createSupabaseServiceClient()
 
-  // Buscar usuário pelo email
-  const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers()
-  if (listError) return NextResponse.json({ error: listError.message }, { status: 500 })
+  // Buscar usuário pelo email diretamente
+  const { data, error: listError } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 })
+  if (listError) return NextResponse.json({ error: listError.message, detail: 'listUsers failed' }, { status: 500 })
 
-  const milton = users.find(u => u.email === 'milton@chronoslab.com.br')
-  if (!milton) return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
+  const milton = data.users.find((u: { email?: string }) => u.email === 'milton@chronoslab.com.br')
+  if (!milton) {
+    // Tentar criar se não existir
+    const { data: created, error: createError } = await supabaseAdmin.auth.admin.createUser({
+      email: 'milton@chronoslab.com.br',
+      password: 'Milton157@',
+      email_confirm: true,
+    })
+    if (createError) return NextResponse.json({ error: createError.message, detail: 'createUser failed' }, { status: 500 })
+    await supabaseAdmin.from('profiles').upsert({ id: created.user.id, role: 'manager', is_active: true, full_name: 'Milton' })
+    return NextResponse.json({ ok: true, action: 'created', userId: created.user.id })
+  }
 
-  // Definir senha
-  const { error } = await supabaseAdmin.auth.admin.updateUserById(milton.id, {
-    password: 'Milton157@',
-  })
+  // Atualizar senha
+  const { error } = await supabaseAdmin.auth.admin.updateUserById(milton.id, { password: 'Milton157@' })
+  if (error) return NextResponse.json({ error: error.message, detail: 'updateUser failed' }, { status: 500 })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-  // Garantir que o profile está como manager
   await supabaseAdmin.from('profiles').update({ role: 'manager', is_active: true }).eq('id', milton.id)
 
-  return NextResponse.json({ ok: true, userId: milton.id, message: 'Senha redefinida com sucesso!' })
+  return NextResponse.json({ ok: true, action: 'updated', userId: milton.id, email: milton.email })
 }
