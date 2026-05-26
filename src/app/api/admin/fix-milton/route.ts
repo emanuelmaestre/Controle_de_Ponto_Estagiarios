@@ -18,7 +18,7 @@ export async function GET() {
       email_confirm: true,
     })
     if (createError) return NextResponse.json({ error: createError.message, detail: 'createUser failed' }, { status: 500 })
-    await supabaseAdmin.from('profiles').upsert({ id: created.user.id, role: 'manager', is_active: true, full_name: 'Milton' })
+    await supabaseAdmin.from('profiles').upsert({ id: created.user.id, role: 'manager', is_active: true, full_name: 'Milton', email: 'milton@chronoslab.com.br' })
     return NextResponse.json({ ok: true, action: 'created', userId: created.user.id })
   }
 
