@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { getServerUser, getServerProfile } from '@/lib/supabase/cached'
-import { Home, Users, CheckSquare, BarChart2, Settings, MapPin } from 'lucide-react'
+import { Home, Users, CheckSquare, BarChart2, Settings, MapPin, TrendingUp } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 
 export default async function AdminNav({ pending = 0 }: { pending?: number }) {
@@ -14,8 +14,9 @@ export default async function AdminNav({ pending = 0 }: { pending?: number }) {
     { href: '/admin',           label: 'Início',      icon: <Home        size={18} /> },
     { href: '/admin/interns',  label: 'Estagiários', icon: <Users       size={18} /> },
     { href: '/admin/approvals',label: 'Aprovações',  icon: <CheckSquare size={18} />, badge: pending },
-    { href: '/admin/location', label: 'Localização', icon: <MapPin      size={18} /> },
-    { href: '/admin/reports',  label: 'Relatórios',  icon: <BarChart2   size={18} /> },
+    { href: '/admin/location', label: 'Localizacao', icon: <MapPin      size={18} /> },
+    { href: '/admin/workload', label: 'Carga H.',    icon: <TrendingUp  size={18} /> },
+    { href: '/admin/reports',  label: 'Relatorios',  icon: <BarChart2   size={18} /> },
     { href: '/admin/settings', label: 'Config',      icon: <Settings    size={18} /> },
   ]
 

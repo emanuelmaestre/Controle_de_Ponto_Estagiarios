@@ -29,6 +29,7 @@ export type Database = {
           role: 'intern' | 'manager'
           is_active: boolean
           created_at: string
+          total_hours_required: number | null
         }
         Insert: {
           id: string
@@ -43,6 +44,7 @@ export type Database = {
           role?: 'intern' | 'manager'
           is_active?: boolean
           created_at?: string
+          total_hours_required?: number | null
         }
         Update: {
           full_name?: string
@@ -54,6 +56,34 @@ export type Database = {
           internship_end?: string | null
           pin?: string | null
           role?: 'intern' | 'manager'
+          is_active?: boolean
+          total_hours_required?: number | null
+        }
+        Relationships: []
+      }
+      intern_schedules: {
+        Row: {
+          id: string
+          intern_id: string
+          day_of_week: number
+          expected_start: string
+          expected_end: string
+          expected_hours: number | null
+          is_active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          intern_id: string
+          day_of_week: number
+          expected_start: string
+          expected_end: string
+          is_active?: boolean
+          created_at?: string
+        }
+        Update: {
+          expected_start?: string
+          expected_end?: string
           is_active?: boolean
         }
         Relationships: []
@@ -368,6 +398,7 @@ export type FavoriteActivity = Database['public']['Tables']['favorite_activities
 export type PushSubscription = Database['public']['Tables']['push_subscriptions']['Row']
 export type Notification = Database['public']['Tables']['notifications']['Row']
 export type Settings = Database['public']['Tables']['settings']['Row']
+export type InternSchedule = Database['public']['Tables']['intern_schedules']['Row']
 
 export type TodayStatus = Database['public']['Tables']['v_today_status']['Row']
 export type MonthlyHours = Database['public']['Tables']['v_monthly_hours']['Row']
