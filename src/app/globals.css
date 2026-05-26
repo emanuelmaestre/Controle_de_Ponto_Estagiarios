@@ -156,6 +156,26 @@ body {
   font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Sistema em maiúsculas — identidade visual ChronosLab */
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+/* Exceções — senhas e elementos técnicos preservam case */
+input[type="password"],
+input[type="email"],
+input[type="url"],
+code, pre,
+.preserve-case {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+/* Emails exibidos como texto (não input) também preservam */
+[data-email],
+.email-display {
+  text-transform: none !important;
+  letter-spacing: normal !important;
 }
 
 /* ══════════════════════════════════════════════════════
