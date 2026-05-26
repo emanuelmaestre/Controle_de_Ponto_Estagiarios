@@ -144,14 +144,14 @@ export default function ReportsClient() {
 
       {/* Header */}
       <header className="bg-white border-b border-slate-200 no-print">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-4">
-            <a href="/admin" className="text-slate-400 hover:text-slate-600 text-sm font-medium transition-colors">← Painel</a>
-            <div className="w-px h-5 bg-slate-200" />
-            <div>
-              <h1 className="font-bold text-slate-800 text-lg leading-tight">Relatórios</h1>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <a href="/admin" className="text-slate-400 hover:text-slate-600 text-sm font-medium transition-colors flex-shrink-0">← <span className="hidden sm:inline">Painel</span></a>
+            <div className="w-px h-5 bg-slate-200 hidden sm:block" />
+            <div className="min-w-0">
+              <h1 className="font-bold text-slate-800 text-base sm:text-lg leading-tight">Relatórios</h1>
               {data && applied && (
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-400 mt-0.5 truncate">
                   {periodTypeLabels[data.type]} · {data.label}
                 </p>
               )}
@@ -165,21 +165,21 @@ export default function ReportsClient() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 pb-24 md:pb-6 space-y-4 sm:space-y-6">
 
         {/* ── Painel de Filtros ── */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 no-print">
-          <h2 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 no-print">
+          <h2 className="text-sm font-bold text-slate-700 mb-3 sm:mb-4 flex items-center gap-2">
             <span className="text-base">🔍</span> Filtrar por período
           </h2>
 
           {/* Tipo de período */}
-          <div className="flex flex-wrap gap-2 mb-5">
+          <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-5">
             {(['daily', 'weekly', 'monthly', 'custom'] as PeriodType[]).map(t => (
               <button
                 key={t}
                 onClick={() => setPeriodType(t)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all border ${
+                className={`px-2 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border text-center ${
                   periodType === t
                     ? 'bg-blue-700 text-white border-blue-700 shadow-sm'
                     : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-700'
@@ -191,7 +191,7 @@ export default function ReportsClient() {
           </div>
 
           {/* Campos dinâmicos */}
-          <div className="flex flex-wrap items-end gap-4">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-3 sm:gap-4">
             {periodType === 'daily' && (
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Data</label>
@@ -261,7 +261,7 @@ export default function ReportsClient() {
             )}
 
             {/* Botões */}
-            <div className="flex gap-2 ml-auto">
+            <div className="flex gap-2 sm:ml-auto w-full sm:w-auto">
               {applied && (
                 <button
                   onClick={handleClear}
@@ -296,16 +296,16 @@ export default function ReportsClient() {
 
         {/* ── Skeleton / Loading ── */}
         {loading && !data && (
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-slate-100 p-4 animate-pulse h-24" />
+              <div key={i} className="bg-white rounded-2xl border border-slate-100 p-4 animate-pulse h-20 sm:h-24" />
             ))}
           </div>
         )}
 
         {/* ── Cards de resumo ── */}
         {data && !loading && (
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <SummaryCard label="Total de horas" value={minutesToHours(totalMinutes)} color="blue" icon="⏱️" />
             <SummaryCard label="Sessões" value={totalSessions} color="gray" icon="📋" />
             <SummaryCard label="Aprovadas" value={totalApproved} color="green" icon="✅" />
@@ -415,11 +415,11 @@ function SummaryCard({ label, value, color, icon }: {
     gray:  'text-slate-700 bg-white border-slate-100',
   }
   return (
-    <div className={`rounded-2xl border p-4 shadow-sm ${colors[color]}`}>
-      <p className="text-xs font-semibold uppercase tracking-wide opacity-70 flex items-center gap-1">
+    <div className={`rounded-2xl border p-3 sm:p-4 shadow-sm ${colors[color]}`}>
+      <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide opacity-70 flex items-center gap-1">
         <span>{icon}</span> {label}
       </p>
-      <p className="text-2xl font-bold mt-2">{value}</p>
+      <p className="text-xl sm:text-2xl font-bold mt-1 sm:mt-2">{value}</p>
     </div>
   )
 }

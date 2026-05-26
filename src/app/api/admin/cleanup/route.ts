@@ -5,31 +5,32 @@ export async function GET() {
   const supabaseAdmin = createSupabaseServiceClient()
   const results: string[] = []
 
-  // 1. Limpar registros de ponto e atividades
+  // Limpar registros
   await supabaseAdmin.from('activities').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   results.push('activities cleared')
-
   await supabaseAdmin.from('time_records').delete().neq('id', '00000000-0000-0000-0000-000000000000')
   results.push('time_records cleared')
 
-  // 2. Buscar os 2 usuários de teste para remover
-  const emails = ['seuemail@exemplo.com', 'emanuelmaestree@gmail.com']
+  // Buscar TODOS profiles que NÃO são admin (manager) para listar
+  const { data: profiles } = await supabaseAdmin
+    .from('profiles')
+    .select('id, email, role, full_name')
 
-  for (const email of emails) {
-    const { data: profile } = await supabaseAdmin
-      .from('profiles')
-      .select('id')
-      .eq('email', email)
-      .maybeSingle()
+  // Deletar profiles de teste (sem nome ou com email genérico)
+  const testEmails = ['seuemail@exemplo.com', 'emanuelmaestree@gmail.com']
 
-    if (profile) {
-      // Remover profile
-      await supabaseAdmin.from('profiles').delete().eq('id', profile.id)
-      // Remover do auth
-      await supabaseAdmin.auth.admin.deleteUser(profile.id)
-      results.push(`deleted: ${email}`)
+  for (const p of profiles ?? []) {
+    const emailLower = (p.email ?? '').toLowerCase()
+    const isTest = testEmails.includes(emailLower) ||
+                   emailLower.includes('exemplo.com') ||
+                   (!p.full_name && p.role === 'intern')
+
+    if (isTest) {
+      await supabaseAdmin.from('profiles').delete().eq('id', p.id)
+      await supabaseAdmin.auth.admin.deleteUser(p.id)
+      results.push(`deleted: ${p.email} (${p.full_name || 'sem nome'})`)
     } else {
-      results.push(`not found: ${email}`)
+      results.push(`kept: ${p.email} (${p.role})`)
     }
   }
 
