@@ -31,14 +31,14 @@ export function ScaleIn({ children, delay = 0, className = '' }: { children: Rea
   )
 }
 
-export function StaggerContainer({ children, className = '', stagger = 0.07 }: { children: ReactNode; className?: string; stagger?: number }) {
+export function StaggerContainer({ children, className = '', stagger = 0.045 }: { children: ReactNode; className?: string; stagger?: number }) {
   return (
     <motion.div
       initial="hidden"
       animate="visible"
       variants={{
         hidden: {},
-        visible: { transition: { staggerChildren: stagger, delayChildren: 0.04 } },
+        visible: { transition: { staggerChildren: stagger, delayChildren: 0.02 } },
       }}
       className={className}
     >
@@ -51,8 +51,8 @@ export function StaggerItem({ children, className = '' }: { children: ReactNode;
   return (
     <motion.div
       variants={{
-        hidden:  { opacity: 0, y: 14, scale: 0.98 },
-        visible: { opacity: 1, y: 0,  scale: 1,    transition: { duration: 0.36, ease } },
+        hidden:  { opacity: 0, y: 10, scale: 0.98 },
+        visible: { opacity: 1, y: 0,  scale: 1,    transition: { duration: 0.22, ease } },
       }}
       className={className}
     >

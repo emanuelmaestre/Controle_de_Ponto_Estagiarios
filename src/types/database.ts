@@ -71,6 +71,13 @@ export type Database = {
           approved_by: string | null
           approved_at: string | null
           created_at: string
+          // Geolocation fields (added via migration)
+          geo_lat: number | null
+          geo_lng: number | null
+          geo_accuracy: number | null
+          geo_distance: number | null
+          geo_status: string | null
+          geo_blocked: boolean | null
         }
         Insert: {
           id?: string
@@ -83,6 +90,12 @@ export type Database = {
           approved_by?: string | null
           approved_at?: string | null
           created_at?: string
+          geo_lat?: number | null
+          geo_lng?: number | null
+          geo_accuracy?: number | null
+          geo_distance?: number | null
+          geo_status?: string | null
+          geo_blocked?: boolean | null
         }
         Update: {
           clock_out?: string | null
@@ -91,6 +104,49 @@ export type Database = {
           rejection_reason?: string | null
           approved_by?: string | null
           approved_at?: string | null
+          geo_lat?: number | null
+          geo_lng?: number | null
+          geo_accuracy?: number | null
+          geo_distance?: number | null
+          geo_status?: string | null
+          geo_blocked?: boolean | null
+        }
+        Relationships: []
+      }
+      location_attempts: {
+        Row: {
+          id: string
+          user_id: string
+          user_name: string | null
+          attempted_at: string
+          action_type: string
+          geo_lat: number | null
+          geo_lng: number | null
+          geo_accuracy: number | null
+          geo_distance: number | null
+          geo_status: string
+          block_reason: string | null
+          user_agent: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          user_name?: string | null
+          attempted_at?: string
+          action_type?: string
+          geo_lat?: number | null
+          geo_lng?: number | null
+          geo_accuracy?: number | null
+          geo_distance?: number | null
+          geo_status: string
+          block_reason?: string | null
+          user_agent?: string | null
+          created_at?: string
+        }
+        Update: {
+          geo_status?: string
+          block_reason?: string | null
         }
         Relationships: []
       }
@@ -202,6 +258,11 @@ export type Database = {
           lab_name: string
           report_email: string | null
           updated_at: string
+          // Geolocation settings (added via migration)
+          geo_enabled: boolean | null
+          geo_lat: number | null
+          geo_lng: number | null
+          geo_radius_meters: number | null
         }
         Insert: {
           id?: string
@@ -211,6 +272,10 @@ export type Database = {
           lab_name?: string
           report_email?: string | null
           updated_at?: string
+          geo_enabled?: boolean | null
+          geo_lat?: number | null
+          geo_lng?: number | null
+          geo_radius_meters?: number | null
         }
         Update: {
           reminder_in_time?: string
@@ -218,6 +283,10 @@ export type Database = {
           expected_daily_hours?: number
           lab_name?: string
           report_email?: string | null
+          geo_enabled?: boolean | null
+          geo_lat?: number | null
+          geo_lng?: number | null
+          geo_radius_meters?: number | null
         }
         Relationships: []
       }

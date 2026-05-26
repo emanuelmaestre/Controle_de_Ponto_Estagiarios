@@ -1,11 +1,15 @@
-﻿import { redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Settings } from '@/types/database'
 import SettingsForm from './SettingsForm'
 import ChangePinForm from './ChangePinForm'
+import GeoSettings from './GeoSettings'
 import AdminNav from '@/components/AdminNav'
 import { FadeIn } from '@/components/ui/MotionWrappers'
+import { MapPin } from 'lucide-react'
+
+export const dynamic = 'force-dynamic'
 
 export default async function SettingsPage() {
   const supabase = await createSupabaseServerClient()
@@ -16,41 +20,85 @@ export default async function SettingsPage() {
     .from('settings')
     .select('*')
     .single()
-  const settings = settingsRaw as Settings | null
+  const settings = settingsRaw as (Settings & {
+    geo_enabled?: boolean
+    geo_lat?: number
+    geo_lng?: number
+    geo_radius_meters?: number
+  }) | null
+
+  const geoConfig = settings ? {
+    id: settings.id,
+    geo_enabled: settings.geo_enabled ?? false,
+    geo_lat: settings.geo_lat ?? -17.485672,
+    geo_lng: settings.geo_lng ?? -48.2130547,
+    geo_radius_meters: settings.geo_radius_meters ?? 150,
+  } : null
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--bg)" }}>
+    <div className="min-h-screen pb-24 md:pb-8" style={{ background: 'var(--bg)' }}>
       <AdminNav />
 
       {/* Page header */}
-      <div className="bg-white border-b border-slate-100 shadow-sm">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex items-center gap-2 sm:gap-4">
-          <Link href="/admin" className="text-slate-400 hover:text-slate-600 text-sm transition-colors flex-shrink-0">
-            â†<span className="hidden sm:inline"> Painel</span>
+      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
+          <Link href="/admin" className="text-sm transition-colors hover:opacity-70" style={{ color: 'var(--text-3)' }}>
+            ← Painel
           </Link>
           <div>
-            <h1 className="font-bold text-slate-800 text-lg sm:text-xl">ConfiguraÃ§Ãµes</h1>
-            <p className="text-slate-400 text-xs">Ajustes do sistema</p>
+            <h1 className="font-bold text-lg" style={{ color: 'var(--text)' }}>Configurações</h1>
+            <p className="text-xs" style={{ color: 'var(--text-3)' }}>Ajustes do sistema</p>
           </div>
         </div>
       </div>
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 md:pb-8 space-y-6">
-        {/* ConfiguraÃ§Ãµes gerais */}
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        {/* Configurações gerais */}
         <FadeIn delay={0}>
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 sm:p-6">
-            <h2 className="font-semibold text-slate-800 mb-1">ConfiguraÃ§Ãµes do laboratÃ³rio</h2>
-            <p className="text-sm text-slate-400 mb-5">HorÃ¡rios de lembrete, horas esperadas e e-mail de relatÃ³rio.</p>
+          <div
+            className="rounded-2xl p-5 sm:p-6"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+          >
+            <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>
+              Configurações do laboratório
+            </h2>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
+              Horários de lembrete, horas esperadas e e-mail de relatório.
+            </p>
             <SettingsForm settings={settings} />
           </div>
         </FadeIn>
 
+        {/* Geolocalização */}
+        <FadeIn delay={0.08}>
+          <div
+            className="rounded-2xl p-5 sm:p-6"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <MapPin size={16} style={{ color: 'var(--primary)' }} />
+              <h2 className="font-semibold" style={{ color: 'var(--text)' }}>
+                Controle de localização
+              </h2>
+            </div>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
+              Exige que os estagiários estejam fisicamente no laboratório para registrar o ponto.
+            </p>
+            <GeoSettings config={geoConfig} />
+          </div>
+        </FadeIn>
+
         {/* Alterar PIN */}
-        <FadeIn delay={0.1}>
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 sm:p-6">
-            <h2 className="font-semibold text-slate-800 mb-1">Seu PIN de acesso rÃ¡pido</h2>
-            <p className="text-sm text-slate-400 mb-5">
-              O PIN permite que vocÃª entre no sistema sem digitar e-mail e senha.
+        <FadeIn delay={0.16}>
+          <div
+            className="rounded-2xl p-5 sm:p-6"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+          >
+            <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>
+              Seu PIN de acesso rápido
+            </h2>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
+              O PIN permite que você entre no sistema sem digitar e-mail e senha.
             </p>
             <ChangePinForm userId={user.id} />
           </div>
@@ -59,4 +107,3 @@ export default async function SettingsPage() {
     </div>
   )
 }
-

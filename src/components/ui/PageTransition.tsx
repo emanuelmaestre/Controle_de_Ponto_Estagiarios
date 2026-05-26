@@ -5,22 +5,22 @@ import { motion } from 'framer-motion'
 const ease = [0.16, 1, 0.3, 1] as const
 
 const variants = {
-  hidden:  { opacity: 0, y: 18, scale: 0.99 },
+  hidden:  { opacity: 0, y: 8, scale: 0.995 },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
     transition: {
-      duration: 0.38,
+      duration: 0.2,
       ease,
-      staggerChildren: 0.06,
+      staggerChildren: 0.04,
     },
   },
   exit: {
     opacity: 0,
-    y: -10,
-    scale: 0.99,
-    transition: { duration: 0.22, ease: 'easeIn' as const },
+    y: -4,
+    scale: 0.995,
+    transition: { duration: 0.14, ease: 'easeIn' as const },
   },
 }
 
