@@ -1,37 +1,60 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { ThemeProvider } from '@/components/ThemeProvider'
+import { Toaster } from 'sonner'
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'Controle de Ponto — Estagiários',
-  description: 'Sistema de controle de ponto para estagiários do laboratório',
+  title: 'ChronosLab — Controle de Ponto',
+  description: 'Sistema de controle de ponto para estagiários do laboratório ChronosLab',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Ponto Estagiários',
+    title: 'ChronosLab',
   },
 }
 
 export const viewport: Viewport = {
-  themeColor: '#1F4E79',
+  themeColor: '#1e5c2d',
   width: 'device-width',
   initialScale: 1,
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className="h-full antialiased">
-      <body className={`${inter.className} min-h-full`}>
-        <ServiceWorkerRegister />
-        {children}
+    <html lang="pt-BR" className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const t = localStorage.getItem('cl-theme');
+                if (t) document.documentElement.setAttribute('data-theme', t);
+              } catch(e) {}
+            `,
+          }}
+        />
+      </head>
+      <body className={`${inter.variable} font-sans min-h-full`}>
+        <ThemeProvider>
+          {children}
+          <Toaster
+            richColors
+            position="top-right"
+            toastOptions={{
+              style: {
+                background: 'var(--surface)',
+                color: 'var(--text)',
+                border: '1px solid var(--border)',
+              },
+            }}
+          />
+          <ServiceWorkerRegister />
+        </ThemeProvider>
       </body>
     </html>
   )
