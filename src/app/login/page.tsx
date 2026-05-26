@@ -178,10 +178,10 @@ function LoginContent() {
             initial={{ scale: 0, rotate: -10 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ duration: 0.5, delay: 0.15, type: 'spring', stiffness: 220 }}
-            className="float-anim w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center relative"
-            style={{ background: 'rgba(255,255,255,0.12)' }}
+            className="float-anim mx-auto mb-4"
+            style={{ width: 200, height: 56 }}
           >
-            <Image src="/logo.svg" alt="ChronosLab" width={56} height={56} className="object-contain" />
+            <Image src="/logo.svg" alt="ChronosLab" width={200} height={56} className="object-contain" />
           </motion.div>
 
           <motion.div
@@ -189,7 +189,6 @@ function LoginContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <h1 className="text-white font-bold text-xl tracking-tight">ChronosLab</h1>
             <p className="text-sm mt-1" style={{ color: 'var(--nav-muted)' }}>
               Controle de Ponto — acesso seguro
             </p>
