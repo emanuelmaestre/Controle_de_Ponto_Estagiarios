@@ -9,6 +9,7 @@ import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/MotionWrappers'
 import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, AlertTriangle, CheckCircle } from 'lucide-react'
 import ThemeToggle from '@/components/ThemeToggle'
+import LiveClock from '@/components/ui/LiveClock'
 import type { RecordStatus } from '@/types/database'
 
 export const dynamic = 'force-dynamic'
@@ -127,18 +128,22 @@ export default async function DashboardPage() {
   const dateStr = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
+    <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
 
       {/* ── Header ─────────────────────────────────────── */}
-      <header className="shadow-lg" style={{ background: 'var(--nav-bg)' }}>
-        <div className="max-w-lg mx-auto px-5 py-4 flex items-center justify-between">
+      <header className="flex-shrink-0 shadow-lg" style={{ background: 'var(--nav-bg)' }}>
+        <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative w-8 h-8 flex-shrink-0">
               <Image src="/logo.svg" alt="ChronosLab" fill className="object-contain" />
             </div>
             <div>
               <p className="text-[10px] font-bold" style={{ color: 'var(--nav-muted)' }}>{greeting}, {firstName}</p>
-              <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{weekDay}, {dateStr}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{weekDay}, {dateStr}</p>
+                <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
+                <LiveClock className="text-[10px] font-bold tabular-nums" style={{ color: 'rgba(255,255,255,0.55)' }} />
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -155,7 +160,7 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-lg mx-auto w-full px-4 py-5 space-y-4 pb-24">
+      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-lg mx-auto w-full px-4 py-4 space-y-3 pb-4">
 
         {/* ── Hero: Anel de progresso ─────────────────── */}
         <FadeIn delay={0}>
@@ -374,11 +379,11 @@ export default async function DashboardPage() {
           </FadeIn>
         )}
 
-      </main>
+      </div></main>
 
       {/* ── Bottom nav ──────────────────────────────────── */}
       <nav
-        className="fixed bottom-0 left-0 right-0 border-t"
+        className="flex-shrink-0 border-t"
         style={{ background: 'var(--surface)', borderColor: 'var(--border)', boxShadow: '0 -4px 20px rgba(0,0,0,0.08)' }}
       >
         <div className="max-w-lg mx-auto flex">

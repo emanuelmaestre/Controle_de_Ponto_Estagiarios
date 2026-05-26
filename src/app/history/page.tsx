@@ -63,8 +63,8 @@ export default async function HistoryPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
-      <header className="shadow-lg" style={{ background: 'var(--nav-bg)' }}>
+    <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
+      <header className="flex-shrink-0 shadow-lg" style={{ background: 'var(--nav-bg)' }}>
         <div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-4">
           <Link href="/dashboard" className="text-sm font-bold hover:opacity-70" style={{ color: 'var(--nav-muted)' }}>
             &larr;
@@ -76,7 +76,7 @@ export default async function HistoryPage() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-5 space-y-4 pb-24">
+      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-2xl mx-auto w-full px-4 py-4 space-y-3 pb-4">
         <FadeIn>
           <div className="rounded-3xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow-md)' }}>
             <p className="text-[10px] font-bold mb-4" style={{ color: 'var(--text-3)' }}>RESUMO DO MES ATUAL</p>
@@ -159,9 +159,9 @@ export default async function HistoryPage() {
             </div>
           </FadeIn>
         )}
-      </main>
+      </div></main>
 
-      <nav className="fixed bottom-0 left-0 right-0 border-t" style={{ background: 'var(--surface)', borderColor: 'var(--border)', boxShadow: '0 -4px 20px rgba(0,0,0,0.08)' }}>
+      <nav className="flex-shrink-0 border-t" style={{ background: 'var(--surface)', borderColor: 'var(--border)', boxShadow: '0 -4px 20px rgba(0,0,0,0.08)' }}>
         <div className="max-w-lg mx-auto flex">
           <Link href="/dashboard" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
             <Home size={18} />

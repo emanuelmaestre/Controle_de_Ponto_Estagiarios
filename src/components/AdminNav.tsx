@@ -11,13 +11,13 @@ export default async function AdminNav({ pending = 0 }: { pending?: number }) {
     : { data: null }
 
   const navItems = [
-    { href: '/admin',           label: 'Início',      icon: <Home        size={18} /> },
-    { href: '/admin/interns',  label: 'Estagiários', icon: <Users       size={18} /> },
-    { href: '/admin/approvals',label: 'Aprovações',  icon: <CheckSquare size={18} />, badge: pending },
-    { href: '/admin/location', label: 'Localizacao', icon: <MapPin      size={18} /> },
-    { href: '/admin/workload', label: 'Carga H.',    icon: <TrendingUp  size={18} /> },
-    { href: '/admin/reports',  label: 'Relatorios',  icon: <BarChart2   size={18} /> },
-    { href: '/admin/settings', label: 'Config',      icon: <Settings    size={18} /> },
+    { href: '/admin',            label: 'INICIO',      icon: <Home        size={15} /> },
+    { href: '/admin/interns',   label: 'ESTAGIARIOS', icon: <Users       size={15} /> },
+    { href: '/admin/approvals', label: 'APROVACOES',  icon: <CheckSquare size={15} />, badge: pending },
+    { href: '/admin/location',  label: 'LOCAL',       icon: <MapPin      size={15} /> },
+    { href: '/admin/workload',  label: 'CARGA',       icon: <TrendingUp  size={15} /> },
+    { href: '/admin/reports',   label: 'RELATORIOS',  icon: <BarChart2   size={15} /> },
+    { href: '/admin/settings',  label: 'CONFIG',      icon: <Settings    size={15} /> },
   ]
 
   const initials = profile?.full_name
@@ -28,39 +28,42 @@ export default async function AdminNav({ pending = 0 }: { pending?: number }) {
     <>
       {/* ── Desktop header ─────────────────────────────── */}
       <header
-        className="sticky top-0 z-50 shadow-lg border-b"
+        className="sticky top-0 z-50 shadow-md border-b"
         style={{ background: 'var(--nav-bg)', borderColor: 'rgba(255,255,255,0.08)' }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        <div className="w-full px-4 sm:px-6 h-14 flex items-center gap-3">
 
-          {/* Logo */}
-          <Link href="/admin" className="flex items-center flex-shrink-0 group">
-            <div className="relative h-11 w-[200px]">
-              <Image src="/logo.svg" alt="ChronosLab" fill className="object-contain object-left" />
+          {/* Logo — fixed width, compact */}
+          <Link href="/admin" className="flex items-center gap-2.5 flex-shrink-0" style={{ minWidth: 140 }}>
+            <div className="relative h-9 w-9 flex-shrink-0">
+              <Image src="/logo.svg" alt="ChronosLab" fill className="object-contain" />
             </div>
-            <div className="hidden lg:flex flex-col ml-3 pl-3 border-l" style={{ borderColor: 'rgba(255,255,255,0.15)' }}>
-              <p className="text-[10px] font-bold uppercase tracking-widest leading-none" style={{ color: 'var(--nav-muted)' }}>
-                Controle de Ponto
+            <div className="hidden sm:flex flex-col">
+              <p className="text-[11px] font-black leading-none tracking-wide" style={{ color: 'white' }}>
+                CHRONOS<span style={{ color: 'var(--primary-fg, #4ade80)' }}> LAB</span>
               </p>
-              <p className="text-[9px] leading-none mt-0.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
-                IFGoiano — Campus Urutaí
+              <p className="text-[9px] leading-none mt-0.5 whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                CONTROLE DE PONTO
               </p>
             </div>
           </Link>
 
-          {/* Nav desktop */}
-          <nav className="hidden md:flex items-center gap-1">
+          {/* Divider */}
+          <div className="hidden sm:block w-px h-7 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.12)' }} />
+
+          {/* Nav — takes remaining space, centered */}
+          <nav className="hidden md:flex items-center gap-0.5 flex-1">
             {navItems.map(item => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="nav-link relative flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-150"
+                className="nav-link relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all duration-150 whitespace-nowrap tracking-wide"
               >
-                <span>{item.icon}</span>
+                <span className="flex-shrink-0">{item.icon}</span>
                 <span>{item.label}</span>
                 {(item.badge ?? 0) > 0 && (
                   <span
-                    className="absolute -top-1 -right-1 w-4 h-4 text-[10px] font-black rounded-full flex items-center justify-center"
+                    className="absolute -top-1 -right-1 w-4 h-4 text-[9px] font-black rounded-full flex items-center justify-center"
                     style={{ background: 'var(--accent)', color: 'var(--accent-fg)' }}
                   >
                     {item.badge}
@@ -70,35 +73,39 @@ export default async function AdminNav({ pending = 0 }: { pending?: number }) {
             ))}
           </nav>
 
-          {/* Right side */}
-          <div className="flex items-center gap-2">
+          {/* Right side — fixed, never shrinks */}
+          <div className="flex items-center gap-2 ml-auto flex-shrink-0">
             <ThemeToggle compact />
 
-            <div
-              className="hidden lg:flex items-center gap-2.5 pl-3 border-l"
-              style={{ borderColor: 'rgba(255,255,255,0.12)' }}
-            >
+            <div className="w-px h-6 flex-shrink-0" style={{ background: 'rgba(255,255,255,0.12)' }} />
+
+            {/* User chip */}
+            <div className="flex items-center gap-2">
               <div
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
-                style={{ background: 'var(--primary)', color: 'var(--primary-fg)' }}
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-[11px] font-black flex-shrink-0"
+                style={{ background: 'var(--primary)', color: 'white', minWidth: 32 }}
+                title={profile?.full_name ?? 'Gerente'}
               >
                 {initials}
               </div>
-              <span className="text-xs font-medium truncate max-w-[120px]" style={{ color: 'var(--nav-muted)' }}>
-                {profile?.full_name ?? 'Gerente'}
-              </span>
+              <div className="hidden lg:flex flex-col" style={{ maxWidth: 100 }}>
+                <span className="text-[10px] font-bold leading-none truncate" style={{ color: 'white' }}>
+                  {profile?.full_name?.split(' ')[0] ?? 'Gerente'}
+                </span>
+                <span className="text-[9px] leading-none mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>ADMIN</span>
+              </div>
             </div>
 
             <form action="/api/auth/signout" method="POST">
               <button
-                className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all hover:opacity-90"
+                className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg border transition-all hover:opacity-80 flex-shrink-0"
                 style={{
-                  color: 'var(--nav-muted)',
+                  color: 'rgba(255,255,255,0.6)',
                   borderColor: 'rgba(255,255,255,0.15)',
-                  background: 'rgba(255,255,255,0.05)',
+                  background: 'rgba(255,255,255,0.06)',
                 }}
               >
-                Sair
+                SAIR
               </button>
             </form>
           </div>

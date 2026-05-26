@@ -139,11 +139,11 @@ export default function ReportsClient() {
   }
 
   return (
-    <div className="min-h-screen pb-24 md:pb-6" style={{ background: 'var(--bg)' }}>
+    <div className="flex flex-col flex-1 min-h-0" style={{ background: 'var(--bg)' }}>
       <style>{`@media print { .no-print { display: none !important; } body { background: white !important; } }`}</style>
 
-      {/* Header */}
-      <header className="no-print" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+      {/* Sub-header */}
+      <div className="no-print flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <a
@@ -151,14 +151,14 @@ export default function ReportsClient() {
               className="text-sm font-medium transition-colors flex-shrink-0 hover:opacity-70"
               style={{ color: 'var(--text-3)' }}
             >
-              &larr; <span className="hidden sm:inline">Painel</span>
+              &larr; PAINEL
             </a>
             <div className="w-px h-5 hidden sm:block" style={{ background: 'var(--border)' }} />
             <div className="min-w-0">
-              <h1 className="font-bold text-base sm:text-lg leading-tight" style={{ color: 'var(--text)' }}>Relatorios</h1>
+              <h1 className="font-bold text-base sm:text-lg leading-tight" style={{ color: 'var(--text)' }}>RELATORIOS</h1>
               {data && applied && (
                 <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-3)' }}>
-                  {periodTypeLabels[data.type]} &middot; {data.label}
+                  {periodTypeLabels[data.type].toUpperCase()} &middot; {data.label}
                 </p>
               )}
             </div>
@@ -169,9 +169,9 @@ export default function ReportsClient() {
             disabled={!data || data.interns.length === 0}
           />
         </div>
-      </header>
+      </div>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
+      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
 
         {/* Filtros */}
         <div
@@ -286,7 +286,7 @@ export default function ReportsClient() {
               >
                 {loading ? (
                   <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" /> Carregando...</>
-                ) : '&#128270; Aplicar filtro'}
+                ) : <><span>🔍</span> Aplicar filtro</>}
               </button>
             </div>
           </div>
@@ -414,7 +414,7 @@ export default function ReportsClient() {
             <p className="text-sm mt-1">Configure o filtro acima e clique em Aplicar filtro.</p>
           </div>
         )}
-      </main>
+      </div></main>
     </div>
   )
 }
