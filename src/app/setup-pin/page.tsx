@@ -90,20 +90,21 @@ function SetupPinContent() {
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫']
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-800 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'var(--bg)' }}>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl" />
+        <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full blur-3xl opacity-30" style={{ background: 'var(--primary)' }} />
+        <div className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full blur-3xl opacity-20" style={{ background: 'var(--accent)' }} />
       </div>
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="relative w-full max-w-sm bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 shadow-2xl overflow-hidden"
+        className="relative w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
       >
         {/* Header */}
-        <div className="bg-gradient-to-br from-blue-900/90 to-blue-700/90 px-8 py-7 text-center">
+        <div className="px-8 py-7 text-center" style={{ background: 'var(--nav-bg)' }}>
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}

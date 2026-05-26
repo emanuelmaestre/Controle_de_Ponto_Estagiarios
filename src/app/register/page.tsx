@@ -112,18 +112,19 @@ function RegisterContent() {
   return (
     <div className="w-full max-w-sm">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl" />
+        <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full blur-3xl opacity-30" style={{ background: 'var(--primary)' }} />
+        <div className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full blur-3xl opacity-20" style={{ background: 'var(--accent)' }} />
       </div>
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="relative glass rounded-3xl overflow-hidden shadow-2xl border border-white/30"
+        className="relative rounded-3xl overflow-hidden shadow-2xl"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
       >
         {/* Header */}
-        <div className="bg-gradient-to-br from-blue-900/90 to-blue-700/90 px-8 py-6 text-center">
+        <div className="px-8 py-6 text-center" style={{ background: 'var(--nav-bg)' }}>
           <motion.div
             initial={{ scale: 0, rotate: -10 }}
             animate={{ scale: 1, rotate: 0 }}
@@ -281,11 +282,10 @@ function RegisterContent() {
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-800 flex items-center justify-center p-4 relative">
+    <div className="min-h-screen flex items-center justify-center p-4 relative" style={{ background: 'var(--bg)' }}>
       <Suspense fallback={
-        <div className="w-full max-w-sm glass rounded-3xl shadow-2xl p-10 text-center">
-          <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-blue-200 text-sm mt-4">Carregando...</p>
+        <div className="w-full max-w-sm rounded-3xl shadow-2xl p-10 text-center" style={{ background: 'var(--surface)' }}>
+          <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderColor: 'var(--primary)', borderTopColor: 'transparent' }} />
         </div>
       }>
         <RegisterContent />

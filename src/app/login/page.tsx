@@ -4,19 +4,99 @@ import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useAnimation } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Eye, EyeOff, Mail, Lock, Hash, AlertCircle, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, AlertCircle, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react'
+import { toast } from 'sonner'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { loginSchema, type LoginInput } from '@/lib/validations'
 import ThemeToggle from '@/components/ThemeToggle'
 
+/* ── Shake hook ──────────────────────────────────────── */
+function useShake() {
+  const controls = useAnimation()
+  const shake = async () => {
+    await controls.start({
+      x: [0, -10, 10, -8, 8, -5, 5, 0],
+      transition: { duration: 0.45, ease: 'easeInOut' },
+    })
+  }
+  return { controls, shake }
+}
+
+/* ── Success overlay ─────────────────────────────────── */
+function SuccessOverlay({ name }: { name: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-3xl"
+      style={{ background: 'var(--nav-bg)' }}
+    >
+      {/* Ripple rings */}
+      {[0, 1, 2].map(i => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full border-2"
+          style={{ borderColor: 'var(--primary-light)', opacity: 0 }}
+          animate={{ scale: [0.6, 2.2], opacity: [0.6, 0] }}
+          transition={{ duration: 1.4, delay: i * 0.25, repeat: Infinity, ease: 'easeOut' }}
+        />
+      ))}
+
+      {/* Check icon */}
+      <motion.div
+        initial={{ scale: 0, rotate: -30 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.1 }}
+        className="w-20 h-20 rounded-full flex items-center justify-center mb-5 relative"
+        style={{ background: 'rgba(255,255,255,0.08)' }}
+      >
+        <motion.div
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+        >
+          <CheckCircle2 size={44} style={{ color: 'var(--primary-light)' }} strokeWidth={1.5} />
+        </motion.div>
+      </motion.div>
+
+      <motion.p
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="font-bold text-lg text-white"
+      >
+        Acesso liberado!
+      </motion.p>
+      <motion.p
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="text-sm mt-1"
+        style={{ color: 'var(--nav-muted)' }}
+      >
+        Bem-vindo{name ? `, ${name}` : ''}
+      </motion.p>
+
+      {/* Progress bar */}
+      <motion.div
+        className="absolute bottom-0 left-0 h-1 rounded-b-3xl"
+        style={{ background: 'var(--primary-light)' }}
+        initial={{ width: '0%' }}
+        animate={{ width: '100%' }}
+        transition={{ duration: 1.5, ease: 'linear', delay: 0.2 }}
+      />
+    </motion.div>
+  )
+}
+
 /* ── PIN Pad ─────────────────────────────────────────── */
-function PinPad({ pin, onDigit, onDelete }: {
+function PinPad({ pin, onDigit, onDelete, shake }: {
   pin: string
   onDigit: (d: string) => void
   onDelete: () => void
+  shake?: boolean
 }) {
   const keys = ['1','2','3','4','5','6','7','8','9','','0','⌫']
   return (
@@ -44,13 +124,7 @@ function PinPad({ pin, onDigit, onDelete }: {
             whileTap={{ scale: k ? 0.88 : 1 }}
             disabled={!k || pin.length >= 6}
             onClick={() => k === '⌫' ? onDelete() : k && onDigit(k)}
-            className={`h-14 rounded-2xl text-lg font-bold transition-all disabled:opacity-30 ${
-              !k ? 'invisible' : ''
-            } ${
-              k === '⌫'
-                ? 'hover:opacity-80'
-                : 'hover:opacity-80'
-            }`}
+            className={`h-14 rounded-2xl text-lg font-bold transition-all disabled:opacity-30 ${!k ? 'invisible' : ''}`}
             style={{
               background: k === '⌫' ? 'var(--bg-secondary)' : 'var(--surface)',
               color: k === '⌫' ? 'var(--accent)' : 'var(--text)',
@@ -81,6 +155,10 @@ function LoginContent() {
   const [error, setError] = useState<string | null>(
     errorParam === 'conta-inativa' ? 'Conta desativada. Contate o responsável.' : null
   )
+  const [success, setSuccess] = useState(false)
+  const [successName, setSuccessName] = useState('')
+
+  const { shake: shakeForm, controls: formControls } = useShake()
 
   const supabase = createSupabaseBrowserClient()
 
@@ -92,18 +170,35 @@ function LoginContent() {
     if (!user) return '/login'
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role, pin, is_active')
+      .select('role, pin, is_active, full_name')
       .eq('id', user.id)
       .maybeSingle()
 
     if (profile && !profile.is_active) {
       await supabase.auth.signOut()
-      setError('Conta desativada. Contate o responsável.')
-      return ''
+      return null
     }
+    setSuccessName(profile?.full_name?.split(' ')[0] ?? '')
     if (profile && !profile.pin) return '/setup-pin'
     if (redirect) return redirect
     return profile?.role === 'manager' ? '/admin' : '/dashboard'
+  }
+
+  const handleSuccess = (url: string) => {
+    setSuccess(true)
+    setTimeout(() => {
+      router.push(url)
+      router.refresh()
+    }, 1800)
+  }
+
+  const handleError = (msg: string) => {
+    setError(msg)
+    shakeForm()
+    toast.error(msg, {
+      icon: <AlertCircle size={16} />,
+      duration: 4000,
+    })
   }
 
   const onSubmitEmail = async (data: LoginInput) => {
@@ -112,11 +207,16 @@ function LoginContent() {
       email: data.email,
       password: data.password,
     })
-    if (error) { setError('E-mail ou senha incorretos.'); return }
+    if (error) {
+      handleError('E-mail ou senha incorretos.')
+      return
+    }
     const url = await getRedirectUrl()
-    if (!url) return
-    router.push(url)
-    router.refresh()
+    if (!url) {
+      handleError('Conta desativada. Contate o responsável.')
+      return
+    }
+    handleSuccess(url)
   }
 
   const handlePinSubmit = async () => {
@@ -130,11 +230,15 @@ function LoginContent() {
         body: JSON.stringify({ email: pinEmail, pin }),
       })
       const json = await res.json()
-      if (!res.ok) { setError(json.error || 'PIN incorreto.'); setPin(''); return }
+      if (!res.ok) {
+        setPin('')
+        handleError(json.error || 'PIN incorreto.')
+        return
+      }
       const url = await getRedirectUrl()
-      if (url) { router.push(url); router.refresh() }
+      if (url) handleSuccess(url)
     } catch {
-      setError('Erro de conexão. Tente novamente.')
+      handleError('Erro de conexão. Tente novamente.')
     } finally {
       setLoading(false)
     }
@@ -142,7 +246,7 @@ function LoginContent() {
 
   return (
     <div className="w-full max-w-sm">
-      {/* Orbs decorativos */}
+      {/* Orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full blur-3xl opacity-30"
           style={{ background: 'var(--primary)' }} />
@@ -153,23 +257,27 @@ function LoginContent() {
       </div>
 
       <motion.div
+        animate={formControls}
         initial={{ opacity: 0, scale: 0.94, y: 24 }}
-        animate={{ opacity: 1, scale: 1,    y: 0  }}
+        whileInView={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
         className="relative rounded-3xl overflow-hidden shadow-2xl"
         style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
       >
+        {/* Success overlay */}
+        <AnimatePresence>
+          {success && <SuccessOverlay name={successName} />}
+        </AnimatePresence>
+
         {/* ── Header ── */}
         <div
           className="px-8 pt-8 pb-7 text-center relative overflow-hidden"
           style={{ background: 'var(--nav-bg)' }}
         >
-          {/* Theme toggle */}
           <div className="absolute top-3 right-3">
             <ThemeToggle compact />
           </div>
-
-          {/* Padrão decorativo */}
+          {/* Dot grid */}
           <div className="absolute inset-0 opacity-5 pointer-events-none"
             style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
 
@@ -184,29 +292,33 @@ function LoginContent() {
             <Image src="/logo.svg" alt="ChronosLab" width={200} height={56} className="object-contain" />
           </motion.div>
 
-          <motion.div
+          <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
+            className="text-sm"
+            style={{ color: 'var(--nav-muted)' }}
           >
-            <p className="text-sm mt-1" style={{ color: 'var(--nav-muted)' }}>
-              Controle de Ponto — acesso seguro
-            </p>
-          </motion.div>
+            Controle de Ponto — acesso seguro
+          </motion.p>
         </div>
 
-        {/* ── Error ── */}
+        {/* ── Error banner ── */}
         <AnimatePresence>
           {error && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{   opacity: 0, height: 0 }}
-              className="mx-5 mt-5 p-3 rounded-2xl flex items-start gap-2 text-sm"
-              style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.2)', color: 'var(--danger)' }}
+              initial={{ opacity: 0, height: 0, marginTop: 0 }}
+              animate={{ opacity: 1, height: 'auto', marginTop: 20 }}
+              exit={{   opacity: 0, height: 0, marginTop: 0 }}
+              className="mx-5 p-3 rounded-2xl flex items-start gap-2 text-sm overflow-hidden"
+              style={{
+                background: 'rgba(220,38,38,0.08)',
+                border: '1px solid rgba(220,38,38,0.25)',
+                color: 'var(--danger)',
+              }}
             >
               <AlertCircle size={15} className="mt-0.5 flex-shrink-0" />
-              <span>{error}</span>
+              <span className="font-medium">{error}</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -229,7 +341,7 @@ function LoginContent() {
               className="relative flex-1 py-2 text-sm font-semibold rounded-xl z-10 flex items-center justify-center gap-1.5 transition-colors"
               style={{ color: mode === m ? 'var(--primary)' : 'var(--text-3)' }}
             >
-              {m === 'email' ? <Mail size={13} /> : <Hash size={13} />}
+              {m === 'email' ? <Mail size={13} /> : <ShieldCheck size={13} />}
               {m === 'email' ? 'E-mail' : 'PIN'}
             </button>
           ))}
@@ -238,7 +350,9 @@ function LoginContent() {
         {/* ── Forms ── */}
         <div className="px-5 pt-5 pb-6">
           <AnimatePresence mode="wait">
-            {mode === 'email' ? (
+
+            {/* EMAIL */}
+            {mode === 'email' && (
               <motion.form
                 key="email"
                 initial={{ opacity: 0, x: -16 }}
@@ -248,7 +362,6 @@ function LoginContent() {
                 onSubmit={handleSubmit(onSubmitEmail)}
                 className="space-y-3"
               >
-                {/* E-mail */}
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-3)' }}>
                     E-mail
@@ -263,17 +376,21 @@ function LoginContent() {
                       className="w-full pl-9 pr-4 py-3 rounded-xl text-sm outline-none transition-all"
                       style={{
                         background: 'var(--input-bg)',
-                        border: '1.5px solid var(--border)',
+                        border: `1.5px solid ${errors.email ? 'var(--danger)' : 'var(--border)'}`,
                         color: 'var(--text)',
                       }}
-                      onFocus={e => (e.target.style.borderColor = 'var(--primary)')}
-                      onBlur={e  => (e.target.style.borderColor = 'var(--border)')}
+                      onFocus={e  => (e.target.style.borderColor = 'var(--primary)')}
+                      onBlur={e   => (e.target.style.borderColor = errors.email ? 'var(--danger)' : 'var(--border)')}
                     />
                   </div>
-                  {errors.email && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.email.message}</p>}
+                  {errors.email && (
+                    <motion.p initial={{ opacity:0,y:-4 }} animate={{ opacity:1,y:0 }}
+                      className="text-xs mt-1 flex items-center gap-1" style={{ color: 'var(--danger)' }}>
+                      <AlertCircle size={11} /> {errors.email.message}
+                    </motion.p>
+                  )}
                 </div>
 
-                {/* Senha */}
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-3)' }}>
                     Senha
@@ -288,36 +405,37 @@ function LoginContent() {
                       className="w-full pl-9 pr-10 py-3 rounded-xl text-sm outline-none transition-all"
                       style={{
                         background: 'var(--input-bg)',
-                        border: '1.5px solid var(--border)',
+                        border: `1.5px solid ${errors.password ? 'var(--danger)' : 'var(--border)'}`,
                         color: 'var(--text)',
                       }}
-                      onFocus={e => (e.target.style.borderColor = 'var(--primary)')}
-                      onBlur={e  => (e.target.style.borderColor = 'var(--border)')}
+                      onFocus={e  => (e.target.style.borderColor = 'var(--primary)')}
+                      onBlur={e   => (e.target.style.borderColor = errors.password ? 'var(--danger)' : 'var(--border)')}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(v => !v)}
-                      tabIndex={-1}
+                    <button type="button" onClick={() => setShowPassword(v => !v)} tabIndex={-1}
                       className="absolute right-3 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-80"
-                      style={{ color: 'var(--text-3)' }}
-                    >
+                      style={{ color: 'var(--text-3)' }}>
                       {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
                   </div>
-                  {errors.password && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.password.message}</p>}
+                  {errors.password && (
+                    <motion.p initial={{ opacity:0,y:-4 }} animate={{ opacity:1,y:0 }}
+                      className="text-xs mt-1 flex items-center gap-1" style={{ color: 'var(--danger)' }}>
+                      <AlertCircle size={11} /> {errors.password.message}
+                    </motion.p>
+                  )}
                 </div>
 
-                {/* Submit */}
                 <motion.button
                   type="submit"
                   disabled={isSubmitting}
+                  whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.97 }}
-                  className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all mt-1"
+                  className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mt-1"
                   style={{
                     background: 'var(--primary)',
                     color: 'var(--primary-fg)',
-                    boxShadow: '0 4px 14px rgba(30,92,45,0.4)',
-                    opacity: isSubmitting ? 0.7 : 1,
+                    boxShadow: '0 4px 18px rgba(30,92,45,0.45)',
+                    opacity: isSubmitting ? 0.75 : 1,
                   }}
                 >
                   {isSubmitting ? (
@@ -325,7 +443,10 @@ function LoginContent() {
                   ) : 'Entrar'}
                 </motion.button>
               </motion.form>
-            ) : (
+            )}
+
+            {/* PIN */}
+            {mode === 'pin' && (
               <motion.div
                 key="pin"
                 initial={{ opacity: 0, x: 16 }}
@@ -334,7 +455,6 @@ function LoginContent() {
                 transition={{ duration: 0.2 }}
                 className="space-y-3"
               >
-                {/* E-mail para PIN */}
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-3)' }}>
                     E-mail
@@ -367,12 +487,13 @@ function LoginContent() {
                 <motion.button
                   onClick={handlePinSubmit}
                   disabled={pin.length < 4 || !pinEmail || loading}
+                  whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.97 }}
-                  className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all"
+                  className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2"
                   style={{
                     background: 'var(--primary)',
                     color: 'var(--primary-fg)',
-                    boxShadow: '0 4px 14px rgba(30,92,45,0.4)',
+                    boxShadow: '0 4px 18px rgba(30,92,45,0.45)',
                     opacity: (pin.length < 4 || !pinEmail || loading) ? 0.4 : 1,
                   }}
                 >
@@ -382,15 +503,13 @@ function LoginContent() {
                 </motion.button>
               </motion.div>
             )}
+
           </AnimatePresence>
 
           <p className="text-center text-xs mt-4" style={{ color: 'var(--text-3)' }}>
             Não tem conta?{' '}
-            <Link
-              href="/register"
-              className="font-semibold transition-colors hover:opacity-80"
-              style={{ color: 'var(--primary)' }}
-            >
+            <Link href="/register" className="font-semibold transition-colors hover:opacity-80"
+              style={{ color: 'var(--primary)' }}>
               Criar conta
             </Link>
           </p>
@@ -402,14 +521,10 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <div
-      className="min-h-screen flex items-center justify-center p-4 relative"
-      style={{ background: 'var(--bg)' }}
-    >
+    <div className="min-h-screen flex items-center justify-center p-4 relative" style={{ background: 'var(--bg)' }}>
       <Suspense fallback={
         <div className="w-full max-w-sm rounded-3xl p-10 text-center" style={{ background: 'var(--surface)' }}>
           <Loader2 size={32} className="animate-spin mx-auto" style={{ color: 'var(--primary)' }} />
-          <p className="text-sm mt-4" style={{ color: 'var(--text-3)' }}>Carregando...</p>
         </div>
       }>
         <LoginContent />
