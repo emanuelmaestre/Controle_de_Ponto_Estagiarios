@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { minutesToHours } from '@/lib/utils'
 import ReportExport from './ReportExport'
 import { Clock, ClipboardList, CheckCircle2, AlertCircle, XCircle, Search, BarChart2 } from 'lucide-react'
-import NumberFlow from '@number-flow/react'
 import DatePicker from '@/components/ui/DatePicker'
 
 type PeriodType = 'daily' | 'weekly' | 'monthly' | 'custom'
@@ -446,7 +445,7 @@ export default function ReportsClient() {
                     </tfoot>
                   </table>
                 </div>
-
+              </>
             ) : (
               <div className="py-20 text-center" style={{ color: 'var(--text-3)' }}>
                 <BarChart2 size={44} className="mx-auto mb-4" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
@@ -499,7 +498,7 @@ function SummaryCard({ label, value, color, icon, delay = 0 }: {
       </motion.div>
       <p className="text-xl sm:text-2xl font-black" style={{ color: textColor[color] }}>
         {typeof value === 'number'
-          ? <NumberFlow value={value} />
+          ? <span>{value}</span>
           : value
         }
       </p>
