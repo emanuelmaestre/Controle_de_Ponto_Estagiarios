@@ -116,19 +116,19 @@ export default async function LocationPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: 'Aprovados', value: totalApproved, color: 'var(--success)', icon: '✅' },
-            { label: 'Bloqueados', value: totalBlocked, color: 'var(--danger)', icon: '🚫' },
-            { label: 'Perm. negada', value: totalPermission, color: 'var(--warning)', icon: '🔒' },
-            { label: 'Total tent.', value: totalAttempts, color: 'var(--info)', icon: '📍' },
+            { label: 'APROVADOS',    value: totalApproved,   color: 'var(--success)', icon: <CheckCircle2 size={18} /> },
+            { label: 'BLOQUEADOS',   value: totalBlocked,    color: 'var(--danger)',  icon: <XCircle      size={18} /> },
+            { label: 'PERM. NEGADA', value: totalPermission, color: 'var(--warning)', icon: <Shield       size={18} /> },
+            { label: 'TOTAL TENT.',  value: totalAttempts,   color: 'var(--info)',    icon: <MapPin       size={18} /> },
           ].map((s, i) => (
             <FadeIn key={s.label} delay={i * 0.05}>
               <div
                 className="rounded-2xl p-4"
                 style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
-                <div className="text-2xl mb-1">{s.icon}</div>
+                <div className="mb-2 p-1.5 rounded-lg w-fit" style={{ background: `${s.color}18`, color: s.color }}>{s.icon}</div>
                 <p className="text-2xl font-black" style={{ color: s.color }}>{s.value}</p>
-                <p className="text-xs font-medium" style={{ color: 'var(--text-3)' }}>{s.label}</p>
+                <p className="text-[10px] font-bold mt-0.5" style={{ color: 'var(--text-3)' }}>{s.label}</p>
               </div>
             </FadeIn>
           ))}
@@ -157,8 +157,8 @@ export default async function LocationPage() {
 
             {attempts.length === 0 ? (
               <div className="py-10 text-center" style={{ color: 'var(--text-3)' }}>
-                <p className="text-3xl mb-2">🎉</p>
-                <p className="text-sm font-medium">Nenhuma tentativa bloqueada</p>
+                <CheckCircle2 size={32} className="mx-auto mb-2" style={{ color: 'var(--success)', opacity: 0.4 }} />
+                <p className="text-sm font-bold">NENHUMA TENTATIVA BLOQUEADA</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -235,8 +235,8 @@ export default async function LocationPage() {
 
             {records.length === 0 ? (
               <div className="py-10 text-center" style={{ color: 'var(--text-3)' }}>
-                <p className="text-3xl mb-2">📍</p>
-                <p className="text-sm font-medium">Nenhum registro com localização ainda</p>
+                <MapPin size={32} className="mx-auto mb-2" style={{ color: 'var(--text-3)', opacity: 0.4 }} />
+                <p className="text-sm font-bold">NENHUM REGISTRO COM LOCALIZACAO AINDA</p>
               </div>
             ) : (
               <div className="overflow-x-auto">

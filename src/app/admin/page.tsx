@@ -223,7 +223,7 @@ export default async function AdminPage() {
                           )}
                           {intern.pending_count > 0 && (
                             <p className="text-[9px] font-bold" style={{ color: 'var(--warning)' }}>
-                              &#9203; {intern.pending_count}
+                              {intern.pending_count} PEND.
                             </p>
                           )}
                           {intern.today_status === 'saiu' && intern.pending_count === 0 && (
@@ -242,7 +242,7 @@ export default async function AdminPage() {
                 className="flex-1 rounded-3xl flex flex-col items-center justify-center py-10"
                 style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
-                <div className="text-4xl mb-3 float-anim inline-block">&#128100;</div>
+                <Users size={44} className="mx-auto mb-3" style={{ color: "var(--text-3)", opacity: 0.35 }} />
                 <p className="font-bold text-sm mb-1" style={{ color: 'var(--text)' }}>NENHUM ESTAGIARIO CADASTRADO</p>
                 <p className="text-xs mb-4" style={{ color: 'var(--text-3)' }}>Comece adicionando o primeiro estagiario.</p>
                 <Link

@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Profile } from '@/types/database'
 import AdminNav from '@/components/AdminNav'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
-import { UserPlus } from 'lucide-react'
+import { UserPlus, Users } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -82,7 +82,7 @@ export default async function InternsPage() {
               {active.length === 0 && (
                 <FadeIn>
                   <div className="py-8 text-center" style={{ color: 'var(--text-3)' }}>
-                    <p className="text-2xl mb-1">&#128100;</p>
+                    <Users size={32} className="mx-auto mb-1" style={{ color: "var(--text-3)", opacity: 0.35 }} />
                     <p className="text-xs">Nenhum estagiario ativo.</p>
                   </div>
                 </FadeIn>

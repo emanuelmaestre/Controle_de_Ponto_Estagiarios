@@ -153,7 +153,7 @@ export default async function HistoryPage() {
         ) : (
           <FadeIn>
             <div className="rounded-3xl py-16 text-center" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <div className="text-5xl mb-4">&#128203;</div>
+              <ClipboardList size={44} className="mx-auto mb-4" style={{ color: "var(--text-3)", opacity: 0.35 }} />
               <p className="font-bold text-sm mb-1" style={{ color: 'var(--text)' }}>NENHUM REGISTRO ENCONTRADO</p>
               <p className="text-xs" style={{ color: 'var(--text-3)' }}>Seus registros dos ultimos 60 dias aparecerao aqui.</p>
             </div>

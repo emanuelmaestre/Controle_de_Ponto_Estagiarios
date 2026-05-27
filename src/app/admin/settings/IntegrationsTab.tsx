@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { RefreshCw, Wifi, WifiOff, AlertTriangle } from 'lucide-react'
+import { RefreshCw, Wifi, WifiOff, AlertTriangle, Database, Cloud, Zap, GitBranch } from 'lucide-react'
 
 type ServiceStatus = 'online' | 'offline' | 'degraded' | 'checking'
 
@@ -10,16 +10,16 @@ interface Service {
   key: string
   label: string
   description: string
-  icon: string
+  icon: React.ReactNode
   version?: string
   docs?: string
 }
 
 const SERVICES: Service[] = [
-  { key: 'supabase',   label: 'SUPABASE',   description: 'BANCO DE DADOS E AUTENTICACAO', icon: '🗄️',  docs: 'https://supabase.com', version: '@supabase/ssr' },
-  { key: 'vercel',     label: 'VERCEL',     description: 'HOSPEDAGEM E DEPLOY CONTINUO',  icon: '▲',   docs: 'https://vercel.com',   version: 'PRODUCAO' },
-  { key: 'nextjs',     label: 'NEXT.JS',    description: 'FRAMEWORK FULL-STACK (v16)',    icon: '⚡',  docs: 'https://nextjs.org',   version: '16.2.6' },
-  { key: 'github',     label: 'GITHUB',     description: 'CONTROLE DE VERSAO E CI/CD',   icon: '🐙',  docs: 'https://github.com',   version: 'MAIN' },
+  { key: 'supabase', label: 'SUPABASE', description: 'BANCO DE DADOS E AUTENTICACAO', icon: <Database size={20} />, docs: 'https://supabase.com', version: '@supabase/ssr' },
+  { key: 'vercel',   label: 'VERCEL',   description: 'HOSPEDAGEM E DEPLOY CONTINUO',  icon: <Cloud    size={20} />, docs: 'https://vercel.com',   version: 'PRODUCAO' },
+  { key: 'nextjs',   label: 'NEXT.JS',  description: 'FRAMEWORK FULL-STACK (v16)',    icon: <Zap      size={20} />, docs: 'https://nextjs.org',   version: '16.2.6' },
+  { key: 'github',   label: 'GITHUB',   description: 'CONTROLE DE VERSAO E CI/CD',   icon: <GitBranch size={20} />, docs: 'https://github.com',  version: 'MAIN' },
 ]
 
 const STACK_INFO = [
@@ -144,8 +144,8 @@ export default function IntegrationsTab() {
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                    style={{ background: 'var(--bg)' }}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'var(--bg)', color: 'var(--primary)' }}
                   >
                     {svc.icon}
                   </div>

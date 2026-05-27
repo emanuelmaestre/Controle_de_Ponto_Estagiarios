@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { FileSpreadsheet, CheckCircle2, AlertTriangle } from 'lucide-react'
 
 interface ReportRow {
   nome: string
@@ -68,7 +69,7 @@ export default function ReportExport({ data, label, disabled }: Props) {
           disabled={!!disabled || loading}
           className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm px-4 py-2 rounded-xl transition-all disabled:opacity-40 shadow-sm"
         >
-          📊 Excel
+          <FileSpreadsheet size={13} /> Excel
         </button>
         <button
           onClick={exportPDF}
@@ -99,7 +100,7 @@ export default function ReportExport({ data, label, disabled }: Props) {
               placeholder="gerente@empresa.com"
               className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4"
             />
-            {emailStatus === 'ok'  && <p className="text-green-600 text-sm mb-3">✅ E-mail enviado!</p>}
+            {emailStatus === 'ok'  && <p className="text-green-600 text-sm mb-3"><CheckCircle2 size={14} style={{ display: 'inline', marginRight: 4, color: 'var(--success)' }} /> E-mail enviado!</p>}
             {emailStatus === 'err' && <p className="text-red-500 text-sm mb-3">❌ Erro ao enviar.</p>}
             <div className="flex gap-2">
               <button

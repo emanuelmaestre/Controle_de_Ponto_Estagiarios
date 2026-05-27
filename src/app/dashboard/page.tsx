@@ -7,7 +7,7 @@ import ClockButton from '@/components/ClockButton'
 import StatusBadge from '@/components/StatusBadge'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/MotionWrappers'
-import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, AlertTriangle, CheckCircle } from 'lucide-react'
+import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, AlertTriangle, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell } from 'lucide-react'
 import ThemeToggle from '@/components/ThemeToggle'
 import LiveClock from '@/components/ui/LiveClock'
 import type { RecordStatus } from '@/types/database'
@@ -21,7 +21,7 @@ function getHourStatus(pct: number) {
     color: 'var(--success)',
     bg: 'rgba(22,163,74,0.10)',
     border: 'rgba(22,163,74,0.25)',
-    emoji: '🏆',
+    icon: <Trophy size={20} />,
     msg: 'Parabens! Voce completou sua carga horaria do mes.',
     sub: 'Continue sendo um exemplo de dedicacao e compromisso.',
   }
@@ -30,7 +30,7 @@ function getHourStatus(pct: number) {
     color: 'var(--info)',
     bg: 'rgba(14,165,233,0.10)',
     border: 'rgba(14,165,233,0.25)',
-    emoji: '🚀',
+    icon: <Rocket size={20} />,
     msg: 'Voce esta quase la! Falta pouco para completar sua meta.',
     sub: 'Mantenha o ritmo — voce esta indo muito bem!',
   }
@@ -39,7 +39,7 @@ function getHourStatus(pct: number) {
     color: 'var(--primary)',
     bg: 'rgba(30,92,45,0.10)',
     border: 'rgba(30,92,45,0.25)',
-    emoji: '💪',
+    icon: <Dumbbell size={20} />,
     msg: 'Otimo progresso! Voce esta na metade do caminho.',
     sub: 'Continue comparecendo para manter sua carga em dia.',
   }
@@ -48,7 +48,7 @@ function getHourStatus(pct: number) {
     color: 'var(--warning)',
     bg: 'rgba(217,119,6,0.10)',
     border: 'rgba(217,119,6,0.25)',
-    emoji: '⚡',
+    icon: <Zap size={20} />,
     msg: 'Voce esta progredindo, mas ainda ha horas a cumprir.',
     sub: 'Organize sua agenda para manter o ritmo e evitar pendencias.',
   }
@@ -57,7 +57,7 @@ function getHourStatus(pct: number) {
     color: 'var(--danger)',
     bg: 'rgba(220,38,38,0.10)',
     border: 'rgba(220,38,38,0.25)',
-    emoji: '🎯',
+    icon: <Target size={20} />,
     msg: 'Atencao: suas horas precisam de dedicacao agora.',
     sub: 'Cada presenca conta. Voce ainda pode regularizar sua situacao!',
   }
@@ -211,7 +211,7 @@ export default async function DashboardPage() {
               className="mt-5 rounded-2xl p-3.5 flex items-start gap-3"
               style={{ background: status.bg, border: `1px solid ${status.border}` }}
             >
-              <span className="text-xl flex-shrink-0">{status.emoji}</span>
+              <span className="flex-shrink-0" style={{ color: status.color }}>{status.icon}</span>
               <div>
                 <p className="text-xs font-bold leading-snug" style={{ color: status.color }}>{status.msg}</p>
                 <p className="text-[10px] mt-0.5 leading-relaxed" style={{ color: status.color, opacity: 0.75 }}>{status.sub}</p>

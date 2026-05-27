@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { minutesToHours } from '@/lib/utils'
 import ReportExport from './ReportExport'
+import { Clock, ClipboardList, CheckCircle2, AlertCircle, XCircle, Search, BarChart2 } from 'lucide-react'
 
 type PeriodType = 'daily' | 'weekly' | 'monthly' | 'custom'
 
@@ -179,7 +180,7 @@ export default function ReportsClient() {
           style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
         >
           <h2 className="text-sm font-bold mb-3 sm:mb-4 flex items-center gap-2" style={{ color: 'var(--text)' }}>
-            <span>&#128269;</span> Filtrar por periodo
+            <Search size={15} style={{ color: 'var(--primary)' }} /> FILTRAR POR PERIODO
           </h2>
 
           <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-5">
@@ -286,7 +287,7 @@ export default function ReportsClient() {
               >
                 {loading ? (
                   <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" /> Carregando...</>
-                ) : <><span>🔍</span> Aplicar filtro</>}
+                ) : <><Search size={14} /> APLICAR FILTRO</>}
               </button>
             </div>
           </div>
@@ -296,7 +297,7 @@ export default function ReportsClient() {
         {error && (
           <div className="text-sm rounded-xl px-4 py-3 flex items-center gap-2"
             style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: 'var(--danger)' }}>
-            <span>&#9888;&#65039;</span> {error}
+            <AlertCircle size={14} style={{ flexShrink: 0 }} /> {error}
             <button onClick={fetchData} className="ml-auto underline hover:opacity-70">Tentar novamente</button>
           </div>
         )}
@@ -319,11 +320,11 @@ export default function ReportsClient() {
               transition={{ duration: 0.3 }}
               className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
             >
-              <SummaryCard label="Total de horas" value={minutesToHours(totalMinutes)} color="blue"  icon="&#9203;&#65039;" delay={0} />
-              <SummaryCard label="Sessoes"         value={totalSessions}               color="gray"  icon="&#128203;" delay={0.05} />
-              <SummaryCard label="Aprovadas"       value={totalApproved}               color="green" icon="&#9989;" delay={0.1} />
-              <SummaryCard label="Pendentes"       value={totalPending}                color="amber" icon="&#9203;" delay={0.15} />
-              <SummaryCard label="Reprovadas"      value={totalRejected}               color="red"   icon="&#10060;" delay={0.2} />
+              <SummaryCard label="TOTAL DE HORAS" value={minutesToHours(totalMinutes)} color="blue"  icon={<Clock size={15}        />} delay={0} />
+              <SummaryCard label="SESSOES"         value={totalSessions}               color="gray"  icon={<ClipboardList size={15} />} delay={0.05} />
+              <SummaryCard label="APROVADAS"       value={totalApproved}               color="green" icon={<CheckCircle2 size={15}  />} delay={0.1} />
+              <SummaryCard label="PENDENTES"       value={totalPending}                color="amber" icon={<AlertCircle size={15}   />} delay={0.15} />
+              <SummaryCard label="REPROVADAS"      value={totalRejected}               color="red"   icon={<XCircle size={15}       />} delay={0.2} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -398,9 +399,9 @@ export default function ReportsClient() {
               </div>
             ) : (
               <div className="py-20 text-center" style={{ color: 'var(--text-3)' }}>
-                <div className="text-5xl mb-4">&#128202;</div>
-                <p className="font-semibold" style={{ color: 'var(--text)' }}>Nenhum dado encontrado</p>
-                <p className="text-sm mt-1">Nao ha registros para o periodo selecionado.</p>
+                <BarChart2 size={44} className="mx-auto mb-4" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
+                <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>NENHUM DADO ENCONTRADO</p>
+                <p className="text-xs mt-1">Nao ha registros para o periodo selecionado.</p>
               </div>
             )}
           </motion.div>
@@ -409,9 +410,9 @@ export default function ReportsClient() {
         {/* Estado inicial */}
         {!data && !loading && !error && (
           <div className="py-20 text-center" style={{ color: 'var(--text-3)' }}>
-            <div className="text-5xl mb-4">&#128269;</div>
-            <p className="font-semibold" style={{ color: 'var(--text)' }}>Selecione um periodo</p>
-            <p className="text-sm mt-1">Configure o filtro acima e clique em Aplicar filtro.</p>
+            <Search size={44} className="mx-auto mb-4" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
+            <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>SELECIONE UM PERIODO</p>
+            <p className="text-xs mt-1">Configure o filtro acima e clique em Aplicar filtro.</p>
           </div>
         )}
       </div></main>
@@ -423,10 +424,11 @@ function SummaryCard({ label, value, color, icon, delay = 0 }: {
   label: string
   value: string | number
   color: 'blue' | 'green' | 'amber' | 'red' | 'gray'
-  icon: string
+  icon: React.ReactNode
   delay?: number
 }) {
   const textColor = { blue: 'var(--info)', green: 'var(--success)', amber: 'var(--warning)', red: 'var(--danger)', gray: 'var(--text)' }
+  const bgColor   = { blue: 'rgba(14,165,233,0.10)', green: 'rgba(22,163,74,0.10)', amber: 'rgba(217,119,6,0.10)', red: 'rgba(220,38,38,0.10)', gray: 'var(--bg)' }
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.92 }}
@@ -435,10 +437,11 @@ function SummaryCard({ label, value, color, icon, delay = 0 }: {
       className="rounded-2xl p-3 sm:p-4"
       style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
     >
-      <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide flex items-center gap-1" style={{ color: 'var(--text-3)' }}>
-        <span>{icon}</span> {label}
-      </p>
-      <p className="text-xl sm:text-2xl font-bold mt-1 sm:mt-2" style={{ color: textColor[color] }}>{value}</p>
+      <div className="mb-2 p-1.5 rounded-lg w-fit" style={{ background: bgColor[color], color: textColor[color] }}>
+        {icon}
+      </div>
+      <p className="text-xl sm:text-2xl font-black" style={{ color: textColor[color] }}>{value}</p>
+      <p className="text-[9px] font-bold mt-0.5 tracking-wide" style={{ color: 'var(--text-3)' }}>{label}</p>
     </motion.div>
   )
 }

@@ -5,7 +5,7 @@ import { minutesToHours } from '@/lib/utils'
 import ApprovalActions from './ApprovalActions'
 import AdminNav from '@/components/AdminNav'
 import { StaggerContainer, StaggerItem, FadeIn } from '@/components/ui/MotionWrappers'
-import { CheckSquare } from 'lucide-react'
+import { CheckSquare, CheckCircle2 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -77,7 +77,7 @@ export default async function ApprovalsPage() {
                       </div>
                       <span className="text-[10px] font-bold px-2.5 py-1 rounded-full flex-shrink-0"
                         style={{ background: 'rgba(217,119,6,0.10)', color: 'var(--warning)', border: '1px solid rgba(217,119,6,0.25)' }}>
-                        &#9203; PENDENTE
+                        <span style={{ fontSize: 10 }}>●</span> PENDENTE
                       </span>
                     </div>
 
@@ -140,7 +140,7 @@ export default async function ApprovalsPage() {
                 className="rounded-3xl py-20 text-center mt-8"
                 style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
-                <div className="text-5xl mb-3">&#9989;</div>
+                <CheckCircle2 size={44} className="mx-auto mb-3" style={{ color: 'var(--success)', opacity: 0.5 }} />
                 <p className="font-bold text-sm mb-1" style={{ color: 'var(--text)' }}>TUDO EM DIA!</p>
                 <p className="text-xs mb-5" style={{ color: 'var(--text-3)' }}>Nenhum registro aguardando aprovacao.</p>
                 <Link
