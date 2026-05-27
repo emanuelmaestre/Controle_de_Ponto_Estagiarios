@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Camera, RotateCcw, Check, Loader2, AlertTriangle, ShieldCheck, FlipHorizontal2,
+  Camera, RotateCcw, Check, Loader2, AlertTriangle, ShieldCheck, FlipHorizontal2, RefreshCw, Settings2,
 } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
@@ -25,8 +25,9 @@ export default function SelfieGate({ hasPhoto, internId }: Props) {
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null)
   const [capturedUrl, setCapturedUrl] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
-  const [camError, setCamError] = useState<string | null>(null)
-  const [camReady, setCamReady] = useState(false)
+  const [camError, setCamError]   = useState<string | null>(null)
+  const [camDenied, setCamDenied] = useState(false)
+  const [camReady, setCamReady]   = useState(false)
   const [done, setDone] = useState(false)
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user')
   const [flipping, setFlipping] = useState(false)
@@ -38,18 +39,48 @@ export default function SelfieGate({ hasPhoto, internId }: Props) {
 
   const startCamera = useCallback(async (facing: 'user' | 'environment') => {
     setCamError(null)
+    setCamDenied(false)
     setCamReady(false)
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setCamError('Seu navegador não suporta acesso à câmera. Use Chrome, Safari ou Firefox atualizado.')
+      return
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: facing, width: { ideal: 720 }, height: { ideal: 720 } },
+        audio: false,
       })
       streamRef.current = stream
       if (videoRef.current) {
         videoRef.current.srcObject = stream
         videoRef.current.onloadedmetadata = () => setCamReady(true)
       }
-    } catch {
-      setCamError('Câmera não autorizada. Permita o acesso e recarregue a página.')
+    } catch (err: unknown) {
+      const name = (err as { name?: string })?.name ?? ''
+      if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+        setCamDenied(true)
+        setCamError('Permissão de câmera negada. Clique em "Tentar novamente" ou libere nas configurações do navegador.')
+      } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+        setCamError('Nenhuma câmera encontrada neste dispositivo.')
+      } else if (name === 'NotReadableError' || name === 'TrackStartError') {
+        setCamError('A câmera está sendo usada por outro aplicativo. Feche-o e tente novamente.')
+      } else if (name === 'OverconstrainedError') {
+        // retry with less constraints
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+          streamRef.current = stream
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream
+            videoRef.current.onloadedmetadata = () => setCamReady(true)
+          }
+        } catch {
+          setCamError('Não foi possível acessar a câmera. Verifique as permissões.')
+        }
+      } else {
+        setCamError('Não foi possível acessar a câmera. Verifique as permissões do navegador.')
+      }
     }
   }, [])
 
@@ -232,11 +263,44 @@ export default function SelfieGate({ hasPhoto, internId }: Props) {
                     <motion.div
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="rounded-xl px-3 py-2.5 flex items-start gap-2.5"
+                      className="rounded-xl px-3 py-3 space-y-2.5"
                       style={{ background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.2)' }}
                     >
-                      <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--danger)' }} />
-                      <p className="text-xs" style={{ color: 'var(--danger)' }}>{camError}</p>
+                      <div className="flex items-start gap-2.5">
+                        <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--danger)' }} />
+                        <p className="text-xs leading-relaxed" style={{ color: 'var(--danger)' }}>{camError}</p>
+                      </div>
+
+                      {/* Botões de ação */}
+                      <div className="flex gap-2 pt-1">
+                        <motion.button
+                          onClick={() => startCamera(facingMode)}
+                          whileTap={{ scale: 0.96 }}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-bold transition-all"
+                          style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: 'var(--danger)' }}
+                        >
+                          <RefreshCw size={11} /> TENTAR NOVAMENTE
+                        </motion.button>
+
+                        {camDenied && (
+                          <motion.button
+                            onClick={() => window.location.reload()}
+                            whileTap={{ scale: 0.96 }}
+                            className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold transition-all"
+                            style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: 'var(--danger)' }}
+                            title="Após liberar nas configurações do navegador, recarregue"
+                          >
+                            <Settings2 size={11} />
+                          </motion.button>
+                        )}
+                      </div>
+
+                      {/* Instrução passo a passo para navegadores */}
+                      {camDenied && (
+                        <p className="text-[10px] leading-relaxed" style={{ color: 'rgba(239,68,68,0.7)' }}>
+                          Para liberar: clique no 🔒 ou 📷 na barra de endereços do navegador → Câmera → Permitir → recarregue a página.
+                        </p>
+                      )}
                     </motion.div>
                   )}
 
