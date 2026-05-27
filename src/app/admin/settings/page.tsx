@@ -83,61 +83,63 @@ export default async function SettingsPage({ searchParams }: Props) {
         </div>
       </div>
 
-      {/* Content — flex-1 fills height, overflow-y-auto only when needed */}
-      <div className="flex-1 min-h-0 flex flex-col px-4 sm:px-6 py-4">
-        <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0">
+      {/* Content — ocupa toda a altura restante, scroll interno por aba */}
+      <div className="flex-1 min-h-0" style={{ display: 'flex', flexDirection: 'column', padding: '16px 24px 16px' }}>
+        <div style={{ maxWidth: 672, margin: '0 auto', width: '100%', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
 
-          {activeTab === 'geral' && (
-            <FadeIn className="flex-1 flex flex-col min-h-0">
-              <div className="flex-1 rounded-2xl p-5 sm:p-6 overflow-y-auto" style={{ background: 'var(--surface)', border: '1px solid var(--border)', scrollbarWidth: 'thin' }}>
-                <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES DO LABORATÓRIO</h2>
-                <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>HORÁRIOS DE LEMBRETE, HORAS ESPERADAS E E-MAIL DE RELATÓRIO.</p>
-                <SettingsForm settings={settings} />
-              </div>
-            </FadeIn>
-          )}
+          {/* Cada aba: o card ocupa flex-1, scroll interno quando o conteúdo excede */}
+          {/* div intermediário garante flex-1 antes do motion.div do FadeIn */}
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          <FadeIn className="flex-1 flex flex-col min-h-0">
+            <div className="rounded-2xl p-5 sm:p-6" style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'thin', background: 'var(--surface)', border: '1px solid var(--border)' }}>
 
-          {activeTab === 'localizacao' && (
-            <FadeIn className="flex-1 flex flex-col min-h-0">
-              <div className="flex-1 rounded-2xl p-5 sm:p-6 overflow-y-auto" style={{ background: 'var(--surface)', border: '1px solid var(--border)', scrollbarWidth: 'thin' }}>
-                <div className="flex items-center gap-2 mb-1">
-                  <MapPin size={16} style={{ color: 'var(--primary)' }} />
-                  <h2 className="font-semibold" style={{ color: 'var(--text)' }}>CONTROLE DE LOCALIZAÇÃO</h2>
-                </div>
-                <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
-                  EXIGE QUE OS ESTAGIÁRIOS ESTEJAM FISICAMENTE NO LABORATÓRIO PARA REGISTRAR O PONTO.
-                </p>
-                <GeoSettings config={geoConfig} />
-              </div>
-            </FadeIn>
-          )}
+              {activeTab === 'geral' && (
+                <>
+                  <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES DO LABORATÓRIO</h2>
+                  <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>HORÁRIOS DE LEMBRETE, HORAS ESPERADAS E E-MAIL DE RELATÓRIO.</p>
+                  <SettingsForm settings={settings} />
+                </>
+              )}
 
-          {activeTab === 'integracoes' && (
-            <FadeIn className="flex-1 flex flex-col min-h-0">
-              <div className="flex-1 rounded-2xl p-5 sm:p-6 overflow-y-auto" style={{ background: 'var(--surface)', border: '1px solid var(--border)', scrollbarWidth: 'thin' }}>
-                <div className="flex items-center gap-2 mb-1">
-                  <Plug size={16} style={{ color: 'var(--primary)' }} />
-                  <h2 className="font-semibold" style={{ color: 'var(--text)' }}>INTEGRAÇÕES E STACKS</h2>
-                </div>
-                <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
-                  STATUS EM TEMPO REAL DOS SERVIÇOS E DEPENDÊNCIAS DO SISTEMA.
-                </p>
-                <IntegrationsTab />
-              </div>
-            </FadeIn>
-          )}
+              {activeTab === 'localizacao' && (
+                <>
+                  <div className="flex items-center gap-2 mb-1">
+                    <MapPin size={16} style={{ color: 'var(--primary)' }} />
+                    <h2 className="font-semibold" style={{ color: 'var(--text)' }}>CONTROLE DE LOCALIZAÇÃO</h2>
+                  </div>
+                  <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
+                    EXIGE QUE OS ESTAGIÁRIOS ESTEJAM FISICAMENTE NO LABORATÓRIO PARA REGISTRAR O PONTO.
+                  </p>
+                  <GeoSettings config={geoConfig} />
+                </>
+              )}
 
-          {activeTab === 'seguranca' && (
-            <FadeIn className="flex-1 flex flex-col min-h-0">
-              <div className="flex-1 rounded-2xl p-5 sm:p-6 overflow-y-auto" style={{ background: 'var(--surface)', border: '1px solid var(--border)', scrollbarWidth: 'thin' }}>
-                <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>SEU PIN DE ACESSO RÁPIDO</h2>
-                <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
-                  O PIN PERMITE QUE VOCÊ ENTRE NO SISTEMA SEM DIGITAR E-MAIL E SENHA.
-                </p>
-                <ChangePinForm userId={user.id} />
-              </div>
-            </FadeIn>
-          )}
+              {activeTab === 'integracoes' && (
+                <>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Plug size={16} style={{ color: 'var(--primary)' }} />
+                    <h2 className="font-semibold" style={{ color: 'var(--text)' }}>INTEGRAÇÕES E STACKS</h2>
+                  </div>
+                  <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
+                    STATUS EM TEMPO REAL DOS SERVIÇOS E DEPENDÊNCIAS DO SISTEMA.
+                  </p>
+                  <IntegrationsTab />
+                </>
+              )}
+
+              {activeTab === 'seguranca' && (
+                <>
+                  <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>SEU PIN DE ACESSO RÁPIDO</h2>
+                  <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
+                    O PIN PERMITE QUE VOCÊ ENTRE NO SISTEMA SEM DIGITAR E-MAIL E SENHA.
+                  </p>
+                  <ChangePinForm userId={user.id} />
+                </>
+              )}
+
+            </div>
+          </FadeIn>
+          </div>
 
         </div>
       </div>
