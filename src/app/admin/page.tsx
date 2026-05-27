@@ -67,7 +67,7 @@ export default async function AdminPage() {
     <div className="flex flex-col" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, background: 'var(--bg)' }}>
 
 
-      <div className="flex-1 min-h-0 flex flex-col max-w-6xl mx-auto w-full px-4 sm:px-6 py-4 gap-3">
+      <div className="flex-1 min-h-0 flex flex-col w-full px-4 sm:px-6 py-4 gap-3">
 
         {/* Saudacao compacta */}
         <FadeIn delay={0}>

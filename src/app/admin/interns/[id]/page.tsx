@@ -108,7 +108,7 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
         <div className="absolute -top-12 -right-12 w-36 h-36 rounded-full blur-3xl pointer-events-none"
           style={{ background:'var(--primary)', opacity:0.2 }} />
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-3 pb-0">
+        <div className="px-4 sm:px-6 pt-3 pb-0">
           {/* Back + Intern info in one compact row */}
           <div className="flex items-center gap-3 mb-3">
             <BackButton href="/admin/interns" variant="dark" />
@@ -178,7 +178,7 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
 
       {/* ── Tab Content — truly fills remaining height, no scrollbar ── */}
       <div className="no-scrollbar" style={{ flex:1, minHeight:0, overflowY:'auto', background:'var(--bg)' }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 h-full">
+        <div className="px-4 sm:px-6 py-4 h-full">
 
           {/* ════ ABA: VISÃO GERAL ════ */}
           {activeTab === 'visao-geral' && (

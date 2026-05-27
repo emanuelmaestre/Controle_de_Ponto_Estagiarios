@@ -145,7 +145,7 @@ export default function ReportsClient() {
 
       {/* Sub-header */}
       <div className="no-print flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 flex-wrap">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <BackButton href="/admin" />
             <div className="w-px h-5 hidden sm:block" style={{ background: 'var(--border)' }} />
@@ -166,7 +166,7 @@ export default function ReportsClient() {
         </div>
       </div>
 
-      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
+      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
 
         {/* Filtros */}
         <div

@@ -85,7 +85,7 @@ export default async function WorkloadPage() {
 
       {/* Header */}
       <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+        <div className="px-4 sm:px-6 py-4">
           <div className="flex items-center gap-3 mb-2">
             <BackButton href="/admin" />
             <div>
@@ -113,7 +113,7 @@ export default async function WorkloadPage() {
         </div>
       </div>
 
-      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 space-y-4">
+      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="px-4 sm:px-6 py-4 space-y-4">
         {rows.length === 0 && (
           <FadeIn>
             <div className="text-center py-16" style={{ color: 'var(--text-3)' }}>
