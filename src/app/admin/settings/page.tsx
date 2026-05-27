@@ -91,7 +91,7 @@ export default async function SettingsPage({ searchParams }: Props) {
           {/* div intermediário garante flex-1 antes do motion.div do FadeIn */}
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           <FadeIn className="flex-1 flex flex-col min-h-0">
-            <div className="rounded-2xl p-5 sm:p-6" style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'thin', background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="rounded-2xl p-5 sm:p-6 no-scrollbar" style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: 'var(--surface)', border: '1px solid var(--border)' }}>
 
               {activeTab === 'geral' && (
                 <>

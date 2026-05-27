@@ -201,6 +201,14 @@ code, pre,
 ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
 
+/* Esconde scrollbar em todo o sistema — scroll ainda funciona via touch/mouse */
+* { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+*::-webkit-scrollbar { display: none !important; }
+
+/* Utilitário auxiliar (caso necessário pontualmente) */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
 /* ══════════════════════════════════════════════════════
    ANIMATIONS
 ══════════════════════════════════════════════════════ */
