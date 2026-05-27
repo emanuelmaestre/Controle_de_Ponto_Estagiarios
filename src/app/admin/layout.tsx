@@ -19,9 +19,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const initials = fullName.split(' ').slice(0, 2).map((n: string) => n[0]).join('')
 
   return (
-    <div style={{ display: 'flex', height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
+    <div className="flex flex-col md:flex-row" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
       <AdminSidebar fullName={fullName} initials={initials} pending={pendingCount} />
-      <div style={{ flex: 1, minWidth: 0, height: '100dvh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      {/* Content area — pb-16 on mobile to clear fixed bottom nav */}
+      <div className="flex-1 min-w-0 flex flex-col pb-16 md:pb-0 min-h-0" style={{ overflow: 'hidden' }}>
         {children}
       </div>
     </div>

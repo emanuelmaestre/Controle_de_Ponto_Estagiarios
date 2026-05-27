@@ -341,68 +341,116 @@ export default function ReportsClient() {
             style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
           >
             {data.interns.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
-                      <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Estagiario</th>
-                      <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--info)' }}>Horas</th>
-                      <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Sessoes</th>
-                      <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--success)' }}>Aprov.</th>
-                      <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--warning)' }}>Pend.</th>
-                      <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--danger)' }}>Reprov.</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.interns.map((intern, i) => (
-                      <motion.tr
-                        key={intern.id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.2, delay: i * 0.04 }}
-                        style={{ borderTop: '1px solid var(--border)', background: i % 2 !== 0 ? 'rgba(0,0,0,0.02)' : 'transparent' }}
-                      >
-                        <td className="px-5 py-4">
-                          <p className="font-semibold" style={{ color: 'var(--text)' }}>
+              <>
+                {/* Mobile: card list */}
+                <div className="md:hidden space-y-2 p-3">
+                  {data.interns.map((intern, i) => (
+                    <motion.div
+                      key={intern.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2, delay: i * 0.04 }}
+                      className="rounded-xl p-3"
+                      style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="min-w-0">
+                          <p className="font-bold text-sm truncate" style={{ color: 'var(--text)' }}>
                             {intern.full_name}
-                            {intern.nickname && <span className="ml-2 text-xs font-normal" style={{ color: 'var(--text-3)' }}>({intern.nickname})</span>}
+                            {intern.nickname && <span className="ml-1 font-normal text-xs" style={{ color: 'var(--text-3)' }}>({intern.nickname})</span>}
                           </p>
-                          {intern.course && <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{intern.course}</p>}
-                        </td>
-                        <td className="px-4 py-4 text-center font-bold" style={{ color: intern.total_minutes > 0 ? 'var(--info)' : 'var(--text-3)' }}>
+                          {intern.course && <p className="text-xs truncate" style={{ color: 'var(--text-3)' }}>{intern.course}</p>}
+                        </div>
+                        <span className="font-black text-base flex-shrink-0" style={{ color: intern.total_minutes > 0 ? 'var(--info)' : 'var(--text-3)' }}>
                           {intern.total_minutes > 0 ? minutesToHours(intern.total_minutes) : '—'}
-                        </td>
-                        <td className="px-4 py-4 text-center font-medium" style={{ color: 'var(--text-2)' }}>{intern.total_sessions || '—'}</td>
-                        <td className="px-4 py-4 text-center">
-                          {intern.approved_sessions > 0
-                            ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700">{intern.approved_sessions}</span>
-                            : <span style={{ color: 'var(--text-3)' }}>—</span>}
-                        </td>
-                        <td className="px-4 py-4 text-center">
-                          {intern.pending_sessions > 0
-                            ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-600">{intern.pending_sessions}</span>
-                            : <span style={{ color: 'var(--text-3)' }}>—</span>}
-                        </td>
-                        <td className="px-4 py-4 text-center">
-                          {intern.rejected_sessions > 0
-                            ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600">{intern.rejected_sessions}</span>
-                            : <span style={{ color: 'var(--text-3)' }}>—</span>}
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </tbody>
-                  <tfoot style={{ borderTop: '2px solid var(--border)', background: 'var(--bg)' }}>
-                    <tr>
-                      <td className="px-5 py-3 text-xs font-bold uppercase" style={{ color: 'var(--text-3)' }}>Total</td>
-                      <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--info)' }}>{minutesToHours(totalMinutes)}</td>
-                      <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--text)' }}>{totalSessions}</td>
-                      <td className="px-4 py-3 text-center font-bold text-emerald-600">{totalApproved}</td>
-                      <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--warning)' }}>{totalPending}</td>
-                      <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--danger)' }}>{totalRejected}</td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
+                        </span>
+                      </div>
+                      <div className="flex gap-2 flex-wrap">
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: 'var(--surface)', color: 'var(--text-3)', border: '1px solid var(--border)' }}>
+                          {intern.total_sessions} SESSÕES
+                        </span>
+                        {intern.approved_sessions > 0 && (
+                          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">{intern.approved_sessions} APROV.</span>
+                        )}
+                        {intern.pending_sessions > 0 && (
+                          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-600">{intern.pending_sessions} PEND.</span>
+                        )}
+                        {intern.rejected_sessions > 0 && (
+                          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-600">{intern.rejected_sessions} REPROV.</span>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+                  {/* Mobile total row */}
+                  <div className="rounded-xl p-3 flex items-center justify-between" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                    <span className="text-xs font-bold" style={{ color: 'var(--text-3)' }}>TOTAL — {data.interns.length} ESTAGIÁRIOS</span>
+                    <span className="font-black" style={{ color: 'var(--info)' }}>{minutesToHours(totalMinutes)}</span>
+                  </div>
+                </div>
+                {/* Desktop: full table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
+                        <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Estagiario</th>
+                        <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--info)' }}>Horas</th>
+                        <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Sessoes</th>
+                        <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--success)' }}>Aprov.</th>
+                        <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--warning)' }}>Pend.</th>
+                        <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--danger)' }}>Reprov.</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.interns.map((intern, i) => (
+                        <motion.tr
+                          key={intern.id}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.2, delay: i * 0.04 }}
+                          style={{ borderTop: '1px solid var(--border)', background: i % 2 !== 0 ? 'rgba(0,0,0,0.02)' : 'transparent' }}
+                        >
+                          <td className="px-5 py-4">
+                            <p className="font-semibold" style={{ color: 'var(--text)' }}>
+                              {intern.full_name}
+                              {intern.nickname && <span className="ml-2 text-xs font-normal" style={{ color: 'var(--text-3)' }}>({intern.nickname})</span>}
+                            </p>
+                            {intern.course && <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{intern.course}</p>}
+                          </td>
+                          <td className="px-4 py-4 text-center font-bold" style={{ color: intern.total_minutes > 0 ? 'var(--info)' : 'var(--text-3)' }}>
+                            {intern.total_minutes > 0 ? minutesToHours(intern.total_minutes) : '—'}
+                          </td>
+                          <td className="px-4 py-4 text-center font-medium" style={{ color: 'var(--text-2)' }}>{intern.total_sessions || '—'}</td>
+                          <td className="px-4 py-4 text-center">
+                            {intern.approved_sessions > 0
+                              ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700">{intern.approved_sessions}</span>
+                              : <span style={{ color: 'var(--text-3)' }}>—</span>}
+                          </td>
+                          <td className="px-4 py-4 text-center">
+                            {intern.pending_sessions > 0
+                              ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-600">{intern.pending_sessions}</span>
+                              : <span style={{ color: 'var(--text-3)' }}>—</span>}
+                          </td>
+                          <td className="px-4 py-4 text-center">
+                            {intern.rejected_sessions > 0
+                              ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600">{intern.rejected_sessions}</span>
+                              : <span style={{ color: 'var(--text-3)' }}>—</span>}
+                          </td>
+                        </motion.tr>
+                      ))}
+                    </tbody>
+                    <tfoot style={{ borderTop: '2px solid var(--border)', background: 'var(--bg)' }}>
+                      <tr>
+                        <td className="px-5 py-3 text-xs font-bold uppercase" style={{ color: 'var(--text-3)' }}>Total</td>
+                        <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--info)' }}>{minutesToHours(totalMinutes)}</td>
+                        <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--text)' }}>{totalSessions}</td>
+                        <td className="px-4 py-3 text-center font-bold text-emerald-600">{totalApproved}</td>
+                        <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--warning)' }}>{totalPending}</td>
+                        <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--danger)' }}>{totalRejected}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
             ) : (
               <div className="py-20 text-center" style={{ color: 'var(--text-3)' }}>
                 <BarChart2 size={44} className="mx-auto mb-4" style={{ color: 'var(--text-3)', opacity: 0.35 }} />

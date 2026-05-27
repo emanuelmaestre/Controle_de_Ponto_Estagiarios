@@ -64,7 +64,7 @@ export default function ReportExport({ data, label, disabled }: Props) {
 
   return (
     <>
-      <div className="flex items-center gap-2 no-print">
+      <div className="flex items-center gap-1.5 sm:gap-2 no-print flex-wrap">
         {[
           { onClick: exportExcel, disabled: !!disabled || loading, bg: '#059669', hoverBg: '#10b981', label: loading ? 'Gerando...' : 'Excel', icon: loading ? <Loader2 size={13} className="animate-spin" /> : <FileSpreadsheet size={13} /> },
           { onClick: exportPDF, disabled: !!disabled, bg: '#dc2626', hoverBg: '#ef4444', label: 'PDF', icon: <span>📄</span> },
@@ -76,7 +76,7 @@ export default function ReportExport({ data, label, disabled }: Props) {
             disabled={dis}
             whileHover={{ scale: 1.04, y: -1 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-1.5 text-white font-semibold text-sm px-4 py-2 rounded-xl disabled:opacity-40 shadow-sm"
+            className="flex items-center gap-1.5 text-white font-semibold text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-xl disabled:opacity-40 shadow-sm"
             style={{ background: bg }}
           >
             {icon} {label}

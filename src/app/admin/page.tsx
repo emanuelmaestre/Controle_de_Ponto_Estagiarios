@@ -100,7 +100,7 @@ export default async function AdminPage() {
         </FadeIn>
 
         {/* Stats row */}
-        <div className="grid grid-cols-4 gap-3 flex-shrink-0">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 flex-shrink-0">
           {stats.map((s, i) => (
             <FadeIn key={s.label} delay={i * 0.04}>
               <div

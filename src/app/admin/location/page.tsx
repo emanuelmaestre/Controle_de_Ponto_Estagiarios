@@ -160,53 +160,69 @@ export default async function LocationPage() {
                 <p className="text-sm font-bold">NENHUMA TENTATIVA BLOQUEADA</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                      {['Usuário', 'Data/Hora', 'Status', 'Distância', 'Precisão', 'Motivo'].map(h => (
-                        <th
-                          key={h}
-                          className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider"
-                          style={{ color: 'var(--text-3)' }}
-                        >
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {attempts.map((a, i) => (
-                      <tr
-                        key={a.id}
-                        style={{
-                          borderBottom: i < attempts.length - 1 ? '1px solid var(--border)' : 'none',
-                          background: i % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.02)',
-                        }}
-                      >
-                        <td className="px-4 py-3 font-medium" style={{ color: 'var(--text)' }}>
-                          {a.user_name ?? '—'}
-                        </td>
-                        <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-2)' }}>
-                          {formatDateTime(a.attempted_at)}
-                        </td>
-                        <td className="px-4 py-3">
-                          <StatusBadge status={a.geo_status} />
-                        </td>
-                        <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-2)' }}>
+              <>
+                {/* Mobile: card list */}
+                <div className="md:hidden space-y-2 p-3">
+                  {attempts.map(a => (
+                    <div
+                      key={a.id}
+                      className="rounded-xl p-3"
+                      style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-bold text-sm truncate" style={{ color: 'var(--text)' }}>{a.user_name ?? '—'}</span>
+                        <StatusBadge status={a.geo_status} />
+                      </div>
+                      <div className="text-xs space-y-0.5" style={{ color: 'var(--text-3)' }}>
+                        <p>{formatDateTime(a.attempted_at)}</p>
+                        <p>
                           {a.geo_distance != null ? `${a.geo_distance}m` : '—'}
-                        </td>
-                        <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-3)' }}>
-                          {a.geo_accuracy != null ? `±${Math.round(a.geo_accuracy)}m` : '—'}
-                        </td>
-                        <td className="px-4 py-3 max-w-xs" style={{ color: 'var(--text-3)' }}>
-                          <span className="truncate block text-xs">{a.block_reason ?? '—'}</span>
-                        </td>
+                          {a.geo_accuracy != null ? ` · ±${Math.round(a.geo_accuracy)}m` : ''}
+                        </p>
+                        {a.block_reason && <p className="truncate">{a.block_reason}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {/* Desktop: full table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                        {['Usuário', 'Data/Hora', 'Status', 'Distância', 'Precisão', 'Motivo'].map(h => (
+                          <th
+                            key={h}
+                            className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider"
+                            style={{ color: 'var(--text-3)' }}
+                          >
+                            {h}
+                          </th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {attempts.map((a, i) => (
+                        <tr
+                          key={a.id}
+                          style={{
+                            borderBottom: i < attempts.length - 1 ? '1px solid var(--border)' : 'none',
+                            background: i % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.02)',
+                          }}
+                        >
+                          <td className="px-4 py-3 font-medium" style={{ color: 'var(--text)' }}>{a.user_name ?? '—'}</td>
+                          <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-2)' }}>{formatDateTime(a.attempted_at)}</td>
+                          <td className="px-4 py-3"><StatusBadge status={a.geo_status} /></td>
+                          <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-2)' }}>{a.geo_distance != null ? `${a.geo_distance}m` : '—'}</td>
+                          <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-3)' }}>{a.geo_accuracy != null ? `±${Math.round(a.geo_accuracy)}m` : '—'}</td>
+                          <td className="px-4 py-3 max-w-xs" style={{ color: 'var(--text-3)' }}>
+                            <span className="truncate block text-xs">{a.block_reason ?? '—'}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </FadeIn>
@@ -238,55 +254,68 @@ export default async function LocationPage() {
                 <p className="text-sm font-bold">NENHUM REGISTRO COM LOCALIZACAO AINDA</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                      {['Usuário', 'Entrada', 'Status', 'Distância', 'Precisão', 'Coordenadas'].map(h => (
-                        <th
-                          key={h}
-                          className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider"
-                          style={{ color: 'var(--text-3)' }}
-                        >
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {records.map((r, i) => (
-                      <tr
-                        key={r.id}
-                        style={{
-                          borderBottom: i < records.length - 1 ? '1px solid var(--border)' : 'none',
-                          background: i % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.02)',
-                        }}
-                      >
-                        <td className="px-4 py-3 font-medium" style={{ color: 'var(--text)' }}>
-                          {r.profiles?.full_name ?? '—'}
-                        </td>
-                        <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-2)' }}>
-                          {formatDateTime(r.clock_in)}
-                        </td>
-                        <td className="px-4 py-3">
-                          <StatusBadge status={r.geo_status ?? 'unknown'} />
-                        </td>
-                        <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-2)' }}>
+              <>
+                {/* Mobile: card list */}
+                <div className="md:hidden space-y-2 p-3">
+                  {records.map(r => (
+                    <div
+                      key={r.id}
+                      className="rounded-xl p-3"
+                      style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-bold text-sm truncate" style={{ color: 'var(--text)' }}>{r.profiles?.full_name ?? '—'}</span>
+                        <StatusBadge status={r.geo_status ?? 'unknown'} />
+                      </div>
+                      <div className="text-xs space-y-0.5" style={{ color: 'var(--text-3)' }}>
+                        <p>{formatDateTime(r.clock_in)}</p>
+                        <p>
                           {r.geo_distance != null ? `${r.geo_distance}m` : '—'}
-                        </td>
-                        <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-3)' }}>
-                          {r.geo_accuracy != null ? `±${Math.round(r.geo_accuracy)}m` : '—'}
-                        </td>
-                        <td className="px-4 py-3 font-mono text-xs" style={{ color: 'var(--text-3)' }}>
-                          {r.geo_lat != null && r.geo_lng != null
-                            ? `${r.geo_lat.toFixed(5)}, ${r.geo_lng.toFixed(5)}`
-                            : '—'}
-                        </td>
+                          {r.geo_accuracy != null ? ` · ±${Math.round(r.geo_accuracy)}m` : ''}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {/* Desktop: full table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                        {['Usuário', 'Entrada', 'Status', 'Distância', 'Precisão', 'Coordenadas'].map(h => (
+                          <th
+                            key={h}
+                            className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider"
+                            style={{ color: 'var(--text-3)' }}
+                          >
+                            {h}
+                          </th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {records.map((r, i) => (
+                        <tr
+                          key={r.id}
+                          style={{
+                            borderBottom: i < records.length - 1 ? '1px solid var(--border)' : 'none',
+                            background: i % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.02)',
+                          }}
+                        >
+                          <td className="px-4 py-3 font-medium" style={{ color: 'var(--text)' }}>{r.profiles?.full_name ?? '—'}</td>
+                          <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-2)' }}>{formatDateTime(r.clock_in)}</td>
+                          <td className="px-4 py-3"><StatusBadge status={r.geo_status ?? 'unknown'} /></td>
+                          <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-2)' }}>{r.geo_distance != null ? `${r.geo_distance}m` : '—'}</td>
+                          <td className="px-4 py-3 tabular-nums" style={{ color: 'var(--text-3)' }}>{r.geo_accuracy != null ? `±${Math.round(r.geo_accuracy)}m` : '—'}</td>
+                          <td className="px-4 py-3 font-mono text-xs" style={{ color: 'var(--text-3)' }}>
+                            {r.geo_lat != null && r.geo_lng != null ? `${r.geo_lat.toFixed(5)}, ${r.geo_lng.toFixed(5)}` : '—'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </FadeIn>

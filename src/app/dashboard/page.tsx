@@ -165,7 +165,7 @@ export default async function DashboardPage() {
         {/* ── Hero: Anel de progresso ─────────────────── */}
         <FadeIn delay={0}>
           <div
-            className="rounded-3xl p-6"
+            className="rounded-3xl p-4 sm:p-6"
             style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow-md)' }}
           >
             {/* Status badge */}
@@ -180,8 +180,8 @@ export default async function DashboardPage() {
             </div>
 
             {/* Ring + info */}
-            <div className="flex items-center gap-6">
-              <ProgressRing pct={pct} size={120} strokeWidth={11} color={status.color}>
+            <div className="flex items-center gap-4 sm:gap-6">
+              <ProgressRing pct={pct} size={100} strokeWidth={10} color={status.color}>
                 <div className="text-center">
                   <p className="text-2xl font-black leading-none" style={{ color: status.color }}>{pct}%</p>
                   <p className="text-[9px] font-bold mt-0.5" style={{ color: 'var(--text-3)' }}>CUMPRIDO</p>
