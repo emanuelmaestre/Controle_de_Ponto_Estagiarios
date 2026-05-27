@@ -33,7 +33,7 @@ export default async function InternsPage() {
 
       {/* Header compacto */}
       <div className="flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+        <div className="px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <BackButton href="/admin" />
             <div className="w-px h-4 flex-shrink-0" style={{ background: 'var(--border)' }} />
@@ -59,7 +59,7 @@ export default async function InternsPage() {
         className="flex-1 min-h-0 overflow-y-auto"
         style={{ scrollbarWidth: 'thin' }}
       >
-        <main className="max-w-4xl mx-auto px-4 sm:px-6 py-4 space-y-6">
+        <main className="px-4 sm:px-6 py-4 space-y-6">
 
           {/* Ativos */}
           <section>

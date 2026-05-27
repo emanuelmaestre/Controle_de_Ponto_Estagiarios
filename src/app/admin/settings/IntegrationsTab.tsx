@@ -22,22 +22,22 @@ const SERVICES: Service[] = [
 ]
 
 const STACK_INFO = [
-  { label: 'REACT',           version: '19.2',   color: '#61dafb' },
-  { label: 'NEXT.JS',         version: '16.2.6', color: '#ffffff' },
-  { label: 'TYPESCRIPT',      version: '5',      color: '#3178c6' },
-  { label: 'TAILWIND CSS',    version: '4',      color: '#38bdf8' },
+  { label: 'BCRYPTJS',        version: '3.0',    color: '#10b981' },
   { label: 'FRAMER MOTION',   version: '12',     color: '#ff0055' },
-  { label: 'SUPABASE JS',     version: '2.106',  color: '#3ecf8e' },
+  { label: 'LUCIDE REACT',    version: '1.16',   color: '#fbbf24' },
+  { label: 'NEXT.JS',         version: '16.2.6', color: '#ffffff' },
+  { label: 'REACT',           version: '19.2',   color: '#61dafb' },
   { label: 'REACT HOOK FORM', version: '7.76',   color: '#ec4899' },
+  { label: 'REACT QUERY',     version: '5.100',  color: '#ef4444' },
+  { label: 'RECHARTS',        version: '3.8',    color: '#22d3ee' },
+  { label: 'SONNER',          version: '2.0',    color: '#8b5cf6' },
+  { label: 'SUPABASE JS',     version: '2.106',  color: '#3ecf8e' },
+  { label: 'SWR',             version: '2.4',    color: '#a78bfa' },
+  { label: 'TAILWIND CSS',    version: '4',      color: '#38bdf8' },
+  { label: 'TYPESCRIPT',      version: '5',      color: '#3178c6' },
+  { label: 'XLSX',            version: '0.18',   color: '#84cc16' },
   { label: 'ZOD',             version: '4.4',    color: '#60a5fa' },
   { label: 'ZUSTAND',         version: '5.0',    color: '#f97316' },
-  { label: 'LUCIDE REACT',    version: '1.16',   color: '#fbbf24' },
-  { label: 'SONNER',          version: '2.0',    color: '#8b5cf6' },
-  { label: 'RECHARTS',        version: '3.8',    color: '#22d3ee' },
-  { label: 'REACT QUERY',     version: '5.100',  color: '#ef4444' },
-  { label: 'BCRYPTJS',        version: '3.0',    color: '#10b981' },
-  { label: 'XLSX',            version: '0.18',   color: '#84cc16' },
-  { label: 'SWR',             version: '2.4',    color: '#a78bfa' },
 ]
 
 export default function IntegrationsTab() {
