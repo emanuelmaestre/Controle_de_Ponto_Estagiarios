@@ -35,6 +35,7 @@ const internBase = z.object({
     .string()
     .min(3, 'Nome deve ter no mínimo 3 caracteres')
     .max(100, 'Nome muito longo'),
+  nickname: z.string().max(50).optional(),
   email: z.string().email('E-mail inválido'),
   course: z.string().max(100, 'Curso muito longo').optional(),
   internship_start: z.string().optional(),
