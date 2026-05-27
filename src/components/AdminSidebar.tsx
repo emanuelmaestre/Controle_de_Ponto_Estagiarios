@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Home, Users, CheckSquare, BarChart2, Settings,
   MapPin, TrendingUp, LogOut, ChevronRight, Leaf,
-  Bell
+  Bell, GraduationCap, BookOpen, ChevronDown
 } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 
@@ -45,8 +45,15 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
   const [expanded, setExpanded] = useState(true)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    setMounted(true)
+    const check = () => setIsDesktop(window.innerWidth >= 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   const isActive = (href: string, end?: boolean) => {
     if (end) return pathname === href
@@ -61,10 +68,10 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
   return (
     <>
       {/* ════════════════════════════════════════════
-          MOBILE: Top bar (md:hidden)
+          MOBILE: Top bar (mobile only)
           ════════════════════════════════════════════ */}
-      <div
-        className="md:hidden flex items-center justify-between px-4 flex-shrink-0 z-40"
+      {!isDesktop && <div
+        className="flex items-center justify-between px-4 flex-shrink-0 z-40"
         style={{
           height: 52,
           background: 'var(--nav-bg)',
@@ -97,15 +104,15 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
           )}
           <ThemeToggle compact />
         </div>
-      </div>
+      </div>}
 
       {/* ════════════════════════════════════════════
-          DESKTOP: Left sidebar (hidden on mobile)
+          DESKTOP: Left sidebar (desktop only)
           ════════════════════════════════════════════ */}
-      <motion.aside
+      {isDesktop && <motion.aside
         animate={{ width: expanded ? SIDEBAR_W_EXPANDED : SIDEBAR_W_COLLAPSED }}
         transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-        className="relative hidden md:flex flex-col flex-shrink-0 z-40"
+        className="relative flex flex-col flex-shrink-0 z-40"
         style={{
           height: '100dvh',
           background: 'var(--nav-bg)',
@@ -392,13 +399,13 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
         >
           <Leaf size={28} style={{ color: '#4ade80' }} />
         </motion.div>
-      </motion.aside>
+      </motion.aside>}
 
       {/* ════════════════════════════════════════════
-          MOBILE: Bottom nav bar (md:hidden)
+          MOBILE: Bottom nav bar (mobile only)
           ════════════════════════════════════════════ */}
-      <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex"
+      {!isDesktop && <nav
+        className="fixed bottom-0 left-0 right-0 z-50 flex"
         style={{
           background: 'var(--nav-bg)',
           borderTop: '1px solid rgba(255,255,255,0.08)',
@@ -446,7 +453,7 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
             </Link>
           )
         })}
-      </nav>
+      </nav>}
     </>
   )
 }
