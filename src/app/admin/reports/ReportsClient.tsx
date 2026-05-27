@@ -157,7 +157,7 @@ export default function ReportsClient() {
             </a>
             <div className="w-px h-5 hidden sm:block" style={{ background: 'var(--border)' }} />
             <div className="min-w-0">
-              <h1 className="font-bold text-base sm:text-lg leading-tight" style={{ color: 'var(--text)' }}>RELATORIOS</h1>
+              <h1 className="font-bold text-base sm:text-lg leading-tight" style={{ color: 'var(--text)' }}>RELATÓRIOS</h1>
               {data && applied && (
                 <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-3)' }}>
                   {periodTypeLabels[data.type].toUpperCase()} &middot; {data.label}
@@ -181,7 +181,7 @@ export default function ReportsClient() {
           style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
         >
           <h2 className="text-sm font-bold mb-3 sm:mb-4 flex items-center gap-2" style={{ color: 'var(--text)' }}>
-            <Search size={15} style={{ color: 'var(--primary)' }} /> FILTRAR POR PERIODO
+            <Search size={15} style={{ color: 'var(--primary)' }} /> FILTRAR POR PERÍODO
           </h2>
 
           <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-5">
@@ -465,7 +465,7 @@ export default function ReportsClient() {
         {!data && !loading && !error && (
           <div className="py-20 text-center" style={{ color: 'var(--text-3)' }}>
             <Search size={44} className="mx-auto mb-4" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
-            <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>SELECIONE UM PERIODO</p>
+            <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>SELECIONE UM PERÍODO</p>
             <p className="text-xs mt-1">Configure o filtro acima e clique em Aplicar filtro.</p>
           </div>
         )}

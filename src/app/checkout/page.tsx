@@ -38,7 +38,7 @@ export default async function CheckoutPage({ searchParams }: Props) {
     <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
       <header className="flex-shrink-0" style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
-          <h1 className="font-bold text-base" style={{ color: 'white' }}>REGISTRAR SAIDA</h1>
+          <h1 className="font-bold text-base" style={{ color: 'white' }}>REGISTRAR SAÍDA</h1>
           <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>
             Entrada as {formatTime(record.clock_in)}
           </p>

@@ -16,10 +16,10 @@ interface Service {
 }
 
 const SERVICES: Service[] = [
-  { key: 'supabase', label: 'SUPABASE', description: 'BANCO DE DADOS E AUTENTICACAO', icon: <Database size={20} />, docs: 'https://supabase.com', version: '@supabase/ssr' },
-  { key: 'vercel',   label: 'VERCEL',   description: 'HOSPEDAGEM E DEPLOY CONTINUO',  icon: <Cloud    size={20} />, docs: 'https://vercel.com',   version: 'PRODUCAO' },
+  { key: 'supabase', label: 'SUPABASE', description: 'BANCO DE DADOS E AUTENTICAÇÃO', icon: <Database size={20} />, docs: 'https://supabase.com', version: '@supabase/ssr' },
+  { key: 'vercel',   label: 'VERCEL',   description: 'HOSPEDAGEM E DEPLOY CONTÍNUO',  icon: <Cloud    size={20} />, docs: 'https://vercel.com',   version: 'PRODUÇÃO' },
   { key: 'nextjs',   label: 'NEXT.JS',  description: 'FRAMEWORK FULL-STACK (v16)',    icon: <Zap      size={20} />, docs: 'https://nextjs.org',   version: '16.2.6' },
-  { key: 'github',   label: 'GITHUB',   description: 'CONTROLE DE VERSAO E CI/CD',   icon: <GitBranch size={20} />, docs: 'https://github.com',  version: 'MAIN' },
+  { key: 'github',   label: 'GITHUB',   description: 'CONTROLE DE VERSÃO E CI/CD',   icon: <GitBranch size={20} />, docs: 'https://github.com',  version: 'MAIN' },
 ]
 
 const STACK_INFO = [
@@ -90,10 +90,10 @@ export default function IntegrationsTab() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-bold" style={{ color: 'var(--text)' }}>
-            STATUS DOS SERVICOS
+            STATUS DOS SERVIÇOS
           </p>
           <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
-            {totalOnline}/{totalServices} SERVICOS OPERACIONAIS
+            {totalOnline}/{totalServices} SERVIÇOS OPERACIONAIS
             {lastChecked && ` — VERIFICADO ${lastChecked.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
           </p>
         </div>
@@ -210,7 +210,7 @@ export default function IntegrationsTab() {
 
       {/* Stack / Packages */}
       <div>
-        <p className="text-xs font-bold mb-3" style={{ color: 'var(--text-3)' }}>BIBLIOTECAS E DEPENDENCIAS</p>
+        <p className="text-xs font-bold mb-3" style={{ color: 'var(--text-3)' }}>BIBLIOTECAS E DEPENDÊNCIAS</p>
         <div className="flex flex-wrap gap-2">
           {STACK_INFO.map(pkg => (
             <motion.span

@@ -70,8 +70,8 @@ export default async function HistoryPage() {
             &larr;
           </Link>
           <div>
-            <h1 className="font-bold text-base" style={{ color: 'var(--nav-fg)' }}>MEU HISTORICO</h1>
-            <p className="text-[10px]" style={{ color: 'var(--nav-muted)' }}>ULTIMOS 60 DIAS DE REGISTRO</p>
+            <h1 className="font-bold text-base" style={{ color: 'var(--nav-fg)' }}>MEU HISTÓRICO</h1>
+            <p className="text-[10px]" style={{ color: 'var(--nav-muted)' }}>ÚLTIMOS 60 DIAS DE REGISTRO</p>
           </div>
         </div>
       </header>
@@ -141,7 +141,7 @@ export default async function HistoryPage() {
                     )}
                     {record.status === 'rejected' && record.rejection_reason && (
                       <div className="px-4 py-3" style={{ background: 'rgba(220,38,38,0.06)', borderTop: '1px solid rgba(220,38,38,0.15)' }}>
-                        <p className="text-[9px] font-bold mb-0.5" style={{ color: 'var(--danger)' }}>MOTIVO DA REPROVACAO</p>
+                        <p className="text-[9px] font-bold mb-0.5" style={{ color: 'var(--danger)' }}>MOTIVO DA REPROVAÇÃO</p>
                         <p className="text-xs" style={{ color: 'var(--danger)', opacity: 0.85 }}>{record.rejection_reason}</p>
                       </div>
                     )}
@@ -169,7 +169,7 @@ export default async function HistoryPage() {
           </Link>
           <Link href="/history" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--primary)' }}>
             <ClipboardList size={18} />
-            <span className="text-[10px] font-bold">HISTORICO</span>
+            <span className="text-[10px] font-bold">HISTÓRICO</span>
           </Link>
           <form action="/api/auth/signout" method="POST" className="flex-1">
             <button type="submit" className="w-full flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>

@@ -32,7 +32,7 @@ export default async function ApprovalsPage() {
           <div className="w-px h-4 flex-shrink-0" style={{ background: 'var(--border)' }} />
           <div className="flex items-center gap-2">
             <CheckSquare size={14} style={{ color: 'var(--primary)' }} />
-            <h1 className="font-bold text-sm" style={{ color: 'var(--text)' }}>APROVACOES</h1>
+            <h1 className="font-bold text-sm" style={{ color: 'var(--text)' }}>APROVAÇÕES</h1>
             {count > 0 ? (
               <span className="text-[10px] font-black px-2 py-0.5 rounded-full" style={{ background: 'var(--danger)', color: 'white' }}>
                 {count}
@@ -88,13 +88,13 @@ export default async function ApprovalsPage() {
                           value: new Date(record.clock_in).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' })
                         },
                         {
-                          label: 'SAIDA',
+                          label: 'SAÍDA',
                           value: record.clock_out
                             ? new Date(record.clock_out).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' })
                             : '—'
                         },
                         {
-                          label: 'DURACAO',
+                          label: 'DURAÇÃO',
                           value: record.duration_minutes ? minutesToHours(record.duration_minutes) : '—'
                         },
                       ].map(s => (
@@ -120,7 +120,7 @@ export default async function ApprovalsPage() {
 
                     {record.notes && (
                       <div className="px-4 py-2.5" style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}>
-                        <p className="text-[9px] font-bold mb-0.5" style={{ color: 'var(--text-3)' }}>OBSERVACOES</p>
+                        <p className="text-[9px] font-bold mb-0.5" style={{ color: 'var(--text-3)' }}>OBSERVAÇÕES</p>
                         <p className="text-xs italic" style={{ color: 'var(--text-2)' }}>{record.notes}</p>
                       </div>
                     )}

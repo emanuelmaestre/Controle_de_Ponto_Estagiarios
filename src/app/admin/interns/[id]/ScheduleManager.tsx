@@ -98,9 +98,9 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
         }
       }
 
-      toast.success('HORARIO SALVO COM SUCESSO')
+      toast.success('HORÁRIO SALVO COM SUCESSO')
     } catch (e) {
-      toast.error('ERRO AO SALVAR HORARIO')
+      toast.error('ERRO AO SALVAR HORÁRIO')
       console.error(e)
     } finally {
       setSaving(false)
@@ -114,7 +114,7 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-bold" style={{ color: 'var(--text)' }}>CARGA HORARIA TOTAL</p>
-            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>TOTAL DE HORAS A CUMPRIR NO PERIODO</p>
+            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>TOTAL DE HORAS A CUMPRIR NO PERÍODO</p>
           </div>
           <div className="flex items-center gap-2">
             <input
@@ -215,7 +215,7 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
                       {(['start', 'end'] as const).map(f => (
                         <div key={f}>
                           <label className="text-[10px] font-bold block mb-1" style={{ color: 'var(--text-3)' }}>
-                            {f === 'start' ? 'ENTRADA' : 'SAIDA'}
+                            {f === 'start' ? 'ENTRADA' : 'SAÍDA'}
                           </label>
                           <div className="relative">
                             <Clock size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-3)' }} />
@@ -252,7 +252,7 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.98 }}
       >
-        {saving ? 'SALVANDO...' : 'SALVAR HORARIO'}
+        {saving ? 'SALVANDO...' : 'SALVAR HORÁRIO'}
       </motion.button>
     </div>
   )

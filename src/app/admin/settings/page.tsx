@@ -42,9 +42,9 @@ export default async function SettingsPage({ searchParams }: Props) {
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'geral',       label: 'GERAL',        icon: <SettingsIcon size={14} /> },
-    { key: 'localizacao', label: 'LOCALIZACAO',  icon: <MapPin size={14} /> },
-    { key: 'integracoes', label: 'INTEGRACOES',  icon: <Plug size={14} /> },
-    { key: 'seguranca',   label: 'SEGURANCA',    icon: <Shield size={14} /> },
+    { key: 'localizacao', label: 'LOCALIZAÇÃO',  icon: <MapPin size={14} /> },
+    { key: 'integracoes', label: 'INTEGRAÇÕES',  icon: <Plug size={14} /> },
+    { key: 'seguranca',   label: 'SEGURANÇA',    icon: <Shield size={14} /> },
   ]
 
   return (
@@ -59,7 +59,7 @@ export default async function SettingsPage({ searchParams }: Props) {
               &larr; PAINEL
             </Link>
             <div>
-              <h1 className="font-bold text-lg" style={{ color: 'var(--text)' }}>CONFIGURACOES</h1>
+              <h1 className="font-bold text-lg" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES</h1>
               <p className="text-xs" style={{ color: 'var(--text-3)' }}>AJUSTES DO SISTEMA</p>
             </div>
           </div>
@@ -87,8 +87,8 @@ export default async function SettingsPage({ searchParams }: Props) {
         {activeTab === 'geral' && (
           <FadeIn>
           <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-            <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>CONFIGURACOES DO LABORATORIO</h2>
-            <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>HORARIOS DE LEMBRETE, HORAS ESPERADAS E E-MAIL DE RELATORIO.</p>
+            <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES DO LABORATÓRIO</h2>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>HORÁRIOS DE LEMBRETE, HORAS ESPERADAS E E-MAIL DE RELATÓRIO.</p>
             <SettingsForm settings={settings} />
           </div>
           </FadeIn>
@@ -99,10 +99,10 @@ export default async function SettingsPage({ searchParams }: Props) {
           <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <div className="flex items-center gap-2 mb-1">
               <MapPin size={16} style={{ color: 'var(--primary)' }} />
-              <h2 className="font-semibold" style={{ color: 'var(--text)' }}>CONTROLE DE LOCALIZACAO</h2>
+              <h2 className="font-semibold" style={{ color: 'var(--text)' }}>CONTROLE DE LOCALIZAÇÃO</h2>
             </div>
             <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
-              EXIGE QUE OS ESTAGIARIOS ESTEJAM FISICAMENTE NO LABORATORIO PARA REGISTRAR O PONTO.
+              EXIGE QUE OS ESTAGIÁRIOS ESTEJAM FISICAMENTE NO LABORATÓRIO PARA REGISTRAR O PONTO.
             </p>
             <GeoSettings config={geoConfig} />
           </div>
@@ -114,10 +114,10 @@ export default async function SettingsPage({ searchParams }: Props) {
           <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <div className="flex items-center gap-2 mb-1">
               <Plug size={16} style={{ color: 'var(--primary)' }} />
-              <h2 className="font-semibold" style={{ color: 'var(--text)' }}>INTEGRACOES E STACKS</h2>
+              <h2 className="font-semibold" style={{ color: 'var(--text)' }}>INTEGRAÇÕES E STACKS</h2>
             </div>
             <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
-              STATUS EM TEMPO REAL DOS SERVICOS E DEPENDENCIAS DO SISTEMA.
+              STATUS EM TEMPO REAL DOS SERVIÇOS E DEPENDÊNCIAS DO SISTEMA.
             </p>
             <IntegrationsTab />
           </div>
@@ -129,7 +129,7 @@ export default async function SettingsPage({ searchParams }: Props) {
           <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>SEU PIN DE ACESSO RAPIDO</h2>
             <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
-              O PIN PERMITE QUE VOCE ENTRE NO SISTEMA SEM DIGITAR E-MAIL E SENHA.
+              O PIN PERMITE QUE VOCÊ ENTRE NO SISTEMA SEM DIGITAR E-MAIL E SENHA.
             </p>
             <ChangePinForm userId={user.id} />
           </div>

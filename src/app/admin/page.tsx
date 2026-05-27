@@ -32,7 +32,7 @@ export default async function AdminPage() {
   const avatarColors = ['#3b82f6','#8b5cf6','#ec4899','#10b981','#f59e0b','#06b6d4']
 
   const statusCfg: Record<string, { label: string; color: string; bg: string; border: string }> = {
-    ativo:   { label: 'NO LABORATORIO', color: 'var(--success)', bg: 'rgba(22,163,74,0.10)',  border: 'rgba(22,163,74,0.25)'  },
+    ativo:   { label: 'NO LABORATÓRIO', color: 'var(--success)', bg: 'rgba(22,163,74,0.10)',  border: 'rgba(22,163,74,0.25)'  },
     saiu:    { label: 'SAIU HOJE',      color: 'var(--info)',    bg: 'rgba(14,165,233,0.10)', border: 'rgba(14,165,233,0.25)' },
     ausente: { label: 'AUSENTE',        color: 'var(--text-3)',  bg: 'var(--bg)',             border: 'var(--border)'         },
   }
@@ -48,9 +48,9 @@ export default async function AdminPage() {
     },
     {
       icon: <Users size={16} />,
-      label: 'ESTAGIARIOS',
+      label: 'ESTAGIÁRIOS',
       value: totalCount,
-      sub: `${saiuCount} sairam hoje`,
+      sub: `${saiuCount} saíram hoje`,
       color: 'var(--info)',
       bg: 'rgba(14,165,233,0.08)',
     },
@@ -58,7 +58,7 @@ export default async function AdminPage() {
       icon: <Clock size={16} />,
       label: 'PENDENTES',
       value: totalPending,
-      sub: totalPending > 0 ? 'aguardam revisao' : 'tudo em dia',
+      sub: totalPending > 0 ? 'aguardam revisão' : 'tudo em dia',
       color: totalPending > 0 ? 'var(--warning)' : 'var(--text-3)',
       bg: totalPending > 0 ? 'rgba(217,119,6,0.08)' : 'var(--bg)',
     },
@@ -94,7 +94,7 @@ export default async function AdminPage() {
               className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold px-3 py-2 rounded-xl transition-all hover:opacity-90"
               style={{ background: 'var(--primary)', color: 'white' }}
             >
-              + NOVO ESTAGIARIO
+              + NOVO ESTAGIÁRIO
             </Link>
           </div>
         </FadeIn>
@@ -129,10 +129,10 @@ export default async function AdminPage() {
                 <Clock size={16} style={{ color: 'var(--warning)', flexShrink: 0 }} />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold" style={{ color: 'var(--warning)' }}>
-                    {totalPending} {totalPending === 1 ? 'REGISTRO PENDENTE' : 'REGISTROS PENDENTES'} DE APROVACAO
+                    {totalPending} {totalPending === 1 ? 'REGISTRO PENDENTE' : 'REGISTROS PENDENTES'} DE APROVAÇÃO
                   </p>
                   <p className="text-[10px] truncate" style={{ color: 'var(--warning)', opacity: 0.75 }}>
-                    Clique para revisar e aprovar os registros aguardando sua analise.
+                    Clique para revisar e aprovar os registros aguardando sua análise.
                   </p>
                 </div>
                 <span
@@ -153,7 +153,7 @@ export default async function AdminPage() {
               <div className="flex items-center gap-2">
                 <TrendingUp size={14} style={{ color: 'var(--primary)' }} />
                 <h2 className="text-[10px] font-bold" style={{ color: 'var(--text)' }}>
-                  ESTAGIARIOS &mdash; HOJE
+                  ESTAGIÁRIOS &mdash; HOJE
                 </h2>
               </div>
               <Link
@@ -242,14 +242,14 @@ export default async function AdminPage() {
                 style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
                 <Users size={44} className="mx-auto mb-3" style={{ color: "var(--text-3)", opacity: 0.35 }} />
-                <p className="font-bold text-sm mb-1" style={{ color: 'var(--text)' }}>NENHUM ESTAGIARIO CADASTRADO</p>
-                <p className="text-xs mb-4" style={{ color: 'var(--text-3)' }}>Comece adicionando o primeiro estagiario.</p>
+                <p className="font-bold text-sm mb-1" style={{ color: 'var(--text)' }}>NENHUM ESTAGIÁRIO CADASTRADO</p>
+                <p className="text-xs mb-4" style={{ color: 'var(--text-3)' }}>Comece adicionando o primeiro estagiário.</p>
                 <Link
                   href="/admin/interns/new"
                   className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold transition-all hover:opacity-90"
                   style={{ background: 'var(--primary)', color: 'white' }}
                 >
-                  + ADICIONAR ESTAGIARIO
+                  + ADICIONAR ESTAGIÁRIO
                 </Link>
               </div>
             </FadeIn>

@@ -22,17 +22,17 @@ function getHourStatus(pct: number) {
     bg: 'rgba(22,163,74,0.10)',
     border: 'rgba(22,163,74,0.25)',
     icon: <Trophy size={20} />,
-    msg: 'Parabens! Voce completou sua carga horaria do mes.',
-    sub: 'Continue sendo um exemplo de dedicacao e compromisso.',
+    msg: 'Parabéns! Você completou sua carga horária do mês.',
+    sub: 'Continue sendo um exemplo de dedicação e compromisso.',
   }
   if (pct >= 80) return {
-    label: 'QUASE LA',
+    label: 'QUASE LÁ',
     color: 'var(--info)',
     bg: 'rgba(14,165,233,0.10)',
     border: 'rgba(14,165,233,0.25)',
     icon: <Rocket size={20} />,
-    msg: 'Voce esta quase la! Falta pouco para completar sua meta.',
-    sub: 'Mantenha o ritmo — voce esta indo muito bem!',
+    msg: 'Você está quase lá! Falta pouco para completar sua meta.',
+    sub: 'Mantenha o ritmo — você está indo muito bem!',
   }
   if (pct >= 50) return {
     label: 'EM DIA',
@@ -40,17 +40,17 @@ function getHourStatus(pct: number) {
     bg: 'rgba(30,92,45,0.10)',
     border: 'rgba(30,92,45,0.25)',
     icon: <Dumbbell size={20} />,
-    msg: 'Otimo progresso! Voce esta na metade do caminho.',
+    msg: 'Ótimo progresso! Você está na metade do caminho.',
     sub: 'Continue comparecendo para manter sua carga em dia.',
   }
   if (pct >= 25) return {
-    label: 'ATENCAO',
+    label: 'ATENÇÃO',
     color: 'var(--warning)',
     bg: 'rgba(217,119,6,0.10)',
     border: 'rgba(217,119,6,0.25)',
     icon: <Zap size={20} />,
-    msg: 'Voce esta progredindo, mas ainda ha horas a cumprir.',
-    sub: 'Organize sua agenda para manter o ritmo e evitar pendencias.',
+    msg: 'Você está progredindo, mas ainda há horas a cumprir.',
+    sub: 'Organize sua agenda para manter o ritmo e evitar pendências.',
   }
   return {
     label: 'HORAS PENDENTES',
@@ -58,8 +58,8 @@ function getHourStatus(pct: number) {
     bg: 'rgba(220,38,38,0.10)',
     border: 'rgba(220,38,38,0.25)',
     icon: <Target size={20} />,
-    msg: 'Atencao: suas horas precisam de dedicacao agora.',
-    sub: 'Cada presenca conta. Voce ainda pode regularizar sua situacao!',
+    msg: 'Atenção: suas horas precisam de dedicação agora.',
+    sub: 'Cada presença conta. Você ainda pode regularizar sua situação!',
   }
 }
 
@@ -281,7 +281,7 @@ export default async function DashboardPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-bold" style={{ color: 'var(--text)' }}>
-                  HORARIO PREVISTO HOJE
+                  HORÁRIO PREVISTO HOJE
                 </p>
                 <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
                   {todaySchedule.expected_start?.slice(0, 5)} &mdash; {todaySchedule.expected_end?.slice(0, 5)}
@@ -311,10 +311,10 @@ export default async function DashboardPage() {
               <AlertTriangle size={18} style={{ color: 'var(--warning)', flexShrink: 0 }} />
               <div>
                 <p className="text-[10px] font-bold" style={{ color: 'var(--warning)' }}>
-                  {monthData!.pending_sessions} {monthData!.pending_sessions === 1 ? 'REGISTRO PENDENTE' : 'REGISTROS PENDENTES'} DE APROVACAO
+                  {monthData!.pending_sessions} {monthData!.pending_sessions === 1 ? 'REGISTRO PENDENTE' : 'REGISTROS PENDENTES'} DE APROVAÇÃO
                 </p>
                 <p className="text-[10px] mt-0.5" style={{ color: 'var(--warning)', opacity: 0.75 }}>
-                  Aguardando revisao do administrador. Suas horas serao contabilizadas apos aprovacao.
+                  Aguardando revisão do administrador. Suas horas serão contabilizadas após aprovação.
                 </p>
               </div>
             </div>
@@ -393,7 +393,7 @@ export default async function DashboardPage() {
           </Link>
           <Link href="/history" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
             <ClipboardList size={18} />
-            <span className="text-[10px] font-bold">HISTORICO</span>
+            <span className="text-[10px] font-bold">HISTÓRICO</span>
           </Link>
           <form action="/api/auth/signout" method="POST" className="flex-1">
             <button type="submit" className="w-full flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>

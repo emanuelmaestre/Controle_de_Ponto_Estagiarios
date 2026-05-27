@@ -53,7 +53,7 @@ export default async function InternDetailPage({ params }: Props) {
   const totalRequired = (intern.total_hours_required ?? 120) * 60
   const pct = totalRequired > 0 ? Math.min(100, Math.round((monthMinutes / totalRequired) * 100)) : 0
 
-  const statusLabel = pct >= 100 ? 'CONCLUIDO' : pct >= 75 ? 'QUASE LA' : pct >= 40 ? 'EM DIA' : 'ATENCAO'
+  const statusLabel = pct >= 100 ? 'CONCLUÍDO' : pct >= 75 ? 'QUASE LÁ' : pct >= 40 ? 'EM DIA' : 'ATENÇÃO'
   const statusColor = pct >= 100 ? 'var(--success)' : pct >= 75 ? 'var(--info)' : pct >= 40 ? 'var(--primary)' : 'var(--warning)'
 
   return (
@@ -65,7 +65,7 @@ export default async function InternDetailPage({ params }: Props) {
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <Link href="/admin/interns" className="text-sm hover:opacity-70 flex-shrink-0" style={{ color: 'var(--text-3)' }}>
-              &larr; ESTAGIARIOS
+              &larr; ESTAGIÁRIOS
             </Link>
             <div className="min-w-0">
               <h1 className="font-bold text-lg truncate" style={{ color: 'var(--text)' }}>{intern.full_name}</h1>
@@ -112,12 +112,12 @@ export default async function InternDetailPage({ params }: Props) {
               style={{ width: `${pct}%`, background: statusColor }}
             />
           </div>
-          <p className="text-[10px] font-bold" style={{ color: statusColor }}>{pct}% CONCLUIDO</p>
+          <p className="text-[10px] font-bold" style={{ color: statusColor }}>{pct}% CONCLUÍDO</p>
 
           {/* Monthly breakdown */}
           {hours && hours.length > 0 && (
             <div className="mt-4 pt-4 space-y-2" style={{ borderTop: '1px solid var(--border)' }}>
-              <p className="text-[10px] font-bold mb-2" style={{ color: 'var(--text-3)' }}>ULTIMOS 3 MESES</p>
+              <p className="text-[10px] font-bold mb-2" style={{ color: 'var(--text-3)' }}>ÚLTIMOS 3 MESES</p>
               {hours.map(h => {
                 const hPct = totalRequired > 0 ? Math.min(100, (h.total_minutes / totalRequired) * 100) : 0
                 return (
@@ -166,7 +166,7 @@ export default async function InternDetailPage({ params }: Props) {
         <div className="rounded-2xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <div className="flex items-center gap-2 mb-5">
             <Calendar size={16} style={{ color: 'var(--primary)' }} />
-            <h2 className="font-bold text-sm" style={{ color: 'var(--text)' }}>HORARIO SEMANAL</h2>
+            <h2 className="font-bold text-sm" style={{ color: 'var(--text)' }}>HORÁRIO SEMANAL</h2>
           </div>
           <ScheduleManager
             internId={intern.id}

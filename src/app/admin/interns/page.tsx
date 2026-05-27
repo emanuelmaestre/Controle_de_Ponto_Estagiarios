@@ -39,7 +39,7 @@ export default async function InternsPage() {
             </Link>
             <div className="w-px h-4 flex-shrink-0" style={{ background: 'var(--border)' }} />
             <div className="min-w-0">
-              <h1 className="font-bold text-sm" style={{ color: 'var(--text)' }}>ESTAGIARIOS</h1>
+              <h1 className="font-bold text-sm" style={{ color: 'var(--text)' }}>ESTAGIÁRIOS</h1>
               <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>
                 {active.length} ATIVO{active.length !== 1 ? 'S' : ''} &middot; {inactive.length} INATIVO{inactive.length !== 1 ? 'S' : ''}
               </p>
@@ -50,7 +50,7 @@ export default async function InternsPage() {
             className="flex items-center gap-1.5 font-bold text-[10px] px-3 py-2 rounded-xl transition-all hover:opacity-90 flex-shrink-0"
             style={{ background: 'var(--primary)', color: 'white' }}
           >
-            <UserPlus size={13} /> NOVO ESTAGIARIO
+            <UserPlus size={13} /> NOVO ESTAGIÁRIO
           </Link>
         </div>
       </div>

@@ -19,11 +19,11 @@ export default async function NewInternPage() {
       <div className="flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
           <Link href="/admin/interns" className="text-sm font-bold hover:opacity-70" style={{ color: 'var(--text-3)' }}>
-            &larr; ESTAGIARIOS
+            &larr; ESTAGIÁRIOS
           </Link>
           <div className="w-px h-4 flex-shrink-0" style={{ background: 'var(--border)' }} />
           <div>
-            <h1 className="font-bold text-sm" style={{ color: 'var(--text)' }}>CADASTRAR ESTAGIARIO</h1>
+            <h1 className="font-bold text-sm" style={{ color: 'var(--text)' }}>CADASTRAR ESTAGIÁRIO</h1>
             <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>PREENCHA OS DADOS DO NOVO MEMBRO</p>
           </div>
         </div>

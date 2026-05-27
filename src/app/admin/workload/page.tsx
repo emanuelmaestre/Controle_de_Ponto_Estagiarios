@@ -76,7 +76,7 @@ export default async function WorkloadPage() {
   const getColor = (pct: number) =>
     pct >= 100 ? 'var(--success)' : pct >= 75 ? 'var(--info)' : pct >= 40 ? 'var(--primary)' : 'var(--warning)'
   const getLabel = (pct: number) =>
-    pct >= 100 ? 'CONCLUIDO' : pct >= 75 ? 'QUASE LA' : pct >= 40 ? 'EM DIA' : 'ATENCAO'
+    pct >= 100 ? 'CONCLUÍDO' : pct >= 75 ? 'QUASE LÁ' : pct >= 40 ? 'EM DIA' : 'ATENÇÃO'
 
   const avatarColors = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#06b6d4']
 
@@ -92,7 +92,7 @@ export default async function WorkloadPage() {
               &larr; PAINEL
             </Link>
             <div>
-              <h1 className="font-bold text-lg" style={{ color: 'var(--text)' }}>CARGA HORARIA</h1>
+              <h1 className="font-bold text-lg" style={{ color: 'var(--text)' }}>CARGA HORÁRIA</h1>
               <p className="text-xs" style={{ color: 'var(--text-3)' }}>ACOMPANHAMENTO DE HORAS &mdash; {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()}</p>
             </div>
           </div>
@@ -100,9 +100,9 @@ export default async function WorkloadPage() {
           {/* Summary chips */}
           <div className="flex gap-2 flex-wrap mt-3">
             {[
-              { label: 'TOTAL ESTAGIARIOS', value: rows.length, color: 'var(--primary)' },
-              { label: 'CONCLUIRAM META', value: rows.filter(r => r.pct >= 100).length, color: 'var(--success)' },
-              { label: 'ATENCAO', value: rows.filter(r => r.pct < 40).length, color: 'var(--warning)' },
+              { label: 'TOTAL ESTAGIÁRIOS', value: rows.length, color: 'var(--primary)' },
+              { label: 'CONCLUÍRAM META', value: rows.filter(r => r.pct >= 100).length, color: 'var(--success)' },
+              { label: 'ATENÇÃO', value: rows.filter(r => r.pct < 40).length, color: 'var(--warning)' },
             ].map(c => (
               <div
                 key={c.label}
@@ -121,7 +121,7 @@ export default async function WorkloadPage() {
           <FadeIn>
             <div className="text-center py-16" style={{ color: 'var(--text-3)' }}>
               <Users size={40} className="mx-auto mb-3" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
-              <p className="text-sm font-bold">NENHUM ESTAGIARIO ATIVO</p>
+              <p className="text-sm font-bold">NENHUM ESTAGIÁRIO ATIVO</p>
             </div>
           </FadeIn>
         )}

@@ -101,10 +101,10 @@ export default async function LocationPage() {
           <span style={{ color: 'var(--border)' }}>/</span>
           <div>
             <h1 className="font-bold text-sm" style={{ color: 'var(--text)' }}>
-              HISTORICO DE LOCALIZACAO
+              HISTÓRICO DE LOCALIZAÇÃO
             </h1>
             <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>
-              REGISTROS E TENTATIVAS DE PONTO COM DADOS DE GEOLOCALIZACAO
+              REGISTROS E TENTATIVAS DE PONTO COM DADOS DE GEOLOCALIZAÇÃO
             </p>
           </div>
         </div>
@@ -251,7 +251,7 @@ export default async function LocationPage() {
             {records.length === 0 ? (
               <div className="py-10 text-center" style={{ color: 'var(--text-3)' }}>
                 <MapPin size={32} className="mx-auto mb-2" style={{ color: 'var(--text-3)', opacity: 0.4 }} />
-                <p className="text-sm font-bold">NENHUM REGISTRO COM LOCALIZACAO AINDA</p>
+                <p className="text-sm font-bold">NENHUM REGISTRO COM LOCALIZAÇÃO AINDA</p>
               </div>
             ) : (
               <>
