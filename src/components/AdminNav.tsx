@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { getServerUser, getServerProfile } from '@/lib/supabase/cached'
-import { Home, Users, BarChart2, Settings, TrendingUp } from 'lucide-react'
+import { Home, Users, BarChart2, Settings, TrendingUp, LogOut } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 
 export default async function AdminNav() {
@@ -107,16 +107,50 @@ export default async function AdminNav() {
         className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t"
         style={{ background: 'var(--surface)', borderColor: 'var(--border)', boxShadow: '0 -4px 24px rgba(0,0,0,0.12)' }}
       >
+        {/* User info bar */}
+        <div
+          className="flex items-center justify-between gap-2 px-4 py-2 border-b"
+          style={{ borderColor: 'var(--border)', background: 'var(--bg)' }}
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-black flex-shrink-0"
+              style={{ background: 'var(--primary)', color: 'white' }}
+            >
+              {initials}
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold leading-none truncate" style={{ color: 'var(--text)' }}>
+                {profile?.full_name?.split(' ')[0] ?? 'Gerente'}
+              </p>
+              <p className="text-[9px] mt-0.5" style={{ color: 'var(--text-3)' }}>ADMINISTRADOR</p>
+            </div>
+          </div>
+          <form action="/api/auth/signout" method="POST">
+            <button
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all active:scale-95"
+              style={{
+                background: 'rgba(220,38,38,0.08)',
+                border: '1px solid rgba(220,38,38,0.2)',
+                color: 'var(--danger)',
+              }}
+            >
+              <LogOut size={11} /> SAIR
+            </button>
+          </form>
+        </div>
+
+        {/* Nav items */}
         <div className="flex justify-around items-center py-1">
           {navItems.map(item => (
             <Link
               key={item.href}
               href={item.href}
-              className="relative flex flex-col items-center gap-0.5 py-2.5 px-3 flex-1 transition-all"
+              className="relative flex flex-col items-center gap-0.5 py-2 px-2 flex-1 transition-all"
               style={{ color: 'var(--text-3)' }}
             >
               <span>{item.icon}</span>
-              <span className="text-[10px] font-semibold">{item.label}</span>
+              <span className="text-[9px] font-semibold">{item.label}</span>
             </Link>
           ))}
         </div>
