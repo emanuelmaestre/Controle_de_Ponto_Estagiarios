@@ -128,8 +128,8 @@ export default function IntegrationsTab() {
         </div>
       </div>
 
-      {/* ── Service cards 2×2 ── */}
-      <div className="grid grid-cols-2 gap-2 flex-shrink-0">
+      {/* ── Service cards 2×2 / 4×1 em telas largas ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 flex-shrink-0">
         {SERVICES.map((svc, i) => {
           const st  = statuses[svc.key] ?? 'checking'
           const cfg = statusConfig[st]

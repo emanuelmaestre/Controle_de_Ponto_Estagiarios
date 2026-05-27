@@ -53,8 +53,8 @@ export default async function SettingsPage({ searchParams }: Props) {
 
       {/* Page header */}
       <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center gap-3 mb-4">
+        <div className="px-4 sm:px-6 py-3">
+          <div className="flex items-center gap-3 mb-3">
             <BackButton href="/admin" />
             <div>
               <h1 className="font-bold text-lg" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES</h1>
@@ -62,29 +62,29 @@ export default async function SettingsPage({ searchParams }: Props) {
             </div>
           </div>
 
-          {/* Tab nav — grid fixo, sem scroll lateral */}
-          <div className="grid grid-cols-3 gap-1.5">
+          {/* Tab nav */}
+          <div className="flex gap-1.5">
             {tabs.map(t => (
               <Link
                 key={t.key}
                 href={`/admin/settings?tab=${t.key}`}
-                className="flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[11px] font-bold transition-all text-center"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[11px] font-bold transition-all"
                 style={activeTab === t.key
                   ? { background: 'var(--primary)', color: 'white' }
                   : { background: 'var(--bg)', color: 'var(--text-3)', border: '1px solid var(--border)' }
                 }
               >
                 <span className="flex-shrink-0">{t.icon}</span>
-                <span className="truncate">{t.label}</span>
+                <span>{t.label}</span>
               </Link>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Content — ocupa toda a altura restante, sem scroll */}
-      <div className="flex-1 min-h-0" style={{ display: 'flex', flexDirection: 'column', padding: '12px 24px' }}>
-        <div style={{ maxWidth: 672, margin: '0 auto', width: '100%', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+      {/* Content — full width, sem scroll */}
+      <div className="flex-1 min-h-0" style={{ display: 'flex', flexDirection: 'column', padding: '12px 16px sm:24px' }}>
+        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
 
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           <FadeIn className="flex-1 flex flex-col min-h-0">
