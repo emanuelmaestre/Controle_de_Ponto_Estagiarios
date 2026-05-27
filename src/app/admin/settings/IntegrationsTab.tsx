@@ -78,9 +78,9 @@ export default function IntegrationsTab() {
   useEffect(() => { check() }, [])
 
   const statusConfig: Record<ServiceStatus, { color: string; bg: string; label: string; icon: React.ReactNode }> = {
-    online:   { color: 'var(--success)', bg: 'rgba(22,163,74,0.1)',   label: 'ONLINE',      icon: <Wifi size={10} /> },
+    online:   { color: 'var(--success)', bg: 'rgba(22,163,74,0.1)',   label: 'DISPONÍVEL',  icon: <Wifi size={10} /> },
     degraded: { color: 'var(--warning)', bg: 'rgba(217,119,6,0.1)',   label: 'DEGRADADO',   icon: <AlertTriangle size={10} /> },
-    offline:  { color: 'var(--danger)',  bg: 'rgba(220,38,38,0.1)',   label: 'OFFLINE',     icon: <WifiOff size={10} /> },
+    offline:  { color: 'var(--danger)',  bg: 'rgba(220,38,38,0.1)',   label: 'AUSENTE',     icon: <WifiOff size={10} /> },
     checking: { color: 'var(--text-3)', bg: 'rgba(148,163,184,0.1)', label: 'VERIFICANDO', icon: <span className="w-2.5 h-2.5 rounded-full border-2 border-current border-t-transparent animate-spin inline-block" /> },
   }
 
