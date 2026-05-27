@@ -75,7 +75,8 @@ export default function ApprovalActions({ recordId, approverId }: Props) {
             initial={{ opacity: 0, y: -6, height: 0 }}
             animate={{ opacity: 1, y: 0, height: 'auto' }}
             exit={{ opacity: 0, y: -6, height: 0 }}
-            className="text-red-600 text-sm mb-2"
+            className="text-sm mb-2"
+            style={{ color: 'var(--danger)' }}
           >{error}</motion.p>
         )}
       </AnimatePresence>
@@ -86,19 +87,21 @@ export default function ApprovalActions({ recordId, approverId }: Props) {
           disabled={loading}
           whileHover={{ scale: 1.03, y: -1 }}
           whileTap={{ scale: 0.95 }}
-          className="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+          className="flex-1 py-2.5 font-bold rounded-xl text-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5 text-white"
+          style={{ background: 'var(--success)' }}
         >
           {loading ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-          Aprovar
+          APROVAR
         </motion.button>
         <motion.button
           onClick={() => setShowRejectModal(true)}
           disabled={loading}
           whileHover={{ scale: 1.03, y: -1 }}
           whileTap={{ scale: 0.95 }}
-          className="flex-1 py-2.5 bg-red-50 hover:bg-red-100 text-red-700 font-semibold rounded-lg text-sm border border-red-200 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+          className="flex-1 py-2.5 font-bold rounded-xl text-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+          style={{ background: 'rgba(239,68,68,0.08)', color: 'var(--danger)', border: '1px solid rgba(239,68,68,0.2)' }}
         >
-          <XCircle size={14} /> Reprovar
+          <XCircle size={14} /> REPROVAR
         </motion.button>
       </div>
 
@@ -109,17 +112,19 @@ export default function ApprovalActions({ recordId, approverId }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-4"
+            className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-4"
+            style={{ background: 'rgba(0,0,0,0.5)' }}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.94, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.94, y: 30 }}
               transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl"
+              className="rounded-2xl w-full max-w-md p-6"
+              style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}
             >
-              <h3 className="font-bold text-gray-800 text-lg mb-1">Reprovar registro</h3>
-              <p className="text-sm text-gray-500 mb-4">
+              <h3 className="font-bold text-lg mb-1" style={{ color: 'var(--text)' }}>REPROVAR REGISTRO</h3>
+              <p className="text-sm mb-4" style={{ color: 'var(--text-3)' }}>
                 Informe o motivo da reprovação. O estagiário será notificado.
               </p>
               <form onSubmit={handleSubmit(handleReject)} className="space-y-4">
@@ -128,13 +133,15 @@ export default function ApprovalActions({ recordId, approverId }: Props) {
                     {...register('rejection_reason')}
                     rows={3}
                     placeholder="Ex: Horário registrado não confere com o período de expediente..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-400 resize-none"
+                    className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none resize-none"
+                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
                   />
                   {errors.rejection_reason && (
                     <motion.p
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-red-500 text-xs mt-1"
+                      className="text-xs mt-1"
+                      style={{ color: 'var(--danger)' }}
                     >{errors.rejection_reason.message}</motion.p>
                   )}
                 </div>
@@ -144,18 +151,20 @@ export default function ApprovalActions({ recordId, approverId }: Props) {
                     onClick={() => { setShowRejectModal(false); reset() }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.97 }}
-                    className="flex-1 py-2.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50"
+                    className="flex-1 py-2.5 rounded-xl text-xs font-bold"
+                    style={{ border: '1px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}
                   >
-                    Cancelar
+                    CANCELAR
                   </motion.button>
                   <motion.button
                     type="submit"
                     disabled={loading}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.97 }}
-                    className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 rounded-xl text-xs font-bold text-white disabled:opacity-50 flex items-center justify-center gap-1.5"
+                    style={{ background: 'var(--danger)' }}
                   >
-                    {loading ? <><Loader2 size={14} className="animate-spin" /> Reprovando...</> : 'Confirmar reprovação'}
+                    {loading ? <><Loader2 size={14} className="animate-spin" /> REPROVANDO...</> : 'CONFIRMAR REPROVAÇÃO'}
                   </motion.button>
                 </div>
               </form>

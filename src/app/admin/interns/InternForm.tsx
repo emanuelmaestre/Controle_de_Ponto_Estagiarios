@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react'
+import { CheckCircle2, AlertTriangle, Loader2, Camera, Key, Mail, Lock } from 'lucide-react'
 import { internSchema } from '@/lib/validations'
 import type { Profile } from '@/types/database'
 
@@ -147,109 +147,118 @@ export default function InternForm({ mode, intern }: Props) {
       </AnimatePresence>
 
       {/* Foto de perfil */}
-      <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">Foto de perfil</h3>
+      <div className="rounded-2xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+        <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--text)' }}>FOTO DE PERFIL</h3>
         <div className="flex flex-col items-center gap-3">
-          <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center">
+          <div
+            className="relative w-24 h-24 rounded-2xl overflow-hidden flex items-center justify-center"
+            style={{ background: 'var(--bg)', border: '2px dashed var(--border)' }}
+          >
             {photoPreview ? (
               <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
             ) : (
-              <span className="text-3xl">📷</span>
+              <Camera size={28} style={{ color: 'var(--text-3)', opacity: 0.5 }} />
             )}
           </div>
-          <label className="cursor-pointer text-sm text-blue-700 font-medium hover:underline">
-            {photoPreview ? 'Trocar foto' : 'Adicionar foto'}
+          <label className="cursor-pointer text-sm font-bold hover:opacity-70 transition-opacity" style={{ color: 'var(--primary)' }}>
+            {photoPreview ? 'TROCAR FOTO' : 'ADICIONAR FOTO'}
             <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
           </label>
         </div>
       </div>
 
       {/* Dados Pessoais */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm space-y-4">
-        <h3 className="text-sm font-semibold text-slate-700">Dados Pessoais</h3>
+      <div className="rounded-2xl p-5 space-y-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>DADOS PESSOAIS</h3>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nome completo *</label>
+          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>NOME COMPLETO *</label>
           <input
             {...register('full_name')}
             type="text"
             placeholder="Ex: Miltão Rei da Galáxia"
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+            style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
           />
-          {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name.message}</p>}
+          {errors.full_name && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.full_name.message}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Apelido</label>
+          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>APELIDO</label>
           <input
             {...register('nickname')}
             type="text"
             placeholder="Ex: Miltinho"
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+            style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
           />
-          {errors.nickname && <p className="text-red-500 text-xs mt-1">{errors.nickname.message}</p>}
+          {errors.nickname && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.nickname.message}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">E-mail *</label>
+          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>E-MAIL *</label>
           <input
             {...register('email')}
             type="email"
             placeholder="Ex: milton@exemplo.com"
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+            style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
           />
-          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+          {errors.email && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.email.message}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Curso</label>
+          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>CURSO</label>
           <input
             {...register('course')}
             type="text"
             placeholder="Ex: Agronomia"
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+            style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
           />
-          {errors.course && <p className="text-red-500 text-xs mt-1">{errors.course.message}</p>}
+          {errors.course && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.course.message}</p>}
         </div>
       </div>
 
       {/* Período do estágio */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm space-y-4">
-        <h3 className="text-sm font-semibold text-slate-700">Período do Estágio</h3>
+      <div className="rounded-2xl p-5 space-y-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>PERÍODO DO ESTÁGIO</h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Data de início</label>
+            <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>DATA DE INÍCIO</label>
             <input
               {...register('internship_start')}
               type="date"
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+              style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
             />
-            {errors.internship_start && <p className="text-red-500 text-xs mt-1">{errors.internship_start.message}</p>}
+            {errors.internship_start && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.internship_start.message}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Data de término</label>
+            <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>DATA DE TÉRMINO</label>
             <input
               {...register('internship_end')}
               type="date"
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+              style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
             />
-            {errors.internship_end && <p className="text-red-500 text-xs mt-1">{errors.internship_end.message}</p>}
+            {errors.internship_end && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.internship_end.message}</p>}
           </div>
         </div>
       </div>
 
       {/* Configurações */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm space-y-3">
-        <h3 className="text-sm font-semibold text-slate-700">Configurações</h3>
+      <div className="rounded-2xl p-5 space-y-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES</h3>
 
         <div className="flex items-center gap-3">
           <input
             {...register('is_active')}
             type="checkbox"
             id="is_active"
-            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="w-4 h-4 rounded accent-green-500"
           />
-          <label htmlFor="is_active" className="text-sm font-medium text-gray-700">
+          <label htmlFor="is_active" className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>
             Estagiário ativo (pode registrar ponto)
           </label>
         </div>
@@ -260,9 +269,9 @@ export default function InternForm({ mode, intern }: Props) {
             id="notify_email"
             checked={notifyEmail}
             onChange={e => setNotifyEmail(e.target.checked)}
-            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="w-4 h-4 rounded accent-green-500"
           />
-          <label htmlFor="notify_email" className="text-sm font-medium text-gray-700">
+          <label htmlFor="notify_email" className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>
             Receber lembretes por e-mail
           </label>
         </div>
@@ -279,20 +288,22 @@ export default function InternForm({ mode, intern }: Props) {
           onClick={() => router.back()}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
-          className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+          className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-colors"
+          style={{ border: '1px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}
         >
-          Cancelar
+          CANCELAR
         </motion.button>
         <motion.button
           type="submit"
           disabled={loading}
           whileHover={{ scale: 1.02, y: -1 }}
           whileTap={{ scale: 0.97 }}
-          className="flex-1 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl text-sm font-semibold disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
+          className="flex-1 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
+          style={{ background: 'var(--primary)', color: 'white' }}
         >
           {loading
-            ? <><Loader2 size={14} className="animate-spin" /> Salvando...</>
-            : mode === 'create' ? 'Cadastrar' : 'Salvar alterações'
+            ? <><Loader2 size={14} className="animate-spin" /> SALVANDO...</>
+            : mode === 'create' ? 'CADASTRAR' : 'SALVAR ALTERAÇÕES'
           }
         </motion.button>
       </div>
@@ -338,22 +349,22 @@ function PasswordResetSection({ internId }: { internId: string }) {
   }
 
   return (
-    <div className="bg-amber-50 rounded-2xl p-5 border border-amber-100 shadow-sm space-y-3">
-      <h3 className="text-sm font-semibold text-amber-800 flex items-center gap-2">
-        🔑 Redefinição de senha
+    <div className="rounded-2xl p-5 space-y-3" style={{ background: 'rgba(217,119,6,0.06)', border: '1px solid rgba(217,119,6,0.2)' }}>
+      <h3 className="text-sm font-bold flex items-center gap-2" style={{ color: 'var(--warning)' }}>
+        <Key size={14} /> REDEFINIÇÃO DE SENHA
       </h3>
-      <p className="text-xs text-amber-700">
+      <p className="text-xs" style={{ color: 'var(--text-2)' }}>
         Como administrador, você pode redefinir a senha do estagiário de duas formas:
       </p>
 
       {status === 'ok' && (
-        <div className="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3">
-          ✅ {message}
+        <div className="flex items-center gap-2 text-sm rounded-xl px-4 py-3" style={{ background: 'rgba(22,163,74,0.1)', color: 'var(--success)', border: '1px solid rgba(22,163,74,0.2)' }}>
+          <CheckCircle2 size={14} className="flex-shrink-0" /> {message}
         </div>
       )}
       {status === 'err' && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
-          ⚠️ {message}
+        <div className="flex items-center gap-2 text-sm rounded-xl px-4 py-3" style={{ background: 'rgba(239,68,68,0.1)', color: 'var(--danger)', border: '1px solid rgba(239,68,68,0.2)' }}>
+          <AlertTriangle size={14} className="flex-shrink-0" /> {message}
         </div>
       )}
 
@@ -364,18 +375,19 @@ function PasswordResetSection({ internId }: { internId: string }) {
           className="flex gap-2 flex-wrap"
         >
           {[
-            { label: '✉️ Enviar link por e-mail', onClick: () => setMode('email') },
-            { label: '🔒 Definir nova senha', onClick: () => setMode('manual') },
-          ].map(({ label, onClick }) => (
+            { label: 'ENVIAR LINK POR E-MAIL', icon: <Mail size={13} />, onClick: () => setMode('email') },
+            { label: 'DEFINIR NOVA SENHA', icon: <Lock size={13} />, onClick: () => setMode('manual') },
+          ].map(({ label, icon, onClick }) => (
             <motion.button
               key={label}
               type="button"
               onClick={onClick}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.96 }}
-              className="flex items-center gap-1.5 px-4 py-2 bg-white border border-amber-200 text-amber-800 text-sm font-medium rounded-xl hover:bg-amber-50 transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl transition-colors"
+              style={{ background: 'var(--surface)', border: '1px solid rgba(217,119,6,0.25)', color: 'var(--warning)' }}
             >
-              {label}
+              {icon} {label}
             </motion.button>
           ))}
         </motion.div>
@@ -383,17 +395,19 @@ function PasswordResetSection({ internId }: { internId: string }) {
 
       {mode === 'email' && (
         <div className="space-y-3">
-          <p className="text-xs text-amber-700">
+          <p className="text-xs" style={{ color: 'var(--text-2)' }}>
             Um e-mail com link de redefinição será enviado ao estagiário.
           </p>
           <div className="flex gap-2">
             <button type="button" onClick={() => setMode('idle')}
-              className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50">
-              Cancelar
+              className="px-4 py-2 rounded-xl text-xs font-bold transition-colors"
+              style={{ border: '1px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}>
+              CANCELAR
             </button>
             <button type="button" onClick={submit} disabled={status === 'loading'}
-              className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-sm font-semibold disabled:opacity-50">
-              {status === 'loading' ? 'Enviando...' : 'Enviar e-mail'}
+              className="px-4 py-2 rounded-xl text-xs font-bold text-white disabled:opacity-50 transition-colors"
+              style={{ background: 'var(--warning)' }}>
+              {status === 'loading' ? 'ENVIANDO...' : 'ENVIAR E-MAIL'}
             </button>
           </div>
         </div>
@@ -402,34 +416,38 @@ function PasswordResetSection({ internId }: { internId: string }) {
       {mode === 'manual' && (
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-medium text-amber-800 mb-1">Nova senha</label>
+            <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>NOVA SENHA</label>
             <input
               type="password"
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
               placeholder="Mínimo 6 caracteres"
-              className="w-full px-3 py-2.5 border border-amber-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+              style={{ background: 'var(--bg)', border: '1px solid rgba(217,119,6,0.3)', color: 'var(--text)' }}
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-amber-800 mb-1">Confirmar nova senha</label>
+            <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>CONFIRMAR NOVA SENHA</label>
             <input
               type="password"
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
               placeholder="Repita a senha"
-              className="w-full px-3 py-2.5 border border-amber-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+              style={{ background: 'var(--bg)', border: '1px solid rgba(217,119,6,0.3)', color: 'var(--text)' }}
             />
           </div>
           <div className="flex gap-2">
             <button type="button" onClick={() => { setMode('idle'); setNewPassword(''); setConfirmPassword('') }}
-              className="px-4 py-2 border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50">
-              Cancelar
+              className="px-4 py-2 rounded-xl text-xs font-bold transition-colors"
+              style={{ border: '1px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}>
+              CANCELAR
             </button>
             <button type="button" onClick={submit}
               disabled={status === 'loading' || newPassword.length < 6 || newPassword !== confirmPassword}
-              className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-sm font-semibold disabled:opacity-50">
-              {status === 'loading' ? 'Salvando...' : 'Salvar nova senha'}
+              className="px-4 py-2 rounded-xl text-xs font-bold text-white disabled:opacity-50 transition-colors"
+              style={{ background: 'var(--warning)' }}>
+              {status === 'loading' ? 'SALVANDO...' : 'SALVAR NOVA SENHA'}
             </button>
           </div>
         </div>
