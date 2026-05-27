@@ -4,10 +4,11 @@ import Image from 'next/image'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { formatTime, minutesToHours } from '@/lib/utils'
 import ClockButton from '@/components/ClockButton'
+import SelfieGate from '@/components/SelfieGate'
 import StatusBadge from '@/components/StatusBadge'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/MotionWrappers'
-import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, AlertTriangle, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell } from 'lucide-react'
+import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell } from 'lucide-react'
 import ThemeToggle from '@/components/ThemeToggle'
 import LiveClock from '@/components/ui/LiveClock'
 import type { RecordStatus } from '@/types/database'
@@ -17,7 +18,7 @@ export const dynamic = 'force-dynamic'
 // ─── Helpers de gamificação ─────────────────────────────────
 function getHourStatus(pct: number) {
   if (pct >= 100) return {
-    label: 'CARGA CONCLUIDA',
+    label: 'CARGA CONCLUÍDA',
     color: 'var(--success)',
     bg: 'rgba(22,163,74,0.10)',
     border: 'rgba(22,163,74,0.25)',
@@ -70,7 +71,7 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, total_hours_required, role')
+    .select('full_name, total_hours_required, role, photo_url')
     .eq('id', user.id)
     .maybeSingle()
 
@@ -97,7 +98,7 @@ export default async function DashboardPage() {
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
   const { data: monthData } = await supabase
     .from('v_monthly_hours')
-    .select('total_minutes, approved_sessions, pending_sessions')
+    .select('total_minutes, approved_sessions')
     .eq('intern_id', user.id)
     .gte('month', monthStart)
     .maybeSingle()
@@ -132,6 +133,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
+      <SelfieGate hasPhoto={!!profile?.photo_url} internId={user.id} />
 
       {/* ── Header ─────────────────────────────────────── */}
       <header className="flex-shrink-0 shadow-lg" style={{ background: 'var(--nav-bg)' }}>
@@ -173,7 +175,7 @@ export default async function DashboardPage() {
           >
             {/* Status badge */}
             <div className="flex items-center justify-between mb-5">
-              <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>PROGRESSO DO MES</p>
+              <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>PROGRESSO DO MÊS</p>
               <span
                 className="text-[10px] font-bold px-2.5 py-1 rounded-full"
                 style={{ background: status.bg, color: status.color, border: `1px solid ${status.border}` }}
@@ -224,7 +226,7 @@ export default async function DashboardPage() {
         </FadeIn>
 
         {/* ── Stats row ───────────────────────────────── */}
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-2 gap-2.5">
           {[
             {
               icon: <Calendar size={14} />,
@@ -236,19 +238,11 @@ export default async function DashboardPage() {
             },
             {
               icon: <TrendingUp size={14} />,
-              label: 'MES',
+              label: 'MÊS',
               value: `${monthData?.approved_sessions ?? 0} SESS.`,
               color: 'var(--success)',
               bg: 'rgba(22,163,74,0.08)',
               delay: 0.1,
-            },
-            {
-              icon: <Clock size={14} />,
-              label: 'PENDENTES',
-              value: `${monthData?.pending_sessions ?? 0}`,
-              color: (monthData?.pending_sessions ?? 0) > 0 ? 'var(--warning)' : 'var(--text-3)',
-              bg: (monthData?.pending_sessions ?? 0) > 0 ? 'rgba(217,119,6,0.08)' : 'var(--bg)',
-              delay: 0.14,
             },
           ].map(s => (
             <FadeIn key={s.label} delay={s.delay}>
@@ -304,27 +298,8 @@ export default async function DashboardPage() {
           </FadeIn>
         )}
 
-        {/* ── Alertas de pendencia ─────────────────────── */}
-        {(monthData?.pending_sessions ?? 0) > 0 && (
-          <FadeIn delay={0.18}>
-            <div
-              className="rounded-2xl px-4 py-3 flex items-center gap-3"
-              style={{ background: 'rgba(217,119,6,0.08)', border: '1px solid rgba(217,119,6,0.25)' }}
-            >
-              <AlertTriangle size={18} style={{ color: 'var(--warning)', flexShrink: 0 }} />
-              <div>
-                <p className="text-[10px] font-bold" style={{ color: 'var(--warning)' }}>
-                  {monthData!.pending_sessions} {monthData!.pending_sessions === 1 ? 'REGISTRO PENDENTE' : 'REGISTROS PENDENTES'} DE APROVAÇÃO
-                </p>
-                <p className="text-[10px] mt-0.5" style={{ color: 'var(--warning)', opacity: 0.75 }}>
-                  Aguardando revisão do administrador. Suas horas serão contabilizadas após aprovação.
-                </p>
-              </div>
-            </div>
-          </FadeIn>
-        )}
 
-        {/* ── Botao de ponto ──────────────────────────── */}
+{/* ── Botao de ponto ──────────────────────────── */}
         <ScaleIn delay={0.2}>
           <div
             className="rounded-3xl p-5"

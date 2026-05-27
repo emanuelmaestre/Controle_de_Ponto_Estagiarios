@@ -49,7 +49,7 @@ export default async function HistoryPage() {
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
   const { data: monthData } = await supabase
     .from('v_monthly_hours')
-    .select('total_minutes, approved_sessions, pending_sessions, rejected_sessions')
+    .select('total_minutes, approved_sessions, rejected_sessions')
     .eq('intern_id', user.id)
     .gte('month', monthStart)
     .maybeSingle()
@@ -74,7 +74,7 @@ export default async function HistoryPage() {
           </Link>
           <div>
             <h1 className="font-bold text-base" style={{ color: 'var(--nav-fg)' }}>MEU HISTÓRICO</h1>
-            <p className="text-[10px]" style={{ color: 'var(--nav-muted)' }}>ÚLTIMOS 60 DIAS DE REGISTRO</p>
+            <p className="text-[10px]" style={{ color: 'var(--nav-muted)' }}>ÚLTIMOS 60 DIAS DE REGISTROS</p>
           </div>
         </div>
       </header>
@@ -82,18 +82,17 @@ export default async function HistoryPage() {
       <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-2xl mx-auto w-full px-4 py-4 space-y-3 pb-4">
         <FadeIn>
           <div className="rounded-3xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow-md)' }}>
-            <p className="text-[10px] font-bold mb-4" style={{ color: 'var(--text-3)' }}>RESUMO DO MES ATUAL</p>
+            <p className="text-[10px] font-bold mb-4" style={{ color: 'var(--text-3)' }}>RESUMO DO MÊS ATUAL</p>
             <div className="flex items-center gap-5">
               <ProgressRing pct={pct} size={88} strokeWidth={9} color={pctColor}>
                 <div className="text-center">
                   <p className="text-base font-black" style={{ color: pctColor }}>{pct}%</p>
                 </div>
               </ProgressRing>
-              <div className="flex-1 grid grid-cols-2 gap-3">
+              <div className="flex-1 grid grid-cols-3 gap-3">
                 {[
                   { label: 'TOTAL', value: minutesToHours(monthMinutes), color: 'var(--text)' },
                   { label: 'APROVADOS', value: monthData?.approved_sessions ?? 0, color: 'var(--success)' },
-                  { label: 'PENDENTES', value: monthData?.pending_sessions ?? 0, color: 'var(--warning)' },
                   { label: 'REPROVADOS', value: monthData?.rejected_sessions ?? 0, color: 'var(--danger)' },
                 ].map(s => (
                   <div key={s.label}>
@@ -158,7 +157,7 @@ export default async function HistoryPage() {
             <div className="rounded-3xl py-16 text-center" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
               <ClipboardList size={44} className="mx-auto mb-4" style={{ color: "var(--text-3)", opacity: 0.35 }} />
               <p className="font-bold text-sm mb-1" style={{ color: 'var(--text)' }}>NENHUM REGISTRO ENCONTRADO</p>
-              <p className="text-xs" style={{ color: 'var(--text-3)' }}>Seus registros dos ultimos 60 dias aparecerao aqui.</p>
+              <p className="text-xs" style={{ color: 'var(--text-3)' }}>Seus registros dos últimos 60 dias aparecerão aqui.</p>
             </div>
           </FadeIn>
         )}

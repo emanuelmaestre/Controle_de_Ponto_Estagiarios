@@ -210,7 +210,7 @@ export default function InternForm({ mode, intern }: Props) {
 
         <div>
           <label className="block text-xs font-bold mb-1.5 flex items-center gap-1.5" style={{ color: 'var(--text-2)' }}>
-            <GraduationCap size={12} style={{ color: 'var(--primary)' }} /> CURSO
+            <GraduationCap size={12} style={{ color: 'var(--primary)' }} /> GRADUAÇÃO
           </label>
           <div className="relative">
             <select

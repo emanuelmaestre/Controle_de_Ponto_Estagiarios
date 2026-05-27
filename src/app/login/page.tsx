@@ -100,9 +100,9 @@ function PinPad({ pin, onDigit, onDelete, shake }: {
 }) {
   const keys = ['1','2','3','4','5','6','7','8','9','','0','⌫']
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Dots */}
-      <div className="flex justify-center gap-3 py-2">
+      <div className="flex justify-center gap-3 py-1">
         {Array.from({ length: 6 }).map((_, i) => (
           <motion.div
             key={i}
@@ -124,7 +124,7 @@ function PinPad({ pin, onDigit, onDelete, shake }: {
             whileTap={{ scale: k ? 0.88 : 1 }}
             disabled={!k || pin.length >= 6}
             onClick={() => k === '⌫' ? onDelete() : k && onDigit(k)}
-            className={`h-14 rounded-2xl text-lg font-bold transition-all disabled:opacity-30 ${!k ? 'invisible' : ''}`}
+            className={`h-12 sm:h-14 rounded-2xl text-base sm:text-lg font-bold transition-all disabled:opacity-30 ${!k ? 'invisible' : ''}`}
             style={{
               background: k === '⌫' ? 'var(--bg-secondary)' : 'var(--surface)',
               color: k === '⌫' ? 'var(--accent)' : 'var(--text)',
@@ -271,7 +271,7 @@ function LoginContent() {
 
         {/* ── Header ── */}
         <div
-          className="px-8 pt-8 pb-7 text-center relative overflow-hidden"
+          className="px-6 pt-6 pb-5 sm:px-8 sm:pt-8 sm:pb-7 text-center relative overflow-hidden"
           style={{ background: 'var(--nav-bg)' }}
         >
           <div className="absolute top-3 right-3">
@@ -286,10 +286,10 @@ function LoginContent() {
             initial={{ scale: 0, rotate: -10 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ duration: 0.5, delay: 0.15, type: 'spring', stiffness: 220 }}
-            className="float-anim mx-auto mb-4"
-            style={{ width: 200, height: 56 }}
+            className="float-anim mx-auto mb-3"
+            style={{ width: 160, height: 44 }}
           >
-            <Image src="/logo.svg" alt="ChronosLab" width={200} height={56} className="object-contain" />
+            <Image src="/logo.svg" alt="ChronosLab" width={160} height={44} className="object-contain" />
           </motion.div>
 
           <motion.p
@@ -536,7 +536,10 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <div className="flex items-center justify-center p-4 relative" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
+    <div
+      className="flex items-center justify-center relative"
+      style={{ minHeight: '100dvh', overflowY: 'auto', background: 'var(--bg)', padding: '16px 16px 32px' }}
+    >
       <Suspense fallback={
         <div className="w-full max-w-sm rounded-3xl p-10 text-center" style={{ background: 'var(--surface)' }}>
           <Loader2 size={32} className="animate-spin mx-auto" style={{ color: 'var(--primary)' }} />

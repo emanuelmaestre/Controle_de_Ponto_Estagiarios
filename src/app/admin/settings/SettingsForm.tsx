@@ -25,7 +25,7 @@ export default function SettingsForm({ settings }: Props) {
     resolver: zodResolver(settingsSchema),
     defaultValues: {
       lab_name: settings?.lab_name ?? 'Laboratório',
-      reminder_in_time: settings?.reminder_in_time ?? '08:00',
+      reminder_in_time: (settings?.reminder_in_time ?? '08:00').slice(0, 5),
       reminder_out_after_hours: settings?.reminder_out_after_hours ?? 6,
       expected_daily_hours: settings?.expected_daily_hours ?? 4,
       report_email: settings?.report_email ?? '',
@@ -115,7 +115,7 @@ export default function SettingsForm({ settings }: Props) {
         </motion.div>
       ))}
 
-      <motion.div className="grid grid-cols-2 gap-4" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25, delay: 0.05 }}>
+      <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25, delay: 0.05 }}>
         <div>
           <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-2, #374151)' }}>Lembrete de entrada (horário)</label>
           <input

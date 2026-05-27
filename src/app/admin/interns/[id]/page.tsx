@@ -7,10 +7,11 @@ import InternForm from '../InternForm'
 import ScheduleManager from './ScheduleManager'
 import type { Profile, MonthlyHours, InternSchedule } from '@/types/database'
 import {
-  Clock, TrendingUp, Calendar, UserCheck, GraduationCap,
-  BarChart2, Settings2, ArrowLeft,
+  Clock, TrendingUp, UserCheck, GraduationCap,
+  BarChart2, Settings2, Calendar,
 } from 'lucide-react'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
+import BackButton from '@/components/ui/BackButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -110,11 +111,7 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-3 pb-0">
           {/* Back + Intern info in one compact row */}
           <div className="flex items-center gap-3 mb-3">
-            <Link href="/admin/interns"
-              className="flex items-center gap-1 text-xs font-bold flex-shrink-0 transition-opacity hover:opacity-70"
-              style={{ color: 'rgba(255,255,255,0.45)' }}>
-              <ArrowLeft size={11} /> ESTAGIÁRIOS
-            </Link>
+            <BackButton href="/admin/interns" variant="dark" />
 
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <InitialsAvatar name={intern.full_name} photoUrl={intern.photo_url} size={44} />
@@ -188,11 +185,10 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
             <div className="h-full flex flex-col gap-3">
 
               {/* Stats row — 3 compact cards */}
-              <StaggerContainer className="grid grid-cols-3 gap-3 flex-shrink-0">
+              <StaggerContainer className="grid grid-cols-2 gap-3 flex-shrink-0">
                 {[
-                  { icon: <Clock size={16}/>,     label:'SESSÕES',   value: thisMonth?.total_sessions ?? 0,          color:'var(--info)' },
-                  { icon: <UserCheck size={16}/>, label:'APROVADAS', value: thisMonth?.approved_sessions ?? 0,        color:'var(--success)' },
-                  { icon: <Calendar size={16}/>,  label:'PENDENTES', value: thisMonth?.pending_sessions ?? 0,         color:'var(--warning)' },
+                  { icon: <Clock size={16}/>,     label:'SESSÕES',   value: thisMonth?.total_sessions ?? 0,   color:'var(--info)' },
+                  { icon: <UserCheck size={16}/>, label:'APROVADAS', value: thisMonth?.approved_sessions ?? 0, color:'var(--success)' },
                 ].map(s => (
                   <StaggerItem key={s.label}>
                     <div className="rounded-2xl p-3 text-center relative overflow-hidden"

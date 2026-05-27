@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Profile } from '@/types/database'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import { UserPlus, Users } from 'lucide-react'
+import BackButton from '@/components/ui/BackButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,9 +35,7 @@ export default async function InternsPage() {
       <div className="flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <Link href="/admin" className="text-sm font-bold hover:opacity-70 flex-shrink-0" style={{ color: 'var(--text-3)' }}>
-              &larr; INICIO
-            </Link>
+            <BackButton href="/admin" />
             <div className="w-px h-4 flex-shrink-0" style={{ background: 'var(--border)' }} />
             <div className="min-w-0">
               <h1 className="font-bold text-sm" style={{ color: 'var(--text)' }}>ESTAGIÁRIOS</h1>
@@ -82,7 +81,7 @@ export default async function InternsPage() {
                 <FadeIn>
                   <div className="py-8 text-center" style={{ color: 'var(--text-3)' }}>
                     <Users size={32} className="mx-auto mb-1" style={{ color: "var(--text-3)", opacity: 0.35 }} />
-                    <p className="text-xs">Nenhum estagiario ativo.</p>
+                    <p className="text-xs">Nenhum estagiário ativo.</p>
                   </div>
                 </FadeIn>
               )}

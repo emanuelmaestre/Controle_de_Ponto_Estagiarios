@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Home, BarChart2, Settings,
-  MapPin, TrendingUp, LogOut, ChevronRight, Leaf,
+  TrendingUp, LogOut, ChevronRight, Leaf,
   FolderOpen, ChevronDown
 } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
@@ -15,7 +15,6 @@ import ThemeToggle from './ThemeToggle'
 interface Props {
   fullName: string
   initials: string
-  pending?: number
 }
 
 interface SubItem {
@@ -41,7 +40,6 @@ const NAV_ITEMS: NavItem[] = [
       { href: '/admin/interns', label: 'Estagiários' },
     ],
   },
-  { href: '/admin/location',  label: 'Localização', icon: MapPin },
   { href: '/admin/workload',  label: 'Carga',       icon: TrendingUp },
   { href: '/admin/reports',   label: 'Relatórios',  icon: BarChart2 },
   { href: '/admin/settings',  label: 'Config',      icon: Settings },
@@ -59,7 +57,7 @@ const MOBILE_NAV = [
 const avatarColors = ['#3b82f6','#8b5cf6','#ec4899','#10b981','#f59e0b','#06b6d4']
 const getAvatarColor = (name: string) => avatarColors[name.charCodeAt(0) % avatarColors.length]
 
-export default function AdminSidebar({ fullName, initials, pending }: Props) {
+export default function AdminSidebar({ fullName, initials }: Props) {
   const pathname = usePathname()
   const [expanded, setExpanded] = useState(true)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
@@ -108,7 +106,7 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
     if (!item.href) return null
     const active = isActive(item.href, item.end)
     const Icon = item.icon
-    const showBadge = item.badge && (pending ?? 0) > 0
+    const showBadge = false
 
     return (
       <div key={item.href} className="relative">
@@ -150,16 +148,6 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
                   style={{ background: 'rgba(74,222,128,0.3)', zIndex: -1 }}
                 />
               )}
-              {showBadge && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -top-1.5 -right-1.5 w-4 h-4 text-[9px] font-black rounded-full flex items-center justify-center"
-                  style={{ background: '#ef4444', color: 'white' }}
-                >
-                  {pending}
-                </motion.span>
-              )}
             </div>
             <AnimatePresence>
               {expanded && (
@@ -192,11 +180,6 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
             }}
           >
             {item.label}
-            {showBadge && (
-              <span className="ml-1.5 px-1 py-0.5 rounded-full text-[9px]" style={{ background: '#ef4444', color: 'white' }}>
-                {pending}
-              </span>
-            )}
             <div
               className="absolute right-full top-1/2 -translate-y-1/2"
               style={{
@@ -435,49 +418,58 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
 
           {/* ── Logo ─────────────────────────── */}
           <div
-            className="flex items-center gap-3 px-4 flex-shrink-0"
-            style={{ height: 64, borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+            className="flex-shrink-0 flex items-center"
+            style={{ height: 64, borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '0 10px', gap: 8 }}
           >
-            <motion.div
-              whileHover={{ rotate: [0, -8, 8, 0] }}
-              transition={{ duration: 0.5 }}
-              className="flex-shrink-0"
+            {/* Toggle button — always visible, on the left when collapsed */}
+            <motion.button
+              onClick={() => setExpanded(v => !v)}
+              whileHover={{ scale: 1.12, background: 'rgba(74,222,128,0.15)' }}
+              whileTap={{ scale: 0.90 }}
+              className="flex-shrink-0 rounded-xl flex items-center justify-center transition-colors"
+              style={{
+                width: 34, height: 34,
+                color: 'rgba(255,255,255,0.55)',
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}
+              title={expanded ? 'Recolher menu' : 'Expandir menu'}
             >
-              <div className="relative w-8 h-8">
-                <Image src="/logo.svg" alt="Chronos" fill className="object-contain" />
-              </div>
-            </motion.div>
+              <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.28, ease: [0.16,1,0.3,1] }}>
+                <ChevronRight size={15} />
+              </motion.div>
+            </motion.button>
 
+            {/* Logo + text — only when expanded */}
             <AnimatePresence>
               {expanded && (
                 <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.18 }}
-                  className="overflow-hidden"
+                  initial={{ opacity: 0, x: -10, width: 0 }}
+                  animate={{ opacity: 1, x: 0, width: 'auto' }}
+                  exit={{ opacity: 0, x: -10, width: 0 }}
+                  transition={{ duration: 0.2, ease: [0.16,1,0.3,1] }}
+                  className="flex items-center gap-2.5 overflow-hidden flex-shrink-0"
                 >
-                  <p className="text-[11px] font-black leading-none tracking-widest whitespace-nowrap" style={{ color: 'white' }}>
-                    CHRONOS <span style={{ color: '#4ade80' }}>LAB</span>
-                  </p>
-                  <p className="text-[9px] leading-none mt-0.5 whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                    CONTROLE DE PONTO
-                  </p>
+                  <motion.div
+                    whileHover={{ rotate: [0, -8, 8, 0] }}
+                    transition={{ duration: 0.5 }}
+                    className="flex-shrink-0"
+                  >
+                    <div className="relative w-7 h-7">
+                      <Image src="/logo.svg" alt="Chronos" fill className="object-contain" />
+                    </div>
+                  </motion.div>
+                  <div>
+                    <p className="text-[11px] font-black leading-none tracking-widest whitespace-nowrap" style={{ color: 'white' }}>
+                      CHRONOS <span style={{ color: '#4ade80' }}>LAB</span>
+                    </p>
+                    <p className="text-[9px] leading-none mt-0.5 whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                      CONTROLE DE PONTO
+                    </p>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
-
-            <motion.button
-              onClick={() => setExpanded(v => !v)}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.92 }}
-              className="ml-auto flex-shrink-0 rounded-lg p-1 transition-colors"
-              style={{ color: 'rgba(255,255,255,0.35)', background: 'rgba(255,255,255,0.05)' }}
-            >
-              <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.25 }}>
-                <ChevronRight size={14} />
-              </motion.div>
-            </motion.button>
           </div>
 
           {/* ── Nav items ─────────────────────── */}

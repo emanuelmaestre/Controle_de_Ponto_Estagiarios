@@ -6,6 +6,7 @@ import { minutesToHours } from '@/lib/utils'
 import ReportExport from './ReportExport'
 import { Clock, ClipboardList, CheckCircle2, AlertCircle, XCircle, Search, BarChart2 } from 'lucide-react'
 import DatePicker from '@/components/ui/DatePicker'
+import BackButton from '@/components/ui/BackButton'
 
 type PeriodType = 'daily' | 'weekly' | 'monthly' | 'custom'
 
@@ -114,7 +115,6 @@ export default function ReportsClient() {
   const totalMinutes  = data?.interns.reduce((a, i) => a + i.total_minutes, 0) ?? 0
   const totalApproved = data?.interns.reduce((a, i) => a + i.approved_sessions, 0) ?? 0
   const totalSessions = data?.interns.reduce((a, i) => a + i.total_sessions, 0) ?? 0
-  const totalPending  = data?.interns.reduce((a, i) => a + i.pending_sessions, 0) ?? 0
   const totalRejected = data?.interns.reduce((a, i) => a + i.rejected_sessions, 0) ?? 0
 
   const exportData = data?.interns.map(i => ({
@@ -125,7 +125,6 @@ export default function ReportsClient() {
     total_horas: minutesToHours(i.total_minutes),
     sessoes: i.total_sessions,
     aprovados: i.approved_sessions,
-    pendentes: i.pending_sessions,
     reprovados: i.rejected_sessions,
   })) ?? []
 
@@ -148,13 +147,7 @@ export default function ReportsClient() {
       <div className="no-print flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-            <a
-              href="/admin"
-              className="text-sm font-medium transition-colors flex-shrink-0 hover:opacity-70"
-              style={{ color: 'var(--text-3)' }}
-            >
-              &larr; PAINEL
-            </a>
+            <BackButton href="/admin" />
             <div className="w-px h-5 hidden sm:block" style={{ background: 'var(--border)' }} />
             <div className="min-w-0">
               <h1 className="font-bold text-base sm:text-lg leading-tight" style={{ color: 'var(--text)' }}>RELATÓRIOS</h1>
@@ -316,13 +309,12 @@ export default function ReportsClient() {
             <motion.div
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+              className="grid grid-cols-2 sm:grid-cols-4 gap-3"
             >
               <SummaryCard label="TOTAL DE HORAS" value={minutesToHours(totalMinutes)} color="blue"  icon={<Clock size={15}        />} delay={0} />
-              <SummaryCard label="SESSOES"         value={totalSessions}               color="gray"  icon={<ClipboardList size={15} />} delay={0.05} />
+              <SummaryCard label="SESSÕES"         value={totalSessions}               color="gray"  icon={<ClipboardList size={15} />} delay={0.05} />
               <SummaryCard label="APROVADAS"       value={totalApproved}               color="green" icon={<CheckCircle2 size={15}  />} delay={0.1} />
-              <SummaryCard label="PENDENTES"       value={totalPending}                color="amber" icon={<AlertCircle size={15}   />} delay={0.15} />
-              <SummaryCard label="REPROVADAS"      value={totalRejected}               color="red"   icon={<XCircle size={15}       />} delay={0.2} />
+              <SummaryCard label="REPROVADAS"      value={totalRejected}               color="red"   icon={<XCircle size={15}       />} delay={0.15} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -367,9 +359,6 @@ export default function ReportsClient() {
                         {intern.approved_sessions > 0 && (
                           <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">{intern.approved_sessions} APROV.</span>
                         )}
-                        {intern.pending_sessions > 0 && (
-                          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-600">{intern.pending_sessions} PEND.</span>
-                        )}
                         {intern.rejected_sessions > 0 && (
                           <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-600">{intern.rejected_sessions} REPROV.</span>
                         )}
@@ -387,11 +376,10 @@ export default function ReportsClient() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
-                        <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Estagiario</th>
+                        <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Estagiário</th>
                         <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--info)' }}>Horas</th>
-                        <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Sessoes</th>
+                        <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Sessões</th>
                         <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--success)' }}>Aprov.</th>
-                        <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--warning)' }}>Pend.</th>
                         <th className="text-center px-4 py-3.5 text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--danger)' }}>Reprov.</th>
                       </tr>
                     </thead>
@@ -421,11 +409,6 @@ export default function ReportsClient() {
                               : <span style={{ color: 'var(--text-3)' }}>—</span>}
                           </td>
                           <td className="px-4 py-4 text-center">
-                            {intern.pending_sessions > 0
-                              ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-600">{intern.pending_sessions}</span>
-                              : <span style={{ color: 'var(--text-3)' }}>—</span>}
-                          </td>
-                          <td className="px-4 py-4 text-center">
                             {intern.rejected_sessions > 0
                               ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600">{intern.rejected_sessions}</span>
                               : <span style={{ color: 'var(--text-3)' }}>—</span>}
@@ -439,7 +422,6 @@ export default function ReportsClient() {
                         <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--info)' }}>{minutesToHours(totalMinutes)}</td>
                         <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--text)' }}>{totalSessions}</td>
                         <td className="px-4 py-3 text-center font-bold text-emerald-600">{totalApproved}</td>
-                        <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--warning)' }}>{totalPending}</td>
                         <td className="px-4 py-3 text-center font-bold" style={{ color: 'var(--danger)' }}>{totalRejected}</td>
                       </tr>
                     </tfoot>
@@ -450,7 +432,7 @@ export default function ReportsClient() {
               <div className="py-20 text-center" style={{ color: 'var(--text-3)' }}>
                 <BarChart2 size={44} className="mx-auto mb-4" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
                 <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>NENHUM DADO ENCONTRADO</p>
-                <p className="text-xs mt-1">Nao ha registros para o periodo selecionado.</p>
+                <p className="text-xs mt-1">Não há registros para o período selecionado.</p>
               </div>
             )}
           </motion.div>
@@ -461,7 +443,7 @@ export default function ReportsClient() {
           <div className="py-20 text-center" style={{ color: 'var(--text-3)' }}>
             <Search size={44} className="mx-auto mb-4" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
             <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>SELECIONE UM PERÍODO</p>
-            <p className="text-xs mt-1">Configure o filtro acima e clique em Aplicar filtro.</p>
+            <p className="text-xs mt-1">Configure o filtro acima e clique em Aplicar.</p>
           </div>
         )}
       </div></main>

@@ -16,22 +16,29 @@ interface Service {
 }
 
 const SERVICES: Service[] = [
-  { key: 'supabase', label: 'SUPABASE', description: 'BANCO DE DADOS E AUTENTICAÇÃO', icon: <Database size={20} />, docs: 'https://supabase.com', version: '@supabase/ssr' },
+  { key: 'supabase', label: 'SUPABASE', description: 'BANCO DE DADOS E AUTENTICAÇÃO', icon: <Database size={20} />, docs: 'https://supabase.com', version: '@supabase/ssr 0.10' },
   { key: 'vercel',   label: 'VERCEL',   description: 'HOSPEDAGEM E DEPLOY CONTÍNUO',  icon: <Cloud    size={20} />, docs: 'https://vercel.com',   version: 'PRODUÇÃO' },
-  { key: 'nextjs',   label: 'NEXT.JS',  description: 'FRAMEWORK FULL-STACK (v16)',    icon: <Zap      size={20} />, docs: 'https://nextjs.org',   version: '16.2.6' },
-  { key: 'github',   label: 'GITHUB',   description: 'CONTROLE DE VERSÃO E CI/CD',   icon: <GitBranch size={20} />, docs: 'https://github.com',  version: 'MAIN' },
+  { key: 'nextjs',   label: 'NEXT.JS',  description: 'FRAMEWORK FULL-STACK',          icon: <Zap      size={20} />, docs: 'https://nextjs.org',   version: '16.2.6' },
+  { key: 'github',   label: 'GITHUB',   description: 'CONTROLE DE VERSÃO E CI/CD',    icon: <GitBranch size={20} />, docs: 'https://github.com',  version: 'MAIN' },
 ]
 
 const STACK_INFO = [
-  { label: 'REACT',           version: '19',          color: '#61dafb' },
-  { label: 'FRAMER MOTION',   version: '12',          color: '#ff0055' },
-  { label: 'TAILWIND CSS',    version: '4',           color: '#38bdf8' },
-  { label: 'TYPESCRIPT',      version: '5',           color: '#3178c6' },
-  { label: 'LUCIDE REACT',    version: '0.x',         color: '#f97316' },
-  { label: 'SONNER',          version: '1.x',         color: '#8b5cf6' },
-  { label: 'ZOOKEEPER',       version: 'BCRYPT',      color: '#10b981' },
-  { label: 'REACT HOOK FORM', version: '7',           color: '#ec4899' },
-  { label: 'ZOD',             version: '3',           color: '#60a5fa' },
+  { label: 'REACT',            version: '19.2',   color: '#61dafb' },
+  { label: 'NEXT.JS',          version: '16.2.6', color: '#ffffff' },
+  { label: 'TYPESCRIPT',       version: '5',      color: '#3178c6' },
+  { label: 'TAILWIND CSS',     version: '4',      color: '#38bdf8' },
+  { label: 'FRAMER MOTION',    version: '12',     color: '#ff0055' },
+  { label: 'SUPABASE JS',      version: '2.106',  color: '#3ecf8e' },
+  { label: 'REACT HOOK FORM',  version: '7.76',   color: '#ec4899' },
+  { label: 'ZOD',              version: '4.4',    color: '#60a5fa' },
+  { label: 'ZUSTAND',          version: '5.0',    color: '#f97316' },
+  { label: 'LUCIDE REACT',     version: '1.16',   color: '#fbbf24' },
+  { label: 'SONNER',           version: '2.0',    color: '#8b5cf6' },
+  { label: 'RECHARTS',         version: '3.8',    color: '#22d3ee' },
+  { label: 'REACT QUERY',      version: '5.100',  color: '#ef4444' },
+  { label: 'BCRYPTJS',         version: '3.0',    color: '#10b981' },
+  { label: 'XLSX',             version: '0.18',   color: '#84cc16' },
+  { label: 'SWR',              version: '2.4',    color: '#a78bfa' },
 ]
 
 export default function IntegrationsTab() {
@@ -113,7 +120,7 @@ export default function IntegrationsTab() {
       {/* Overall health bar */}
       <div className="rounded-xl p-3" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
         <div className="flex justify-between text-xs font-bold mb-2" style={{ color: 'var(--text-3)' }}>
-          <span>SAUDE GERAL</span>
+          <span>SAÚDE GERAL</span>
           <span style={{ color: 'var(--success)' }}>{Math.round((totalOnline / totalServices) * 100)}%</span>
         </div>
         <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>

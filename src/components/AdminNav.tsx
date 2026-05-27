@@ -1,23 +1,21 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { getServerUser, getServerProfile } from '@/lib/supabase/cached'
-import { Home, Users, CheckSquare, BarChart2, Settings, MapPin, TrendingUp } from 'lucide-react'
+import { Home, Users, BarChart2, Settings, TrendingUp } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 
-export default async function AdminNav({ pending = 0 }: { pending?: number }) {
+export default async function AdminNav() {
   const { data: { user } } = await getServerUser()
   const { data: profile } = user
     ? await getServerProfile(user.id)
     : { data: null }
 
   const navItems = [
-    { href: '/admin',            label: 'INICIO',      icon: <Home        size={15} /> },
-    { href: '/admin/interns',   label: 'ESTAGIARIOS', icon: <Users       size={15} /> },
-    { href: '/admin/approvals', label: 'APROVACOES',  icon: <CheckSquare size={15} />, badge: pending },
-    { href: '/admin/location',  label: 'LOCAL',       icon: <MapPin      size={15} /> },
-    { href: '/admin/workload',  label: 'CARGA',       icon: <TrendingUp  size={15} /> },
-    { href: '/admin/reports',   label: 'RELATORIOS',  icon: <BarChart2   size={15} /> },
-    { href: '/admin/settings',  label: 'CONFIG',      icon: <Settings    size={15} /> },
+    { href: '/admin',           label: 'INÍCIO',      icon: <Home       size={15} /> },
+    { href: '/admin/interns',   label: 'ESTAGIÁRIOS', icon: <Users      size={15} /> },
+    { href: '/admin/workload',  label: 'CARGA',       icon: <TrendingUp size={15} /> },
+    { href: '/admin/reports',   label: 'RELATÓRIOS',  icon: <BarChart2  size={15} /> },
+    { href: '/admin/settings',  label: 'CONFIG',      icon: <Settings   size={15} /> },
   ]
 
   const initials = profile?.full_name
@@ -61,14 +59,6 @@ export default async function AdminNav({ pending = 0 }: { pending?: number }) {
               >
                 <span className="flex-shrink-0">{item.icon}</span>
                 <span>{item.label}</span>
-                {(item.badge ?? 0) > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 w-4 h-4 text-[9px] font-black rounded-full flex items-center justify-center"
-                    style={{ background: 'var(--accent)', color: 'var(--accent-fg)' }}
-                  >
-                    {item.badge}
-                  </span>
-                )}
               </Link>
             ))}
           </nav>
@@ -127,14 +117,6 @@ export default async function AdminNav({ pending = 0 }: { pending?: number }) {
             >
               <span>{item.icon}</span>
               <span className="text-[10px] font-semibold">{item.label}</span>
-              {(item.badge ?? 0) > 0 && (
-                <span
-                  className="absolute top-1.5 right-1/4 translate-x-1/2 w-4 h-4 text-[9px] font-black rounded-full flex items-center justify-center"
-                  style={{ background: 'var(--accent)', color: 'var(--accent-fg)' }}
-                >
-                  {item.badge}
-                </span>
-              )}
             </Link>
           ))}
         </div>

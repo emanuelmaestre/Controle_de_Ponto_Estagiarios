@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { minutesToHours, formatTime } from '@/lib/utils'
 import type { TodayStatus } from '@/types/database'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
-import { Users, Activity, Clock, AlertTriangle, TrendingUp, CheckCircle } from 'lucide-react'
+import { Users, Activity, AlertTriangle, TrendingUp, CheckCircle } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,7 +19,6 @@ export default async function AdminPage() {
     .order('full_name')
   const interns = internsRaw as TodayStatus[] | null
 
-  const totalPending = interns?.reduce((acc, i) => acc + (i.pending_count ?? 0), 0) ?? 0
   const activeCount  = interns?.filter(i => i.today_status === 'ativo').length ?? 0
   const saiuCount    = interns?.filter(i => i.today_status === 'saiu').length ?? 0
   const ausenteCount = interns?.filter(i => i.today_status === 'ausente').length ?? 0
@@ -42,7 +41,7 @@ export default async function AdminPage() {
       icon: <Activity size={16} />,
       label: 'PRESENTES',
       value: activeCount,
-      sub: 'no laboratorio',
+      sub: 'no laboratório',
       color: 'var(--success)',
       bg: 'rgba(22,163,74,0.08)',
     },
@@ -53,14 +52,6 @@ export default async function AdminPage() {
       sub: `${saiuCount} saíram hoje`,
       color: 'var(--info)',
       bg: 'rgba(14,165,233,0.08)',
-    },
-    {
-      icon: <Clock size={16} />,
-      label: 'PENDENTES',
-      value: totalPending,
-      sub: totalPending > 0 ? 'aguardam revisão' : 'tudo em dia',
-      color: totalPending > 0 ? 'var(--warning)' : 'var(--text-3)',
-      bg: totalPending > 0 ? 'rgba(217,119,6,0.08)' : 'var(--bg)',
     },
     {
       icon: <AlertTriangle size={16} />,
@@ -100,7 +91,7 @@ export default async function AdminPage() {
         </FadeIn>
 
         {/* Stats row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 flex-shrink-0">
+        <div className="grid grid-cols-3 gap-3 flex-shrink-0">
           {stats.map((s, i) => (
             <FadeIn key={s.label} delay={i * 0.04}>
               <div
@@ -118,35 +109,8 @@ export default async function AdminPage() {
           ))}
         </div>
 
-        {/* Banner de pendencias */}
-        {totalPending > 0 && (
-          <FadeIn delay={0.18}>
-            <Link href="/admin/approvals">
-              <div
-                className="rounded-2xl px-4 py-3 flex items-center gap-3 transition-all hover:shadow-md flex-shrink-0"
-                style={{ background: 'rgba(217,119,6,0.08)', border: '1px solid rgba(217,119,6,0.3)' }}
-              >
-                <Clock size={16} style={{ color: 'var(--warning)', flexShrink: 0 }} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold" style={{ color: 'var(--warning)' }}>
-                    {totalPending} {totalPending === 1 ? 'REGISTRO PENDENTE' : 'REGISTROS PENDENTES'} DE APROVAÇÃO
-                  </p>
-                  <p className="text-[10px] truncate" style={{ color: 'var(--warning)', opacity: 0.75 }}>
-                    Clique para revisar e aprovar os registros aguardando sua análise.
-                  </p>
-                </div>
-                <span
-                  className="text-[10px] font-bold px-3 py-1.5 rounded-xl flex-shrink-0"
-                  style={{ background: 'var(--warning)', color: 'white' }}
-                >
-                  REVISAR
-                </span>
-              </div>
-            </Link>
-          </FadeIn>
-        )}
 
-        {/* Estagiarios — ocupa o espaco restante */}
+{/* Estagiarios — ocupa o espaco restante */}
         <div className="flex-1 min-h-0 flex flex-col">
           <FadeIn delay={0.22}>
             <div className="flex items-center justify-between mb-3 flex-shrink-0">
@@ -220,12 +184,7 @@ export default async function AdminPage() {
                               {formatTime(intern.clock_in)}
                             </p>
                           )}
-                          {intern.pending_count > 0 && (
-                            <p className="text-[9px] font-bold" style={{ color: 'var(--warning)' }}>
-                              {intern.pending_count} PEND.
-                            </p>
-                          )}
-                          {intern.today_status === 'saiu' && intern.pending_count === 0 && (
+                          {intern.today_status === 'saiu' && (
                             <CheckCircle size={12} style={{ color: 'var(--info)', marginLeft: 'auto' }} />
                           )}
                         </div>

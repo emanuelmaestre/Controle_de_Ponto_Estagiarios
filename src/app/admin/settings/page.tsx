@@ -6,12 +6,13 @@ import SettingsForm from './SettingsForm'
 import ChangePinForm from './ChangePinForm'
 import GeoSettings from './GeoSettings'
 import IntegrationsTab from './IntegrationsTab'
-import { Settings as SettingsIcon, MapPin, Plug, Shield } from 'lucide-react'
+import { Settings as SettingsIcon, Plug, Shield } from 'lucide-react'
 import { FadeIn } from '@/components/ui/MotionWrappers'
+import BackButton from '@/components/ui/BackButton'
 
 export const dynamic = 'force-dynamic'
 
-type Tab = 'geral' | 'localizacao' | 'integracoes' | 'seguranca'
+type Tab = 'geral' | 'integracoes' | 'seguranca'
 
 interface Props {
   searchParams: Promise<{ tab?: string }>
@@ -23,7 +24,7 @@ export default async function SettingsPage({ searchParams }: Props) {
   if (!user) redirect('/login')
 
   const { tab: tabParam } = await searchParams
-  const activeTab = (['geral', 'localizacao', 'integracoes', 'seguranca'].includes(tabParam ?? '')
+  const activeTab = (['geral', 'integracoes', 'seguranca'].includes(tabParam ?? '')
     ? tabParam
     : 'geral') as Tab
 
@@ -42,7 +43,6 @@ export default async function SettingsPage({ searchParams }: Props) {
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'geral',       label: 'GERAL',        icon: <SettingsIcon size={14} /> },
-    { key: 'localizacao', label: 'LOCALIZAÇÃO',  icon: <MapPin size={14} /> },
     { key: 'integracoes', label: 'INTEGRAÇÕES',  icon: <Plug size={14} /> },
     { key: 'seguranca',   label: 'SEGURANÇA',    icon: <Shield size={14} /> },
   ]
@@ -55,28 +55,27 @@ export default async function SettingsPage({ searchParams }: Props) {
       <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center gap-3 mb-4">
-            <Link href="/admin" className="text-sm transition-colors hover:opacity-70" style={{ color: 'var(--text-3)' }}>
-              &larr; PAINEL
-            </Link>
+            <BackButton href="/admin" />
             <div>
               <h1 className="font-bold text-lg" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES</h1>
               <p className="text-xs" style={{ color: 'var(--text-3)' }}>AJUSTES DO SISTEMA</p>
             </div>
           </div>
 
-          {/* Tab nav */}
-          <div className="flex gap-1 overflow-x-auto pb-1">
+          {/* Tab nav — grid fixo, sem scroll lateral */}
+          <div className="grid grid-cols-3 gap-1.5">
             {tabs.map(t => (
               <Link
                 key={t.key}
                 href={`/admin/settings?tab=${t.key}`}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all"
+                className="flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl text-[11px] font-bold transition-all text-center"
                 style={activeTab === t.key
                   ? { background: 'var(--primary)', color: 'white' }
                   : { background: 'var(--bg)', color: 'var(--text-3)', border: '1px solid var(--border)' }
                 }
               >
-                {t.icon} {t.label}
+                <span className="flex-shrink-0">{t.icon}</span>
+                <span className="truncate">{t.label}</span>
               </Link>
             ))}
           </div>
@@ -98,19 +97,6 @@ export default async function SettingsPage({ searchParams }: Props) {
                   <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES DO LABORATÓRIO</h2>
                   <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>HORÁRIOS DE LEMBRETE, HORAS ESPERADAS E E-MAIL DE RELATÓRIO.</p>
                   <SettingsForm settings={settings} />
-                </>
-              )}
-
-              {activeTab === 'localizacao' && (
-                <>
-                  <div className="flex items-center gap-2 mb-1">
-                    <MapPin size={16} style={{ color: 'var(--primary)' }} />
-                    <h2 className="font-semibold" style={{ color: 'var(--text)' }}>CONTROLE DE LOCALIZAÇÃO</h2>
-                  </div>
-                  <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
-                    EXIGE QUE OS ESTAGIÁRIOS ESTEJAM FISICAMENTE NO LABORATÓRIO PARA REGISTRAR O PONTO.
-                  </p>
-                  <GeoSettings config={geoConfig} />
                 </>
               )}
 

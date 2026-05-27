@@ -5,6 +5,7 @@ import { minutesToHours } from '@/lib/utils'
 import type { Profile, MonthlyHours, InternSchedule } from '@/types/database'
 import { TrendingUp, Users } from 'lucide-react'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
+import BackButton from '@/components/ui/BackButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,9 +27,9 @@ export default async function WorkloadPage() {
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
   const { data: allHoursRaw } = await supabase
     .from('v_monthly_hours')
-    .select('intern_id, total_minutes, approved_sessions, pending_sessions')
+    .select('intern_id, total_minutes, approved_sessions')
     .gte('month', monthStart)
-  const allHours = (allHoursRaw ?? []) as Pick<MonthlyHours, 'intern_id' | 'total_minutes' | 'approved_sessions' | 'pending_sessions'>[]
+  const allHours = (allHoursRaw ?? []) as Pick<MonthlyHours, 'intern_id' | 'total_minutes' | 'approved_sessions'>[]
 
   // Schedules - weekly expected hours per intern
   const { data: schedulesRaw } = await supabase
@@ -50,7 +51,6 @@ export default async function WorkloadPage() {
     total_hours_required: number | null
     monthMinutes: number
     approvedSessions: number
-    pendingSessions: number
     pct: number
     weeklyHours: number
   }
@@ -64,7 +64,6 @@ export default async function WorkloadPage() {
       ...i,
       monthMinutes,
       approvedSessions: h?.approved_sessions ?? 0,
-      pendingSessions: h?.pending_sessions ?? 0,
       pct,
       weeklyHours: weeklyByIntern[i.id] ?? 0,
     }
@@ -88,9 +87,7 @@ export default async function WorkloadPage() {
       <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center gap-3 mb-2">
-            <Link href="/admin" className="text-sm hover:opacity-70" style={{ color: 'var(--text-3)' }}>
-              &larr; PAINEL
-            </Link>
+            <BackButton href="/admin" />
             <div>
               <h1 className="font-bold text-lg" style={{ color: 'var(--text)' }}>CARGA HORÁRIA</h1>
               <p className="text-xs" style={{ color: 'var(--text-3)' }}>ACOMPANHAMENTO DE HORAS &mdash; {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()}</p>
@@ -180,12 +177,6 @@ export default async function WorkloadPage() {
                     </span>
                     <span>&middot;</span>
                     <span>{r.approvedSessions} APROVADAS</span>
-                    {r.pendingSessions > 0 && (
-                      <>
-                        <span>&middot;</span>
-                        <span style={{ color: 'var(--warning)' }}>{r.pendingSessions} PENDENTES</span>
-                      </>
-                    )}
                     {r.weeklyHours > 0 && (
                       <>
                         <span>&middot;</span>

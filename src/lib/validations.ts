@@ -84,7 +84,8 @@ export type RejectInput = z.infer<typeof rejectSchema>
 export const settingsSchema = z.object({
   reminder_in_time: z
     .string()
-    .regex(/^\d{2}:\d{2}$/, 'Formato inválido (HH:MM)'),
+    .regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Formato inválido (HH:MM)')
+    .transform(v => v.slice(0, 5)),
   reminder_out_after_hours: z
     .number()
     .int()
