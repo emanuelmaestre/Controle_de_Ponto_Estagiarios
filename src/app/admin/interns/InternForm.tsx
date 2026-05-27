@@ -2,13 +2,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { CheckCircle2, AlertTriangle, Loader2, Camera, Key, Mail, Lock } from 'lucide-react'
+import { CheckCircle2, AlertTriangle, Loader2, Camera, Key, Mail, Lock, ChevronDown, GraduationCap } from 'lucide-react'
 import { internSchema } from '@/lib/validations'
 import type { Profile } from '@/types/database'
+import DatePicker from '@/components/ui/DatePicker'
 
 type InternFormValues = {
   full_name: string
@@ -37,7 +38,7 @@ export default function InternForm({ mode, intern }: Props) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(intern?.photo_url ?? null)
   const [notifyEmail, setNotifyEmail] = useState(false)
 
-  const { register, handleSubmit, formState: { errors } } = useForm<InternFormValues>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<InternFormValues>({
     resolver: zodResolver(internSchema),
     defaultValues: intern ? {
       full_name: intern.full_name,
@@ -208,19 +209,36 @@ export default function InternForm({ mode, intern }: Props) {
         </div>
 
         <div>
-          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>CURSO</label>
-          <select
-            {...register('course')}
-            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none appearance-none"
-            style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
-          >
-            <option value="">SELECIONE O CURSO</option>
-            <option value="BACHARELADO EM AGRONOMIA">BACHARELADO EM AGRONOMIA</option>
-            <option value="TÉCNICO EM AGROPECUÁRIA">TÉCNICO EM AGROPECUÁRIA</option>
-            <option value="LICENCIATURA EM CIÊNCIAS BIOLÓGICAS">LICENCIATURA EM CIÊNCIAS BIOLÓGICAS</option>
-            <option value="MESTRADO EM PROTEÇÃO DE PLANTAS">MESTRADO EM PROTEÇÃO DE PLANTAS</option>
-            <option value="TÉCNICO EM BIOTECNOLOGIA">TÉCNICO EM BIOTECNOLOGIA</option>
-          </select>
+          <label className="block text-xs font-bold mb-1.5 flex items-center gap-1.5" style={{ color: 'var(--text-2)' }}>
+            <GraduationCap size={12} style={{ color: 'var(--primary)' }} /> CURSO
+          </label>
+          <div className="relative">
+            <select
+              {...register('course')}
+              className="w-full pl-4 pr-10 py-3 rounded-xl text-sm focus:outline-none appearance-none font-medium transition-all"
+              style={{
+                background: 'var(--bg)',
+                border: '1.5px solid var(--border)',
+                color: 'var(--text)',
+                boxShadow: 'var(--card-shadow)',
+                cursor: 'pointer',
+              }}
+              onFocus={e => (e.target.style.borderColor = 'var(--primary)')}
+              onBlur={e  => (e.target.style.borderColor = 'var(--border)')}
+            >
+              <option value="" style={{ color: 'var(--text-3)' }}>▾ SELECIONE O CURSO</option>
+              <option value="BACHARELADO EM AGRONOMIA">BACHARELADO EM AGRONOMIA</option>
+              <option value="TÉCNICO EM AGROPECUÁRIA">TÉCNICO EM AGROPECUÁRIA</option>
+              <option value="LICENCIATURA EM CIÊNCIAS BIOLÓGICAS">LICENCIATURA EM CIÊNCIAS BIOLÓGICAS</option>
+              <option value="MESTRADO EM PROTEÇÃO DE PLANTAS">MESTRADO EM PROTEÇÃO DE PLANTAS</option>
+              <option value="TÉCNICO EM BIOTECNOLOGIA">TÉCNICO EM BIOTECNOLOGIA</option>
+            </select>
+            {/* Custom chevron arrow */}
+            <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6 rounded-lg"
+              style={{ background: 'rgba(30,92,45,0.12)' }}>
+              <ChevronDown size={13} style={{ color: 'var(--primary)' }} />
+            </div>
+          </div>
           {errors.course && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.course.message}</p>}
         </div>
       </div>
@@ -228,24 +246,34 @@ export default function InternForm({ mode, intern }: Props) {
       {/* Período do estágio */}
       <div className="rounded-2xl p-5 space-y-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
         <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>PERÍODO DO ESTÁGIO</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>DATA DE INÍCIO</label>
-            <input
-              {...register('internship_start')}
-              type="date"
-              className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
-              style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
+            <label className="block text-xs font-bold mb-1.5" style={{ color: 'var(--text-2)' }}>DATA DE INÍCIO</label>
+            <Controller
+              name="internship_start"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  placeholder="Selecionar início"
+                />
+              )}
             />
             {errors.internship_start && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.internship_start.message}</p>}
           </div>
           <div>
-            <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>DATA DE TÉRMINO</label>
-            <input
-              {...register('internship_end')}
-              type="date"
-              className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
-              style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
+            <label className="block text-xs font-bold mb-1.5" style={{ color: 'var(--text-2)' }}>DATA DE TÉRMINO</label>
+            <Controller
+              name="internship_end"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  placeholder="Selecionar término"
+                />
+              )}
             />
             {errors.internship_end && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.internship_end.message}</p>}
           </div>
