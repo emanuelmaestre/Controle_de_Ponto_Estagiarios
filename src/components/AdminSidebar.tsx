@@ -6,16 +6,16 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Home, Users, CheckSquare, BarChart2, Settings,
+  Home, BarChart2, Settings,
   MapPin, TrendingUp, LogOut, ChevronRight, Leaf,
-  Bell, FolderOpen, ChevronDown
+  FolderOpen, ChevronDown
 } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 
 interface Props {
   fullName: string
   initials: string
-  pending: number
+  pending?: number
 }
 
 interface SubItem {
@@ -41,7 +41,6 @@ const NAV_ITEMS: NavItem[] = [
       { href: '/admin/interns', label: 'Estagiários' },
     ],
   },
-  { href: '/admin/approvals', label: 'Aprovações',  icon: CheckSquare, badge: true },
   { href: '/admin/location',  label: 'Localização', icon: MapPin },
   { href: '/admin/workload',  label: 'Carga',       icon: TrendingUp },
   { href: '/admin/reports',   label: 'Relatórios',  icon: BarChart2 },
@@ -52,8 +51,8 @@ const NAV_ITEMS: NavItem[] = [
 const MOBILE_NAV = [
   { href: '/admin',            label: 'Início',      icon: Home,        end: true },
   { href: '/admin/interns',   label: 'Cadastros',   icon: FolderOpen },
-  { href: '/admin/approvals', label: 'Aprovações',  icon: CheckSquare, badge: true },
   { href: '/admin/workload',  label: 'Carga',       icon: TrendingUp },
+  { href: '/admin/reports',   label: 'Relatórios',  icon: BarChart2 },
   { href: '/admin/settings',  label: 'Config',      icon: Settings },
 ]
 
@@ -109,7 +108,7 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
     if (!item.href) return null
     const active = isActive(item.href, item.end)
     const Icon = item.icon
-    const showBadge = item.badge && pending > 0
+    const showBadge = item.badge && (pending ?? 0) > 0
 
     return (
       <div key={item.href} className="relative">
@@ -396,16 +395,6 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {pending > 0 && (
-              <Link href="/admin/approvals">
-                <span
-                  className="flex items-center gap-1 text-[9px] font-black px-2 py-1 rounded-full"
-                  style={{ background: '#ef4444', color: 'white' }}
-                >
-                  <Bell size={10} /> {pending}
-                </span>
-              </Link>
-            )}
             <ThemeToggle compact />
           </div>
         </div>
@@ -507,21 +496,6 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
           <div className="px-2 pb-4 space-y-1 flex-shrink-0">
             <div className="flex items-center gap-1 px-2 py-1">
               <ThemeToggle compact />
-              {pending > 0 && (
-                <motion.div
-                  animate={{ scale: [1, 1.15, 1] }}
-                  transition={{ repeat: Infinity, duration: 2.5 }}
-                  className="relative ml-1"
-                >
-                  <Bell size={15} style={{ color: 'rgba(255,255,255,0.4)' }} />
-                  <span
-                    className="absolute -top-1 -right-1 w-3.5 h-3.5 text-[8px] font-black rounded-full flex items-center justify-center"
-                    style={{ background: '#ef4444', color: 'white' }}
-                  >
-                    {pending}
-                  </span>
-                </motion.div>
-              )}
             </div>
 
             <motion.div
@@ -604,7 +578,6 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
           {MOBILE_NAV.map((item) => {
             const active = isActive(item.href, item.end)
             const Icon = item.icon
-            const showBadge = item.badge && pending > 0
             return (
               <Link
                 key={item.href}
@@ -616,14 +589,6 @@ export default function AdminSidebar({ fullName, initials, pending }: Props) {
                     size={20}
                     style={{ color: active ? '#4ade80' : 'rgba(255,255,255,0.4)' }}
                   />
-                  {showBadge && (
-                    <span
-                      className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 text-[8px] font-black rounded-full flex items-center justify-center"
-                      style={{ background: '#ef4444', color: 'white' }}
-                    >
-                      {pending > 9 ? '9+' : pending}
-                    </span>
-                  )}
                 </div>
                 <span
                   className="text-[9px] font-bold leading-none"

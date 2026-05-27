@@ -5,16 +5,16 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { InternSchedule } from '@/types/database'
 import { toast } from 'sonner'
-import { Clock, Check, X, ChevronDown } from 'lucide-react'
+import { Clock, Check, X, Loader2, Save } from 'lucide-react'
 
 const DAYS = [
-  { key: 1, label: 'SEG', full: 'SEGUNDA-FEIRA' },
-  { key: 2, label: 'TER', full: 'TERCA-FEIRA' },
-  { key: 3, label: 'QUA', full: 'QUARTA-FEIRA' },
-  { key: 4, label: 'QUI', full: 'QUINTA-FEIRA' },
-  { key: 5, label: 'SEX', full: 'SEXTA-FEIRA' },
-  { key: 6, label: 'SAB', full: 'SABADO' },
-  { key: 0, label: 'DOM', full: 'DOMINGO' },
+  { key: 1, label: 'SEG', full: 'SEGUNDA-FEIRA',  color: 'var(--primary-light)' },
+  { key: 2, label: 'TER', full: 'TERÇA-FEIRA',    color: 'var(--primary-light)' },
+  { key: 3, label: 'QUA', full: 'QUARTA-FEIRA',   color: 'var(--primary-light)' },
+  { key: 4, label: 'QUI', full: 'QUINTA-FEIRA',   color: 'var(--primary-light)' },
+  { key: 5, label: 'SEX', full: 'SEXTA-FEIRA',    color: 'var(--primary-light)' },
+  { key: 6, label: 'SAB', full: 'SÁBADO',         color: 'var(--warning)' },
+  { key: 0, label: 'DOM', full: 'DOMINGO',        color: 'var(--accent-light)' },
 ]
 
 interface Props {
@@ -49,16 +49,12 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
   const [schedule, setSchedule] = useState<Record<number, DaySchedule>>(buildInitial)
   const [totalHours, setTotalHours] = useState<number>(totalHoursRequired ?? 120)
   const [saving, setSaving] = useState(false)
-  const [expanded, setExpanded] = useState<number | null>(null)
 
   const weeklyHours = DAYS.filter(d => schedule[d.key]?.active)
     .reduce((sum, d) => sum + calcHours(schedule[d.key].start, schedule[d.key].end), 0)
 
   const toggleDay = (key: number) => {
-    setSchedule(prev => ({
-      ...prev,
-      [key]: { ...prev[key], active: !prev[key].active }
-    }))
+    setSchedule(prev => ({ ...prev, [key]: { ...prev[key], active: !prev[key].active } }))
   }
 
   const updateTime = (key: number, field: 'start' | 'end', value: string) => {
@@ -68,36 +64,23 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
   const save = async () => {
     setSaving(true)
     try {
-      // Update total_hours_required on profile
       const { error: profileErr } = await supabase
-        .from('profiles')
-        .update({ total_hours_required: totalHours })
-        .eq('id', internId)
+        .from('profiles').update({ total_hours_required: totalHours }).eq('id', internId)
       if (profileErr) throw profileErr
 
-      // Upsert each active day, delete inactive
       for (const d of DAYS) {
         const ds = schedule[d.key]
         if (ds.active) {
-          const { error } = await supabase
-            .from('intern_schedules')
-            .upsert({
-              intern_id: internId,
-              day_of_week: d.key,
-              expected_start: ds.start + ':00',
-              expected_end: ds.end + ':00',
-              is_active: true,
-            }, { onConflict: 'intern_id,day_of_week' })
+          const { error } = await supabase.from('intern_schedules').upsert({
+            intern_id: internId, day_of_week: d.key,
+            expected_start: ds.start + ':00', expected_end: ds.end + ':00', is_active: true,
+          }, { onConflict: 'intern_id,day_of_week' })
           if (error) throw error
         } else {
-          await supabase
-            .from('intern_schedules')
-            .update({ is_active: false })
-            .eq('intern_id', internId)
-            .eq('day_of_week', d.key)
+          await supabase.from('intern_schedules')
+            .update({ is_active: false }).eq('intern_id', internId).eq('day_of_week', d.key)
         }
       }
-
       toast.success('HORÁRIO SALVO COM SUCESSO')
     } catch (e) {
       toast.error('ERRO AO SALVAR HORÁRIO')
@@ -108,130 +91,139 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
   }
 
   return (
-    <div className="space-y-5">
-      {/* Total hours required */}
-      <div className="rounded-xl p-4" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold" style={{ color: 'var(--text)' }}>CARGA HORARIA TOTAL</p>
-            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>TOTAL DE HORAS A CUMPRIR NO PERÍODO</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              min={1}
-              max={9999}
-              value={totalHours}
-              onChange={e => setTotalHours(Number(e.target.value))}
-              className="w-20 text-center font-bold text-lg rounded-xl px-2 py-1.5 outline-none focus:ring-2"
-              style={{
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                color: 'var(--text)',
-                '--tw-ring-color': 'var(--primary)',
-              } as React.CSSProperties}
-            />
-            <span className="text-xs font-bold" style={{ color: 'var(--text-3)' }}>H</span>
-          </div>
-        </div>
-        <div className="mt-3 flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full" style={{ background: 'var(--info)' }} />
-          <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>
-            SEMANA ATUAL: <span style={{ color: 'var(--primary)', fontWeight: 700 }}>{weeklyHours.toFixed(1)}H/SEMANA</span>
+    <div className="space-y-4">
+
+      {/* ── Carga horária total ───────────────────────── */}
+      <div className="rounded-xl px-4 py-3 flex items-center justify-between gap-4"
+        style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+        <div className="min-w-0">
+          <p className="text-xs font-bold" style={{ color: 'var(--text)' }}>CARGA HORÁRIA TOTAL</p>
+          <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
+            SEMANA ATUAL:&nbsp;
+            <span style={{ color: 'var(--primary-light)', fontWeight: 700 }}>{weeklyHours.toFixed(1)}H/SEM</span>
           </p>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <input
+            type="number" min={1} max={9999} value={totalHours}
+            onChange={e => setTotalHours(Number(e.target.value))}
+            className="w-20 text-center font-bold text-lg rounded-xl px-2 py-1.5 outline-none"
+            style={{ background: 'var(--surface)', border: '1.5px solid var(--border)', color: 'var(--text)' }}
+            onFocus={e => (e.target.style.borderColor = 'var(--primary)')}
+            onBlur={e  => (e.target.style.borderColor = 'var(--border)')}
+          />
+          <span className="text-xs font-bold" style={{ color: 'var(--text-3)' }}>H</span>
         </div>
       </div>
 
-      {/* Day cards */}
+      {/* ── Dias da semana ────────────────────────────── */}
       <div className="space-y-2">
         {DAYS.map((d, i) => {
           const ds = schedule[d.key]
           const hours = ds.active ? calcHours(ds.start, ds.end) : 0
-          const isOpen = expanded === d.key
 
           return (
             <motion.div
               key={d.key}
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.04 }}
+              transition={{ delay: i * 0.035 }}
               className="rounded-2xl overflow-hidden"
-              style={{ border: `1px solid ${ds.active ? 'var(--primary)' : 'var(--border)'}`, background: 'var(--surface)' }}
+              style={{
+                border: `1.5px solid ${ds.active ? 'var(--primary)' : 'var(--border)'}`,
+                background: ds.active ? 'var(--surface)' : 'var(--bg)',
+                boxShadow: ds.active ? 'var(--card-shadow)' : 'none',
+                transition: 'border-color 0.2s, background 0.2s',
+              }}
             >
-              {/* Day header row */}
-              <div className="flex items-center gap-3 p-3">
-                {/* Toggle */}
-                <button
+              {/* ── Day header row ──── */}
+              <div className="flex items-center gap-3 px-3 py-2.5">
+
+                {/* Toggle button */}
+                <motion.button
+                  type="button"
                   onClick={() => toggleDay(d.key)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.88 }}
                   className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all"
                   style={{
-                    background: ds.active ? 'var(--primary)' : 'var(--bg)',
-                    border: `1px solid ${ds.active ? 'var(--primary)' : 'var(--border)'}`,
+                    background: ds.active ? 'var(--primary)' : 'var(--bg-secondary)',
+                    border: `1.5px solid ${ds.active ? 'var(--primary)' : 'var(--border)'}`,
+                    boxShadow: ds.active ? '0 2px 10px rgba(30,92,45,0.4)' : 'none',
                   }}
                 >
-                  {ds.active
-                    ? <Check size={14} color="white" />
-                    : <X size={14} style={{ color: 'var(--text-3)' }} />
-                  }
-                </button>
+                  <AnimatePresence mode="wait">
+                    {ds.active ? (
+                      <motion.div key="check" initial={{ scale: 0, rotate: -20 }} animate={{ scale: 1, rotate: 0 }} exit={{ scale: 0 }}>
+                        <Check size={14} color="white" />
+                      </motion.div>
+                    ) : (
+                      <motion.div key="x" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+                        <X size={14} style={{ color: 'var(--text-3)' }} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
 
-                {/* Day label */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold" style={{ color: ds.active ? 'var(--text)' : 'var(--text-3)' }}>
+                {/* Day label pill */}
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded-lg flex-shrink-0"
+                    style={{
+                      background: ds.active ? `${d.color}18` : 'var(--bg-secondary)',
+                      color: ds.active ? d.color : 'var(--text-3)',
+                      border: `1px solid ${ds.active ? `${d.color}30` : 'transparent'}`,
+                    }}>
+                    {d.label}
+                  </span>
+                  <span className="text-xs font-bold truncate"
+                    style={{ color: ds.active ? 'var(--text)' : 'var(--text-3)' }}>
                     {d.full}
-                  </p>
-                  {ds.active && (
-                    <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>
-                      {ds.start} - {ds.end} &middot; {hours.toFixed(1)}H
-                    </p>
-                  )}
+                  </span>
                 </div>
 
-                {/* Expand toggle */}
-                {ds.active && (
-                  <button
-                    onClick={() => setExpanded(isOpen ? null : d.key)}
-                    className="p-1.5 rounded-lg transition-all"
-                    style={{ color: 'var(--text-3)' }}
+                {/* Hours badge when active */}
+                {ds.active && hours > 0 && (
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-[10px] font-black px-2 py-0.5 rounded-lg flex-shrink-0"
+                    style={{ background: 'rgba(30,92,45,0.12)', color: 'var(--primary-light)' }}
                   >
-                    <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                      <ChevronDown size={14} />
-                    </motion.div>
-                  </button>
+                    {hours.toFixed(1)}H
+                  </motion.span>
                 )}
               </div>
 
-              {/* Time inputs */}
+              {/* ── Inline time inputs (shown when active) ──── */}
               <AnimatePresence>
-                {ds.active && isOpen && (
+                {ds.active && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                     style={{ borderTop: '1px solid var(--border)' }}
                   >
-                    <div className="p-3 grid grid-cols-2 gap-3">
+                    <div className="px-3 py-3 grid grid-cols-2 gap-3">
                       {(['start', 'end'] as const).map(f => (
                         <div key={f}>
-                          <label className="text-[10px] font-bold block mb-1" style={{ color: 'var(--text-3)' }}>
+                          <label className="text-[10px] font-bold flex items-center gap-1 mb-1.5" style={{ color: 'var(--text-3)' }}>
+                            <Clock size={10} style={{ color: f === 'start' ? 'var(--success)' : 'var(--accent-light)' }} />
                             {f === 'start' ? 'ENTRADA' : 'SAÍDA'}
                           </label>
-                          <div className="relative">
-                            <Clock size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-3)' }} />
-                            <input
-                              type="time"
-                              value={f === 'start' ? ds.start : ds.end}
-                              onChange={e => updateTime(d.key, f, e.target.value)}
-                              className="w-full pl-7 pr-2 py-2 rounded-xl text-xs font-bold outline-none focus:ring-2"
-                              style={{
-                                background: 'var(--bg)',
-                                border: '1px solid var(--border)',
-                                color: 'var(--text)',
-                                '--tw-ring-color': 'var(--primary)',
-                              } as React.CSSProperties}
-                            />
-                          </div>
+                          <input
+                            type="time"
+                            value={f === 'start' ? ds.start : ds.end}
+                            onChange={e => updateTime(d.key, f, e.target.value)}
+                            className="w-full px-3 py-2 rounded-xl text-sm font-bold outline-none transition-all"
+                            style={{
+                              background: 'var(--bg)',
+                              border: `1.5px solid ${f === 'start' ? 'rgba(22,163,74,0.3)' : 'rgba(220,38,38,0.2)'}`,
+                              color: 'var(--text)',
+                            }}
+                            onFocus={e => (e.target.style.borderColor = f === 'start' ? 'var(--success)' : 'var(--accent)')}
+                            onBlur={e  => (e.target.style.borderColor = f === 'start' ? 'rgba(22,163,74,0.3)' : 'rgba(220,38,38,0.2)')}
+                          />
                         </div>
                       ))}
                     </div>
@@ -243,16 +235,23 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
         })}
       </div>
 
-      {/* Save button */}
+      {/* ── Save button ───────────────────────────────── */}
       <motion.button
         onClick={save}
         disabled={saving}
-        className="w-full py-3 rounded-2xl font-bold text-sm transition-all disabled:opacity-50"
-        style={{ background: 'var(--primary)', color: 'white' }}
-        whileHover={{ scale: 1.01 }}
+        whileHover={{ scale: 1.01, y: -1 }}
         whileTap={{ scale: 0.98 }}
+        className="w-full py-3 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+        style={{
+          background: 'var(--primary)',
+          color: 'white',
+          boxShadow: '0 4px 18px rgba(30,92,45,0.4)',
+        }}
       >
-        {saving ? 'SALVANDO...' : 'SALVAR HORÁRIO'}
+        {saving
+          ? <><Loader2 size={15} className="animate-spin" /> SALVANDO...</>
+          : <><Save size={14} /> SALVAR HORÁRIO</>
+        }
       </motion.button>
     </div>
   )
