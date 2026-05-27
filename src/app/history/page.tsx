@@ -17,9 +17,12 @@ export default async function HistoryPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('total_hours_required')
+    .select('total_hours_required, role')
     .eq('id', user.id)
     .maybeSingle()
+
+  // Administradores não têm histórico de ponto
+  if (profile?.role === 'manager') redirect('/admin')
 
   const since = new Date()
   since.setDate(since.getDate() - 60)

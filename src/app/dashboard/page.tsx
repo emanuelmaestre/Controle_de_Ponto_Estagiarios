@@ -70,11 +70,14 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, total_hours_required')
+    .select('full_name, total_hours_required, role')
     .eq('id', user.id)
     .maybeSingle()
 
-  const firstName = profile?.full_name?.split(' ')[0] ?? 'Ola'
+  // Administradores não registram ponto — redirecionar para o painel admin
+  if (profile?.role === 'manager') redirect('/admin')
+
+  const firstName = profile?.full_name?.split(' ')[0] ?? 'Olá'
 
   const { data: openRecord } = await supabase
     .from('time_records')

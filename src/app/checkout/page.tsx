@@ -15,6 +15,10 @@ export default async function CheckoutPage({ searchParams }: Props) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  // Administradores não registram ponto
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
+  if (profile?.role === 'manager') redirect('/admin')
+
   // Verificar se o registro pertence ao estagiário e está aberto
   const { data: record } = await supabase
     .from('time_records')
