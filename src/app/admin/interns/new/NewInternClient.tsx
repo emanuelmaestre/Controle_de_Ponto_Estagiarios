@@ -14,6 +14,7 @@ import {
 import { internSchema, type InternInput } from '@/lib/validations'
 import DatePicker from '@/components/ui/DatePicker'
 import BackButton from '@/components/ui/BackButton'
+import CourseSelect from '@/components/ui/CourseSelect'
 
 export default function NewInternClient() {
   const router = useRouter()
@@ -210,27 +211,13 @@ export default function NewInternClient() {
                 {/* Graduação */}
                 <div>
                   <Label icon={<GraduationCap size={9} />} text="GRADUAÇÃO" />
-                  <div className="relative">
-                    <select
-                      {...register('course')}
-                      className={`${inp} appearance-none cursor-pointer pr-9`}
-                      style={inpStyle}
-                      onFocus={onFocus as React.FocusEventHandler<HTMLSelectElement>}
-                      onBlur={onBlur as React.FocusEventHandler<HTMLSelectElement>}
-                    >
-                      <option value="">Selecione o curso</option>
-                      <option value="BACHARELADO EM AGRONOMIA">BACHARELADO EM AGRONOMIA</option>
-                      <option value="TÉCNICO EM AGROPECUÁRIA">TÉCNICO EM AGROPECUÁRIA</option>
-                      <option value="LICENCIATURA EM CIÊNCIAS BIOLÓGICAS">LICENCIATURA EM CIÊNCIAS BIOLÓGICAS</option>
-                      <option value="MESTRADO EM PROTEÇÃO DE PLANTAS">MESTRADO EM PROTEÇÃO DE PLANTAS</option>
-                      <option value="TÉCNICO EM BIOTECNOLOGIA">TÉCNICO EM BIOTECNOLOGIA</option>
-                      <option value="CONSERVAÇÃO DOS RECURSOS NATURAIS DO CERRADO">CONSERVAÇÃO DOS RECURSOS NATURAIS DO CERRADO</option>
-                    </select>
-                    <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-lg flex items-center justify-center"
-                      style={{ background: 'rgba(30,92,45,0.12)' }}>
-                      <ChevronDown size={11} style={{ color: 'var(--primary)' }} />
-                    </div>
-                  </div>
+                  <Controller
+                    name="course"
+                    control={control}
+                    render={({ field }) => (
+                      <CourseSelect value={field.value ?? ''} onChange={field.onChange} />
+                    )}
+                  />
                 </div>
 
               </div>

@@ -10,6 +10,7 @@ import { CheckCircle2, AlertTriangle, Loader2, Camera, Key, Mail, Lock, ChevronD
 import { internSchema } from '@/lib/validations'
 import type { Profile } from '@/types/database'
 import DatePicker from '@/components/ui/DatePicker'
+import CourseSelect from '@/components/ui/CourseSelect'
 
 type InternFormValues = {
   full_name: string
@@ -212,33 +213,13 @@ export default function InternForm({ mode, intern }: Props) {
           <label className="block text-xs font-bold mb-1.5 flex items-center gap-1.5" style={{ color: 'var(--text-2)' }}>
             <GraduationCap size={12} style={{ color: 'var(--primary)' }} /> GRADUAÇÃO
           </label>
-          <div className="relative">
-            <select
-              {...register('course')}
-              className="w-full pl-4 pr-10 py-3 rounded-xl text-sm focus:outline-none appearance-none font-medium transition-all"
-              style={{
-                background: 'var(--bg)',
-                border: '1.5px solid var(--border)',
-                color: 'var(--text)',
-                boxShadow: 'var(--card-shadow)',
-                cursor: 'pointer',
-              }}
-              onFocus={e => (e.target.style.borderColor = 'var(--primary)')}
-              onBlur={e  => (e.target.style.borderColor = 'var(--border)')}
-            >
-              <option value="" style={{ color: 'var(--text-3)' }}>▾ SELECIONE O CURSO</option>
-              <option value="BACHARELADO EM AGRONOMIA">BACHARELADO EM AGRONOMIA</option>
-              <option value="TÉCNICO EM AGROPECUÁRIA">TÉCNICO EM AGROPECUÁRIA</option>
-              <option value="LICENCIATURA EM CIÊNCIAS BIOLÓGICAS">LICENCIATURA EM CIÊNCIAS BIOLÓGICAS</option>
-              <option value="MESTRADO EM PROTEÇÃO DE PLANTAS">MESTRADO EM PROTEÇÃO DE PLANTAS</option>
-              <option value="TÉCNICO EM BIOTECNOLOGIA">TÉCNICO EM BIOTECNOLOGIA</option>
-            </select>
-            {/* Custom chevron arrow */}
-            <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6 rounded-lg"
-              style={{ background: 'rgba(30,92,45,0.12)' }}>
-              <ChevronDown size={13} style={{ color: 'var(--primary)' }} />
-            </div>
-          </div>
+          <Controller
+            name="course"
+            control={control}
+            render={({ field }) => (
+              <CourseSelect value={field.value ?? ''} onChange={field.onChange} />
+            )}
+          />
           {errors.course && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.course.message}</p>}
         </div>
       </div>

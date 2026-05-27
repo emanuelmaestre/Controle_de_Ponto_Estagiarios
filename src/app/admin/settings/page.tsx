@@ -82,45 +82,45 @@ export default async function SettingsPage({ searchParams }: Props) {
         </div>
       </div>
 
-      {/* Content — ocupa toda a altura restante, scroll interno por aba */}
-      <div className="flex-1 min-h-0" style={{ display: 'flex', flexDirection: 'column', padding: '16px 24px 16px' }}>
+      {/* Content — ocupa toda a altura restante, sem scroll */}
+      <div className="flex-1 min-h-0" style={{ display: 'flex', flexDirection: 'column', padding: '12px 24px' }}>
         <div style={{ maxWidth: 672, margin: '0 auto', width: '100%', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
 
-          {/* Cada aba: o card ocupa flex-1, scroll interno quando o conteúdo excede */}
-          {/* div intermediário garante flex-1 antes do motion.div do FadeIn */}
           <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           <FadeIn className="flex-1 flex flex-col min-h-0">
-            <div className="rounded-2xl p-5 sm:p-6 no-scrollbar" style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="rounded-2xl p-4 sm:p-5" style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--surface)', border: '1px solid var(--border)' }}>
 
               {activeTab === 'geral' && (
-                <>
-                  <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES DO LABORATÓRIO</h2>
-                  <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>HORÁRIOS DE LEMBRETE, HORAS ESPERADAS E E-MAIL DE RELATÓRIO.</p>
+                <div className="flex flex-col h-full">
+                  <h2 className="font-semibold mb-0.5 flex-shrink-0" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES DO LABORATÓRIO</h2>
+                  <p className="text-xs mb-4 flex-shrink-0" style={{ color: 'var(--text-3)' }}>HORÁRIOS DE LEMBRETE, HORAS ESPERADAS E E-MAIL DE RELATÓRIO.</p>
                   <SettingsForm settings={settings} />
-                </>
+                </div>
               )}
 
               {activeTab === 'integracoes' && (
-                <>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Plug size={16} style={{ color: 'var(--primary)' }} />
+                <div className="flex flex-col h-full">
+                  <div className="flex items-center gap-2 mb-0.5 flex-shrink-0">
+                    <Plug size={14} style={{ color: 'var(--primary)' }} />
                     <h2 className="font-semibold" style={{ color: 'var(--text)' }}>INTEGRAÇÕES E STACKS</h2>
                   </div>
-                  <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
+                  <p className="text-xs mb-3 flex-shrink-0" style={{ color: 'var(--text-3)' }}>
                     STATUS EM TEMPO REAL DOS SERVIÇOS E DEPENDÊNCIAS DO SISTEMA.
                   </p>
-                  <IntegrationsTab />
-                </>
+                  <div style={{ flex: 1, minHeight: 0 }}>
+                    <IntegrationsTab />
+                  </div>
+                </div>
               )}
 
               {activeTab === 'seguranca' && (
-                <>
-                  <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>SEU PIN DE ACESSO RÁPIDO</h2>
-                  <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
+                <div className="flex flex-col h-full">
+                  <h2 className="font-semibold mb-0.5 flex-shrink-0" style={{ color: 'var(--text)' }}>SEU PIN DE ACESSO RÁPIDO</h2>
+                  <p className="text-xs mb-4 flex-shrink-0" style={{ color: 'var(--text-3)' }}>
                     O PIN PERMITE QUE VOCÊ ENTRE NO SISTEMA SEM DIGITAR E-MAIL E SENHA.
                   </p>
                   <ChangePinForm userId={user.id} />
-                </>
+                </div>
               )}
 
             </div>
