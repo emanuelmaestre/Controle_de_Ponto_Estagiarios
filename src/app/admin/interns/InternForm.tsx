@@ -4,8 +4,9 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react'
 import { internSchema } from '@/lib/validations'
 import type { Profile } from '@/types/database'
 
@@ -118,16 +119,32 @@ export default function InternForm({ mode, intern }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
-          {error}
-        </div>
-      )}
-      {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3">
-          {success}
-        </div>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0, height: 0, scale: 0.96 }}
+            animate={{ opacity: 1, height: 'auto', scale: 1 }}
+            exit={{ opacity: 0, height: 0, scale: 0.96 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3"
+          >
+            <AlertTriangle size={14} className="flex-shrink-0" /> {error}
+          </motion.div>
+        )}
+        {success && (
+          <motion.div
+            key="success"
+            initial={{ opacity: 0, height: 0, scale: 0.96 }}
+            animate={{ opacity: 1, height: 'auto', scale: 1 }}
+            exit={{ opacity: 0, height: 0, scale: 0.96 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3"
+          >
+            <CheckCircle2 size={14} className="flex-shrink-0" /> {success}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Foto de perfil */}
       <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
@@ -257,20 +274,27 @@ export default function InternForm({ mode, intern }: Props) {
       )}
 
       <div className="flex gap-3 pt-1">
-        <button
+        <motion.button
           type="button"
           onClick={() => router.back()}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
           className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
         >
           Cancelar
-        </button>
-        <button
+        </motion.button>
+        <motion.button
           type="submit"
           disabled={loading}
-          className="flex-1 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl text-sm font-semibold disabled:opacity-50 transition-colors"
+          whileHover={{ scale: 1.02, y: -1 }}
+          whileTap={{ scale: 0.97 }}
+          className="flex-1 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl text-sm font-semibold disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
         >
-          {loading ? 'Salvando...' : mode === 'create' ? 'Cadastrar' : 'Salvar alterações'}
-        </button>
+          {loading
+            ? <><Loader2 size={14} className="animate-spin" /> Salvando...</>
+            : mode === 'create' ? 'Cadastrar' : 'Salvar alterações'
+          }
+        </motion.button>
       </div>
     </form>
   )
@@ -334,22 +358,27 @@ function PasswordResetSection({ internId }: { internId: string }) {
       )}
 
       {mode === 'idle' && (
-        <div className="flex gap-2 flex-wrap">
-          <button
-            type="button"
-            onClick={() => setMode('email')}
-            className="flex items-center gap-1.5 px-4 py-2 bg-white border border-amber-200 text-amber-800 text-sm font-medium rounded-xl hover:bg-amber-50 transition-colors"
-          >
-            ✉️ Enviar link por e-mail
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('manual')}
-            className="flex items-center gap-1.5 px-4 py-2 bg-white border border-amber-200 text-amber-800 text-sm font-medium rounded-xl hover:bg-amber-50 transition-colors"
-          >
-            🔒 Definir nova senha
-          </button>
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex gap-2 flex-wrap"
+        >
+          {[
+            { label: '✉️ Enviar link por e-mail', onClick: () => setMode('email') },
+            { label: '🔒 Definir nova senha', onClick: () => setMode('manual') },
+          ].map(({ label, onClick }) => (
+            <motion.button
+              key={label}
+              type="button"
+              onClick={onClick}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.96 }}
+              className="flex items-center gap-1.5 px-4 py-2 bg-white border border-amber-200 text-amber-800 text-sm font-medium rounded-xl hover:bg-amber-50 transition-colors"
+            >
+              {label}
+            </motion.button>
+          ))}
+        </motion.div>
       )}
 
       {mode === 'email' && (

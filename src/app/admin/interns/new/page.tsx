@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import InternForm from '../InternForm'
+import { FadeIn } from '@/components/ui/MotionWrappers'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,7 +35,9 @@ export default async function NewInternPage() {
         style={{ scrollbarWidth: 'none' }}
       >
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-5">
-          <InternForm mode="create" />
+          <FadeIn>
+            <InternForm mode="create" />
+          </FadeIn>
         </div>
       </div>
     </div>

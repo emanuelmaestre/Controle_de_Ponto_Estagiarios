@@ -7,6 +7,8 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { settingsSchema, type SettingsInput } from '@/lib/validations'
 import type { Settings } from '@/types/database'
 import { useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
+import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react'
 
 interface Props {
   settings: Settings | null
@@ -55,88 +57,128 @@ export default function SettingsForm({ settings }: Props) {
     setLoading(false)
   }
 
+  const inputCls = "w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-all"
+  const inputStyle = { background: 'var(--input-bg, #f9fafb)', border: '1.5px solid var(--border, #e5e7eb)', color: 'var(--text, #111)' }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      {error && <p className="text-red-600 text-sm">{error}</p>}
-      {saved && <p className="text-green-600 text-sm">Configurações salvas!</p>}
+    <motion.form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-5"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="flex items-center gap-2 text-sm px-3 py-2.5 rounded-xl"
+            style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)', color: 'var(--danger, #dc2626)' }}
+          >
+            <AlertTriangle size={14} /> {error}
+          </motion.div>
+        )}
+        {saved && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="flex items-center gap-2 text-sm px-3 py-2.5 rounded-xl"
+            style={{ background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.25)', color: 'var(--success, #16a34a)' }}
+          >
+            <CheckCircle2 size={14} /> Configurações salvas!
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Nome do laboratório</label>
-        <input
-          {...register('lab_name')}
-          type="text"
-          className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        {errors.lab_name && <p className="text-red-500 text-xs mt-1">{errors.lab_name.message}</p>}
-      </div>
+      {[
+        { label: 'Nome do laboratório', field: 'lab_name' as const, type: 'text', error: errors.lab_name },
+      ].map(({ label, field, type, error: fieldErr }) => (
+        <motion.div key={field} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25 }}>
+          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-2, #374151)' }}>{label}</label>
+          <input
+            {...register(field)}
+            type={type}
+            className={inputCls}
+            style={inputStyle}
+            onFocus={e => (e.target.style.borderColor = 'var(--primary, #1e7a38)')}
+            onBlur={e => (e.target.style.borderColor = 'var(--border, #e5e7eb)')}
+          />
+          {fieldErr && (
+            <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+              className="text-xs mt-1" style={{ color: 'var(--danger, #dc2626)' }}>
+              {fieldErr.message}
+            </motion.p>
+          )}
+        </motion.div>
+      ))}
 
-      <div className="grid grid-cols-2 gap-4">
+      <motion.div className="grid grid-cols-2 gap-4" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25, delay: 0.05 }}>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Lembrete de entrada (horário)
-          </label>
+          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-2, #374151)' }}>Lembrete de entrada (horário)</label>
           <input
             {...register('reminder_in_time')}
             type="time"
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className={inputCls}
+            style={inputStyle}
+            onFocus={e => (e.target.style.borderColor = 'var(--primary, #1e7a38)')}
+            onBlur={e => (e.target.style.borderColor = 'var(--border, #e5e7eb)')}
           />
-          {errors.reminder_in_time && (
-            <p className="text-red-500 text-xs mt-1">{errors.reminder_in_time.message}</p>
-          )}
+          {errors.reminder_in_time && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.reminder_in_time.message}</p>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Lembrete de saída (após X horas)
-          </label>
+          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-2, #374151)' }}>Lembrete de saída (após X horas)</label>
           <input
             {...register('reminder_out_after_hours', { valueAsNumber: true })}
-            type="number"
-            min={1}
-            max={12}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            type="number" min={1} max={12}
+            className={inputCls}
+            style={inputStyle}
+            onFocus={e => (e.target.style.borderColor = 'var(--primary, #1e7a38)')}
+            onBlur={e => (e.target.style.borderColor = 'var(--border, #e5e7eb)')}
           />
-          {errors.reminder_out_after_hours && (
-            <p className="text-red-500 text-xs mt-1">{errors.reminder_out_after_hours.message}</p>
-          )}
+          {errors.reminder_out_after_hours && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.reminder_out_after_hours.message}</p>}
         </div>
-      </div>
+      </motion.div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Horas diárias esperadas
-        </label>
+      <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25, delay: 0.1 }}>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-2, #374151)' }}>Horas diárias esperadas</label>
         <input
           {...register('expected_daily_hours', { valueAsNumber: true })}
-          type="number"
-          min={1}
-          max={12}
-          className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          type="number" min={1} max={12}
+          className={inputCls}
+          style={inputStyle}
+          onFocus={e => (e.target.style.borderColor = 'var(--primary, #1e7a38)')}
+          onBlur={e => (e.target.style.borderColor = 'var(--border, #e5e7eb)')}
         />
-        {errors.expected_daily_hours && (
-          <p className="text-red-500 text-xs mt-1">{errors.expected_daily_hours.message}</p>
-        )}
-      </div>
+        {errors.expected_daily_hours && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.expected_daily_hours.message}</p>}
+      </motion.div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          E-mail para relatórios mensais (opcional)
-        </label>
+      <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25, delay: 0.15 }}>
+        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-2, #374151)' }}>E-mail para relatórios mensais (opcional)</label>
         <input
           {...register('report_email')}
           type="email"
           placeholder="relatorio@exemplo.com"
-          className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className={inputCls}
+          style={inputStyle}
+          onFocus={e => (e.target.style.borderColor = 'var(--primary, #1e7a38)')}
+          onBlur={e => (e.target.style.borderColor = 'var(--border, #e5e7eb)')}
         />
-        {errors.report_email && <p className="text-red-500 text-xs mt-1">{errors.report_email.message}</p>}
-      </div>
+        {errors.report_email && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.report_email.message}</p>}
+      </motion.div>
 
-      <button
+      <motion.button
         type="submit"
         disabled={loading}
-        className="w-full py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-lg text-sm font-semibold disabled:opacity-50 transition-colors"
+        whileHover={{ scale: 1.02, y: -1 }}
+        whileTap={{ scale: 0.97 }}
+        className="w-full py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-50"
+        style={{ background: 'var(--primary, #1e3a5f)', color: 'white' }}
       >
-        {loading ? 'Salvando...' : 'Salvar configurações'}
-      </button>
-    </form>
+        {loading ? <><Loader2 size={14} className="animate-spin" /> Salvando...</> : 'Salvar configurações'}
+      </motion.button>
+    </motion.form>
   )
 }

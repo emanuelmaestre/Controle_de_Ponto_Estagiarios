@@ -7,6 +7,7 @@ import ChangePinForm from './ChangePinForm'
 import GeoSettings from './GeoSettings'
 import IntegrationsTab from './IntegrationsTab'
 import { Settings as SettingsIcon, MapPin, Plug, Shield } from 'lucide-react'
+import { FadeIn } from '@/components/ui/MotionWrappers'
 
 export const dynamic = 'force-dynamic'
 
@@ -84,14 +85,17 @@ export default async function SettingsPage({ searchParams }: Props) {
 
       <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-2xl mx-auto px-4 sm:px-6 py-4 space-y-4">
         {activeTab === 'geral' && (
+          <FadeIn>
           <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>CONFIGURACOES DO LABORATORIO</h2>
             <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>HORARIOS DE LEMBRETE, HORAS ESPERADAS E E-MAIL DE RELATORIO.</p>
             <SettingsForm settings={settings} />
           </div>
+          </FadeIn>
         )}
 
         {activeTab === 'localizacao' && (
+          <FadeIn>
           <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <div className="flex items-center gap-2 mb-1">
               <MapPin size={16} style={{ color: 'var(--primary)' }} />
@@ -102,9 +106,11 @@ export default async function SettingsPage({ searchParams }: Props) {
             </p>
             <GeoSettings config={geoConfig} />
           </div>
+          </FadeIn>
         )}
 
         {activeTab === 'integracoes' && (
+          <FadeIn>
           <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <div className="flex items-center gap-2 mb-1">
               <Plug size={16} style={{ color: 'var(--primary)' }} />
@@ -115,9 +121,11 @@ export default async function SettingsPage({ searchParams }: Props) {
             </p>
             <IntegrationsTab />
           </div>
+          </FadeIn>
         )}
 
         {activeTab === 'seguranca' && (
+          <FadeIn>
           <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>SEU PIN DE ACESSO RAPIDO</h2>
             <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
@@ -125,6 +133,7 @@ export default async function SettingsPage({ searchParams }: Props) {
             </p>
             <ChangePinForm userId={user.id} />
           </div>
+          </FadeIn>
         )}
       </div></main>
     </div>

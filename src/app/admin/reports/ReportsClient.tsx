@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { minutesToHours } from '@/lib/utils'
 import ReportExport from './ReportExport'
 import { Clock, ClipboardList, CheckCircle2, AlertCircle, XCircle, Search, BarChart2 } from 'lucide-react'
+import NumberFlow from '@number-flow/react'
 
 type PeriodType = 'daily' | 'weekly' | 'monthly' | 'custom'
 
@@ -185,9 +186,11 @@ export default function ReportsClient() {
 
           <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-5">
             {(['daily', 'weekly', 'monthly', 'custom'] as PeriodType[]).map(t => (
-              <button
+              <motion.button
                 key={t}
                 onClick={() => setPeriodType(t)}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.96 }}
                 className="px-2 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all border text-center"
                 style={periodType === t
                   ? { background: 'var(--primary)', color: 'white', borderColor: 'var(--primary)' }
@@ -195,7 +198,7 @@ export default function ReportsClient() {
                 }
               >
                 {periodTypeLabels[t]}
-              </button>
+              </motion.button>
             ))}
           </div>
 
@@ -352,8 +355,11 @@ export default function ReportsClient() {
                   </thead>
                   <tbody>
                     {data.interns.map((intern, i) => (
-                      <tr
+                      <motion.tr
                         key={intern.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.2, delay: i * 0.04 }}
                         style={{ borderTop: '1px solid var(--border)', background: i % 2 !== 0 ? 'rgba(0,0,0,0.02)' : 'transparent' }}
                       >
                         <td className="px-5 py-4">
@@ -382,7 +388,7 @@ export default function ReportsClient() {
                             ? <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600">{intern.rejected_sessions}</span>
                             : <span style={{ color: 'var(--text-3)' }}>—</span>}
                         </td>
-                      </tr>
+                      </motion.tr>
                     ))}
                   </tbody>
                   <tfoot style={{ borderTop: '2px solid var(--border)', background: 'var(--bg)' }}>
@@ -431,16 +437,28 @@ function SummaryCard({ label, value, color, icon, delay = 0 }: {
   const bgColor   = { blue: 'rgba(14,165,233,0.10)', green: 'rgba(22,163,74,0.10)', amber: 'rgba(217,119,6,0.10)', red: 'rgba(220,38,38,0.10)', gray: 'var(--bg)' }
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.92 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.25, delay }}
+      initial={{ opacity: 0, scale: 0.88, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.3, delay, type: 'spring', stiffness: 280, damping: 22 }}
+      whileHover={{ scale: 1.02, y: -2 }}
       className="rounded-2xl p-3 sm:p-4"
       style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
     >
-      <div className="mb-2 p-1.5 rounded-lg w-fit" style={{ background: bgColor[color], color: textColor[color] }}>
+      <motion.div
+        className="mb-2 p-1.5 rounded-lg w-fit"
+        style={{ background: bgColor[color], color: textColor[color] }}
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: delay + 0.1, type: 'spring', stiffness: 400 }}
+      >
         {icon}
-      </div>
-      <p className="text-xl sm:text-2xl font-black" style={{ color: textColor[color] }}>{value}</p>
+      </motion.div>
+      <p className="text-xl sm:text-2xl font-black" style={{ color: textColor[color] }}>
+        {typeof value === 'number'
+          ? <NumberFlow value={value} />
+          : value
+        }
+      </p>
       <p className="text-[9px] font-bold mt-0.5 tracking-wide" style={{ color: 'var(--text-3)' }}>{label}</p>
     </motion.div>
   )

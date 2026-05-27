@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { minutesToHours } from '@/lib/utils'
 import type { Profile, MonthlyHours, InternSchedule } from '@/types/database'
 import { TrendingUp, Users } from 'lucide-react'
+import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 
 export const dynamic = 'force-dynamic'
 
@@ -117,12 +118,15 @@ export default async function WorkloadPage() {
 
       <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 space-y-4">
         {rows.length === 0 && (
-          <div className="text-center py-16" style={{ color: 'var(--text-3)' }}>
-            <Users size={40} className="mx-auto mb-3" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
-            <p className="text-sm font-bold">NENHUM ESTAGIARIO ATIVO</p>
-          </div>
+          <FadeIn>
+            <div className="text-center py-16" style={{ color: 'var(--text-3)' }}>
+              <Users size={40} className="mx-auto mb-3" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
+              <p className="text-sm font-bold">NENHUM ESTAGIARIO ATIVO</p>
+            </div>
+          </FadeIn>
         )}
 
+        <StaggerContainer className="space-y-4">
         {rows.map((r, i) => {
           const color = getColor(r.pct)
           const label = getLabel(r.pct)
@@ -130,10 +134,10 @@ export default async function WorkloadPage() {
           const avatarBg = avatarColors[i % avatarColors.length]
 
           return (
+            <StaggerItem key={r.id}>
             <Link
-              key={r.id}
               href={`/admin/interns/${r.id}`}
-              className="block rounded-2xl p-4 transition-all hover:shadow-md"
+              className="block rounded-2xl p-4 transition-all hover:shadow-md hover:-translate-y-0.5"
               style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
             >
               <div className="flex items-center gap-4">
@@ -194,8 +198,10 @@ export default async function WorkloadPage() {
                 <TrendingUp size={16} className="flex-shrink-0" style={{ color }} />
               </div>
             </Link>
+            </StaggerItem>
           )
         })}
+        </StaggerContainer>
       </div></main>
     </div>
   )

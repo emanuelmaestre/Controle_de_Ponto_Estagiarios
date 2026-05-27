@@ -410,25 +410,58 @@ export default function ClockButton({ openRecord }: Props) {
 
       {/* Main button */}
       <div className="relative">
-        {/* Ping ring when active */}
+        {/* Heartbeat rings when active (clocked in) */}
         {isActive && (
           <>
-            <span className="absolute inset-0 rounded-2xl bg-red-400 opacity-15 animate-ping" />
-            <span className="absolute inset-0 rounded-2xl bg-red-400 opacity-10 animate-ping" style={{ animationDelay: '0.5s' }} />
+            <motion.span
+              className="absolute inset-0 rounded-2xl bg-red-400"
+              animate={{ scale: [1, 1.06, 1], opacity: [0.18, 0, 0.18] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <motion.span
+              className="absolute inset-0 rounded-2xl bg-red-500"
+              animate={{ scale: [1, 1.12, 1], opacity: [0.10, 0, 0.10] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+            />
+            <motion.span
+              className="absolute inset-0 rounded-2xl bg-red-400"
+              animate={{ scale: [1, 1.18, 1], opacity: [0.06, 0, 0.06] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
+            />
           </>
         )}
         {/* Success pulse ring */}
         {isSuccess && (
-          <span className="absolute inset-0 rounded-2xl bg-emerald-400 opacity-20 animate-ping" />
+          <>
+            <motion.span
+              className="absolute inset-0 rounded-2xl bg-emerald-400"
+              animate={{ scale: [1, 1.08, 1], opacity: [0.25, 0, 0.25] }}
+              transition={{ duration: 1.2, repeat: Infinity }}
+            />
+            <motion.span
+              className="absolute inset-0 rounded-2xl bg-emerald-400"
+              animate={{ scale: [1, 1.16, 1], opacity: [0.15, 0, 0.15] }}
+              transition={{ duration: 1.2, repeat: Infinity, delay: 0.3 }}
+            />
+          </>
         )}
 
         <motion.button
           onClick={isActive ? handleClockOut : handleClockIn}
           disabled={isLoading || isSuccess || isBlocked}
-          whileTap={{ scale: isLoading || isBlocked ? 1 : 0.96 }}
-          animate={{ scale: isSuccess ? 1.02 : 1 }}
+          whileHover={!isLoading && !isBlocked ? { scale: 1.02, y: -2 } : {}}
+          whileTap={{ scale: isLoading || isBlocked ? 1 : 0.95 }}
+          animate={{
+            scale: isSuccess ? 1.03 : 1,
+            boxShadow: isActive
+              ? ['0 8px 32px rgba(239,68,68,0.4)', '0 8px 48px rgba(239,68,68,0.6)', '0 8px 32px rgba(239,68,68,0.4)']
+              : isSuccess
+              ? '0 8px 32px rgba(22,163,74,0.5)'
+              : '0 8px 24px rgba(0,0,0,0.2)',
+          }}
+          transition={isActive ? { boxShadow: { duration: 1.8, repeat: Infinity } } : { duration: 0.3 }}
           style={{ background: buttonBg }}
-          className="relative w-full py-6 rounded-2xl text-white text-lg font-bold shadow-xl flex items-center justify-center gap-3 transition-shadow disabled:cursor-not-allowed"
+          className="relative w-full py-6 rounded-2xl text-white text-lg font-bold shadow-xl flex items-center justify-center gap-3 disabled:cursor-not-allowed"
         >
           {buttonContent()}
         </motion.button>

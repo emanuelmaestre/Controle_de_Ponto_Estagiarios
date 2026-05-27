@@ -1,3 +1,6 @@
+'use client'
+
+import { motion } from 'framer-motion'
 import type { RecordStatus } from '@/types/database'
 
 interface Props {
@@ -14,7 +17,10 @@ const CONFIG: Record<RecordStatus, { label: string; color: string; bg: string; b
 export default function StatusBadge({ status, size = 'sm' }: Props) {
   const cfg = CONFIG[status]
   return (
-    <span
+    <motion.span
+      initial={{ scale: 0.75, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 380, damping: 20 }}
       className="inline-flex items-center gap-1.5 font-bold rounded-full"
       style={{
         background: cfg.bg,
@@ -24,8 +30,13 @@ export default function StatusBadge({ status, size = 'sm' }: Props) {
         fontSize: size === 'sm' ? '10px' : '11px',
       }}
     >
-      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: cfg.color }} />
+      <motion.span
+        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+        style={{ background: cfg.color }}
+        animate={status === 'pending' ? { scale: [1, 1.5, 1] } : {}}
+        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+      />
       {cfg.label}
-    </span>
+    </motion.span>
   )
 }

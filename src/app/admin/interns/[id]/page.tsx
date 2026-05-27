@@ -6,6 +6,7 @@ import InternForm from '../InternForm'
 import ScheduleManager from './ScheduleManager'
 import type { Profile, MonthlyHours, InternSchedule } from '@/types/database'
 import { Clock, TrendingUp, Calendar, UserCheck } from 'lucide-react'
+import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 
 export const dynamic = 'force-dynamic'
 
@@ -87,6 +88,7 @@ export default async function InternDetailPage({ params }: Props) {
       <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-2xl mx-auto px-4 sm:px-6 py-4 space-y-4">
 
         {/* Hour progress */}
+        <FadeIn>
         <div className="rounded-2xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp size={16} style={{ color: 'var(--primary)' }} />
@@ -137,27 +139,30 @@ export default async function InternDetailPage({ params }: Props) {
             </div>
           )}
         </div>
+        </FadeIn>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-3">
+        <StaggerContainer className="grid grid-cols-3 gap-3">
           {[
             { icon: <Clock size={14} />, label: 'SESSOES', value: thisMonth?.total_sessions ?? 0 },
             { icon: <UserCheck size={14} />, label: 'APROVADAS', value: thisMonth?.approved_sessions ?? 0 },
             { icon: <Calendar size={14} />, label: 'PENDENTES', value: thisMonth?.pending_sessions ?? 0 },
           ].map(s => (
-            <div
-              key={s.label}
-              className="rounded-2xl p-3 text-center"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-            >
-              <div className="flex justify-center mb-1" style={{ color: 'var(--primary)' }}>{s.icon}</div>
-              <p className="text-lg font-black" style={{ color: 'var(--text)' }}>{s.value}</p>
-              <p className="text-[9px] font-bold" style={{ color: 'var(--text-3)' }}>{s.label}</p>
-            </div>
+            <StaggerItem key={s.label}>
+              <div
+                className="rounded-2xl p-3 text-center"
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+              >
+                <div className="flex justify-center mb-1" style={{ color: 'var(--primary)' }}>{s.icon}</div>
+                <p className="text-lg font-black" style={{ color: 'var(--text)' }}>{s.value}</p>
+                <p className="text-[9px] font-bold" style={{ color: 'var(--text-3)' }}>{s.label}</p>
+              </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* Schedule manager */}
+        <FadeIn delay={0.15}>
         <div className="rounded-2xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <div className="flex items-center gap-2 mb-5">
             <Calendar size={16} style={{ color: 'var(--primary)' }} />
@@ -169,12 +174,15 @@ export default async function InternDetailPage({ params }: Props) {
             totalHoursRequired={intern.total_hours_required}
           />
         </div>
+        </FadeIn>
 
         {/* Edit form */}
+        <FadeIn delay={0.22}>
         <div className="rounded-2xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <h2 className="font-bold text-sm mb-5" style={{ color: 'var(--text)' }}>DADOS CADASTRAIS</h2>
           <InternForm mode="edit" intern={intern} />
         </div>
+        </FadeIn>
 
       </div></main>
     </div>
