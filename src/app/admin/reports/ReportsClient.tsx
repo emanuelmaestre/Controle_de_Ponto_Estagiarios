@@ -6,6 +6,7 @@ import { minutesToHours } from '@/lib/utils'
 import ReportExport from './ReportExport'
 import { Clock, ClipboardList, CheckCircle2, AlertCircle, XCircle, Search, BarChart2 } from 'lucide-react'
 import NumberFlow from '@number-flow/react'
+import DatePicker from '@/components/ui/DatePicker'
 
 type PeriodType = 'daily' | 'weekly' | 'monthly' | 'custom'
 
@@ -205,30 +206,26 @@ export default function ReportsClient() {
           <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-3 sm:gap-4">
             {periodType === 'daily' && (
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Data</label>
-                <input
-                  type="date"
+                <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>DATA</label>
+                <DatePicker
                   value={dailyDate}
-                  onChange={e => setDailyDate(e.target.value || getTodayStr())}
-                  className="px-3 py-2 rounded-xl text-sm focus:outline-none"
-                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                  onChange={v => setDailyDate(v || getTodayStr())}
+                  placeholder="Selecionar data"
                 />
               </div>
             )}
 
             {periodType === 'weekly' && (
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Qualquer dia da semana</label>
-                <input
-                  type="date"
+                <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>QUALQUER DIA DA SEMANA</label>
+                <DatePicker
                   value={weeklyDate}
-                  onChange={e => setWeeklyDate(e.target.value || getTodayStr())}
-                  className="px-3 py-2 rounded-xl text-sm focus:outline-none"
-                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                  onChange={v => setWeeklyDate(v || getTodayStr())}
+                  placeholder="Selecionar data"
                 />
                 {weeklyDate && (
-                  <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
-                    Semana: {new Date(weekStart + 'T12:00:00Z').toLocaleDateString('pt-BR')} &mdash; {new Date(weekEnd + 'T12:00:00Z').toLocaleDateString('pt-BR')}
+                  <p className="text-xs mt-1 font-medium" style={{ color: 'var(--primary)' }}>
+                    {new Date(weekStart + 'T12:00:00Z').toLocaleDateString('pt-BR')} &mdash; {new Date(weekEnd + 'T12:00:00Z').toLocaleDateString('pt-BR')}
                   </p>
                 )}
               </div>
@@ -236,11 +233,11 @@ export default function ReportsClient() {
 
             {periodType === 'monthly' && (
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Mes e Ano</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>MÊS E ANO</label>
                 <select
                   value={month}
                   onChange={e => setMonth(e.target.value)}
-                  className="px-3 py-2 rounded-xl text-sm focus:outline-none min-w-[180px]"
+                  className="px-3 py-2 rounded-xl text-sm focus:outline-none min-w-[180px] font-medium"
                   style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
                 >
                   {monthOptions.map(o => (
@@ -253,21 +250,20 @@ export default function ReportsClient() {
             {periodType === 'custom' && (
               <>
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Data inicial</label>
-                  <input
-                    type="date" value={customStart}
-                    onChange={e => setCustomStart(e.target.value || getTodayStr())}
-                    className="px-3 py-2 rounded-xl text-sm focus:outline-none"
-                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                  <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>DATA INICIAL</label>
+                  <DatePicker
+                    value={customStart}
+                    onChange={v => setCustomStart(v || getTodayStr())}
+                    placeholder="Data inicial"
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Data final</label>
-                  <input
-                    type="date" value={customEnd} min={customStart}
-                    onChange={e => setCustomEnd(e.target.value || getTodayStr())}
-                    className="px-3 py-2 rounded-xl text-sm focus:outline-none"
-                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                  <label className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>DATA FINAL</label>
+                  <DatePicker
+                    value={customEnd}
+                    onChange={v => setCustomEnd(v || getTodayStr())}
+                    min={customStart}
+                    placeholder="Data final"
                   />
                 </div>
               </>

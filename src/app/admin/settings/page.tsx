@@ -83,59 +83,64 @@ export default async function SettingsPage({ searchParams }: Props) {
         </div>
       </div>
 
-      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-2xl mx-auto px-4 sm:px-6 py-4 space-y-4">
-        {activeTab === 'geral' && (
-          <FadeIn>
-          <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-            <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES DO LABORATÓRIO</h2>
-            <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>HORÁRIOS DE LEMBRETE, HORAS ESPERADAS E E-MAIL DE RELATÓRIO.</p>
-            <SettingsForm settings={settings} />
-          </div>
-          </FadeIn>
-        )}
+      {/* Content — flex-1 fills height, overflow-y-auto only when needed */}
+      <div className="flex-1 min-h-0 flex flex-col px-4 sm:px-6 py-4">
+        <div className="max-w-2xl mx-auto w-full flex-1 flex flex-col min-h-0">
 
-        {activeTab === 'localizacao' && (
-          <FadeIn>
-          <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-            <div className="flex items-center gap-2 mb-1">
-              <MapPin size={16} style={{ color: 'var(--primary)' }} />
-              <h2 className="font-semibold" style={{ color: 'var(--text)' }}>CONTROLE DE LOCALIZAÇÃO</h2>
-            </div>
-            <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
-              EXIGE QUE OS ESTAGIÁRIOS ESTEJAM FISICAMENTE NO LABORATÓRIO PARA REGISTRAR O PONTO.
-            </p>
-            <GeoSettings config={geoConfig} />
-          </div>
-          </FadeIn>
-        )}
+          {activeTab === 'geral' && (
+            <FadeIn className="flex-1 flex flex-col min-h-0">
+              <div className="flex-1 rounded-2xl p-5 sm:p-6 overflow-y-auto" style={{ background: 'var(--surface)', border: '1px solid var(--border)', scrollbarWidth: 'thin' }}>
+                <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES DO LABORATÓRIO</h2>
+                <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>HORÁRIOS DE LEMBRETE, HORAS ESPERADAS E E-MAIL DE RELATÓRIO.</p>
+                <SettingsForm settings={settings} />
+              </div>
+            </FadeIn>
+          )}
 
-        {activeTab === 'integracoes' && (
-          <FadeIn>
-          <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-            <div className="flex items-center gap-2 mb-1">
-              <Plug size={16} style={{ color: 'var(--primary)' }} />
-              <h2 className="font-semibold" style={{ color: 'var(--text)' }}>INTEGRAÇÕES E STACKS</h2>
-            </div>
-            <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
-              STATUS EM TEMPO REAL DOS SERVIÇOS E DEPENDÊNCIAS DO SISTEMA.
-            </p>
-            <IntegrationsTab />
-          </div>
-          </FadeIn>
-        )}
+          {activeTab === 'localizacao' && (
+            <FadeIn className="flex-1 flex flex-col min-h-0">
+              <div className="flex-1 rounded-2xl p-5 sm:p-6 overflow-y-auto" style={{ background: 'var(--surface)', border: '1px solid var(--border)', scrollbarWidth: 'thin' }}>
+                <div className="flex items-center gap-2 mb-1">
+                  <MapPin size={16} style={{ color: 'var(--primary)' }} />
+                  <h2 className="font-semibold" style={{ color: 'var(--text)' }}>CONTROLE DE LOCALIZAÇÃO</h2>
+                </div>
+                <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
+                  EXIGE QUE OS ESTAGIÁRIOS ESTEJAM FISICAMENTE NO LABORATÓRIO PARA REGISTRAR O PONTO.
+                </p>
+                <GeoSettings config={geoConfig} />
+              </div>
+            </FadeIn>
+          )}
 
-        {activeTab === 'seguranca' && (
-          <FadeIn>
-          <div className="rounded-2xl p-5 sm:p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-            <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>SEU PIN DE ACESSO RAPIDO</h2>
-            <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
-              O PIN PERMITE QUE VOCÊ ENTRE NO SISTEMA SEM DIGITAR E-MAIL E SENHA.
-            </p>
-            <ChangePinForm userId={user.id} />
-          </div>
-          </FadeIn>
-        )}
-      </div></main>
+          {activeTab === 'integracoes' && (
+            <FadeIn className="flex-1 flex flex-col min-h-0">
+              <div className="flex-1 rounded-2xl p-5 sm:p-6 overflow-y-auto" style={{ background: 'var(--surface)', border: '1px solid var(--border)', scrollbarWidth: 'thin' }}>
+                <div className="flex items-center gap-2 mb-1">
+                  <Plug size={16} style={{ color: 'var(--primary)' }} />
+                  <h2 className="font-semibold" style={{ color: 'var(--text)' }}>INTEGRAÇÕES E STACKS</h2>
+                </div>
+                <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
+                  STATUS EM TEMPO REAL DOS SERVIÇOS E DEPENDÊNCIAS DO SISTEMA.
+                </p>
+                <IntegrationsTab />
+              </div>
+            </FadeIn>
+          )}
+
+          {activeTab === 'seguranca' && (
+            <FadeIn className="flex-1 flex flex-col min-h-0">
+              <div className="flex-1 rounded-2xl p-5 sm:p-6 overflow-y-auto" style={{ background: 'var(--surface)', border: '1px solid var(--border)', scrollbarWidth: 'thin' }}>
+                <h2 className="font-semibold mb-1" style={{ color: 'var(--text)' }}>SEU PIN DE ACESSO RÁPIDO</h2>
+                <p className="text-sm mb-5" style={{ color: 'var(--text-3)' }}>
+                  O PIN PERMITE QUE VOCÊ ENTRE NO SISTEMA SEM DIGITAR E-MAIL E SENHA.
+                </p>
+                <ChangePinForm userId={user.id} />
+              </div>
+            </FadeIn>
+          )}
+
+        </div>
+      </div>
     </div>
   )
 }
