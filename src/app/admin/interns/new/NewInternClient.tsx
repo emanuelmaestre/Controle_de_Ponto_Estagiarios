@@ -107,19 +107,23 @@ export default function NewInternClient() {
 
       {/* ── Body ──
           Mobile  → scroll vertical normal
-          Desktop → overflow hidden, tudo visível de uma vez  */}
-      <div className="flex-1 min-h-0 overflow-y-auto md:overflow-hidden no-scrollbar">
+          Desktop → overflow hidden, grid de 3 colunas sem scroll  */}
+      <div
+        className="flex-1 min-h-0 overflow-y-auto md:overflow-hidden no-scrollbar"
+        style={{ display: 'flex', flexDirection: 'column' }}
+      >
         <form
           onSubmit={handleSubmit(onSubmit)}
-          /* No desktop usamos display:grid para garantir que os filhos
-             respeitem a altura disponível sem precisar de h-full */
-          className="h-full max-w-screen-xl mx-auto px-4 sm:px-6 py-3
+          className="max-w-screen-xl mx-auto px-4 sm:px-6 py-3
                      flex flex-col gap-3
                      md:grid md:gap-3"
           style={{
+            flex: 1,
+            minHeight: 0,
+            width: '100%',
             /* 3 colunas: foto estreita | dados pessoais larga | config+período média */
             gridTemplateColumns: '180px 1fr 210px',
-            gridTemplateRows: '1fr auto',
+            gridTemplateRows: 'minmax(0, 1fr) auto',
           }}
         >
 
