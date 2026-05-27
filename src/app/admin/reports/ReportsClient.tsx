@@ -285,7 +285,7 @@ export default function ReportsClient() {
               >
                 {loading ? (
                   <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" /> Carregando...</>
-                ) : <><Search size={14} /> APLICAR FILTRO</>}
+                ) : <><Search size={14} /> APLICAR</>}
               </button>
             </div>
           </div>
