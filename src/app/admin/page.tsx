@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { minutesToHours, formatTime } from '@/lib/utils'
 import type { TodayStatus } from '@/types/database'
-import AdminNav from '@/components/AdminNav'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import { Users, Activity, Clock, AlertTriangle, TrendingUp, CheckCircle } from 'lucide-react'
 
@@ -74,8 +73,8 @@ export default async function AdminPage() {
   ]
 
   return (
-    <div className="flex flex-col" style={{ height: '100dvh', background: 'var(--bg)', overflow: 'hidden' }}>
-      <AdminNav pending={totalPending} />
+    <div className="flex flex-col" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, background: 'var(--bg)' }}>
+
 
       <div className="flex-1 min-h-0 flex flex-col max-w-6xl mx-auto w-full px-4 sm:px-6 py-4 gap-3">
 

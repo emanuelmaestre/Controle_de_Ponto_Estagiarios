@@ -4,7 +4,6 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { minutesToHours } from '@/lib/utils'
 import InternForm from '../InternForm'
 import ScheduleManager from './ScheduleManager'
-import AdminNav from '@/components/AdminNav'
 import type { Profile, MonthlyHours, InternSchedule } from '@/types/database'
 import { Clock, TrendingUp, Calendar, UserCheck } from 'lucide-react'
 
@@ -57,8 +56,8 @@ export default async function InternDetailPage({ params }: Props) {
   const statusColor = pct >= 100 ? 'var(--success)' : pct >= 75 ? 'var(--info)' : pct >= 40 ? 'var(--primary)' : 'var(--warning)'
 
   return (
-    <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
-      <AdminNav />
+    <div className="flex flex-col" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, background: 'var(--bg)' }}>
+
 
       {/* Page header */}
       <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>

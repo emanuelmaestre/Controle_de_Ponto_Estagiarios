@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
-import AdminNav from '@/components/AdminNav'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import { MapPin, CheckCircle2, XCircle, AlertTriangle, Clock, Shield } from 'lucide-react'
 
@@ -90,8 +89,8 @@ export default async function LocationPage() {
   const totalAttempts = attempts.length
 
   return (
-    <div className="flex flex-col" style={{ height: '100dvh', background: 'var(--bg)', overflow: 'hidden' }}>
-      <AdminNav />
+    <div className="flex flex-col" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, background: 'var(--bg)' }}>
+
 
       {/* Header compacto */}
       <div className="flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>

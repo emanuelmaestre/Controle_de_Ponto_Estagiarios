@@ -2,7 +2,6 @@
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Profile } from '@/types/database'
-import AdminNav from '@/components/AdminNav'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import { UserPlus, Users } from 'lucide-react'
 
@@ -28,8 +27,8 @@ export default async function InternsPage() {
   const inactive = interns?.filter(i => !i.is_active) ?? []
 
   return (
-    <div className="flex flex-col" style={{ height: '100dvh', background: 'var(--bg)', overflow: 'hidden' }}>
-      <AdminNav />
+    <div className="flex flex-col" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, background: 'var(--bg)' }}>
+
 
       {/* Header compacto */}
       <div className="flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>

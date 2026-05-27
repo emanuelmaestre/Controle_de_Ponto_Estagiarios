@@ -1,7 +1,6 @@
 ﻿import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
-import AdminNav from '@/components/AdminNav'
 import { minutesToHours } from '@/lib/utils'
 import type { Profile, MonthlyHours, InternSchedule } from '@/types/database'
 import { TrendingUp, Users } from 'lucide-react'
@@ -81,8 +80,8 @@ export default async function WorkloadPage() {
   const avatarColors = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#06b6d4']
 
   return (
-    <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
-      <AdminNav />
+    <div className="flex flex-col" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, background: 'var(--bg)' }}>
+
 
       {/* Header */}
       <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>

@@ -6,7 +6,6 @@ import SettingsForm from './SettingsForm'
 import ChangePinForm from './ChangePinForm'
 import GeoSettings from './GeoSettings'
 import IntegrationsTab from './IntegrationsTab'
-import AdminNav from '@/components/AdminNav'
 import { Settings as SettingsIcon, MapPin, Plug, Shield } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -48,8 +47,8 @@ export default async function SettingsPage({ searchParams }: Props) {
   ]
 
   return (
-    <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
-      <AdminNav />
+    <div className="flex flex-col" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, background: 'var(--bg)' }}>
+
 
       {/* Page header */}
       <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>

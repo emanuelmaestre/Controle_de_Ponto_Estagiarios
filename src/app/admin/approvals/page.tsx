@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { minutesToHours } from '@/lib/utils'
 import ApprovalActions from './ApprovalActions'
-import AdminNav from '@/components/AdminNav'
 import { StaggerContainer, StaggerItem, FadeIn } from '@/components/ui/MotionWrappers'
 import { CheckSquare, CheckCircle2 } from 'lucide-react'
 
@@ -21,8 +20,8 @@ export default async function ApprovalsPage() {
   const count = pending?.length ?? 0
 
   return (
-    <div className="flex flex-col" style={{ height: '100dvh', background: 'var(--bg)', overflow: 'hidden' }}>
-      <AdminNav pending={count} />
+    <div className="flex flex-col" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, background: 'var(--bg)' }}>
+
 
       {/* Header compacto */}
       <div className="flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
