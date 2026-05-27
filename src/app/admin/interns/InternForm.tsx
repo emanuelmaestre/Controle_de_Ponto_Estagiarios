@@ -209,13 +209,18 @@ export default function InternForm({ mode, intern }: Props) {
 
         <div>
           <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>CURSO</label>
-          <input
+          <select
             {...register('course')}
-            type="text"
-            placeholder="Ex: Agronomia"
-            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
+            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none appearance-none"
             style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
-          />
+          >
+            <option value="">SELECIONE O CURSO</option>
+            <option value="BACHARELADO EM AGRONOMIA">BACHARELADO EM AGRONOMIA</option>
+            <option value="TÉCNICO EM AGROPECUÁRIA">TÉCNICO EM AGROPECUÁRIA</option>
+            <option value="LICENCIATURA EM CIÊNCIAS BIOLÓGICAS">LICENCIATURA EM CIÊNCIAS BIOLÓGICAS</option>
+            <option value="MESTRADO EM PROTEÇÃO DE PLANTAS">MESTRADO EM PROTEÇÃO DE PLANTAS</option>
+            <option value="TÉCNICO EM BIOTECNOLOGIA">TÉCNICO EM BIOTECNOLOGIA</option>
+          </select>
           {errors.course && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.course.message}</p>}
         </div>
       </div>

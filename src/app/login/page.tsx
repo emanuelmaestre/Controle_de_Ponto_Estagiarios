@@ -506,13 +506,28 @@ function LoginContent() {
 
           </AnimatePresence>
 
-          <p className="text-center text-xs mt-4" style={{ color: 'var(--text-3)' }}>
-            Não tem conta?{' '}
-            <Link href="/register" className="font-semibold transition-colors hover:opacity-80"
-              style={{ color: 'var(--primary)' }}>
-              Criar conta
-            </Link>
-          </p>
+          <div className="flex flex-col items-center gap-1.5 mt-4">
+            {mode === 'email' && (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Link href="/forgot-password" className="text-xs font-semibold transition-opacity hover:opacity-70"
+                  style={{ color: 'var(--text-3)' }}>
+                  Esqueceu a senha?
+                </Link>
+              </motion.div>
+            )}
+            <p className="text-center text-xs" style={{ color: 'var(--text-3)' }}>
+              Não tem conta?{' '}
+              <Link href="/register" className="font-semibold transition-colors hover:opacity-80"
+                style={{ color: 'var(--primary)' }}>
+                Criar conta
+              </Link>
+            </p>
+          </div>
         </div>
       </motion.div>
     </div>
