@@ -74,6 +74,24 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
     setSchedule(buildInitial())
   }
 
+  const playPlin = () => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(880, ctx.currentTime)
+      osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.08)
+      gain.gain.setValueAtTime(0.35, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45)
+      osc.start(ctx.currentTime)
+      osc.stop(ctx.currentTime + 0.45)
+      osc.onended = () => ctx.close()
+    } catch {}
+  }
+
   const save = async () => {
     setSaving(true)
     try {
@@ -94,6 +112,7 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
             .update({ is_active: false }).eq('intern_id', internId).eq('day_of_week', d.key)
         }
       }
+      playPlin()
       toast.success('Horário salvo com sucesso!')
     } catch (e) {
       toast.error('Erro ao salvar horário.')
