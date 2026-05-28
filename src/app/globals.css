@@ -76,6 +76,42 @@
 @theme inline {
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
+
+  /* Stitch color tokens — required for Tailwind utility classes */
+  --color-bg:                    #07170c;
+  --color-bg-secondary:          #0f1f14;
+  --color-surface:               #07170c;
+  --color-surface-2:             #0f1f14;
+  --color-surface-card:          #0f2318;
+  --color-surface-container-low: #0f1f14;
+  --color-surface-container:     #132317;
+  --color-surface-container-high:#1d2e21;
+  --color-surface-variant:       #28392c;
+
+  --color-primary:               #3fe56c;
+  --color-primary-dark:          #00c853;
+  --color-primary-fg:            #003912;
+  --color-secondary:             #95d69a;
+
+  --color-text:                  #d4e8d5;
+  --color-text-2:                #bbcbb8;
+  --color-text-3:                #869583;
+
+  --color-status-active:         #00c853;
+  --color-status-attention:      #ffbf00;
+  --color-status-error:          #ff5252;
+  --color-success:               #00c853;
+  --color-warning:               #ffbf00;
+  --color-danger:                #ff5252;
+  --color-info:                  #95d69a;
+
+  --color-border:                rgba(0, 200, 83, 0.15);
+  --color-border-hover:          rgba(0, 200, 83, 0.25);
+  --color-border-low-opacity:    rgba(0, 200, 83, 0.15);
+
+  --color-nav-bg:                #07170c;
+  --color-nav-fg:                #d4e8d5;
+  --color-nav-muted:             #869583;
 }
 
 *, *::before, *::after {
@@ -99,8 +135,6 @@ body {
   font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
 }
 
 /* Exceções — senhas e elementos técnicos preservam case */
