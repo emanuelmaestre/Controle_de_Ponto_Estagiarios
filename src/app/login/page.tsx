@@ -249,12 +249,12 @@ function LoginContent() {
     <div className="w-full max-w-sm">
       {/* Orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full blur-3xl opacity-30"
+        <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full blur-3xl opacity-20"
           style={{ background: 'var(--primary)' }} />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full blur-3xl opacity-20"
-          style={{ background: 'var(--accent)' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl opacity-10"
-          style={{ background: 'var(--primary-light)' }} />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full blur-3xl opacity-15"
+          style={{ background: 'var(--primary-dark, #00c853)' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl opacity-[0.07]"
+          style={{ background: 'var(--primary-light, #69ff87)' }} />
       </div>
 
       <motion.div
