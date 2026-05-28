@@ -464,7 +464,7 @@ export default function RegisterPage() {
       </div>
 
       {/* ── RIGHT PANEL — form ────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden px-4 py-6 sm:py-8 lg:py-12" style={{ minWidth: 0, maxWidth: '100vw' }}>
+      <div className="flex-1 flex flex-col items-center justify-center relative px-4 py-6 sm:py-8 lg:py-12" style={{ minWidth: 0, maxWidth: '100vw', overflowX: 'hidden' }}>
 
         {/* Mobile background */}
         <div className="lg:hidden absolute inset-0 pointer-events-none">
@@ -488,7 +488,7 @@ export default function RegisterPage() {
           <motion.div
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="rounded-3xl overflow-hidden"
+            className="rounded-3xl"
             style={{ background: 'rgba(15,35,24,0.95)', border: '1px solid rgba(0,200,83,0.15)', backdropFilter: 'blur(20px)', boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,200,83,0.05)' }}
           >
             {/* Card header */}
