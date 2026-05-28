@@ -272,7 +272,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
             </div>
             <div>
               <p className="text-[11px] font-black leading-none tracking-widest" style={{ color: 'white' }}>
-                CHRONOS <span style={{ color: '#3fe56c' }}>LAB</span>
+                CHRONOS <span style={{ color: '#C0392B' }}>LAB</span>
               </p>
               <p className="text-[8px] leading-none" style={{ color: 'rgba(255,255,255,0.35)' }}>
                 CONTROLE DE PONTO
@@ -303,7 +303,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                 <Image src="/logo.svg" alt="Chronos" fill className="object-contain" />
               </div>
               <h1 className="text-xl font-bold" style={{ color: 'white' }}>
-              Chronos <span style={{ color: '#3fe56c' }}>Lab</span>
+              Chronos <span style={{ color: '#C0392B' }}>Lab</span>
             </h1>
             </div>
             <p className="text-[11px] font-medium tracking-wider ml-9" style={{ color: 'rgba(255,255,255,0.35)' }}>
