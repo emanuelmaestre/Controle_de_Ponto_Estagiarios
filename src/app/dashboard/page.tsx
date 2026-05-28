@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { formatTime, minutesToHours } from '@/lib/utils'
 import ClockButton from '@/components/ClockButton'
@@ -9,7 +8,6 @@ import StatusBadge from '@/components/StatusBadge'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/MotionWrappers'
 import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell } from 'lucide-react'
-import ThemeToggle from '@/components/ThemeToggle'
 import LiveClock from '@/components/ui/LiveClock'
 import type { RecordStatus } from '@/types/database'
 
@@ -136,32 +134,44 @@ export default async function DashboardPage() {
       <SelfieGate hasPhoto={!!profile?.photo_url} internId={user.id} />
 
       {/* ── Header ─────────────────────────────────────── */}
-      <header className="flex-shrink-0 shadow-lg" style={{ background: 'var(--nav-bg)' }}>
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="relative w-8 h-8 flex-shrink-0">
-              <Image src="/logo.svg" alt="ChronosLab" fill className="object-contain" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold" style={{ color: 'var(--nav-muted)' }}>{greeting}, {firstName}</p>
-              <div className="flex items-center gap-1.5">
-                <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{weekDay}, {dateStr}</p>
-                <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
+      <header className="flex-shrink-0" style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
+        <div className="max-w-lg mx-auto px-5 py-4 flex items-center justify-between gap-3">
+          {/* Avatar + nome */}
+          <div className="flex items-center gap-3 min-w-0">
+            {profile?.photo_url ? (
+              <img src={profile.photo_url} alt={firstName} className="w-10 h-10 rounded-full object-cover flex-shrink-0" style={{ border: '2px solid rgba(0,200,83,0.4)' }} />
+            ) : (
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center font-black text-base flex-shrink-0"
+                style={{ background: 'rgba(0,200,83,0.18)', border: '2px solid rgba(0,200,83,0.4)', color: '#3fe56c' }}
+              >
+                {firstName.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="min-w-0">
+              <p className="text-base font-bold leading-tight truncate" style={{ color: 'white' }}>
+                {greeting}, {profile?.full_name?.toUpperCase() ?? firstName.toUpperCase()}
+              </p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <p className="text-[10px] font-medium tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                  {weekDay}, {dateStr}
+                </p>
+                <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
                 <LiveClock className="text-[10px] font-bold tabular-nums" style={{ color: 'rgba(255,255,255,0.55)' }} />
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <ThemeToggle compact />
-            <form action="/api/auth/signout" method="POST">
-              <button
-                className="text-[10px] font-bold px-3 py-1.5 rounded-lg border transition-all"
-                style={{ color: 'var(--nav-muted)', borderColor: 'rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)' }}
-              >
-                SAIR
-              </button>
-            </form>
-          </div>
+          {/* Sair */}
+          <form action="/api/auth/signout" method="POST" className="flex-shrink-0">
+            <button
+              type="submit"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wider transition-all"
+              style={{ color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)' }}
+            >
+              <LogOut size={13} />
+              SAIR
+            </button>
+          </form>
         </div>
       </header>
 
@@ -226,35 +236,29 @@ export default async function DashboardPage() {
         </FadeIn>
 
         {/* ── Stats row ───────────────────────────────── */}
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-3">
           {[
             {
-              icon: <Calendar size={14} />,
-              label: 'Hoje',
+              icon: <Calendar size={22} />,
+              label: 'HOJE',
               value: minutesToHours(todayMinutes),
-              color: 'var(--info)',
-              bg: 'rgba(14,165,233,0.08)',
               delay: 0.06,
             },
             {
-              icon: <TrendingUp size={14} />,
-              label: 'Mês',
+              icon: <TrendingUp size={22} />,
+              label: 'MÊS',
               value: `${monthData?.approved_sessions ?? 0} sess.`,
-              color: 'var(--success)',
-              bg: 'rgba(22,163,74,0.08)',
               delay: 0.1,
             },
           ].map(s => (
             <FadeIn key={s.label} delay={s.delay}>
               <div
-                className="rounded-2xl p-3 text-center"
-                style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
+                className="rounded-2xl p-5 flex flex-col items-center justify-center gap-2"
+                style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)', minHeight: 100 }}
               >
-                <div className="flex justify-center mb-1.5 p-1.5 rounded-xl w-fit mx-auto" style={{ background: s.bg, color: s.color }}>
-                  {s.icon}
-                </div>
-                <p className="text-xs font-black leading-none" style={{ color: s.color }}>{s.value}</p>
-                <p className="text-[9px] font-bold mt-1" style={{ color: 'var(--text-3)' }}>{s.label}</p>
+                <span style={{ color: '#3fe56c' }}>{s.icon}</span>
+                <p className="text-2xl font-black leading-none" style={{ color: 'var(--text)' }}>{s.value}</p>
+                <p className="text-[10px] font-bold tracking-widest" style={{ color: 'var(--text-3)' }}>{s.label}</p>
               </div>
             </FadeIn>
           ))}
@@ -301,12 +305,7 @@ export default async function DashboardPage() {
 
 {/* ── Botao de ponto ──────────────────────────── */}
         <ScaleIn delay={0.2}>
-          <div
-            className="rounded-3xl p-5"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow-md)' }}
-          >
-            <ClockButton openRecord={openRecord ?? null} />
-          </div>
+          <ClockButton openRecord={openRecord ?? null} />
         </ScaleIn>
 
         {/* ── Registros de hoje ───────────────────────── */}

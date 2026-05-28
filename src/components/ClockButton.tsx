@@ -373,12 +373,12 @@ export default function ClockButton({ openRecord }: Props) {
   }
 
   const buttonBg = isActive
-    ? 'linear-gradient(135deg, #ef4444, #dc2626)'
+    ? '#ef4444'
     : isSuccess
-    ? 'linear-gradient(135deg, #16a34a, #15803d)'
+    ? '#16a34a'
     : isBlocked
-    ? 'linear-gradient(135deg, #78716c, #57534e)'
-    : 'linear-gradient(135deg, #1e7a38, #15803d)'
+    ? '#57534e'
+    : '#00c853'
 
   return (
     <div className="space-y-3">
