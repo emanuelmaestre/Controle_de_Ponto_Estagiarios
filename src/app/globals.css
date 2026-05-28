@@ -244,6 +244,8 @@ button, a, input, select, textarea {
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
@@ -253,6 +255,10 @@ body {
   font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  max-width: 100vw;
+  /* Evita zoom no iOS ao focar inputs */
+  touch-action: manipulation;
 }
 
 /* Exceções — preservar case */
@@ -409,6 +415,11 @@ input::-webkit-textfield-decoration-container {
 [data-theme="light"] body {
   background: var(--bg);
   color: var(--text);
+}
+
+/* Evita auto-zoom do iOS Safari em inputs com font < 16px */
+input, select, textarea {
+  font-size: 16px;
 }
 
 [data-theme="light"] input,
