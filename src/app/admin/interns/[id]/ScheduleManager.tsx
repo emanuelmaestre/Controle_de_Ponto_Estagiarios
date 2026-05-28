@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { InternSchedule } from '@/types/database'
 import { toast } from 'sonner'
-import { Clock, CheckCircle2, Loader2 } from 'lucide-react'
+import { Clock, CheckCircle2, Loader2, X } from 'lucide-react'
 
 const DAYS = [
   { key: 1, abbr: 'SEG', full: 'Segunda-feira' },
@@ -190,18 +190,33 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
                 {/* Time slot pill or empty text */}
                 <div className="flex-1 flex flex-wrap gap-3">
                   {ds.active ? (
-                    <button
-                      onClick={() => setEditing(d.key, !ds.editing)}
-                      className="flex items-center gap-2 px-4 py-2 rounded-full transition-all"
-                      style={{
-                        background: 'var(--surface-variant)',
-                        border: `1px solid ${ds.editing ? 'rgba(0,200,83,0.50)' : 'rgba(0,200,83,0.20)'}`,
-                        color: 'var(--text)',
-                      }}
-                    >
-                      <Clock size={13} style={{ color: '#3fe56c' }} />
-                      <span className="text-sm font-medium">{timeRange}</span>
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setEditing(d.key, !ds.editing)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-full transition-all"
+                        style={{
+                          background: 'var(--surface-variant)',
+                          border: `1px solid ${ds.editing ? 'rgba(0,200,83,0.50)' : 'rgba(0,200,83,0.20)'}`,
+                          color: 'var(--text)',
+                        }}
+                      >
+                        <Clock size={13} style={{ color: '#3fe56c' }} />
+                        <span className="text-sm font-medium">{timeRange}</span>
+                      </button>
+                      {/* Botão excluir horário */}
+                      <button
+                        onClick={() => toggleDay(d.key)}
+                        title="Remover horário"
+                        className="w-6 h-6 rounded-full flex items-center justify-center transition-all hover:scale-110"
+                        style={{
+                          background: 'rgba(255,82,82,0.12)',
+                          border: '1px solid rgba(255,82,82,0.30)',
+                          color: '#ff5252',
+                        }}
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
                   ) : (
                     <span className="text-sm italic" style={{ color: 'var(--text-3)' }}>
                       Nenhum horário configurado.
