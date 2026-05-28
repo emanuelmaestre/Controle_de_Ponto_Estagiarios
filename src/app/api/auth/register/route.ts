@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     const supabaseAdmin = createSupabaseServiceClient()
 
-    // Verificar se email já existe
+    // Verificar se email já existe no profiles
     const { data: existing } = await supabaseAdmin
       .from('profiles')
       .select('id')
@@ -22,7 +22,15 @@ export async function POST(request: NextRequest) {
       .maybeSingle()
 
     if (existing) {
-      return NextResponse.json({ error: 'Este e-mail já está cadastrado.' }, { status: 409 })
+      return NextResponse.json({ error: 'Este e-mail já está cadastrado no sistema.' }, { status: 409 })
+    }
+
+    // Verificar se email existe em auth.users (usuário órfão — perfil deletado mas auth não)
+    const { data: authList } = await supabaseAdmin.auth.admin.listUsers()
+    const orphanUser = authList?.users?.find(u => u.email === email.toLowerCase())
+    if (orphanUser) {
+      // Deleta o usuário órfão e recria com os novos dados
+      await supabaseAdmin.auth.admin.deleteUser(orphanUser.id)
     }
 
     // Criar usuário no auth
@@ -33,10 +41,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (authError) {
-      if (authError.message.includes('already been registered')) {
-        return NextResponse.json({ error: 'Este e-mail já está cadastrado.' }, { status: 409 })
-      }
-      return NextResponse.json({ error: authError.message }, { status: 500 })
+      return NextResponse.json({ error: 'Erro ao criar conta. Tente novamente.' }, { status: 500 })
     }
 
     // Criar profile como intern INATIVO (precisa aprovação do admin)
