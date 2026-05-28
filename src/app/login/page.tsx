@@ -247,14 +247,14 @@ function LoginContent() {
 
   return (
     <div className="w-full max-w-sm">
-      {/* Orbs */}
+      {/* Orbs — cores fixas verdes, não dependem do tema salvo */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full blur-3xl opacity-20"
-          style={{ background: 'var(--primary)' }} />
+          style={{ background: '#3fe56c' }} />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full blur-3xl opacity-15"
-          style={{ background: 'var(--primary-dark, #00c853)' }} />
+          style={{ background: '#00c853' }} />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl opacity-[0.07]"
-          style={{ background: 'var(--primary-light, #69ff87)' }} />
+          style={{ background: '#69ff87' }} />
       </div>
 
       <motion.div
@@ -581,13 +581,15 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
+    /* Força sempre o background verde — página de entrada é sempre on-brand */
     <div
+      data-theme="green"
       className="flex items-center justify-center relative"
-      style={{ minHeight: '100dvh', overflowY: 'auto', background: 'var(--bg)', padding: '16px 16px 32px' }}
+      style={{ minHeight: '100dvh', overflowY: 'auto', background: '#07170c', padding: '16px 16px 32px' }}
     >
       <Suspense fallback={
-        <div className="w-full max-w-sm rounded-3xl p-10 text-center" style={{ background: 'var(--surface)' }}>
-          <Loader2 size={32} className="animate-spin mx-auto" style={{ color: 'var(--primary)' }} />
+        <div className="w-full max-w-sm rounded-3xl p-10 text-center" style={{ background: '#0f2318' }}>
+          <Loader2 size={32} className="animate-spin mx-auto" style={{ color: '#3fe56c' }} />
         </div>
       }>
         <LoginContent />
