@@ -133,11 +133,12 @@ function Field({ label, icon, error, children }: { label: string; icon: React.Re
   )
 }
 
-const inputCls = "w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium outline-none transition-all"
+const inputCls = "w-full pl-10 pr-4 py-3 rounded-xl font-medium outline-none transition-all"
 const inputStyle = {
   background: 'rgba(0,0,0,0.25)',
   border: '1px solid rgba(0,200,83,0.18)',
   color: '#d4e8d5',
+  fontSize: '16px', // evita zoom automático no iOS Safari
 }
 
 function RegisterContent() {
@@ -351,7 +352,7 @@ export default function RegisterPage() {
   }))
 
   return (
-    <div className="min-h-dvh flex" style={{ background: '#07170c' }}>
+    <div className="min-h-dvh flex" style={{ background: '#07170c', overflowX: 'hidden', maxWidth: '100vw' }}>
 
       {/* ── LEFT PANEL (desktop only) ─────────────────── */}
       <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden flex-shrink-0"
@@ -415,7 +416,7 @@ export default function RegisterPage() {
       </div>
 
       {/* ── RIGHT PANEL — form ────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden px-4 py-8 lg:py-12">
+      <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden px-4 py-6 sm:py-8 lg:py-12" style={{ minWidth: 0, maxWidth: '100vw' }}>
 
         {/* Mobile background */}
         <div className="lg:hidden absolute inset-0 pointer-events-none">
@@ -424,7 +425,7 @@ export default function RegisterPage() {
           {particles.slice(0, 8).map((p, i) => <Particle key={i} {...p} />)}
         </div>
 
-        <div className="relative z-10 w-full max-w-md">
+        <div className="relative z-10 w-full" style={{ maxWidth: 420 }}>
 
           {/* Mobile logo */}
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
@@ -443,7 +444,7 @@ export default function RegisterPage() {
             style={{ background: 'rgba(15,35,24,0.95)', border: '1px solid rgba(0,200,83,0.15)', backdropFilter: 'blur(20px)', boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,200,83,0.05)' }}
           >
             {/* Card header */}
-            <div className="px-8 pt-8 pb-6" style={{ borderBottom: '1px solid rgba(0,200,83,0.08)' }}>
+            <div className="px-5 sm:px-8 pt-6 sm:pt-8 pb-5 sm:pb-6" style={{ borderBottom: '1px solid rgba(0,200,83,0.08)' }}>
               <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
                 className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
@@ -456,8 +457,8 @@ export default function RegisterPage() {
               </p>
             </div>
 
-            {/* Form */}
-            <div className="px-8 py-6">
+            {/* Form — px menor no mobile para caber na tela */}
+            <div className="px-5 sm:px-8 py-5 sm:py-6">
               <Suspense fallback={
                 <div className="flex justify-center py-8">
                   <Loader2 size={24} className="animate-spin" style={{ color: '#00c853' }} />
