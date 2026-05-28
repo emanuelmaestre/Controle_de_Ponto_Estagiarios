@@ -161,7 +161,7 @@ export default function IntegrationsTab() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.07 }}
-                className="rounded-xl p-5 flex flex-col transition-all"
+                className="rounded-xl p-5 flex flex-col hover-lift"
                 style={{
                   background: 'var(--surface-card, #0f2318)',
                   border: '1px solid rgba(0,200,83,0.15)',

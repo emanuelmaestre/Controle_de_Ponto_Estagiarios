@@ -261,7 +261,7 @@ export default async function WorkloadPage() {
                 <StaggerItem key={r.id}>
                   <Link
                     href={`/admin/interns/${r.id}`}
-                    className="group block rounded-2xl transition-all duration-200"
+                    className="group block rounded-2xl hover-lift"
                     style={{ background: 'var(--surface-card)', border: `1px solid var(--border)` }}
                   >
                     {/* ── MOBILE layout (< sm) ── */}

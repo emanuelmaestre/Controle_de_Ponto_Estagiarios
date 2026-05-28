@@ -239,7 +239,97 @@
 }
 
 button, a, input, select, textarea {
-  transition-property: background-color, border-color, color, box-shadow, opacity, transform;
+  transition-property: background-color, border-color, color, box-shadow, opacity, transform, filter;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ══════════════════════════════════════════════════════
+   HOVER EFFECTS — Botões e Cards globais
+   Cobre todo o sistema sem precisar editar cada componente
+══════════════════════════════════════════════════════ */
+
+/* ── Botões primários (fundo sólido) ── */
+button:not([disabled]):not([data-framer]):hover,
+a[class*="font-bold"]:not([data-framer]):hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+button:not([disabled]):not([data-framer]):active,
+a[class*="font-bold"]:not([data-framer]):active {
+  transform: scale(0.97) translateY(0);
+  filter: brightness(0.95);
+}
+
+/* ── Cards clicáveis (Link/a com rounded) ── */
+a[class*="rounded"]:not([data-framer]):hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+}
+a[class*="rounded"]:not([data-framer]):active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+/* ── Cards div com group (não são links mas são interativos) ── */
+.group:hover {
+  box-shadow: 0 8px 28px rgba(0,0,0,0.40);
+}
+
+/* ── Efeito glow no hover para botões verdes ── */
+button[style*="#00c853"]:not([disabled]):hover,
+button[style*="#3fe56c"]:not([disabled]):hover,
+a[style*="#00c853"]:hover,
+a[style*="#3fe56c"]:hover {
+  box-shadow: 0 0 20px rgba(0,200,83,0.40), 0 6px 20px rgba(0,0,0,0.30);
+  filter: brightness(1.10);
+}
+
+/* ── Botões de outline (borda sem fundo) ── */
+button[style*="transparent"]:not([disabled]):hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+}
+
+/* ── Icon buttons (pequenos, sem texto) ── */
+button.w-8:not([disabled]):hover,
+button.w-9:not([disabled]):hover,
+button.w-10:not([disabled]):hover {
+  transform: scale(1.15) rotate(8deg);
+  filter: brightness(1.2);
+}
+
+/* ── Tags / badges clicáveis ── */
+button[class*="rounded-full"]:not([disabled]):hover {
+  transform: scale(1.06);
+  filter: brightness(1.15);
+}
+
+/* ══════════════════════════════════════════════════════
+   HOVER LIFT — classe utilitária para cards estáticos
+   Use className="hover-lift" em qualquer div/section
+══════════════════════════════════════════════════════ */
+.hover-lift {
+  transition: transform 0.22s cubic-bezier(0.16,1,0.3,1),
+              box-shadow 0.22s cubic-bezier(0.16,1,0.3,1),
+              border-color 0.22s ease !important;
+}
+.hover-lift:hover {
+  transform: translateY(-4px) scale(1.005);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.50) !important;
+  border-color: rgba(0,200,83,0.35) !important;
+}
+.hover-lift:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+/* ── Glow interno no hover (verde) para cards interativos ── */
+.hover-glow {
+  transition: box-shadow 0.22s ease, border-color 0.22s ease !important;
+}
+.hover-glow:hover {
+  box-shadow: 0 0 0 1px rgba(63,229,108,0.25), 0 12px 40px rgba(0,0,0,0.45) !important;
+  border-color: rgba(0,200,83,0.30) !important;
 }
 
 html {

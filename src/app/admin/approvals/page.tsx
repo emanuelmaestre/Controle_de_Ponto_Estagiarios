@@ -56,7 +56,7 @@ export default async function ApprovalsPage() {
               {pending.map(record => (
                 <StaggerItem key={record.id}>
                   <div
-                    className="rounded-2xl overflow-hidden"
+                    className="rounded-2xl overflow-hidden hover-lift"
                     style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
                   >
                     {/* Card header */}

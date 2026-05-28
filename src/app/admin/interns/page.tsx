@@ -174,7 +174,7 @@ function InternCard({
   return (
     <Link
       href={`/admin/interns/${intern.id}`}
-      className="group flex flex-col h-full p-5 rounded-xl transition-all duration-200"
+      className="group flex flex-col h-full p-5 rounded-xl hover-lift"
       style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
     >
       {/* Top: avatar + name + status */}
