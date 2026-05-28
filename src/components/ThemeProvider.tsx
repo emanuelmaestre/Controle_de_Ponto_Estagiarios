@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 
-export type Theme = 'light' | 'dark' | 'lab'
+export type Theme = 'green' | 'dark' | 'light'
 
 interface ThemeContextValue {
   theme: Theme
@@ -10,21 +10,24 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: 'light',
+  theme: 'green',
   setTheme: () => {},
 })
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('lab')
+  const [theme, setThemeState] = useState<Theme>('green')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-    const saved = localStorage.getItem('cl-theme') as Theme | null
-    if (saved && ['light', 'dark', 'lab'].includes(saved)) {
-      setThemeState(saved)
-      document.documentElement.setAttribute('data-theme', saved)
-    }
+    const saved = localStorage.getItem('cl-theme')
+    // accept 'lab' as legacy alias for 'green'
+    const resolved: Theme =
+      saved === 'lab' ? 'green'
+      : saved === 'dark' || saved === 'light' || saved === 'green' ? (saved as Theme)
+      : 'green'
+    setThemeState(resolved)
+    document.documentElement.setAttribute('data-theme', resolved)
   }, [])
 
   const setTheme = (t: Theme) => {

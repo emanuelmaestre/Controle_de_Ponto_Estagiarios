@@ -2,13 +2,16 @@
 
 /* ══════════════════════════════════════════════════════
    STITCH DESIGN SYSTEM — ChronosLab
-   Paleta: verde escuro profundo + verde neon primário
+   Temas: green (padrão) | dark | light
 ══════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────
+   TEMA GREEN — Deep Forest (padrão / lab)
+   Fundo: verde-floresta escuro | Acento: neon verde
+────────────────────────────────────────────────────── */
 :root,
-[data-theme="light"],
-[data-theme="dark"],
+[data-theme="green"],
 [data-theme="lab"] {
-  /* Backgrounds */
   --bg:                    #07170c;
   --bg-secondary:          #0f1f14;
   --surface:               #07170c;
@@ -19,65 +22,174 @@
   --surface-container-high:#1d2e21;
   --surface-variant:       #28392c;
 
-  /* Borders */
   --border:                rgba(0, 200, 83, 0.15);
   --border-hover:          rgba(0, 200, 83, 0.25);
   --border-low-opacity:    rgba(0, 200, 83, 0.15);
 
-  /* Text */
   --text:                  #d4e8d5;
   --text-2:                #bbcbb8;
   --text-3:                #869583;
 
-  /* Primary */
   --primary:               #3fe56c;
-  --primary-light:         #3fe56c;
+  --primary-light:         #69ff87;
   --primary-dark:          #00c853;
   --primary-fg:            #003912;
   --primary-container:     #00c853;
   --on-primary:            #003912;
 
-  /* Secondary */
   --secondary:             #95d69a;
 
-  /* Status */
   --status-active:         #00c853;
   --status-attention:      #ffbf00;
   --status-error:          #ff5252;
 
-  /* Semantic */
   --success:               #00c853;
   --warning:               #ffbf00;
   --danger:                #ff5252;
   --error:                 #ffb4ab;
   --info:                  #95d69a;
 
-  /* Nav (sidebar) */
   --nav-bg:                #07170c;
   --nav-fg:                #d4e8d5;
   --nav-muted:             #869583;
   --nav-hover:             rgba(0, 200, 83, 0.08);
   --nav-active:            rgba(0, 200, 83, 0.12);
+  --nav-active-border:     #00c853;
 
-  /* Shadows */
   --card-shadow:           0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4);
   --card-shadow-md:        0 4px 16px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
-  --card-glow:             0 0 12px rgba(0, 200, 83, 0.1);
+  --card-glow:             0 0 12px rgba(0, 200, 83, 0.10);
 
-  /* Misc */
   --ring:                  rgba(0, 200, 83, 0.3);
   --input-bg:              #0f1f14;
   --outline:               #869583;
 }
 
+/* ──────────────────────────────────────────────────────
+   TEMA DARK — Midnight Tech
+   Fundo: cinza-ardósia profundo | Acento: índigo/violeta
+────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --bg:                    #0a0a12;
+  --bg-secondary:          #12121c;
+  --surface:               #0a0a12;
+  --surface-2:             #12121c;
+  --surface-card:          #14141e;
+  --surface-container-low: #12121c;
+  --surface-container:     #18182a;
+  --surface-container-high:#1e1e30;
+  --surface-variant:       #23233a;
+
+  --border:                rgba(99, 102, 241, 0.15);
+  --border-hover:          rgba(99, 102, 241, 0.28);
+  --border-low-opacity:    rgba(99, 102, 241, 0.12);
+
+  --text:                  #e2e8f0;
+  --text-2:                #94a3b8;
+  --text-3:                #64748b;
+
+  --primary:               #818cf8;
+  --primary-light:         #a5b4fc;
+  --primary-dark:          #6366f1;
+  --primary-fg:            #1e1b4b;
+  --primary-container:     #6366f1;
+  --on-primary:            #ffffff;
+
+  --secondary:             #93c5fd;
+
+  --status-active:         #34d399;
+  --status-attention:      #fbbf24;
+  --status-error:          #f87171;
+
+  --success:               #34d399;
+  --warning:               #fbbf24;
+  --danger:                #f87171;
+  --error:                 #fca5a5;
+  --info:                  #93c5fd;
+
+  --nav-bg:                #07070f;
+  --nav-fg:                #e2e8f0;
+  --nav-muted:             #64748b;
+  --nav-hover:             rgba(99, 102, 241, 0.08);
+  --nav-active:            rgba(99, 102, 241, 0.14);
+  --nav-active-border:     #6366f1;
+
+  --card-shadow:           0 1px 3px rgba(0,0,0,0.65), 0 1px 2px rgba(0,0,0,0.55);
+  --card-shadow-md:        0 4px 16px rgba(0,0,0,0.75), 0 2px 6px rgba(0,0,0,0.55);
+  --card-glow:             0 0 12px rgba(99, 102, 241, 0.10);
+
+  --ring:                  rgba(99, 102, 241, 0.3);
+  --input-bg:              #12121c;
+  --outline:               #64748b;
+}
+
+/* ──────────────────────────────────────────────────────
+   TEMA LIGHT — Clean Lab
+   Fundo: branco/gelo | Acento: verde-esmeralda
+   Nav lateral permanece escuro (contraste profissional)
+────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:                    #f0f4f1;
+  --bg-secondary:          #e8ede9;
+  --surface:               #f0f4f1;
+  --surface-2:             #e8ede9;
+  --surface-card:          #ffffff;
+  --surface-container-low: #e8ede9;
+  --surface-container:     #dce3dd;
+  --surface-container-high:#ccd6ce;
+  --surface-variant:       #dce3dd;
+
+  --border:                rgba(0, 150, 60, 0.18);
+  --border-hover:          rgba(0, 150, 60, 0.32);
+  --border-low-opacity:    rgba(0, 150, 60, 0.14);
+
+  --text:                  #0d1f11;
+  --text-2:                #2d4a33;
+  --text-3:                #5a7860;
+
+  --primary:               #00a846;
+  --primary-light:         #3fe56c;
+  --primary-dark:          #007a32;
+  --primary-fg:            #ffffff;
+  --primary-container:     #00c853;
+  --on-primary:            #ffffff;
+
+  --secondary:             #10b981;
+
+  --status-active:         #00a846;
+  --status-attention:      #c77c00;
+  --status-error:          #c62828;
+
+  --success:               #00a846;
+  --warning:               #c77c00;
+  --danger:                #c62828;
+  --error:                 #ef4444;
+  --info:                  #0277bd;
+
+  /* Nav permanece escuro para contraste */
+  --nav-bg:                #0d1f11;
+  --nav-fg:                #d4e8d5;
+  --nav-muted:             #5a7860;
+  --nav-hover:             rgba(0, 200, 83, 0.08);
+  --nav-active:            rgba(0, 200, 83, 0.14);
+  --nav-active-border:     #00c853;
+
+  --card-shadow:           0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --card-shadow-md:        0 4px 16px rgba(0,0,0,0.09), 0 2px 6px rgba(0,0,0,0.05);
+  --card-glow:             0 0 12px rgba(0, 150, 60, 0.08);
+
+  --ring:                  rgba(0, 150, 60, 0.25);
+  --input-bg:              #ffffff;
+  --outline:               #5a7860;
+}
+
 /* ══════════════════════════════════════════════════════
-   BASE STYLES
+   TAILWIND @theme inline — tokens padrão (green)
 ══════════════════════════════════════════════════════ */
 @theme inline {
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 
-  /* Stitch color tokens — required for Tailwind utility classes */
   --color-bg:                    #07170c;
   --color-bg-secondary:          #0f1f14;
   --color-surface:               #07170c;
@@ -114,6 +226,9 @@
   --color-nav-muted:             #869583;
 }
 
+/* ══════════════════════════════════════════════════════
+   BASE STYLES
+══════════════════════════════════════════════════════ */
 *, *::before, *::after {
   transition-property: background-color, border-color, color, box-shadow;
   transition-duration: 200ms;
@@ -137,7 +252,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Exceções — senhas e elementos técnicos preservam case */
+/* Exceções — preservar case */
 input[type="password"],
 input[type="email"],
 input[type="url"],
@@ -154,40 +269,40 @@ code, pre,
 }
 
 /* ══════════════════════════════════════════════════════
-   CARD UTILITY CLASSES
+   CARD UTILITY CLASSES — usa variáveis de tema
 ══════════════════════════════════════════════════════ */
 .card-surface {
   background: var(--surface-card);
-  border: 1px solid rgba(0, 200, 83, 0.15);
+  border: 1px solid var(--border);
   border-radius: 16px;
   transition: box-shadow 200ms ease, border-color 200ms ease;
 }
 .card-surface:hover {
-  box-shadow: 0 0 12px rgba(0, 200, 83, 0.1);
-  border-color: rgba(0, 200, 83, 0.25);
+  box-shadow: var(--card-glow);
+  border-color: var(--border-hover);
 }
 
 .status-badge-active {
   background: rgba(0, 200, 83, 0.1);
-  border: 1px solid #00c853;
-  color: #00c853;
+  border: 1px solid var(--status-active);
+  color: var(--status-active);
 }
 .status-badge-absent {
   background: rgba(255, 82, 82, 0.1);
-  border: 1px solid #ff5252;
-  color: #ff5252;
+  border: 1px solid var(--status-error);
+  color: var(--status-error);
 }
 .status-badge-attention {
   background: rgba(255, 191, 0, 0.1);
-  border: 1px solid #ffbf00;
-  color: #ffbf00;
+  border: 1px solid var(--status-attention);
+  color: var(--status-attention);
 }
 
 /* ══════════════════════════════════════════════════════
    GLASS
 ══════════════════════════════════════════════════════ */
 .glass {
-  background: rgba(7, 23, 12, 0.88);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
 }
@@ -239,8 +354,8 @@ code, pre,
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 8px rgba(0, 200, 83, 0.15); }
-  50%       { box-shadow: 0 0 20px rgba(0, 200, 83, 0.3); }
+  0%, 100% { box-shadow: var(--card-glow); }
+  50%       { box-shadow: var(--card-shadow-md); }
 }
 .glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
 
@@ -256,21 +371,21 @@ input::-webkit-textfield-decoration-container {
 }
 
 /* ══════════════════════════════════════════════════════
-   NAV LINK HOVER
+   NAV LINK — usa variáveis de tema
 ══════════════════════════════════════════════════════ */
 .nav-link {
-  color: var(--text-3);
+  color: var(--nav-muted);
 }
 .nav-link:hover {
-  background: var(--surface-variant);
-  color: var(--text);
+  background: var(--nav-hover);
+  color: var(--nav-fg);
 }
 .nav-link-active,
 .nav-link[aria-current="page"] {
-  background: rgba(17,82,36,0.10);
+  background: var(--nav-active);
   color: var(--primary);
   font-weight: 700;
-  border-left: 4px solid var(--primary);
+  border-left: 4px solid var(--nav-active-border);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -282,4 +397,28 @@ input::-webkit-textfield-decoration-container {
 }
 #nprogress .peg {
   box-shadow: 0 0 10px var(--primary), 0 0 5px var(--primary) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   LIGHT THEME — override de componentes críticos
+   Cards e inputs recebem fundo branco / borda verde escuro
+══════════════════════════════════════════════════════ */
+[data-theme="light"] body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  color-scheme: light;
+}
+
+/* ══════════════════════════════════════════════════════
+   DARK THEME — inputs com cor de esquema escuro
+══════════════════════════════════════════════════════ */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  color-scheme: dark;
 }

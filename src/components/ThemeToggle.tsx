@@ -5,23 +5,22 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Sun, Moon, Leaf } from 'lucide-react'
 
 const themes: { value: Theme; label: string; icon: React.ReactNode; color: string }[] = [
-  { value: 'light', label: 'Claro',      icon: <Sun  size={14} />, color: 'text-amber-400' },
-  { value: 'dark',  label: 'Escuro',    icon: <Moon size={14} />, color: 'text-blue-400'  },
-  { value: 'lab',   label: 'Lab',       icon: <Leaf size={14} />, color: 'text-emerald-400' },
+  { value: 'green', label: 'Verde',  icon: <Leaf size={14} />, color: 'text-emerald-400' },
+  { value: 'dark',  label: 'Escuro', icon: <Moon size={14} />, color: 'text-indigo-400'  },
+  { value: 'light', label: 'Claro',  icon: <Sun  size={14} />, color: 'text-amber-400'   },
 ]
 
 export default function ThemeToggle({ compact = false }: { compact?: boolean }) {
   const { theme, setTheme } = useTheme()
-  const current = themes.find(t => t.value === theme)!
+  const current = themes.find(t => t.value === theme) ?? themes[0]
 
   if (compact) {
-    // Ícone único que roda entre os temas
-    const next: Theme = theme === 'light' ? 'dark' : theme === 'dark' ? 'lab' : 'light'
+    const next: Theme = theme === 'green' ? 'dark' : theme === 'dark' ? 'light' : 'green'
     return (
       <motion.button
         onClick={() => setTheme(next)}
         whileTap={{ scale: 0.85 }}
-        title={`Tema: ${current.label} → ${next}`}
+        title={`Tema: ${current.label} → ${themes.find(t => t.value === next)?.label}`}
         className="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors"
         style={{ color: 'var(--nav-fg)' }}
       >
