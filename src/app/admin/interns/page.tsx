@@ -96,9 +96,9 @@ export default async function InternsPage() {
               </div>
             </FadeIn>
           ) : (
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-stretch">
               {active.map((intern, idx) => (
-                <StaggerItem key={intern.id}>
+                <StaggerItem key={intern.id} className="h-full">
                   <InternCard intern={intern} colorIdx={idx} isActive />
                 </StaggerItem>
               ))}
@@ -118,9 +118,9 @@ export default async function InternsPage() {
                 <div className="flex-1 h-px" style={{ background: 'rgba(0,200,83,0.15)' }} />
               </div>
             </FadeIn>
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 opacity-60">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 opacity-60 items-stretch">
               {inactive.map((intern, idx) => (
-                <StaggerItem key={intern.id}>
+                <StaggerItem key={intern.id} className="h-full">
                   <InternCard intern={intern} colorIdx={active.length + idx} isActive={false} />
                 </StaggerItem>
               ))}
@@ -173,12 +173,12 @@ function InternCard({
   return (
     <Link
       href={`/admin/interns/${intern.id}`}
-      className="group block p-5 rounded-xl transition-all duration-200"
+      className="group flex flex-col h-full p-5 rounded-xl transition-all duration-200"
       style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
     >
       {/* Top: avatar + name + status */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
+      <div className="flex items-start justify-between gap-2 mb-4">
+        <div className="flex items-center gap-3 min-w-0">
           {intern.photo_url ? (
             <img
               src={intern.photo_url}
@@ -194,12 +194,16 @@ function InternCard({
               {initials}
             </div>
           )}
-          <div>
-            <h5 className="text-base font-bold preserve-case" style={{ color: 'var(--text)' }}>
+          {/* Nome + curso: altura fixa para alinhar todos os cards */}
+          <div className="min-w-0" style={{ minHeight: '2.75rem' }}>
+            <h5
+              className="text-base font-bold preserve-case leading-tight line-clamp-2"
+              style={{ color: 'var(--text)' }}
+            >
               {intern.full_name}
             </h5>
             {intern.course && (
-              <p className="text-xs preserve-case truncate" style={{ color: 'var(--text-3)', maxWidth: 160 }}>
+              <p className="text-xs preserve-case truncate mt-0.5" style={{ color: 'var(--text-3)' }}>
                 {intern.course}
               </p>
             )}
@@ -217,7 +221,8 @@ function InternCard({
         </span>
       </div>
 
-      {/* Divider */}
+      {/* Divider + email empurrado para baixo com flex-1 */}
+      <div className="flex-1" />
       <div className="w-full mb-4" style={{ height: 1, background: 'rgba(0,200,83,0.15)' }} />
 
       {/* Email */}

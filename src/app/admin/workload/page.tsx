@@ -3,16 +3,86 @@ import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { minutesToHours } from '@/lib/utils'
 import type { Profile, MonthlyHours, InternSchedule } from '@/types/database'
-import { TrendingUp, Users, CheckCircle2, AlertTriangle, Clock } from 'lucide-react'
+import {
+  TrendingUp, Users, CheckCircle2, AlertTriangle,
+  Clock, Eye, XCircle, AlertCircle,
+} from 'lucide-react'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 
 export const dynamic = 'force-dynamic'
 
+/* ─────────────────────────────────────────
+   Helpers de status
+───────────────────────────────────────── */
+type StatusKey = 'done' | 'ontrack' | 'attention' | 'late'
+
+function getStatus(pct: number): StatusKey {
+  if (pct >= 100) return 'done'
+  if (pct >= 75)  return 'ontrack'
+  if (pct >= 40)  return 'attention'
+  return 'late'
+}
+
+const STATUS_META: Record<StatusKey, {
+  label: string
+  icon: React.ReactNode
+  color: string
+  bg: string
+  border: string
+  barColor: string
+}> = {
+  done: {
+    label: 'META CONCLUÍDA',
+    icon: <CheckCircle2 size={11} />,
+    color:    '#3fe56c',
+    bg:       'rgba(63,229,108,0.10)',
+    border:   'rgba(63,229,108,0.30)',
+    barColor: '#3fe56c',
+  },
+  ontrack: {
+    label: 'NO PRAZO',
+    icon: <CheckCircle2 size={11} />,
+    color:    '#00c853',
+    bg:       'rgba(0,200,83,0.10)',
+    border:   'rgba(0,200,83,0.30)',
+    barColor: '#00c853',
+  },
+  attention: {
+    label: 'ATENÇÃO NECESSÁRIA',
+    icon: <AlertCircle size={11} />,
+    color:    '#ffbf00',
+    bg:       'rgba(255,191,0,0.10)',
+    border:   'rgba(255,191,0,0.30)',
+    barColor: '#ffbf00',
+  },
+  late: {
+    label: 'ATRASADO',
+    icon: <XCircle size={11} />,
+    color:    '#ff5252',
+    bg:       'rgba(255,82,82,0.10)',
+    border:   'rgba(255,82,82,0.30)',
+    barColor: '#ff5252',
+  },
+}
+
+const AVATAR_COLORS = [
+  { bg: 'rgba(59,130,246,0.15)',  border: 'rgba(59,130,246,0.3)',  text: '#60a5fa' },
+  { bg: 'rgba(139,92,246,0.15)',  border: 'rgba(139,92,246,0.3)',  text: '#a78bfa' },
+  { bg: 'rgba(236,72,153,0.15)',  border: 'rgba(236,72,153,0.3)',  text: '#f472b6' },
+  { bg: 'rgba(16,185,129,0.15)',  border: 'rgba(16,185,129,0.3)',  text: '#34d399' },
+  { bg: 'rgba(245,158,11,0.15)',  border: 'rgba(245,158,11,0.3)',  text: '#fbbf24' },
+  { bg: 'rgba(6,182,212,0.15)',   border: 'rgba(6,182,212,0.3)',   text: '#22d3ee' },
+]
+
+/* ─────────────────────────────────────────
+   Page
+───────────────────────────────────────── */
 export default async function WorkloadPage() {
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  /* fetch */
   const { data: internsRaw } = await supabase
     .from('profiles')
     .select('id, full_name, photo_url, course, total_hours_required')
@@ -40,59 +110,39 @@ export default async function WorkloadPage() {
   }
 
   type InternRow = {
-    id: string
-    full_name: string
-    photo_url: string | null
-    course: string | null
-    total_hours_required: number | null
-    monthMinutes: number
-    approvedSessions: number
-    pct: number
-    weeklyHours: number
+    id: string; full_name: string; photo_url: string | null
+    course: string | null; total_hours_required: number | null
+    monthMinutes: number; approvedSessions: number; pct: number
+    status: StatusKey; weeklyHours: number
   }
 
-  const rows: InternRow[] = interns.map(i => {
+  const rows: InternRow[] = interns.map((i, _idx) => {
     const h = allHours.find(x => x.intern_id === i.id)
     const monthMinutes = h?.total_minutes ?? 0
     const totalRequired = (i.total_hours_required ?? 120) * 60
-    const pct = totalRequired > 0 ? Math.min(100, Math.round((monthMinutes / totalRequired) * 100)) : 0
+    const pct = totalRequired > 0 ? Math.round((monthMinutes / totalRequired) * 100) : 0
     return {
-      ...i,
-      monthMinutes,
+      ...i, monthMinutes,
       approvedSessions: h?.approved_sessions ?? 0,
-      pct,
+      pct, status: getStatus(pct),
       weeklyHours: weeklyByIntern[i.id] ?? 0,
     }
   })
 
   rows.sort((a, b) => a.pct - b.pct)
 
-  const getColor = (pct: number) =>
-    pct >= 100 ? '#00c853' : pct >= 75 ? '#3fe56c' : pct >= 40 ? '#95d69a' : '#ffbf00'
-  const getLabel = (pct: number) =>
-    pct >= 100 ? 'Concluído' : pct >= 75 ? 'Quase lá' : pct >= 40 ? 'Em dia' : 'Atenção'
-
-  const avatarColors = [
-    { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', text: '#60a5fa' },
-    { bg: 'rgba(139,92,246,0.15)', border: 'rgba(139,92,246,0.3)', text: '#a78bfa' },
-    { bg: 'rgba(236,72,153,0.15)', border: 'rgba(236,72,153,0.3)', text: '#f472b6' },
-    { bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.3)', text: '#34d399' },
-    { bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.3)', text: '#fbbf24' },
-    { bg: 'rgba(6,182,212,0.15)',  border: 'rgba(6,182,212,0.3)',  text: '#22d3ee' },
-  ]
-
-  const currentMonth = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
   const completedCount = rows.filter(r => r.pct >= 100).length
   const attentionCount = rows.filter(r => r.pct < 40).length
+  const currentMonth   = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
 
   return (
     <div className="flex flex-col flex-1 min-h-0" style={{ background: 'var(--bg)' }}>
 
-      {/* ── TopAppBar ──────────────────────────────── */}
+      {/* ── TopAppBar ── */}
       <FadeIn delay={0}>
         <header
           className="flex items-center justify-between px-6 h-16 flex-shrink-0"
-          style={{ background: 'var(--bg)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}
+          style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}
         >
           <h2 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
             Carga Horária
@@ -103,91 +153,75 @@ export default async function WorkloadPage() {
         </header>
       </FadeIn>
 
-      {/* ── Main content ───────────────────────────── */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-6" style={{ maxWidth: 1400, margin: '0 auto', width: '100%' }}>
+      {/* ── Main ── */}
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6" style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
 
-        {/* Header */}
+        {/* Subtitle */}
         <FadeIn delay={0.04}>
-          <div className="mb-8">
-            <h3 className="text-3xl font-semibold" style={{ color: 'var(--text)' }}>
+          <div className="mb-6">
+            <h3 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
               Visão Geral de Horas
             </h3>
-            <p className="text-base mt-1 preserve-case" style={{ color: 'var(--text-3)' }}>
+            <p className="text-sm mt-0.5 preserve-case" style={{ color: 'var(--text-3)' }}>
               Acompanhamento do progresso de horas dos estagiários.
             </p>
           </div>
         </FadeIn>
 
-        {/* ── Metrics Bento ─────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {/* Total */}
-          <FadeIn delay={0.08}>
-            <div
-              className="relative overflow-hidden p-6 rounded-xl"
-              style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
-            >
-              <div className="relative z-10">
-                <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
-                  Total de Estagiários
+        {/* ── Metrics ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          {[
+            {
+              label: 'Total de Estagiários',
+              value: String(rows.length).padStart(2, '0'),
+              color: 'var(--text)',
+              icon: <Users size={96} strokeWidth={1} />,
+              delay: 0.08,
+            },
+            {
+              label: 'Concluíram a Meta',
+              value: String(completedCount).padStart(2, '0'),
+              sub: 'este mês',
+              color: '#00c853',
+              icon: <CheckCircle2 size={96} strokeWidth={1} />,
+              delay: 0.12,
+            },
+            {
+              label: 'Necessitam Atenção',
+              value: String(attentionCount).padStart(2, '0'),
+              sub: attentionCount > 0 ? 'abaixo de 40%' : 'todos em dia',
+              color: attentionCount > 0 ? '#ffbf00' : 'var(--text-3)',
+              icon: <AlertTriangle size={96} strokeWidth={1} />,
+              delay: 0.16,
+            },
+          ].map(m => (
+            <FadeIn key={m.label} delay={m.delay}>
+              <div
+                className="relative overflow-hidden p-6 rounded-2xl"
+                style={{ background: 'var(--surface-card)', border: '1px solid var(--border)' }}
+              >
+                <p className="text-[10px] font-bold tracking-widest mb-2 uppercase" style={{ color: 'var(--text-3)' }}>
+                  {m.label}
                 </p>
-                <span className="text-5xl font-bold leading-none" style={{ color: 'var(--text)' }}>
-                  {String(rows.length).padStart(2, '0')}
-                </span>
-              </div>
-              <Users size={120} className="absolute -right-4 -bottom-4" style={{ color: 'var(--text)', opacity: 0.05 }} strokeWidth={1} />
-            </div>
-          </FadeIn>
-
-          {/* Concluíram */}
-          <FadeIn delay={0.12}>
-            <div
-              className="relative overflow-hidden p-6 rounded-xl"
-              style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
-            >
-              <div className="relative z-10">
-                <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
-                  Concluíram a Meta
-                </p>
-                <div className="flex items-end gap-3">
-                  <span className="text-5xl font-bold leading-none" style={{ color: '#00c853' }}>
-                    {String(completedCount).padStart(2, '0')}
+                <div className="flex items-end gap-2">
+                  <span className="text-5xl font-bold leading-none" style={{ color: m.color }}>
+                    {m.value}
                   </span>
-                  <span className="text-xs font-medium mb-2 preserve-case" style={{ color: 'var(--text-3)' }}>
-                    este mês
-                  </span>
+                  {m.sub && (
+                    <span className="text-xs mb-1 preserve-case" style={{ color: 'var(--text-3)' }}>{m.sub}</span>
+                  )}
+                </div>
+                <div className="absolute -right-3 -bottom-3 opacity-[0.04]" style={{ color: m.color }}>
+                  {m.icon}
                 </div>
               </div>
-              <CheckCircle2 size={120} className="absolute -right-4 -bottom-4" style={{ color: '#00c853', opacity: 0.05 }} strokeWidth={1} />
-            </div>
-          </FadeIn>
-
-          {/* Atenção */}
-          <FadeIn delay={0.16}>
-            <div
-              className="relative overflow-hidden p-6 rounded-xl"
-              style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
-            >
-              <div className="relative z-10">
-                <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
-                  Necessitam Atenção
-                </p>
-                <div className="flex items-end gap-3">
-                  <span className="text-5xl font-bold leading-none" style={{ color: attentionCount > 0 ? '#ffbf00' : 'var(--text-3)' }}>
-                    {String(attentionCount).padStart(2, '0')}
-                  </span>
-                  <span className="text-xs font-medium mb-2 preserve-case" style={{ color: 'var(--text-3)' }}>
-                    {attentionCount > 0 ? 'abaixo de 40%' : 'todos em dia'}
-                  </span>
-                </div>
-              </div>
-              <AlertTriangle size={120} className="absolute -right-4 -bottom-4" style={{ color: attentionCount > 0 ? '#ffbf00' : 'var(--text-3)', opacity: 0.05 }} strokeWidth={1} />
-            </div>
-          </FadeIn>
+            </FadeIn>
+          ))}
         </div>
 
-        {/* ── Lista ─────────────────────────────────── */}
+        {/* ── Progresso Individual ── */}
         <FadeIn delay={0.20}>
-          <h4 className="text-2xl font-semibold mb-6" style={{ color: 'var(--text)' }}>
+          <h4 className="text-xl font-semibold mb-4" style={{ color: 'var(--text)' }}>
             Progresso Individual
           </h4>
         </FadeIn>
@@ -195,11 +229,13 @@ export default async function WorkloadPage() {
         {rows.length === 0 ? (
           <FadeIn>
             <div
-              className="rounded-xl flex flex-col items-center justify-center py-16"
-              style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+              className="rounded-2xl flex flex-col items-center justify-center py-16"
+              style={{ background: 'var(--surface-card)', border: '1px solid var(--border)' }}
             >
               <Users size={48} className="mb-4" style={{ color: 'var(--text-3)', opacity: 0.4 }} />
-              <p className="text-lg font-semibold mb-1" style={{ color: 'var(--text)' }}>Nenhum estagiário ativo</p>
+              <p className="text-lg font-semibold mb-1" style={{ color: 'var(--text)' }}>
+                Nenhum estagiário ativo
+              </p>
               <p className="text-sm preserve-case" style={{ color: 'var(--text-3)' }}>
                 Adicione estagiários para acompanhar as horas.
               </p>
@@ -208,74 +244,115 @@ export default async function WorkloadPage() {
         ) : (
           <StaggerContainer className="space-y-3 pb-4">
             {rows.map((r, i) => {
-              const color = getColor(r.pct)
-              const label = getLabel(r.pct)
+              const st   = STATUS_META[r.status]
+              const ac   = AVATAR_COLORS[i % AVATAR_COLORS.length]
               const initials = r.full_name.split(' ').slice(0, 2).map(w => w[0]).join('')
-              const ac = avatarColors[i % avatarColors.length]
+              const hoursLabel = minutesToHours(r.monthMinutes)
+              const totalH    = r.total_hours_required ?? 120
+              const pctDisplay = r.pct > 100 ? '100%+' : `${r.pct}%`
+              const barWidth   = Math.min(100, r.pct)
 
               return (
                 <StaggerItem key={r.id}>
                   <Link
                     href={`/admin/interns/${r.id}`}
-                    className="group block p-5 rounded-xl transition-all duration-200"
-                    style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+                    className="group block rounded-2xl transition-all duration-200"
+                    style={{
+                      background: 'var(--surface-card)',
+                      border: `1px solid var(--border)`,
+                    }}
                   >
-                    <div className="flex items-center gap-4">
-                      {/* Avatar */}
-                      {r.photo_url ? (
-                        <img
-                          src={r.photo_url}
-                          alt={r.full_name}
-                          className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                          style={{ border: `1px solid ${ac.border}` }}
-                        />
-                      ) : (
-                        <div
-                          className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0"
-                          style={{ background: ac.bg, border: `1px solid ${ac.border}`, color: ac.text }}
-                        >
-                          {initials}
-                        </div>
-                      )}
+                    <div className="flex items-center gap-4 sm:gap-6 p-4 sm:p-5">
 
-                      <div className="flex-1 min-w-0">
-                        {/* Name + status */}
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          <p className="font-bold text-base preserve-case" style={{ color: 'var(--text)' }}>{r.full_name}</p>
-                          <span
-                            className="text-[10px] font-bold px-2 py-0.5 rounded flex-shrink-0"
-                            style={{ background: `${color}18`, color, border: `1px solid ${color}40` }}
+                      {/* ── Avatar ── */}
+                      <div className="flex-shrink-0">
+                        {r.photo_url ? (
+                          <img
+                            src={r.photo_url}
+                            alt={r.full_name}
+                            className="w-14 h-14 rounded-full object-cover"
+                            style={{ border: `2px solid ${ac.border}` }}
+                          />
+                        ) : (
+                          <div
+                            className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg"
+                            style={{ background: ac.bg, border: `2px solid ${ac.border}`, color: ac.text }}
                           >
-                            {label}
-                          </span>
-                        </div>
+                            {initials}
+                          </div>
+                        )}
+                      </div>
 
-                        {/* Progress bar */}
-                        <div className="h-2 rounded-full overflow-hidden mb-2" style={{ background: 'var(--surface-variant)' }}>
+                      {/* ── Nome + Badge ── */}
+                      <div className="flex-shrink-0" style={{ minWidth: 160, width: 180 }}>
+                        <p
+                          className="font-bold text-base preserve-case leading-tight mb-1.5 group-hover:opacity-80 transition-opacity"
+                          style={{ color: 'var(--text)' }}
+                        >
+                          {r.full_name}
+                        </p>
+                        <span
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold"
+                          style={{ background: st.bg, border: `1px solid ${st.border}`, color: st.color }}
+                        >
+                          {st.icon}
+                          {st.label}
+                        </span>
+                      </div>
+
+                      {/* ── Barra + Horas ── */}
+                      <div className="flex-1 min-w-0">
+                        {/* Label acima */}
+                        <p className="text-[10px] font-medium mb-2 flex items-center gap-1" style={{ color: 'var(--text-3)' }}>
+                          <Clock size={10} />
+                          Horas Concluídas / Meta de {totalH}h
+                        </p>
+
+                        {/* Barra */}
+                        <div
+                          className="h-2.5 rounded-full overflow-hidden mb-2"
+                          style={{ background: 'var(--surface-variant)' }}
+                        >
                           <div
                             className="h-full rounded-full transition-all duration-700"
-                            style={{ width: `${r.pct}%`, background: color }}
+                            style={{ width: `${barWidth}%`, background: st.barColor }}
                           />
                         </div>
 
-                        {/* Stats */}
-                        <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-3)' }}>
-                          <span className="flex items-center gap-1" style={{ color }}>
-                            <Clock size={11} />
-                            {minutesToHours(r.monthMinutes)} / {r.total_hours_required ?? 120}h ({r.pct}%)
+                        {/* Valor */}
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-base font-bold" style={{ color: st.color }}>
+                            {hoursLabel} / {totalH}h
                           </span>
-                          <span>&middot;</span>
-                          <span>{r.approvedSessions} aprovadas</span>
-                          {r.weeklyHours > 0 && (
-                            <>
-                              <span>&middot;</span>
-                              <span>{r.weeklyHours.toFixed(1)}h/sem</span>
-                            </>
-                          )}
+                          <span className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>
+                            ({pctDisplay})
+                          </span>
                         </div>
                       </div>
 
-                      <TrendingUp size={18} className="flex-shrink-0" style={{ color }} />
+                      {/* ── Sessões Aprovadas ── */}
+                      <div
+                        className="flex-shrink-0 flex flex-col items-center gap-0.5 pl-4 sm:pl-6 hidden sm:flex"
+                        style={{ borderLeft: '1px solid var(--border)', minWidth: 100 }}
+                      >
+                        <p className="text-[9px] font-bold tracking-widest text-center" style={{ color: 'var(--text-3)' }}>
+                          SESSÕES APROVADAS
+                        </p>
+                        <span className="text-4xl font-bold leading-none mt-1" style={{ color: st.color }}>
+                          {String(r.approvedSessions).padStart(2, '0')}
+                        </span>
+                        <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>Sessões</p>
+                      </div>
+
+                      {/* ── Eye icon ── */}
+                      <div className="flex-shrink-0 pl-2 hidden sm:flex">
+                        <Eye
+                          size={20}
+                          className="opacity-40 group-hover:opacity-100 transition-opacity"
+                          style={{ color: st.color }}
+                        />
+                      </div>
+
                     </div>
                   </Link>
                 </StaggerItem>
