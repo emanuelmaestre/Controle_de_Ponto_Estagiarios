@@ -25,6 +25,19 @@ export const metadata: Metadata = {
       { url: '/apple-icon.svg', type: 'image/svg+xml' },
     ],
   },
+  openGraph: {
+    title: 'ChronosLab — Controle de Ponto',
+    description: 'Sistema de controle de ponto para estagiários do laboratório ChronosLab',
+    url: 'https://controle-de-ponto-estagiarios.vercel.app',
+    siteName: 'ChronosLab',
+    locale: 'pt_BR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ChronosLab — Controle de Ponto',
+    description: 'Sistema de controle de ponto para estagiários do laboratório ChronosLab',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
