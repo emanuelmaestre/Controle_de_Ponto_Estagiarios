@@ -209,29 +209,29 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
                 {/* Time slot pill or empty text */}
                 <div className="flex-1 flex flex-wrap gap-3">
                   {ds.active ? (
-                    <div className="flex items-center gap-1.5">
+                    <div
+                      className="flex items-center gap-2 px-4 py-2 rounded-full"
+                      style={{
+                        background: 'var(--surface-variant)',
+                        border: `1px solid ${ds.editing ? 'rgba(0,200,83,0.50)' : 'rgba(0,200,83,0.20)'}`,
+                      }}
+                    >
                       <button
                         onClick={() => setEditing(d.key, !ds.editing)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-full transition-all"
-                        style={{
-                          background: 'var(--surface-variant)',
-                          border: `1px solid ${ds.editing ? 'rgba(0,200,83,0.50)' : 'rgba(0,200,83,0.20)'}`,
-                          color: 'var(--text)',
-                        }}
+                        className="flex items-center gap-2"
+                        style={{ color: 'var(--text)' }}
                       >
                         <Clock size={13} style={{ color: '#3fe56c' }} />
                         <span className="text-sm font-medium">{timeRange}</span>
                       </button>
-                      {/* Botão excluir horário */}
+                      {/* Divisor discreto */}
+                      <span style={{ width: 1, height: 14, background: 'rgba(0,0,0,0.12)', display: 'inline-block', flexShrink: 0 }} />
+                      {/* X dentro da pílula */}
                       <button
                         onClick={() => toggleDay(d.key)}
                         title="Remover horário"
-                        className="w-6 h-6 rounded-full flex items-center justify-center transition-all hover:scale-110"
-                        style={{
-                          background: 'rgba(255,82,82,0.12)',
-                          border: '1px solid rgba(255,82,82,0.30)',
-                          color: '#ff5252',
-                        }}
+                        className="flex items-center justify-center transition-all hover:opacity-70"
+                        style={{ color: 'rgba(180,40,40,0.7)', lineHeight: 1 }}
                       >
                         <X size={12} />
                       </button>
