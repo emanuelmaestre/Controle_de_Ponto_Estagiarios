@@ -257,84 +257,95 @@ export default async function WorkloadPage() {
                   <Link
                     href={`/admin/interns/${r.id}`}
                     className="group block rounded-2xl transition-all duration-200"
-                    style={{
-                      background: 'var(--surface-card)',
-                      border: `1px solid var(--border)`,
-                    }}
+                    style={{ background: 'var(--surface-card)', border: `1px solid var(--border)` }}
                   >
-                    <div className="flex items-center gap-4 sm:gap-6 p-4 sm:p-5">
+                    {/* ── MOBILE layout (< sm) ── */}
+                    <div className="flex flex-col gap-3 p-4 sm:hidden">
+                      {/* Row 1: avatar + nome + eye */}
+                      <div className="flex items-center gap-3">
+                        {r.photo_url ? (
+                          <img src={r.photo_url} alt={r.full_name}
+                            className="w-11 h-11 rounded-full object-cover flex-shrink-0"
+                            style={{ border: `2px solid ${ac.border}` }} />
+                        ) : (
+                          <div className="w-11 h-11 rounded-full flex items-center justify-center font-bold flex-shrink-0"
+                            style={{ background: ac.bg, border: `2px solid ${ac.border}`, color: ac.text }}>
+                            {initials}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-sm preserve-case leading-tight truncate" style={{ color: 'var(--text)' }}>
+                            {r.full_name}
+                          </p>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold mt-1"
+                            style={{ background: st.bg, border: `1px solid ${st.border}`, color: st.color }}>
+                            {st.icon}{st.label}
+                          </span>
+                        </div>
+                        <Eye size={16} className="flex-shrink-0 opacity-30 group-hover:opacity-80 transition-opacity" style={{ color: st.color }} />
+                      </div>
+                      {/* Row 2: barra + horas */}
+                      <div>
+                        <p className="text-[10px] mb-1.5 flex items-center gap-1" style={{ color: 'var(--text-3)' }}>
+                          <Clock size={9} /> Horas Concluídas / Meta de {totalH}h
+                        </p>
+                        <div className="h-2 rounded-full overflow-hidden mb-1.5" style={{ background: 'var(--surface-variant)' }}>
+                          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${barWidth}%`, background: st.barColor }} />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold" style={{ color: st.color }}>{hoursLabel} / {totalH}h</span>
+                          <span className="text-xs" style={{ color: 'var(--text-3)' }}>({pctDisplay}) · {String(r.approvedSessions).padStart(2,'0')} sessões</span>
+                        </div>
+                      </div>
+                    </div>
 
-                      {/* ── Avatar ── */}
+                    {/* ── DESKTOP layout (≥ sm) ── */}
+                    <div className="hidden sm:flex items-center gap-5 p-5">
+
+                      {/* Avatar */}
                       <div className="flex-shrink-0">
                         {r.photo_url ? (
-                          <img
-                            src={r.photo_url}
-                            alt={r.full_name}
+                          <img src={r.photo_url} alt={r.full_name}
                             className="w-14 h-14 rounded-full object-cover"
-                            style={{ border: `2px solid ${ac.border}` }}
-                          />
+                            style={{ border: `2px solid ${ac.border}` }} />
                         ) : (
-                          <div
-                            className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg"
-                            style={{ background: ac.bg, border: `2px solid ${ac.border}`, color: ac.text }}
-                          >
+                          <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg"
+                            style={{ background: ac.bg, border: `2px solid ${ac.border}`, color: ac.text }}>
                             {initials}
                           </div>
                         )}
                       </div>
 
-                      {/* ── Nome + Badge ── */}
-                      <div className="flex-shrink-0" style={{ minWidth: 160, width: 180 }}>
-                        <p
-                          className="font-bold text-base preserve-case leading-tight mb-1.5 group-hover:opacity-80 transition-opacity"
-                          style={{ color: 'var(--text)' }}
-                        >
+                      {/* Nome + Badge — largura relativa, sem px fixo */}
+                      <div className="flex-shrink-0 w-[22%] min-w-0">
+                        <p className="font-bold text-base preserve-case leading-tight mb-1.5 line-clamp-2"
+                          style={{ color: 'var(--text)' }}>
                           {r.full_name}
                         </p>
-                        <span
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold"
-                          style={{ background: st.bg, border: `1px solid ${st.border}`, color: st.color }}
-                        >
-                          {st.icon}
-                          {st.label}
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold"
+                          style={{ background: st.bg, border: `1px solid ${st.border}`, color: st.color }}>
+                          {st.icon}{st.label}
                         </span>
                       </div>
 
-                      {/* ── Barra + Horas ── */}
+                      {/* Barra + Horas */}
                       <div className="flex-1 min-w-0">
-                        {/* Label acima */}
                         <p className="text-[10px] font-medium mb-2 flex items-center gap-1" style={{ color: 'var(--text-3)' }}>
-                          <Clock size={10} />
-                          Horas Concluídas / Meta de {totalH}h
+                          <Clock size={10} /> Horas Concluídas / Meta de {totalH}h
                         </p>
-
-                        {/* Barra */}
-                        <div
-                          className="h-2.5 rounded-full overflow-hidden mb-2"
-                          style={{ background: 'var(--surface-variant)' }}
-                        >
-                          <div
-                            className="h-full rounded-full transition-all duration-700"
-                            style={{ width: `${barWidth}%`, background: st.barColor }}
-                          />
+                        <div className="h-2.5 rounded-full overflow-hidden mb-2" style={{ background: 'var(--surface-variant)' }}>
+                          <div className="h-full rounded-full transition-all duration-700"
+                            style={{ width: `${barWidth}%`, background: st.barColor }} />
                         </div>
-
-                        {/* Valor */}
                         <div className="flex items-baseline gap-2">
-                          <span className="text-base font-bold" style={{ color: st.color }}>
-                            {hoursLabel} / {totalH}h
-                          </span>
-                          <span className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>
-                            ({pctDisplay})
-                          </span>
+                          <span className="text-base font-bold" style={{ color: st.color }}>{hoursLabel} / {totalH}h</span>
+                          <span className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>({pctDisplay})</span>
                         </div>
                       </div>
 
-                      {/* ── Sessões Aprovadas ── */}
-                      <div
-                        className="flex-shrink-0 flex flex-col items-center gap-0.5 pl-4 sm:pl-6 hidden sm:flex"
-                        style={{ borderLeft: '1px solid var(--border)', minWidth: 100 }}
-                      >
+                      {/* Sessões Aprovadas */}
+                      <div className="flex-shrink-0 flex flex-col items-center gap-0.5 pl-5"
+                        style={{ borderLeft: '1px solid var(--border)', minWidth: 96 }}>
                         <p className="text-[9px] font-bold tracking-widest text-center" style={{ color: 'var(--text-3)' }}>
                           SESSÕES APROVADAS
                         </p>
@@ -344,13 +355,10 @@ export default async function WorkloadPage() {
                         <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>Sessões</p>
                       </div>
 
-                      {/* ── Eye icon ── */}
-                      <div className="flex-shrink-0 pl-2 hidden sm:flex">
-                        <Eye
-                          size={20}
-                          className="opacity-40 group-hover:opacity-100 transition-opacity"
-                          style={{ color: st.color }}
-                        />
+                      {/* Eye */}
+                      <div className="flex-shrink-0 pl-2">
+                        <Eye size={20} className="opacity-40 group-hover:opacity-100 transition-opacity"
+                          style={{ color: st.color }} />
                       </div>
 
                     </div>

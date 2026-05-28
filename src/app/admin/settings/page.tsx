@@ -51,7 +51,7 @@ export default async function SettingsPage({ searchParams }: Props) {
       </FadeIn>
 
       {/* ── Scrollable body ── */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-6">
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6">
         <div style={{ maxWidth: 940, margin: '0 auto' }}>
 
           {/* Page heading */}
@@ -66,7 +66,7 @@ export default async function SettingsPage({ searchParams }: Props) {
 
           {/* ── Underline tabs ── */}
           <FadeIn delay={0.06}>
-            <div className="flex gap-8 mb-8" style={{ borderBottom: '1px solid rgba(0,200,83,0.15)' }}>
+            <div className="flex gap-4 sm:gap-8 mb-8 overflow-x-auto" style={{ borderBottom: '1px solid rgba(0,200,83,0.15)' }}>
               {tabs.map(t => (
                 <Link
                   key={t.key}
@@ -135,28 +135,27 @@ export default async function SettingsPage({ searchParams }: Props) {
                     </div>
                   </div>
 
-                  {/* Visual accent card */}
+                  {/* Dica rápida */}
                   <div
-                    className="rounded-xl p-6 relative overflow-hidden flex flex-col justify-end"
+                    className="rounded-xl p-5 relative overflow-hidden"
                     style={{
                       background: 'var(--surface-card, #0f2318)',
                       border: '1px solid rgba(0,200,83,0.15)',
-                      minHeight: 180,
                     }}
                   >
                     <div
                       className="absolute inset-0"
-                      style={{ background: 'linear-gradient(135deg, rgba(63,229,108,0.06) 0%, transparent 60%)' }}
+                      style={{ background: 'linear-gradient(135deg, rgba(63,229,108,0.05) 0%, transparent 60%)' }}
                     />
-                    <div className="absolute top-4 right-4 opacity-20">
-                      <FlaskConical size={64} style={{ color: '#3fe56c' }} />
+                    <div className="absolute top-3 right-3 opacity-15">
+                      <FlaskConical size={52} style={{ color: '#3fe56c' }} />
                     </div>
                     <div className="relative z-10">
-                      <h4 className="text-base font-bold mb-1" style={{ color: '#3fe56c' }}>
-                        Laboratório de Precisão
-                      </h4>
-                      <p className="text-xs leading-relaxed" style={{ color: 'var(--text-3)' }}>
-                        Suas configurações definem a eficiência operacional de toda a pilha de instrumentação.
+                      <p className="text-[10px] font-bold tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
+                        DICA
+                      </p>
+                      <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
+                        Configure o lembrete de entrada para que os estagiários recebam notificação no horário certo e nunca percam um registro.
                       </p>
                     </div>
                   </div>

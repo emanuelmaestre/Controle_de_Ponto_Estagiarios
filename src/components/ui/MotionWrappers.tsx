@@ -48,13 +48,15 @@ export function StaggerContainer({ children, className = '', stagger = 0.045 }: 
 }
 
 export function StaggerItem({ children, className = '' }: { children: ReactNode; className?: string }) {
+  // When h-full is requested, make the wrapper a flex column so the child can stretch
+  const base = className.includes('h-full') ? 'flex flex-col ' : ''
   return (
     <motion.div
       variants={{
         hidden:  { opacity: 0, y: 10, scale: 0.98 },
         visible: { opacity: 1, y: 0,  scale: 1,    transition: { duration: 0.22, ease } },
       }}
-      className={className}
+      className={base + className}
     >
       {children}
     </motion.div>

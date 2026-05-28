@@ -53,22 +53,23 @@ export default async function InternsPage() {
 
         {/* Header */}
         <FadeIn delay={0.04}>
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-start sm:items-center justify-between gap-4 mb-8">
             <div>
-              <h3 className="text-3xl font-semibold" style={{ color: 'var(--text)' }}>
+              <h3 className="text-2xl sm:text-3xl font-semibold" style={{ color: 'var(--text)' }}>
                 Lista de Estagiários
               </h3>
-              <p className="text-base mt-1 preserve-case" style={{ color: 'var(--text-3)' }}>
+              <p className="text-sm sm:text-base mt-1 preserve-case" style={{ color: 'var(--text-3)' }}>
                 {active.length} ativo{active.length !== 1 ? 's' : ''} &middot; {inactive.length} inativo{inactive.length !== 1 ? 's' : ''}
               </p>
             </div>
             <Link
               href="/admin/interns/new"
-              className="flex items-center gap-2 px-6 py-2.5 rounded font-bold text-sm transition-all hover:opacity-90 active:scale-[0.98]"
+              className="flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded font-bold text-sm transition-all hover:opacity-90 active:scale-[0.98] flex-shrink-0"
               style={{ background: '#00c853', color: '#003912' }}
             >
               <UserPlus size={16} />
-              Novo Estagiário
+              <span className="hidden xs:inline sm:inline">Novo Estagiário</span>
+              <span className="sm:hidden">Novo</span>
             </Link>
           </div>
         </FadeIn>
