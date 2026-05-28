@@ -5,6 +5,20 @@
    Temas: green (padrão) | dark | light
 ══════════════════════════════════════════════════════ */
 
+/* ── Toast "plin" bounce animation ─────────────────── */
+@keyframes toast-plin {
+  0%   { transform: translateX(110%) scale(0.85); opacity: 0; }
+  55%  { transform: translateX(-8px) scale(1.04); opacity: 1; }
+  72%  { transform: translateX(5px) scale(0.98); }
+  84%  { transform: translateX(-3px) scale(1.01); }
+  93%  { transform: translateX(2px) scale(0.995); }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+[data-sonner-toast] {
+  animation: toast-plin 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
 /* ──────────────────────────────────────────────────────
    TEMA GREEN — Deep Forest (padrão / lab)
    Fundo: verde-floresta escuro | Acento: neon verde
