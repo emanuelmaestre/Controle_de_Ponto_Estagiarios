@@ -29,6 +29,10 @@ export async function POST(req: NextRequest) {
       user_agent?: string
     }
 
+    // Usuários isentos de verificação de localização (temporário)
+    const GEO_EXEMPT_EMAILS = ['emanuelmaestree@gmail.com']
+    const isGeoExempt = GEO_EXEMPT_EMAILS.includes(user.email ?? '')
+
     // Get profile (role + name)
     const { data: profile } = await supabase
       .from('profiles')
@@ -48,8 +52,8 @@ export async function POST(req: NextRequest) {
 
     const geoEnabled = settings?.geo_enabled ?? false
 
-    // ── Manager or geo disabled ──────────────────────────
-    if (!geoEnabled || isManager) {
+    // ── Manager, geo disabled, ou usuário isento ────────
+    if (!geoEnabled || isManager || isGeoExempt) {
       const { data: record, error } = await supabase
         .from('time_records')
         .insert({
@@ -58,7 +62,7 @@ export async function POST(req: NextRequest) {
           geo_lat: geo_lat ?? null,
           geo_lng: geo_lng ?? null,
           geo_accuracy: geo_accuracy ?? null,
-          geo_status: isManager ? 'admin_exempt' : 'geo_disabled',
+          geo_status: isManager ? 'admin_exempt' : isGeoExempt ? 'user_exempt' : 'geo_disabled',
           geo_blocked: false,
         })
         .select('id, clock_in')
@@ -73,7 +77,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         record,
-        geo_status: isManager ? 'admin_exempt' : 'geo_disabled',
+        geo_status: isManager ? 'admin_exempt' : isGeoExempt ? 'user_exempt' : 'geo_disabled',
       })
     }
 
