@@ -50,7 +50,7 @@ export default async function AdminPage() {
         >
           <div className="flex items-center gap-4 flex-1">
             <h2 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
-              Dashboard
+              Painel
             </h2>
             <div className="relative hidden sm:block ml-8" style={{ maxWidth: 400, width: '100%' }}>
               <Search
@@ -60,7 +60,7 @@ export default async function AdminPage() {
               />
               <input
                 type="text"
-                placeholder="Search interns, projects, or logs..."
+                placeholder="Pesquisar estagiários, projetos ou logs..."
                 className="preserve-case w-full rounded-lg py-2 pl-10 pr-4 text-sm outline-none transition-all"
                 style={{
                   background: 'var(--surface-container-low, #031107)',
@@ -69,12 +69,6 @@ export default async function AdminPage() {
                 }}
               />
             </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div
-              className="h-8 w-px hidden sm:block"
-              style={{ background: 'rgba(0,200,83,0.15)' }}
-            />
           </div>
         </header>
       </FadeIn>
@@ -87,10 +81,10 @@ export default async function AdminPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h3 className="text-3xl font-semibold" style={{ color: 'var(--text)' }}>
-                Operational Overview
+                Visão Geral Operacional
               </h3>
-              <p className="text-base mt-1" style={{ color: 'var(--text-3)' }}>
-                Real-time status monitoring for Chronos Lab personnel.
+              <p className="text-base mt-1 preserve-case" style={{ color: 'var(--text-3)' }}>
+                Monitoramento em tempo real do pessoal do Chronos Lab.
               </p>
             </div>
             <Link
@@ -99,14 +93,14 @@ export default async function AdminPage() {
               style={{ background: '#00c853', color: '#003912' }}
             >
               <UserPlus size={16} />
-              New Intern
+              Novo Estagiário
             </Link>
           </div>
         </FadeIn>
 
         {/* ── Metrics Bento ─────────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {/* Total */}
+          {/* Total de Estagiários */}
           <FadeIn delay={0.08}>
             <div
               className="relative overflow-hidden p-6 rounded-xl transition-all group"
@@ -117,20 +111,20 @@ export default async function AdminPage() {
             >
               <div className="relative z-10">
                 <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
-                  Total Interns
+                  Total de Estagiários
                 </p>
                 <div className="flex items-end gap-3">
                   <span className="text-5xl font-bold leading-none" style={{ color: 'var(--text)' }}>
                     {String(totalCount).padStart(2, '0')}
                   </span>
                   {saiuCount > 0 && (
-                    <span className="text-xs font-medium mb-2 flex items-center" style={{ color: '#00c853' }}>
-                      {saiuCount} left today
+                    <span className="text-xs font-medium mb-2 preserve-case" style={{ color: 'var(--text-3)' }}>
+                      {saiuCount} saíram hoje
                     </span>
                   )}
                 </div>
               </div>
-              {/* Ghost watermark icon */}
+              {/* Ghost watermark */}
               <Users
                 size={120}
                 className="absolute -right-4 -bottom-4"
@@ -140,7 +134,7 @@ export default async function AdminPage() {
             </div>
           </FadeIn>
 
-          {/* Present */}
+          {/* Presentes */}
           <FadeIn delay={0.12}>
             <div
               className="relative overflow-hidden p-6 rounded-xl transition-all group"
@@ -151,14 +145,14 @@ export default async function AdminPage() {
             >
               <div className="relative z-10">
                 <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
-                  Present
+                  Presentes
                 </p>
                 <div className="flex items-end gap-3">
                   <span className="text-5xl font-bold leading-none" style={{ color: '#00c853' }}>
                     {String(activeCount).padStart(2, '0')}
                   </span>
-                  <span className="text-xs font-medium mb-2" style={{ color: 'var(--text-3)' }}>
-                    Active now
+                  <span className="text-xs font-medium mb-2 preserve-case" style={{ color: 'var(--text-3)' }}>
+                    Ativos agora
                   </span>
                 </div>
               </div>
@@ -171,7 +165,7 @@ export default async function AdminPage() {
             </div>
           </FadeIn>
 
-          {/* Absent */}
+          {/* Ausentes */}
           <FadeIn delay={0.16}>
             <div
               className="relative overflow-hidden p-6 rounded-xl transition-all group"
@@ -182,14 +176,14 @@ export default async function AdminPage() {
             >
               <div className="relative z-10">
                 <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
-                  Absent
+                  Ausentes
                 </p>
                 <div className="flex items-end gap-3">
                   <span className="text-5xl font-bold leading-none" style={{ color: ausenteCount > 0 ? '#ff5252' : 'var(--text-3)' }}>
                     {String(ausenteCount).padStart(2, '0')}
                   </span>
-                  <span className="text-xs font-medium mb-2" style={{ color: 'var(--text-3)' }}>
-                    {ausenteCount > 0 ? 'Out of lab' : 'All present'}
+                  <span className="text-xs font-medium mb-2 preserve-case" style={{ color: 'var(--text-3)' }}>
+                    {ausenteCount > 0 ? 'Fora do laboratório' : 'Todos presentes'}
                   </span>
                 </div>
               </div>
@@ -203,11 +197,11 @@ export default async function AdminPage() {
           </FadeIn>
         </div>
 
-        {/* ── Intern Roster ────────────────────────── */}
+        {/* ── Lista de Estagiários ────────────────── */}
         <FadeIn delay={0.20}>
           <div className="flex items-center justify-between mb-6">
             <h4 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
-              Intern Roster
+              Lista de Estagiários
             </h4>
             <Link
               href="/admin/interns"
@@ -217,7 +211,7 @@ export default async function AdminPage() {
                 color: 'var(--text-3)',
               }}
             >
-              View all
+              Ver todos
             </Link>
           </div>
         </FadeIn>
@@ -257,7 +251,7 @@ export default async function AdminPage() {
                           </div>
                         )}
                         <div>
-                          <h5 className="text-base font-bold" style={{ color: 'var(--text)' }}>
+                          <h5 className="text-base font-bold preserve-case" style={{ color: 'var(--text)' }}>
                             {intern.full_name}
                           </h5>
                         </div>
@@ -279,7 +273,7 @@ export default async function AdminPage() {
 
                     {/* Bottom: hours */}
                     <div className="flex justify-between items-center text-xs font-semibold">
-                      <span style={{ color: 'var(--text-3)' }}>Hours Today</span>
+                      <span style={{ color: 'var(--text-3)' }}>Horas Hoje</span>
                       <span style={{ color: intern.today_status === 'ausente' ? 'var(--text-3)' : '#3fe56c' }}>
                         {intern.today_status === 'ausente'
                           ? '--:-- hrs'
@@ -291,7 +285,7 @@ export default async function AdminPage() {
                     {/* Clock in time */}
                     {intern.today_status === 'ativo' && intern.clock_in && (
                       <div className="flex justify-between items-center text-xs mt-2">
-                        <span style={{ color: 'var(--text-3)' }}>Clock In</span>
+                        <span style={{ color: 'var(--text-3)' }}>Entrada</span>
                         <span className="flex items-center gap-1" style={{ color: '#00c853' }}>
                           <Clock size={12} />
                           {formatTime(intern.clock_in)}
@@ -314,10 +308,10 @@ export default async function AdminPage() {
             >
               <Users size={48} className="mb-4" style={{ color: 'var(--text-3)', opacity: 0.4 }} />
               <p className="text-lg font-semibold mb-1" style={{ color: 'var(--text)' }}>
-                No interns registered
+                Nenhum estagiário cadastrado
               </p>
-              <p className="text-sm mb-6" style={{ color: 'var(--text-3)' }}>
-                Start by adding the first intern to the system.
+              <p className="text-sm mb-6 preserve-case" style={{ color: 'var(--text-3)' }}>
+                Comece adicionando o primeiro estagiário ao sistema.
               </p>
               <Link
                 href="/admin/interns/new"
@@ -325,7 +319,7 @@ export default async function AdminPage() {
                 style={{ background: '#00c853', color: '#003912' }}
               >
                 <UserPlus size={16} />
-                Add Intern
+                Adicionar Estagiário
               </Link>
             </div>
           </FadeIn>

@@ -11,10 +11,10 @@ export default async function AdminNav() {
     : { data: null }
 
   const navItems = [
-    { href: '/admin',           label: 'Dashboard',  icon: <LayoutDashboard size={20} /> },
-    { href: '/admin/workload',  label: 'Workload',   icon: <Clock           size={20} /> },
-    { href: '/admin/reports',   label: 'Reports',    icon: <BarChart2       size={20} /> },
-    { href: '/admin/settings',  label: 'Settings',   icon: <Settings        size={20} /> },
+    { href: '/admin',           label: 'Dashboard',      icon: <LayoutDashboard size={20} /> },
+    { href: '/admin/workload',  label: 'Carga Horária',  icon: <Clock           size={20} /> },
+    { href: '/admin/reports',   label: 'Relatórios',     icon: <BarChart2       size={20} /> },
+    { href: '/admin/settings',  label: 'Configurações',  icon: <Settings        size={20} /> },
   ]
 
   const initials = profile?.full_name
@@ -47,8 +47,8 @@ export default async function AdminNav() {
               <h1 className="text-lg font-bold leading-none" style={{ color: '#3fe56c' }}>
                 Chronos Lab
               </h1>
-              <p className="text-[10px] tracking-widest font-bold mt-0.5" style={{ color: 'var(--text-3)' }}>
-                Admin Console
+              <p className="text-[10px] tracking-widest font-bold mt-0.5 preserve-case" style={{ color: 'var(--text-3)' }}>
+                Console de Admin
               </p>
             </div>
           </Link>
@@ -75,7 +75,7 @@ export default async function AdminNav() {
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-base transition-colors duration-200 hover:opacity-90"
               style={{ color: 'var(--text-3)' }}
             >
-              <LogOut size={20} /> Logout
+              <LogOut size={20} /> Sair
             </button>
           </form>
         </div>
