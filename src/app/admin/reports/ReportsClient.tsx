@@ -484,8 +484,8 @@ export default function ReportsClient() {
                     <div
                       className="rounded-xl p-6 relative overflow-hidden group transition-all duration-300 h-full"
                       style={{
-                        background: 'var(--surface-card, #0f2318)',
-                        border: '1px solid rgba(0,200,83,0.15)',
+                        background: '#0f2318',
+                        border: '1px solid rgba(0,200,83,0.18)',
                       }}
                     >
                       {/* Ghost watermark icon */}
@@ -493,7 +493,7 @@ export default function ReportsClient() {
                         style={{ color: card.color }}>
                         {card.icon}
                       </div>
-                      <p className="text-[10px] font-bold tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
+                      <p className="text-[10px] font-bold tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
                         {card.label.toUpperCase()}
                       </p>
                       <div className="flex items-baseline gap-2">
@@ -505,7 +505,7 @@ export default function ReportsClient() {
                           <AnimatedNumber
                             value={card.numValue ?? 0}
                             className="text-4xl font-bold leading-none tabular-nums"
-                            style={{ color: card.color }}
+                            style={{ color: card.numValue === 0 ? 'rgba(255,255,255,0.7)' : card.color }}
                           />
                         )}
                       </div>
