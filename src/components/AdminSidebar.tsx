@@ -224,25 +224,37 @@ export default function AdminSidebar({ fullName, initials }: Props) {
           {/* ── Divisória ── */}
           <div className="mx-4 my-3" style={{ height: 1, background: 'rgba(0,200,83,0.10)' }} />
 
-          {/* ── Usuário ── */}
+          {/* ── Usuário + Tema ── */}
           <div className="px-4 pb-2 flex-shrink-0">
             <div
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1"
+              className="rounded-lg overflow-hidden"
               style={{ background: 'rgba(0,200,83,0.06)', border: '1px solid rgba(0,200,83,0.10)' }}
             >
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0"
-                style={{ background: avatarColor(fullName), color: 'white' }}
-              >
-                {initials}
+              {/* linha do usuário */}
+              <div className="flex items-center gap-3 px-3 py-2.5">
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0"
+                  style={{ background: avatarColor(fullName), color: 'white' }}
+                >
+                  {initials}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold leading-none truncate" style={{ color: 'white' }}>
+                    {fullName.split(' ')[0]}
+                  </p>
+                  <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>ADMIN</p>
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold leading-none truncate" style={{ color: 'white' }}>
-                  {fullName.split(' ')[0]}
-                </p>
-                <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>ADMIN</p>
+
+              {/* divisória + linha de tema */}
+              <div style={{ borderTop: '1px solid rgba(0,200,83,0.10)' }}>
+                <div className="flex items-center justify-between px-3 py-2">
+                  <span className="text-[10px] font-semibold tracking-widest" style={{ color: 'rgba(255,255,255,0.25)' }}>
+                    TEMA
+                  </span>
+                  <ThemeToggle compact />
+                </div>
               </div>
-              <ThemeToggle compact />
             </div>
           </div>
 
