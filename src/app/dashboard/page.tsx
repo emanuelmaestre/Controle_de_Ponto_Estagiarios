@@ -175,13 +175,13 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-lg mx-auto w-full px-4 py-4 space-y-3 pb-4">
+      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-lg mx-auto w-full px-4 py-4 space-y-3 pb-24">
 
         {/* ── Hero: Anel de progresso ─────────────────── */}
         <FadeIn delay={0}>
           <div
             className="rounded-3xl p-4 sm:p-6"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow-md)' }}
+            style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)', boxShadow: 'var(--card-shadow-md)' }}
           >
             {/* Status badge */}
             <div className="flex items-center justify-between mb-5">
@@ -269,11 +269,11 @@ export default async function DashboardPage() {
           <FadeIn delay={0.16}>
             <div
               className="rounded-2xl px-4 py-3 flex items-center gap-3"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+              style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
             >
               <div
                 className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: openRecord ? 'rgba(22,163,74,0.12)' : 'var(--bg)' }}
+                style={{ background: openRecord ? 'rgba(22,163,74,0.12)' : 'rgba(0,0,0,0.2)' }}
               >
                 {openRecord
                   ? <CheckCircle size={18} style={{ color: 'var(--success)' }} />
@@ -313,16 +313,16 @@ export default async function DashboardPage() {
           <FadeIn delay={0.26}>
             <div
               className="rounded-2xl overflow-hidden"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
+              style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
             >
               <div
                 className="px-5 py-3.5 flex items-center justify-between"
-                style={{ borderBottom: '1px solid var(--border)' }}
+                style={{ borderBottom: '1px solid rgba(0,200,83,0.10)' }}
               >
                 <h2 className="text-xs font-bold" style={{ color: 'var(--text)' }}>Registros de hoje</h2>
                 <span
                   className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                  style={{ background: 'var(--bg)', color: 'var(--text-3)', border: '1px solid var(--border)' }}
+                  style={{ background: 'rgba(0,0,0,0.2)', color: 'var(--text-3)', border: '1px solid rgba(0,200,83,0.10)' }}
                 >
                   {todayRecords.length}
                 </span>
@@ -361,7 +361,7 @@ export default async function DashboardPage() {
       {/* ── Bottom nav ──────────────────────────────────── */}
       <nav
         className="flex-shrink-0 border-t"
-        style={{ background: 'var(--surface)', borderColor: 'var(--border)', boxShadow: '0 -4px 20px rgba(0,0,0,0.08)' }}
+        style={{ background: 'var(--nav-bg)', borderColor: 'rgba(0,200,83,0.12)', boxShadow: '0 -4px 20px rgba(0,0,0,0.25)', paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div className="max-w-lg mx-auto flex">
           <Link href="/dashboard" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--primary)' }}>
