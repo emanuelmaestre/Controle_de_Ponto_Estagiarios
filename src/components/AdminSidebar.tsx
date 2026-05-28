@@ -9,7 +9,6 @@ import {
   LayoutDashboard, TrendingUp, BarChart2, Settings,
   LogOut, Users, ChevronDown, X,
 } from 'lucide-react'
-import ThemeToggle from './ThemeToggle'
 
 interface Props {
   fullName: string
@@ -275,7 +274,6 @@ export default function AdminSidebar({ fullName, initials }: Props) {
               </p>
             </div>
           </div>
-          <ThemeToggle compact />
         </div>
       )}
 
@@ -341,15 +339,6 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                 </div>
               </div>
 
-              {/* divisória + linha de tema */}
-              <div style={{ borderTop: '1px solid rgba(0,200,83,0.10)' }}>
-                <div className="flex items-center justify-between px-3 py-2">
-                  <span className="text-[10px] font-semibold tracking-widest" style={{ color: 'rgba(255,255,255,0.25)' }}>
-                    TEMA
-                  </span>
-                  <ThemeToggle compact />
-                </div>
-              </div>
             </div>
           </div>
 
