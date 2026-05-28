@@ -17,9 +17,17 @@ export const metadata: Metadata = {
   title: 'ChronosLab — Controle de Ponto',
   description: 'Sistema de controle de ponto para estagiários do laboratório ChronosLab',
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/apple-icon.svg', type: 'image/svg+xml' },
+    ],
+  },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'ChronosLab',
   },
 }

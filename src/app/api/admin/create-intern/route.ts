@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServiceClient } from '@/lib/supabase/server'
 import { internSchema } from '@/lib/validations'
+import { formatFullName } from '@/lib/utils'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://controle-de-ponto-estagiarios.vercel.app'
 
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
       .from('profiles')
       .upsert({
         id: userId,
-        full_name: data.full_name,
+        full_name: formatFullName(data.full_name),
         email: data.email.toLowerCase(),
         nickname: nickname,
         course: data.course || null,

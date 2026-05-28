@@ -383,7 +383,7 @@ export default function ReportsClient() {
               </div>
 
               {/* Export buttons — outline style matching reference */}
-              <div className="flex items-center gap-2 mt-auto overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+              <div className="flex items-center gap-2 mt-auto py-2 -my-2 px-1 -mx-1 flex-wrap" style={{ scrollbarWidth: 'none' }}>
                 <button
                   onClick={async () => {
                     if (!exportData.length) return

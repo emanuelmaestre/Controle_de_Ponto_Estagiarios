@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, TrendingUp, BarChart2, Settings,
-  LogOut, Users, ChevronDown,
+  LogOut, Users, ChevronDown, X,
 } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 
@@ -52,6 +52,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
   const [mounted,    setMounted]    = useState(false)
   const [isDesktop,  setIsDesktop]  = useState(false)
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({ Cadastros: true })
+  const [profileOpen, setProfileOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -376,41 +377,160 @@ export default function AdminSidebar({ fullName, initials }: Props) {
           MOBILE: Bottom nav bar
           ════════════════════════════════════════════ */}
       {!isDesktop && (
-        <nav
-          className="fixed bottom-0 left-0 right-0 z-50 flex"
-          style={{
-            background: 'var(--nav-bg)',
-            borderTop: '1px solid rgba(0,200,83,0.15)',
-            paddingBottom: 'env(safe-area-inset-bottom)',
-          }}
-        >
-          {MOBILE_NAV.map(item => {
-            const active = isActive(item.href, item.end)
-            const Icon   = item.icon
-            return (
-              <Link key={item.href} href={item.href} className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 relative">
-                <motion.div
-                  whileTap={{ scale: 0.82 }}
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                >
-                  <Icon size={20} style={{ color: active ? '#3fe56c' : 'var(--text-3)' }} />
-                </motion.div>
-                <span className="text-[9px] font-bold leading-none" style={{ color: active ? '#4ade80' : 'rgba(255,255,255,0.4)' }}>
-                  {item.label}
-                </span>
-                {active && (
+        <>
+          {/* Overlay escuro ao abrir o drawer */}
+          <AnimatePresence>
+            {profileOpen && (
+              <motion.div
+                key="overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-40"
+                style={{ background: 'rgba(0,0,0,0.55)' }}
+                onClick={() => setProfileOpen(false)}
+              />
+            )}
+          </AnimatePresence>
+
+          {/* Mini drawer — perfil + sair */}
+          <AnimatePresence>
+            {profileOpen && (
+              <motion.div
+                key="drawer"
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+                className="fixed left-0 right-0 z-50 rounded-t-2xl overflow-hidden"
+                style={{
+                  bottom: 'calc(56px + env(safe-area-inset-bottom))',
+                  background: 'var(--nav-bg)',
+                  border: '1px solid rgba(0,200,83,0.20)',
+                  borderBottom: 'none',
+                }}
+              >
+                {/* Header do drawer */}
+                <div className="flex items-center justify-between px-5 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                      style={{ background: `${avatarColor(fullName)}22`, border: `1px solid ${avatarColor(fullName)}55`, color: avatarColor(fullName) }}
+                    >
+                      {initials}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold leading-tight" style={{ color: 'white' }}>{fullName}</p>
+                      <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.4)' }}>ADMIN</p>
+                    </div>
+                  </div>
+                  <button onClick={() => setProfileOpen(false)} style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    <X size={18} />
+                  </button>
+                </div>
+
+                {/* Opções */}
+                <div className="p-3 space-y-1">
+                  <Link
+                    href="/admin/settings"
+                    onClick={() => setProfileOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium"
+                    style={{ color: 'var(--text-3)', background: 'rgba(255,255,255,0.04)' }}
+                  >
+                    <Settings size={18} style={{ color: 'var(--text-3)' }} />
+                    Configurações
+                  </Link>
+
+                  <form action="/api/auth/signout" method="POST">
+                    <button
+                      type="submit"
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold"
+                      style={{
+                        color: '#ff5252',
+                        background: 'rgba(255,82,82,0.08)',
+                        border: '1px solid rgba(255,82,82,0.20)',
+                      }}
+                    >
+                      <LogOut size={18} />
+                      Sair da conta
+                    </button>
+                  </form>
+                </div>
+
+                {/* Espaço seguro */}
+                <div style={{ height: 8 }} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Barra de navegação */}
+          <nav
+            className="fixed bottom-0 left-0 right-0 z-50 flex"
+            style={{
+              background: 'var(--nav-bg)',
+              borderTop: '1px solid rgba(0,200,83,0.15)',
+              paddingBottom: 'env(safe-area-inset-bottom)',
+            }}
+          >
+            {MOBILE_NAV.map(item => {
+              const active = isActive(item.href, item.end)
+              const Icon   = item.icon
+              return (
+                <Link key={item.href} href={item.href} className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 relative">
                   <motion.div
-                    layoutId="mobileActiveBar"
-                    className="absolute top-0 left-1/2 -translate-x-1/2 rounded-b-full"
-                    style={{ width: 24, height: 2, background: '#00c853' }}
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
-              </Link>
-            )
-          })}
-        </nav>
+                    whileTap={{ scale: 0.82 }}
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                  >
+                    <Icon size={20} style={{ color: active ? '#3fe56c' : 'var(--text-3)' }} />
+                  </motion.div>
+                  <span className="text-[9px] font-bold leading-none" style={{ color: active ? '#4ade80' : 'rgba(255,255,255,0.4)' }}>
+                    {item.label}
+                  </span>
+                  {active && (
+                    <motion.div
+                      layoutId="mobileActiveBar"
+                      className="absolute top-0 left-1/2 -translate-x-1/2 rounded-b-full"
+                      style={{ width: 24, height: 2, background: '#00c853' }}
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              )
+            })}
+
+            {/* Avatar — abre o drawer */}
+            <button
+              onClick={() => setProfileOpen(v => !v)}
+              className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 relative"
+            >
+              <motion.div
+                whileTap={{ scale: 0.82 }}
+                whileHover={{ scale: 1.1 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                className="w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px]"
+                style={{
+                  background: profileOpen ? `${avatarColor(fullName)}44` : `${avatarColor(fullName)}22`,
+                  border: `1.5px solid ${profileOpen ? avatarColor(fullName) : `${avatarColor(fullName)}55`}`,
+                  color: avatarColor(fullName),
+                }}
+              >
+                {initials}
+              </motion.div>
+              <span className="text-[9px] font-bold leading-none" style={{ color: profileOpen ? '#4ade80' : 'rgba(255,255,255,0.4)' }}>
+                Eu
+              </span>
+              {profileOpen && (
+                <motion.div
+                  layoutId="mobileActiveBar"
+                  className="absolute top-0 left-1/2 -translate-x-1/2 rounded-b-full"
+                  style={{ width: 24, height: 2, background: '#00c853' }}
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                />
+              )}
+            </button>
+          </nav>
+        </>
       )}
     </>
   )

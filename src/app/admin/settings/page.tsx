@@ -5,6 +5,7 @@ import type { Settings } from '@/types/database'
 import SettingsForm from './SettingsForm'
 import ChangePinForm from './ChangePinForm'
 import IntegrationsTab from './IntegrationsTab'
+import NormalizeNamesButton from './NormalizeNamesButton'
 import { FadeIn } from '@/components/ui/MotionWrappers'
 import { FlaskConical } from 'lucide-react'
 
@@ -134,6 +135,9 @@ export default async function SettingsPage({ searchParams }: Props) {
                       <span className="text-sm" style={{ color: 'var(--text-3)' }}>2h atrás</span>
                     </div>
                   </div>
+
+                  {/* Normalizar nomes */}
+                  <NormalizeNamesButton />
 
                   {/* Dica rápida */}
                   <div

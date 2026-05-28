@@ -11,6 +11,7 @@ import {
   Mail, Lock, Save, Send, RotateCcw,
 } from 'lucide-react'
 import { internSchema } from '@/lib/validations'
+import { formatFullName } from '@/lib/utils'
 import type { Profile } from '@/types/database'
 import DatePicker from '@/components/ui/DatePicker'
 import CourseSelect from '@/components/ui/CourseSelect'
@@ -162,7 +163,7 @@ export default function InternForm({ mode, intern }: Props) {
       setTimeout(() => router.push('/admin/interns'), 1500)
     } else if (intern) {
       const { error: updateError } = await supabase.from('profiles').update({
-        full_name:        data.full_name,
+        full_name:        formatFullName(data.full_name),
         email:            data.email,
         nickname:         data.nickname || null,
         course:           data.course   || null,

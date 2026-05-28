@@ -10,6 +10,30 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // ──────────────────────────────────────────────────────────
+// Formatação de nome completo — padrão pt-BR
+// Capitaliza a primeira letra de cada palavra, exceto
+// preposições: de, da, do, das, dos, e, em, no, na, nos, nas
+// ──────────────────────────────────────────────────────────
+const LOWERCASE_WORDS = new Set([
+  'de', 'da', 'do', 'das', 'dos',
+  'e', 'em', 'no', 'na', 'nos', 'nas',
+  'a', 'o', 'as', 'os',
+])
+
+export function formatFullName(name: string): string {
+  if (!name) return name
+  return name
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .map((word, index) => {
+      if (index !== 0 && LOWERCASE_WORDS.has(word)) return word
+      return word.charAt(0).toUpperCase() + word.slice(1)
+    })
+    .join(' ')
+}
+
+// ──────────────────────────────────────────────────────────
 // Formatação de datas no fuso de São Paulo
 // ──────────────────────────────────────────────────────────
 const TZ = 'America/Sao_Paulo'

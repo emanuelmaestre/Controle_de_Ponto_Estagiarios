@@ -131,23 +131,23 @@
    Nav lateral permanece escuro (contraste profissional)
 ────────────────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg:                    #f0f4f1;
-  --bg-secondary:          #e8ede9;
-  --surface:               #f0f4f1;
-  --surface-2:             #e8ede9;
+  --bg:                    #f7faf8;
+  --bg-secondary:          #eef5f0;
+  --surface:               #ffffff;
+  --surface-2:             #eef5f0;
   --surface-card:          #ffffff;
-  --surface-container-low: #e8ede9;
-  --surface-container:     #dce3dd;
-  --surface-container-high:#ccd6ce;
-  --surface-variant:       #dce3dd;
+  --surface-container-low: #eef5f0;
+  --surface-container:     #e3efe6;
+  --surface-container-high:#d4e8d7;
+  --surface-variant:       #e3efe6;
 
-  --border:                rgba(0, 150, 60, 0.18);
-  --border-hover:          rgba(0, 150, 60, 0.32);
-  --border-low-opacity:    rgba(0, 150, 60, 0.14);
+  --border:                rgba(0, 160, 70, 0.20);
+  --border-hover:          rgba(0, 160, 70, 0.38);
+  --border-low-opacity:    rgba(0, 160, 70, 0.12);
 
-  --text:                  #0d1f11;
-  --text-2:                #2d4a33;
-  --text-3:                #5a7860;
+  --text:                  #0a1a0e;
+  --text-2:                #1e3d26;
+  --text-3:                #4a7258;
 
   --primary:               #00a846;
   --primary-light:         #3fe56c;
@@ -238,10 +238,18 @@
   transition-timing-function: ease;
 }
 
-button, a, input, select, textarea {
-  transition-property: background-color, border-color, color, box-shadow, opacity, transform, filter;
-  transition-duration: 180ms;
-  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+button, a {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition-property: opacity, transform, box-shadow, border-color;
+  transition-duration: 120ms;
+  transition-timing-function: ease-out;
+  will-change: transform;
+}
+input, select, textarea {
+  transition-property: background-color, border-color, box-shadow;
+  transition-duration: 120ms;
+  transition-timing-function: ease-out;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -252,57 +260,52 @@ button, a, input, select, textarea {
 /* ── Botões primários (fundo sólido) ── */
 button:not([disabled]):not([data-framer]):hover,
 a[class*="font-bold"]:not([data-framer]):hover {
-  filter: brightness(1.12);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  opacity: 0.88;
+  transform: translateY(-2px);
 }
 button:not([disabled]):not([data-framer]):active,
 a[class*="font-bold"]:not([data-framer]):active {
-  transform: scale(0.97) translateY(0);
-  filter: brightness(0.95);
+  transform: translateY(0) scale(0.97);
+  opacity: 0.75;
+  transition-duration: 60ms;
 }
 
 /* ── Cards clicáveis (Link/a com rounded) ── */
 a[class*="rounded"]:not([data-framer]):hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+  transform: translateY(-2px);
 }
 a[class*="rounded"]:not([data-framer]):active {
-  transform: translateY(-1px) scale(0.99);
+  transform: translateY(0) scale(0.99);
+  transition-duration: 60ms;
 }
 
-/* ── Cards div com group (não são links mas são interativos) ── */
-.group:hover {
-  box-shadow: 0 8px 28px rgba(0,0,0,0.40);
-}
-
-/* ── Efeito glow no hover para botões verdes ── */
+/* ── Efeito hover para botões verdes ── */
 button[style*="#00c853"]:not([disabled]):hover,
 button[style*="#3fe56c"]:not([disabled]):hover,
 a[style*="#00c853"]:hover,
 a[style*="#3fe56c"]:hover {
-  box-shadow: 0 0 20px rgba(0,200,83,0.40), 0 6px 20px rgba(0,0,0,0.30);
-  filter: brightness(1.10);
+  opacity: 0.90;
+  transform: translateY(-2px);
 }
 
 /* ── Botões de outline (borda sem fundo) ── */
 button[style*="transparent"]:not([disabled]):hover {
-  filter: brightness(1.2);
-  transform: translateY(-1px);
+  opacity: 0.75;
+  transform: translateY(-2px);
 }
 
 /* ── Icon buttons (pequenos, sem texto) ── */
 button.w-8:not([disabled]):hover,
 button.w-9:not([disabled]):hover,
 button.w-10:not([disabled]):hover {
-  transform: scale(1.15) rotate(8deg);
-  filter: brightness(1.2);
+  transform: scale(1.12);
+  opacity: 0.85;
 }
 
 /* ── Tags / badges clicáveis ── */
 button[class*="rounded-full"]:not([disabled]):hover {
-  transform: scale(1.06);
-  filter: brightness(1.15);
+  transform: scale(1.05);
+  opacity: 0.88;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -315,9 +318,8 @@ button[class*="rounded-full"]:not([disabled]):hover {
               border-color 0.22s ease !important;
 }
 .hover-lift:hover {
-  transform: translateY(-4px) scale(1.005);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.50) !important;
-  border-color: rgba(0,200,83,0.35) !important;
+  transform: translateY(-3px);
+  border-color: rgba(0,200,83,0.30) !important;
 }
 .hover-lift:active {
   transform: translateY(-1px) scale(0.99);
@@ -328,8 +330,8 @@ button[class*="rounded-full"]:not([disabled]):hover {
   transition: box-shadow 0.22s ease, border-color 0.22s ease !important;
 }
 .hover-glow:hover {
-  box-shadow: 0 0 0 1px rgba(63,229,108,0.25), 0 12px 40px rgba(0,0,0,0.45) !important;
   border-color: rgba(0,200,83,0.30) !important;
+  transform: translateY(-2px);
 }
 
 html {

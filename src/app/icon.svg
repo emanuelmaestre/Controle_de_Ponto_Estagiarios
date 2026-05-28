@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Fundo circular verde escuro -->
+  <rect width="64" height="64" rx="14" fill="#07170c"/>
+
+  <!-- Cronômetro simplificado -->
+  <!-- Corpo do cronômetro -->
+  <circle cx="32" cy="36" r="18" fill="none" stroke="#00c853" stroke-width="3"/>
+  <!-- Botão do topo -->
+  <rect x="27" y="10" width="10" height="4" rx="2" fill="#00c853"/>
+  <!-- Haste -->
+  <line x1="32" y1="14" x2="32" y2="18" stroke="#00c853" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Marcadores laterais -->
+  <line x1="14" y1="24" x2="17" y2="27" stroke="#00c853" stroke-width="2" stroke-linecap="round"/>
+  <line x1="50" y1="24" x2="47" y2="27" stroke="#00c853" stroke-width="2" stroke-linecap="round"/>
+  <!-- Ponteiro dos minutos (12 → centro) -->
+  <line x1="32" y1="36" x2="32" y2="23" stroke="#3fe56c" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Ponteiro dos segundos (vermelho/acento) -->
+  <line x1="32" y1="36" x2="42" y2="29" stroke="#00c853" stroke-width="2" stroke-linecap="round"/>
+  <!-- Centro -->
+  <circle cx="32" cy="36" r="2.5" fill="#3fe56c"/>
+</svg>

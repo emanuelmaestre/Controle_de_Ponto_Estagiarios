@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" fill="none">
+  <!-- Fundo verde escuro (iOS pega esse fundo) -->
+  <rect width="180" height="180" rx="40" fill="#07170c"/>
+
+  <!-- Cronômetro escalado para 180x180 -->
+  <!-- Corpo do cronômetro -->
+  <circle cx="90" cy="105" r="52" fill="none" stroke="#00c853" stroke-width="7"/>
+  <!-- Botão do topo -->
+  <rect x="74" y="30" width="32" height="12" rx="6" fill="#00c853"/>
+  <!-- Haste -->
+  <line x1="90" y1="42" x2="90" y2="53" stroke="#00c853" stroke-width="7" stroke-linecap="round"/>
+  <!-- Marcadores laterais -->
+  <line x1="38" y1="65" x2="48" y2="75" stroke="#00c853" stroke-width="5" stroke-linecap="round"/>
+  <line x1="142" y1="65" x2="132" y2="75" stroke="#00c853" stroke-width="5" stroke-linecap="round"/>
+  <!-- Ponteiro dos minutos -->
+  <line x1="90" y1="105" x2="90" y2="65" stroke="#3fe56c" stroke-width="7" stroke-linecap="round"/>
+  <!-- Ponteiro dos segundos -->
+  <line x1="90" y1="105" x2="120" y2="83" stroke="#00c853" stroke-width="5" stroke-linecap="round"/>
+  <!-- Centro -->
+  <circle cx="90" cy="105" r="7" fill="#3fe56c"/>
+</svg>
