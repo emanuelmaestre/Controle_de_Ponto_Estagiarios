@@ -56,7 +56,9 @@ interface Props {
 
 export default function CourseSelect({ value, onChange }: Props) {
   const [open, setOpen] = useState(false)
+  const [dropPos, setDropPos] = useState({ top: 0, left: 0, width: 0 })
   const ref = useRef<HTMLDivElement>(null)
+  const btnRef = useRef<HTMLButtonElement>(null)
 
   const selected = COURSES.find(c => c.value === value) ?? null
 
@@ -68,12 +70,21 @@ export default function CourseSelect({ value, onChange }: Props) {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
+  const handleOpen = () => {
+    if (!open && btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect()
+      setDropPos({ top: rect.bottom + 6, left: rect.left, width: rect.width })
+    }
+    setOpen(o => !o)
+  }
+
   return (
     <div ref={ref} style={{ position: 'relative', userSelect: 'none' }}>
       {/* Trigger */}
       <motion.button
+        ref={btnRef}
         type="button"
-        onClick={() => setOpen(o => !o)}
+        onClick={handleOpen}
         whileTap={{ scale: 0.98 }}
         className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium outline-none transition-all"
         style={{
@@ -135,16 +146,16 @@ export default function CourseSelect({ value, onChange }: Props) {
             exit={{ opacity: 0, y: -6, scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             style={{
-              position: 'absolute',
-              top: 'calc(100% + 6px)',
-              left: 0,
-              right: 0,
-              zIndex: 50,
+              position: 'fixed',
+              top: dropPos.top,
+              left: dropPos.left,
+              width: dropPos.width || '100%',
+              zIndex: 9999,
               borderRadius: 14,
               overflow: 'hidden',
-              background: 'var(--surface)',
+              background: 'var(--surface, #0f2318)',
               border: '1.5px solid var(--border)',
-              boxShadow: '0 12px 40px rgba(0,0,0,0.25)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
             }}
           >
             {COURSES.map((course, i) => {
