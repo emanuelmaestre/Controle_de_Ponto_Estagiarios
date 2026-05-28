@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { minutesToHours } from '@/lib/utils'
 import ApprovalActions from './ApprovalActions'
-import { StaggerContainer, StaggerItem, FadeIn } from '@/components/ui/MotionWrappers'
+import { StaggerContainer, StaggerItem, FadeIn, ScaleIn } from '@/components/ui/MotionWrappers'
 import { CheckSquare, CheckCircle2 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -24,6 +24,7 @@ export default async function ApprovalsPage() {
 
 
       {/* Header compacto */}
+      <FadeIn delay={0}>
       <div className="flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
           <Link href="/admin" className="text-sm font-bold hover:opacity-70 flex-shrink-0" style={{ color: 'var(--text-3)' }}>
@@ -45,6 +46,7 @@ export default async function ApprovalsPage() {
           </div>
         </div>
       </div>
+      </FadeIn>
 
       {/* Lista scrollavel internamente */}
       <div className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>

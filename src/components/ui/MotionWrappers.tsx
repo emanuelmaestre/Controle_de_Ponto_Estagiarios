@@ -89,3 +89,42 @@ export function PageTransition({ children, className = '' }: { children: ReactNo
     </motion.div>
   )
 }
+
+/** Bounces in from scale 0 — great for icons, badges, and check marks */
+export function BounceIn({ children, delay = 0, className = '' }: { children: ReactNode; delay?: number; className?: string }) {
+  return (
+    <motion.div
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 18, delay }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+/** Adds lift + scale on hover — use as drop-in around cards */
+export function HoverLift({
+  children,
+  className = '',
+  style,
+  tap = true,
+}: {
+  children: ReactNode
+  className?: string
+  style?: React.CSSProperties
+  tap?: boolean
+}) {
+  return (
+    <motion.div
+      className={className}
+      style={style}
+      whileHover={{ y: -3, scale: 1.01, boxShadow: '0 10px 32px rgba(0,0,0,0.4)' }}
+      whileTap={tap ? { scale: 0.98 } : undefined}
+      transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+    >
+      {children}
+    </motion.div>
+  )
+}

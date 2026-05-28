@@ -8,6 +8,8 @@ import {
   Clock, Eye, XCircle, AlertCircle,
 } from 'lucide-react'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
+import AnimatedNumber from '@/components/ui/AnimatedNumber'
+import AnimatedBar from '@/components/ui/AnimatedBar'
 
 export const dynamic = 'force-dynamic'
 
@@ -204,9 +206,12 @@ export default async function WorkloadPage() {
                   {m.label}
                 </p>
                 <div className="flex items-end gap-2">
-                  <span className="text-5xl font-bold leading-none" style={{ color: m.color }}>
-                    {m.value}
-                  </span>
+                  <AnimatedNumber
+                    value={Number(m.value)}
+                    padStart={2}
+                    className="text-5xl font-bold leading-none tabular-nums"
+                    style={{ color: m.color }}
+                  />
                   {m.sub && (
                     <span className="text-xs mb-1 preserve-case" style={{ color: 'var(--text-3)' }}>{m.sub}</span>
                   )}
@@ -289,9 +294,7 @@ export default async function WorkloadPage() {
                         <p className="text-[10px] mb-1.5 flex items-center gap-1" style={{ color: 'var(--text-3)' }}>
                           <Clock size={9} /> Horas Concluídas / Meta de {totalH}h
                         </p>
-                        <div className="h-2 rounded-full overflow-hidden mb-1.5" style={{ background: 'var(--surface-variant)' }}>
-                          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${barWidth}%`, background: st.barColor }} />
-                        </div>
+                        <AnimatedBar pct={barWidth} color={st.barColor} height={8} className="mb-1.5" />
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-bold" style={{ color: st.color }}>{hoursLabel} / {totalH}h</span>
                           <span className="text-xs" style={{ color: 'var(--text-3)' }}>({pctDisplay}) · {String(r.approvedSessions).padStart(2,'0')} sessões</span>
@@ -333,10 +336,7 @@ export default async function WorkloadPage() {
                         <p className="text-[10px] font-medium mb-2 flex items-center gap-1" style={{ color: 'var(--text-3)' }}>
                           <Clock size={10} /> Horas Concluídas / Meta de {totalH}h
                         </p>
-                        <div className="h-2.5 rounded-full overflow-hidden mb-2" style={{ background: 'var(--surface-variant)' }}>
-                          <div className="h-full rounded-full transition-all duration-700"
-                            style={{ width: `${barWidth}%`, background: st.barColor }} />
-                        </div>
+                        <AnimatedBar pct={barWidth} color={st.barColor} height={10} className="mb-2" />
                         <div className="flex items-baseline gap-2">
                           <span className="text-base font-bold" style={{ color: st.color }}>{hoursLabel} / {totalH}h</span>
                           <span className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>({pctDisplay})</span>
@@ -349,9 +349,12 @@ export default async function WorkloadPage() {
                         <p className="text-[9px] font-bold tracking-widest text-center" style={{ color: 'var(--text-3)' }}>
                           SESSÕES APROVADAS
                         </p>
-                        <span className="text-4xl font-bold leading-none mt-1" style={{ color: st.color }}>
-                          {String(r.approvedSessions).padStart(2, '0')}
-                        </span>
+                        <AnimatedNumber
+                          value={r.approvedSessions}
+                          padStart={2}
+                          className="text-4xl font-bold leading-none mt-1 tabular-nums"
+                          style={{ color: st.color }}
+                        />
                         <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>Sessões</p>
                       </div>
 

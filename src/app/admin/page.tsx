@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { minutesToHours, formatTime } from '@/lib/utils'
 import type { TodayStatus } from '@/types/database'
-import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
+import { FadeIn, StaggerContainer, StaggerItem, HoverLift } from '@/components/ui/MotionWrappers'
+import AnimatedNumber from '@/components/ui/AnimatedNumber'
 import { Users, Activity, AlertTriangle, Clock, Search, UserPlus } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -102,6 +103,7 @@ export default async function AdminPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {/* Total de Estagiários */}
           <FadeIn delay={0.08}>
+            <HoverLift>
             <div
               className="relative overflow-hidden p-6 rounded-xl transition-all group"
               style={{
@@ -114,9 +116,7 @@ export default async function AdminPage() {
                   Total de Estagiários
                 </p>
                 <div className="flex items-end gap-3">
-                  <span className="text-5xl font-bold leading-none" style={{ color: 'var(--text)' }}>
-                    {String(totalCount).padStart(2, '0')}
-                  </span>
+                  <AnimatedNumber value={totalCount} padStart={2} className="text-5xl font-bold leading-none tabular-nums" style={{ color: 'var(--text)' }} />
                   {saiuCount > 0 && (
                     <span className="text-xs font-medium mb-2 preserve-case" style={{ color: 'var(--text-3)' }}>
                       {saiuCount} saíram hoje
@@ -132,10 +132,12 @@ export default async function AdminPage() {
                 strokeWidth={1}
               />
             </div>
+            </HoverLift>
           </FadeIn>
 
           {/* Presentes */}
           <FadeIn delay={0.12}>
+            <HoverLift>
             <div
               className="relative overflow-hidden p-6 rounded-xl transition-all group"
               style={{
@@ -144,13 +146,20 @@ export default async function AdminPage() {
               }}
             >
               <div className="relative z-10">
-                <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
-                  Presentes
-                </p>
+                <div className="flex items-center gap-2 mb-2">
+                  {/* Pulsing live dot */}
+                  {activeCount > 0 && (
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: '#00c853' }} />
+                      <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: '#00c853' }} />
+                    </span>
+                  )}
+                  <p className="text-xs font-semibold tracking-widest" style={{ color: 'var(--text-3)' }}>
+                    Presentes
+                  </p>
+                </div>
                 <div className="flex items-end gap-3">
-                  <span className="text-5xl font-bold leading-none" style={{ color: '#00c853' }}>
-                    {String(activeCount).padStart(2, '0')}
-                  </span>
+                  <AnimatedNumber value={activeCount} padStart={2} className="text-5xl font-bold leading-none tabular-nums" style={{ color: '#00c853' }} />
                   <span className="text-xs font-medium mb-2 preserve-case" style={{ color: 'var(--text-3)' }}>
                     Ativos agora
                   </span>
@@ -163,10 +172,12 @@ export default async function AdminPage() {
                 strokeWidth={1}
               />
             </div>
+            </HoverLift>
           </FadeIn>
 
           {/* Ausentes */}
           <FadeIn delay={0.16}>
+            <HoverLift>
             <div
               className="relative overflow-hidden p-6 rounded-xl transition-all group"
               style={{
@@ -179,9 +190,7 @@ export default async function AdminPage() {
                   Ausentes
                 </p>
                 <div className="flex items-end gap-3">
-                  <span className="text-5xl font-bold leading-none" style={{ color: ausenteCount > 0 ? '#ff5252' : 'var(--text-3)' }}>
-                    {String(ausenteCount).padStart(2, '0')}
-                  </span>
+                  <AnimatedNumber value={ausenteCount} padStart={2} className="text-5xl font-bold leading-none tabular-nums" style={{ color: ausenteCount > 0 ? '#ff5252' : 'var(--text-3)' }} />
                   <span className="text-xs font-medium mb-2 preserve-case" style={{ color: 'var(--text-3)' }}>
                     {ausenteCount > 0 ? 'Fora do laboratório' : 'Todos presentes'}
                   </span>
@@ -194,6 +203,7 @@ export default async function AdminPage() {
                 strokeWidth={1}
               />
             </div>
+            </HoverLift>
           </FadeIn>
         </div>
 
@@ -224,9 +234,10 @@ export default async function AdminPage() {
               const ac = avatarColors[idx % avatarColors.length]
               return (
                 <StaggerItem key={intern.id}>
+                  <HoverLift className="h-full">
                   <Link
                     href={`/admin/interns/${intern.id}`}
-                    className="group block p-5 rounded-xl transition-all duration-200"
+                    className="group block p-5 rounded-xl transition-all duration-200 h-full"
                     style={{
                       background: 'var(--surface-card, #0f2318)',
                       border: '1px solid rgba(0,200,83,0.15)',
@@ -293,6 +304,7 @@ export default async function AdminPage() {
                       </div>
                     )}
                   </Link>
+                  </HoverLift>
                 </StaggerItem>
               )
             })}
