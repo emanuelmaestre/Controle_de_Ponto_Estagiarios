@@ -1,4 +1,4 @@
-﻿import { redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Settings } from '@/types/database'
@@ -8,7 +8,6 @@ import GeoSettings from './GeoSettings'
 import IntegrationsTab from './IntegrationsTab'
 import { Settings as SettingsIcon, Plug, Shield } from 'lucide-react'
 import { FadeIn } from '@/components/ui/MotionWrappers'
-import BackButton from '@/components/ui/BackButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,36 +41,52 @@ export default async function SettingsPage({ searchParams }: Props) {
   } : null
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'geral',       label: 'GERAL',        icon: <SettingsIcon size={14} /> },
-    { key: 'integracoes', label: 'INTEGRAÇÕES',  icon: <Plug size={14} /> },
-    { key: 'seguranca',   label: 'SEGURANÇA',    icon: <Shield size={14} /> },
+    { key: 'geral',       label: 'Geral',        icon: <SettingsIcon size={14} /> },
+    { key: 'integracoes', label: 'Integrações',   icon: <Plug size={14} /> },
+    { key: 'seguranca',   label: 'Segurança',     icon: <Shield size={14} /> },
   ]
 
   return (
-    <div className="flex flex-col" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, background: 'var(--bg)' }}>
+    <div className="flex flex-col flex-1 min-h-0" style={{ background: 'var(--bg)' }}>
 
+      {/* ── TopAppBar ──────────────────────────────── */}
+      <FadeIn delay={0}>
+        <header
+          className="flex items-center justify-between px-6 h-16 flex-shrink-0"
+          style={{ background: 'var(--bg)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}
+        >
+          <h2 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
+            Configurações
+          </h2>
+        </header>
+      </FadeIn>
 
-      {/* Page header */}
-      <div style={{ background: 'var(--surface-card)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}>
-        <div className="px-4 sm:px-6 py-3">
-          <div className="flex items-center gap-3 mb-3">
-            <BackButton href="/admin" />
-            <div>
-              <h1 className="font-bold text-lg" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES</h1>
-              <p className="text-xs" style={{ color: 'var(--text-3)' }}>AJUSTES DO SISTEMA</p>
-            </div>
+      {/* ── Main content ───────────────────────────── */}
+      <div className="flex-1 min-h-0 overflow-y-auto p-6" style={{ maxWidth: 900, margin: '0 auto', width: '100%' }}>
+
+        {/* Header */}
+        <FadeIn delay={0.04}>
+          <div className="mb-8">
+            <h3 className="text-3xl font-semibold" style={{ color: 'var(--text)' }}>
+              Configuração Geral
+            </h3>
+            <p className="text-base mt-1 preserve-case" style={{ color: 'var(--text-3)' }}>
+              Ajuste os parâmetros do sistema Chronos Lab.
+            </p>
           </div>
+        </FadeIn>
 
-          {/* Tab nav */}
-          <div className="flex gap-1.5">
+        {/* Tab nav */}
+        <FadeIn delay={0.08}>
+          <div className="flex gap-2 mb-6">
             {tabs.map(t => (
               <Link
                 key={t.key}
                 href={`/admin/settings?tab=${t.key}`}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[11px] font-bold transition-all"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all"
                 style={activeTab === t.key
-                  ? { background: '#00c853', color: '#003912', border: '1px solid #00c853' }
-                  : { background: 'var(--surface-container)', color: 'var(--text-3)', border: '1px solid rgba(0,200,83,0.12)' }
+                  ? { background: '#00c853', color: '#003912' }
+                  : { background: 'var(--surface-card, #0f2318)', color: 'var(--text-3)', border: '1px solid rgba(0,200,83,0.15)' }
                 }
               >
                 <span className="flex-shrink-0">{t.icon}</span>
@@ -79,57 +94,56 @@ export default async function SettingsPage({ searchParams }: Props) {
               </Link>
             ))}
           </div>
-        </div>
-      </div>
+        </FadeIn>
 
-      {/* Content — full width, sem scroll */}
-      <div className="flex-1 min-h-0" style={{ display: 'flex', flexDirection: 'column', padding: '12px 16px sm:24px' }}>
-        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+        {/* Content */}
+        <FadeIn delay={0.12}>
+          <div
+            className="rounded-xl p-6"
+            style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+          >
+            {activeTab === 'geral' && (
+              <div>
+                <h4 className="text-xl font-semibold mb-1" style={{ color: 'var(--text)' }}>
+                  Configurações do Laboratório
+                </h4>
+                <p className="text-sm mb-6 preserve-case" style={{ color: 'var(--text-3)' }}>
+                  Horários de lembrete, horas esperadas e e-mail de relatório.
+                </p>
+                <SettingsForm settings={settings} />
+              </div>
+            )}
 
-          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-          <FadeIn className="flex-1 flex flex-col min-h-0">
-            <div className="rounded-2xl p-4 sm:p-5" style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--surface-card)', border: '1px solid rgba(0,200,83,0.15)' }}>
-
-              {activeTab === 'geral' && (
-                <div className="flex flex-col h-full">
-                  <h2 className="font-semibold mb-0.5 flex-shrink-0" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES DO LABORATÓRIO</h2>
-                  <p className="text-xs mb-4 flex-shrink-0" style={{ color: 'var(--text-3)' }}>HORÁRIOS DE LEMBRETE, HORAS ESPERADAS E E-MAIL DE RELATÓRIO.</p>
-                  <SettingsForm settings={settings} />
+            {activeTab === 'integracoes' && (
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Plug size={16} style={{ color: 'var(--primary)' }} />
+                  <h4 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
+                    Integrações e Stacks
+                  </h4>
                 </div>
-              )}
+                <p className="text-sm mb-6 preserve-case" style={{ color: 'var(--text-3)' }}>
+                  Status em tempo real dos serviços e dependências do sistema.
+                </p>
+                <IntegrationsTab />
+              </div>
+            )}
 
-              {activeTab === 'integracoes' && (
-                <div className="flex flex-col h-full">
-                  <div className="flex items-center gap-2 mb-0.5 flex-shrink-0">
-                    <Plug size={14} style={{ color: 'var(--primary)' }} />
-                    <h2 className="font-semibold" style={{ color: 'var(--text)' }}>INTEGRAÇÕES E STACKS</h2>
-                  </div>
-                  <p className="text-xs mb-3 flex-shrink-0" style={{ color: 'var(--text-3)' }}>
-                    STATUS EM TEMPO REAL DOS SERVIÇOS E DEPENDÊNCIAS DO SISTEMA.
-                  </p>
-                  <div style={{ flex: 1, minHeight: 0 }}>
-                    <IntegrationsTab />
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'seguranca' && (
-                <div className="flex flex-col h-full">
-                  <h2 className="font-semibold mb-0.5 flex-shrink-0" style={{ color: 'var(--text)' }}>SEU PIN DE ACESSO RÁPIDO</h2>
-                  <p className="text-xs mb-4 flex-shrink-0" style={{ color: 'var(--text-3)' }}>
-                    O PIN PERMITE QUE VOCÊ ENTRE NO SISTEMA SEM DIGITAR E-MAIL E SENHA.
-                  </p>
-                  <ChangePinForm userId={user.id} />
-                </div>
-              )}
-
-            </div>
-          </FadeIn>
+            {activeTab === 'seguranca' && (
+              <div>
+                <h4 className="text-xl font-semibold mb-1" style={{ color: 'var(--text)' }}>
+                  PIN de Acesso Rápido
+                </h4>
+                <p className="text-sm mb-6 preserve-case" style={{ color: 'var(--text-3)' }}>
+                  O PIN permite que você entre no sistema sem digitar e-mail e senha.
+                </p>
+                <ChangePinForm userId={user.id} />
+              </div>
+            )}
           </div>
+        </FadeIn>
 
-        </div>
       </div>
     </div>
   )
 }
-

@@ -9,10 +9,5 @@ export default async function ReportsPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  return (
-    <div className="flex flex-col" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, background: 'var(--bg)' }}>
-
-      <ReportsClient />
-    </div>
-  )
+  return <ReportsClient />
 }

@@ -13,8 +13,9 @@ import {
 } from 'lucide-react'
 import { internSchema, type InternInput } from '@/lib/validations'
 import DatePicker from '@/components/ui/DatePicker'
-import BackButton from '@/components/ui/BackButton'
 import CourseSelect from '@/components/ui/CourseSelect'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 export default function NewInternClient() {
   const router = useRouter()
@@ -94,17 +95,25 @@ export default function NewInternClient() {
     /* Outer: fills the content area from layout */
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', background: 'var(--bg)' }}>
 
-      {/* ── Header ── */}
-      <div className="flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-3">
-          <BackButton href="/admin/interns" />
-          <div className="w-px h-4 flex-shrink-0" style={{ background: 'var(--border)' }} />
-          <div>
-            <h1 className="font-black text-sm tracking-wide" style={{ color: 'var(--text)' }}>CADASTRAR ESTAGIÁRIO</h1>
-            <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>PREENCHA OS DADOS DO NOVO MEMBRO</p>
-          </div>
+      {/* ── TopAppBar ── */}
+      <header
+        className="flex items-center gap-4 px-6 h-16 flex-shrink-0"
+        style={{ background: 'var(--bg)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}
+      >
+        <Link
+          href="/admin/interns"
+          className="flex items-center justify-center w-9 h-9 rounded-lg transition-colors"
+          style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-3)' }}
+        >
+          <ArrowLeft size={16} />
+        </Link>
+        <div>
+          <p className="text-xs" style={{ color: 'var(--text-3)' }}>Estagiários</p>
+          <h2 className="text-base font-semibold leading-none" style={{ color: 'var(--text)' }}>
+            Novo Estagiário
+          </h2>
         </div>
-      </div>
+      </header>
 
       {/* ── Body ──
           Mobile  → scroll vertical normal
@@ -155,7 +164,7 @@ export default function NewInternClient() {
               )}
             </AnimatePresence>
 
-            <Card title="FOTO DE PERFIL">
+            <Card title="Foto de Perfil">
               <div className="flex flex-col items-center gap-2">
                 <motion.div
                   whileHover={{ scale: 1.04 }}
@@ -172,7 +181,7 @@ export default function NewInternClient() {
                   </label>
                 </motion.div>
                 <p className="text-[10px] font-bold" style={{ color: 'var(--primary)' }}>
-                  {photoPreview ? 'TROCAR FOTO' : 'ADICIONAR FOTO'}
+                  {photoPreview ? 'Trocar foto' : 'Adicionar foto'}
                 </p>
               </div>
             </Card>
@@ -182,7 +191,7 @@ export default function NewInternClient() {
               COLUNA 2 — Dados pessoais (linha 1)
               ══════════════════════════════════════════ */}
           <div className="flex flex-col gap-2 min-w-0">
-            <Card title="DADOS PESSOAIS">
+            <Card title="Dados Pessoais">
               <div className="space-y-2">
 
                 {/* Nome completo */}
@@ -229,7 +238,7 @@ export default function NewInternClient() {
               ══════════════════════════════════════════ */}
           <div className="flex flex-col gap-2">
 
-            <Card title="CONFIGURAÇÕES">
+            <Card title="Configurações">
               <div className="space-y-2">
                 <label htmlFor="is_active" className="flex items-center gap-2.5 cursor-pointer">
                   <input {...register('is_active')} type="checkbox" id="is_active" className="w-4 h-4 rounded accent-green-600 flex-shrink-0" />
@@ -256,7 +265,7 @@ export default function NewInternClient() {
               </div>
             </Card>
 
-            <Card title="PERÍODO DO ESTÁGIO">
+            <Card title="Período do Estágio">
               <div className="space-y-2">
                 {[
                   { name: 'internship_start' as const, label: 'INÍCIO' },
@@ -288,7 +297,7 @@ export default function NewInternClient() {
               className="flex-1 py-2.5 rounded-2xl text-sm font-bold"
               style={{ border: '1.5px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}
             >
-              CANCELAR
+              Cancelar
             </motion.button>
             <motion.button
               type="submit" disabled={loading || success}
@@ -297,10 +306,10 @@ export default function NewInternClient() {
               style={{ background: 'var(--primary)', boxShadow: '0 4px 18px rgba(30,92,45,0.4)' }}
             >
               {loading
-                ? <><Loader2 size={14} className="animate-spin" /> SALVANDO…</>
+                ? <><Loader2 size={14} className="animate-spin" /> Salvando…</>
                 : success
-                ? <><CheckCircle2 size={14} /> CADASTRADO!</>
-                : 'CADASTRAR ESTAGIÁRIO'
+                ? <><CheckCircle2 size={14} /> Cadastrado!</>
+                : 'Cadastrar Estagiário'
               }
             </motion.button>
           </div>
