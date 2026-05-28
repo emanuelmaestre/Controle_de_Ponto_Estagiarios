@@ -82,46 +82,124 @@ export default function AdminSidebar({ fullName, initials }: Props) {
     const Icon   = item.icon
     return (
       <Link href={item.href}>
-        <div
-          className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer"
+        <motion.div
+          className="relative flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer overflow-hidden"
           style={{
             color:      active ? '#3fe56c' : 'var(--text-3)',
             fontWeight: active ? 700 : 400,
-            background: active ? 'rgba(0,200,83,0.08)' : 'transparent',
-            borderLeft: active ? '4px solid #00c853' : '4px solid transparent',
+            borderLeft: active ? '3px solid #00c853' : '3px solid transparent',
           }}
+          whileHover="hover"
+          initial="rest"
+          animate="rest"
         >
-          <Icon size={20} style={{ flexShrink: 0 }} />
-          <span className="text-sm">{item.label}</span>
-        </div>
+          {/* Fundo que desliza da esquerda no hover */}
+          <motion.span
+            className="absolute inset-0 rounded-lg pointer-events-none"
+            style={{ background: active ? 'rgba(0,200,83,0.08)' : 'rgba(0,200,83,0.00)' }}
+            variants={{
+              rest:  { scaleX: active ? 1 : 0, originX: 0 },
+              hover: { scaleX: 1, originX: 0, background: 'rgba(0,200,83,0.10)' },
+            }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          />
+          {/* Borda esquerda que acende no hover */}
+          <motion.span
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-r-full pointer-events-none"
+            style={{ height: active ? '70%' : '0%', background: '#00c853' }}
+            variants={{
+              rest:  { height: active ? '70%' : '0%', opacity: active ? 1 : 0 },
+              hover: { height: '70%', opacity: 1 },
+            }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+          />
+          {/* Ícone com glow no hover */}
+          <motion.span
+            className="relative z-10 flex-shrink-0"
+            variants={{
+              rest:  { scale: 1,    filter: 'drop-shadow(0 0 0px transparent)' },
+              hover: { scale: 1.15, filter: 'drop-shadow(0 0 6px rgba(63,229,108,0.7))' },
+            }}
+            transition={{ duration: 0.18 }}
+          >
+            <Icon size={20} />
+          </motion.span>
+          <motion.span
+            className="relative z-10 text-sm"
+            variants={{
+              rest:  { x: 0,   color: active ? '#3fe56c' : 'var(--text-3)' },
+              hover: { x: 2,   color: '#3fe56c' },
+            }}
+            transition={{ duration: 0.18 }}
+          >
+            {item.label}
+          </motion.span>
+        </motion.div>
       </Link>
     )
   }
 
   /* ── Renderizar grupo com filhos ── */
   const NavGroup = ({ item }: { item: NavItem }) => {
-    const Icon       = item.icon
+    const Icon        = item.icon
     const groupActive = isGroupActive(item)
     const isOpen      = openGroups[item.label] ?? false
 
     return (
       <div>
-        <button
+        <motion.button
           onClick={() => setOpenGroups(prev => ({ ...prev, [item.label]: !prev[item.label] }))}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200"
+          className="relative w-full flex items-center gap-3 px-4 py-3 rounded-lg overflow-hidden"
           style={{
             color:      groupActive ? '#3fe56c' : 'var(--text-3)',
             fontWeight: groupActive ? 700 : 400,
-            background: groupActive && !isOpen ? 'rgba(0,200,83,0.08)' : 'transparent',
-            borderLeft: groupActive && !isOpen ? '4px solid #00c853' : '4px solid transparent',
+            borderLeft: groupActive && !isOpen ? '3px solid #00c853' : '3px solid transparent',
           }}
+          whileHover="hover"
+          initial="rest"
+          animate="rest"
         >
-          <Icon size={20} style={{ flexShrink: 0 }} />
-          <span className="text-sm flex-1 text-left">{item.label}</span>
-          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+          <motion.span
+            className="absolute inset-0 rounded-lg pointer-events-none"
+            variants={{
+              rest:  { scaleX: groupActive && !isOpen ? 1 : 0, originX: 0, background: 'rgba(0,200,83,0.08)' },
+              hover: { scaleX: 1, originX: 0, background: 'rgba(0,200,83,0.10)' },
+            }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          />
+          <motion.span
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] rounded-r-full pointer-events-none"
+            variants={{
+              rest:  { height: groupActive && !isOpen ? '70%' : '0%', opacity: groupActive && !isOpen ? 1 : 0 },
+              hover: { height: '70%', opacity: 1 },
+            }}
+            style={{ background: '#00c853' }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+          />
+          <motion.span
+            className="relative z-10 flex-shrink-0"
+            variants={{
+              rest:  { scale: 1,    filter: 'drop-shadow(0 0 0px transparent)' },
+              hover: { scale: 1.15, filter: 'drop-shadow(0 0 6px rgba(63,229,108,0.7))' },
+            }}
+            transition={{ duration: 0.18 }}
+          >
+            <Icon size={20} />
+          </motion.span>
+          <motion.span
+            className="relative z-10 text-sm flex-1 text-left"
+            variants={{
+              rest:  { x: 0, color: groupActive ? '#3fe56c' : 'var(--text-3)' },
+              hover: { x: 2, color: '#3fe56c' },
+            }}
+            transition={{ duration: 0.18 }}
+          >
+            {item.label}
+          </motion.span>
+          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="relative z-10">
             <ChevronDown size={14} style={{ color: 'rgba(255,255,255,0.3)' }} />
           </motion.div>
-        </button>
+        </motion.button>
 
         <AnimatePresence initial={false}>
           {isOpen && item.children && (
@@ -137,17 +215,35 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                   const childActive = pathname.startsWith(child.href)
                   return (
                     <Link key={child.href} href={child.href}>
-                      <div
-                        className="flex items-center px-3 py-2 rounded-lg text-sm transition-all duration-200"
+                      <motion.div
+                        className="relative flex items-center px-3 py-2 rounded-lg text-sm overflow-hidden"
                         style={{
                           color:      childActive ? '#3fe56c' : 'var(--text-3)',
                           fontWeight: childActive ? 700 : 400,
-                          background: childActive ? 'rgba(0,200,83,0.08)' : 'transparent',
-                          borderLeft: childActive ? '3px solid #00c853' : '3px solid transparent',
                         }}
+                        whileHover="hover"
+                        initial="rest"
+                        animate="rest"
                       >
-                        {child.label}
-                      </div>
+                        <motion.span
+                          className="absolute inset-0 rounded-lg pointer-events-none"
+                          variants={{
+                            rest:  { scaleX: childActive ? 1 : 0, originX: 0, background: 'rgba(0,200,83,0.08)' },
+                            hover: { scaleX: 1, originX: 0, background: 'rgba(0,200,83,0.10)' },
+                          }}
+                          transition={{ duration: 0.2 }}
+                        />
+                        <motion.span
+                          className="relative z-10"
+                          variants={{
+                            rest:  { x: 0, color: childActive ? '#3fe56c' : 'var(--text-3)' },
+                            hover: { x: 2, color: '#3fe56c' },
+                          }}
+                          transition={{ duration: 0.15 }}
+                        >
+                          {child.label}
+                        </motion.span>
+                      </motion.div>
                     </Link>
                   )
                 })}
@@ -291,7 +387,13 @@ export default function AdminSidebar({ fullName, initials }: Props) {
             const Icon   = item.icon
             return (
               <Link key={item.href} href={item.href} className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 relative">
-                <Icon size={20} style={{ color: active ? '#3fe56c' : 'var(--text-3)' }} />
+                <motion.div
+                  whileTap={{ scale: 0.82 }}
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                >
+                  <Icon size={20} style={{ color: active ? '#3fe56c' : 'var(--text-3)' }} />
+                </motion.div>
                 <span className="text-[9px] font-bold leading-none" style={{ color: active ? '#4ade80' : 'rgba(255,255,255,0.4)' }}>
                   {item.label}
                 </span>

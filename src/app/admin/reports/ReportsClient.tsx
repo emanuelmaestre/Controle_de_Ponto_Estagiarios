@@ -288,7 +288,7 @@ export default function ReportsClient() {
 
       {/* ── TopAppBar ── */}
       <header
-        className="no-print flex items-center justify-between px-6 h-16 flex-shrink-0"
+        className="no-print flex items-center justify-between px-4 sm:px-6 h-14 sm:h-16 flex-shrink-0"
         style={{ background: 'var(--bg)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}
       >
         <div className="flex items-center gap-4">
@@ -311,10 +311,10 @@ export default function ReportsClient() {
 
       {/* ── Main content ── */}
       <main className="flex-1 min-h-0 overflow-y-auto">
-        <div className="p-6 space-y-8" style={{ maxWidth: 1400, margin: '0 auto' }}>
+        <div className="p-4 sm:p-6 space-y-6 sm:space-y-8" style={{ maxWidth: 1400, margin: '0 auto' }}>
 
           {/* ── Filters & export row ── */}
-          <section className="no-print flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <section className="no-print flex flex-col gap-4">
             <div className="space-y-3">
               <p className="text-[10px] font-bold tracking-widest" style={{ color: 'var(--text-3)' }}>
                 PERÍODO DO RELATÓRIO
@@ -322,14 +322,14 @@ export default function ReportsClient() {
 
               {/* Period type tabs - contained group */}
               <div
-                className="flex p-1 rounded-lg w-fit"
-                style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+                className="flex p-1 rounded-lg overflow-x-auto"
+                style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)', scrollbarWidth: 'none' }}
               >
                 {(['daily', 'weekly', 'monthly', 'custom'] as PeriodType[]).map(t => (
                   <button
                     key={t}
                     onClick={() => setPeriodType(t)}
-                    className="px-5 py-2 text-sm font-medium rounded-md transition-all"
+                    className="px-3 sm:px-5 py-2 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap flex-shrink-0"
                     style={periodType === t
                       ? { background: 'rgba(0,200,83,0.20)', color: '#84c48a', fontWeight: 700 }
                       : { color: 'var(--text-3)' }
@@ -341,7 +341,7 @@ export default function ReportsClient() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-end gap-3">
               {/* Period-specific picker */}
               <div className="flex flex-col gap-1.5">
                 {periodType !== 'custom' && (
@@ -383,7 +383,7 @@ export default function ReportsClient() {
               </div>
 
               {/* Export buttons — outline style matching reference */}
-              <div className="flex items-center gap-2 mt-auto">
+              <div className="flex items-center gap-2 mt-auto overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
                 <button
                   onClick={async () => {
                     if (!exportData.length) return
@@ -547,7 +547,7 @@ export default function ReportsClient() {
               </div>
 
               {data.interns.length > 0 ? (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr style={{ background: 'rgba(0,0,0,0.20)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>

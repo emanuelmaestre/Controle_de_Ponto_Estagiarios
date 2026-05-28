@@ -46,7 +46,7 @@ export default async function AdminPage() {
       {/* ── TopAppBar ──────────────────────────────── */}
       <FadeIn delay={0}>
         <header
-          className="flex items-center justify-between px-6 h-16 flex-shrink-0"
+          className="flex items-center justify-between px-4 sm:px-6 h-14 sm:h-16 flex-shrink-0"
           style={{ background: 'var(--bg)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}
         >
           <div className="flex items-center gap-4 flex-1">
@@ -75,16 +75,16 @@ export default async function AdminPage() {
       </FadeIn>
 
       {/* ── Main content ───────────────────────────── */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-6" style={{ maxWidth: 1400, margin: '0 auto', width: '100%' }}>
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6" style={{ maxWidth: 1400, margin: '0 auto', width: '100%' }}>
 
         {/* Header section */}
         <FadeIn delay={0.04}>
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-start sm:items-center justify-between gap-3 mb-6 sm:mb-8">
             <div>
-              <h3 className="text-3xl font-semibold" style={{ color: 'var(--text)' }}>
+              <h3 className="text-xl sm:text-3xl font-semibold" style={{ color: 'var(--text)' }}>
                 Visão Geral Operacional
               </h3>
-              <p className="text-base mt-1 preserve-case" style={{ color: 'var(--text-3)' }}>
+              <p className="text-sm mt-1 preserve-case hidden sm:block" style={{ color: 'var(--text-3)' }}>
                 Monitoramento em tempo real do pessoal do Chronos Lab.
               </p>
             </div>
@@ -100,7 +100,7 @@ export default async function AdminPage() {
         </FadeIn>
 
         {/* ── Metrics Bento ─────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {/* Total de Estagiários */}
           <FadeIn delay={0.08}>
             <HoverLift>
@@ -209,8 +209,8 @@ export default async function AdminPage() {
 
         {/* ── Lista de Estagiários ────────────────── */}
         <FadeIn delay={0.20}>
-          <div className="flex items-center justify-between mb-6">
-            <h4 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h4 className="text-lg sm:text-2xl font-semibold" style={{ color: 'var(--text)' }}>
               Lista de Estagiários
             </h4>
             <Link
@@ -227,7 +227,7 @@ export default async function AdminPage() {
         </FadeIn>
 
         {interns && interns.length > 0 ? (
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 pb-4">
+          <StaggerContainer className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 pb-4">
             {interns.map((intern, idx) => {
               const cfg = statusCfg[intern.today_status] ?? statusCfg.ausente
               const initials = intern.full_name.split(' ').slice(0, 2).map((w: string) => w[0]).join('')
@@ -237,38 +237,38 @@ export default async function AdminPage() {
                   <HoverLift className="h-full">
                   <Link
                     href={`/admin/interns/${intern.id}`}
-                    className="group block p-5 rounded-xl transition-all duration-200 h-full"
+                    className="group block p-3 sm:p-5 rounded-xl transition-all duration-200 h-full"
                     style={{
                       background: 'var(--surface-card, #0f2318)',
                       border: '1px solid rgba(0,200,83,0.15)',
                     }}
                   >
                     {/* Top: avatar + name + status */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                         {intern.photo_url ? (
                           <img
                             src={intern.photo_url}
                             alt={intern.full_name}
-                            className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                            className="w-9 h-9 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0"
                             style={{ border: `1px solid ${ac.border}` }}
                           />
                         ) : (
                           <div
-                            className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0"
+                            className="w-9 h-9 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-bold text-sm sm:text-lg flex-shrink-0"
                             style={{ background: ac.bg, border: `1px solid ${ac.border}`, color: ac.text }}
                           >
                             {initials}
                           </div>
                         )}
-                        <div>
-                          <h5 className="text-base font-bold preserve-case" style={{ color: 'var(--text)' }}>
+                        <div className="min-w-0">
+                          <h5 className="text-xs sm:text-base font-bold preserve-case leading-tight line-clamp-2" style={{ color: 'var(--text)' }}>
                             {intern.full_name}
                           </h5>
                         </div>
                       </div>
                       <span
-                        className="text-[10px] font-bold px-2 py-0.5 rounded flex-shrink-0"
+                        className="text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded flex-shrink-0 ml-1"
                         style={{
                           background: cfg.bg,
                           border: `1px solid ${cfg.border}`,

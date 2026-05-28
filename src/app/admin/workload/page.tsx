@@ -143,7 +143,7 @@ export default async function WorkloadPage() {
       {/* ── TopAppBar ── */}
       <FadeIn delay={0}>
         <header
-          className="flex items-center justify-between px-6 h-16 flex-shrink-0"
+          className="flex items-center justify-between px-4 sm:px-6 h-14 sm:h-16 flex-shrink-0"
           style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}
         >
           <h2 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
