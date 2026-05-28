@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import MobileOnlyGuard from '@/components/MobileOnlyGuard'
 import { formatTime, minutesToHours } from '@/lib/utils'
 import ClockButton from '@/components/ClockButton'
 import SelfieGate from '@/components/SelfieGate'
@@ -130,6 +131,7 @@ export default async function DashboardPage() {
   const dateStr = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()
 
   return (
+    <MobileOnlyGuard>
     <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
       <SelfieGate hasPhoto={!!profile?.photo_url} internId={user.id} />
 
@@ -381,5 +383,6 @@ export default async function DashboardPage() {
         </div>
       </nav>
     </div>
+    </MobileOnlyGuard>
   )
 }

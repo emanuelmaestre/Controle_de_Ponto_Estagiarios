@@ -1,6 +1,7 @@
 ﻿import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import MobileOnlyGuard from '@/components/MobileOnlyGuard'
 import { formatDate, formatTime, minutesToHours } from '@/lib/utils'
 import StatusBadge from '@/components/StatusBadge'
 import ProgressRing from '@/components/ui/ProgressRing'
@@ -66,6 +67,7 @@ export default async function HistoryPage() {
   }
 
   return (
+    <MobileOnlyGuard>
     <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
       <header className="flex-shrink-0 shadow-lg" style={{ background: 'var(--nav-bg)' }}>
         <div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-4">
@@ -182,5 +184,6 @@ export default async function HistoryPage() {
         </div>
       </nav>
     </div>
+    </MobileOnlyGuard>
   )
 }
