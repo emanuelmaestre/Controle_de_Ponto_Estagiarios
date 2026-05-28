@@ -144,7 +144,7 @@ export default function IntegrationsTab() {
             <motion.div animate={loading ? { rotate: 360 } : { rotate: 0 }} transition={{ duration: 1, repeat: loading ? Infinity : 0, ease: 'linear' }}>
               <RefreshCw size={13} />
             </motion.div>
-            ESCANEAR NÓS NOVAMENTE
+            ATUALIZAR
           </button>
         </div>
 
@@ -161,17 +161,18 @@ export default function IntegrationsTab() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.07 }}
-                className="rounded-xl p-6 transition-all"
+                className="rounded-xl p-5 flex flex-col transition-all"
                 style={{
                   background: 'var(--surface-card, #0f2318)',
                   border: '1px solid rgba(0,200,83,0.15)',
                   opacity: isOffline ? 0.85 : 1,
+                  minHeight: 200,
                 }}
               >
                 {/* Top: icon + badge */}
-                <div className="flex items-start justify-between mb-6">
+                <div className="flex items-start justify-between mb-4">
                   <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                    className="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
                     style={{
                       background: 'var(--bg)',
                       border: '1px solid rgba(0,200,83,0.15)',
@@ -200,22 +201,24 @@ export default function IntegrationsTab() {
                   </AnimatePresence>
                 </div>
 
-                {/* Name + description */}
-                <h4 className="font-bold text-lg mb-1" style={{ color: 'var(--text)' }}>{svc.label}</h4>
-                <p className="text-sm mb-6" style={{ color: 'var(--text-3)' }}>{svc.description}</p>
+                {/* Name + description — flex-1 empurra os dados para baixo */}
+                <div className="flex-1">
+                  <h4 className="font-bold text-base mb-1" style={{ color: 'var(--text)' }}>{svc.label}</h4>
+                  <p className="text-sm" style={{ color: 'var(--text-3)', lineHeight: 1.4 }}>{svc.description}</p>
+                </div>
 
-                {/* Version + Latency */}
-                <div className="space-y-3">
-                  <div className="flex justify-between text-[11px]">
-                    <span className="font-bold tracking-wider uppercase" style={{ color: 'var(--text-3)' }}>Versão</span>
+                {/* Divisória */}
+                <div className="my-4" style={{ height: 1, background: 'rgba(0,200,83,0.10)' }} />
+
+                {/* Version + Latency — sempre na base */}
+                <div className="space-y-2.5">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="font-bold tracking-widest uppercase" style={{ color: 'var(--text-3)' }}>Versão</span>
                     <span className="font-mono font-bold" style={{ color: 'var(--text)' }}>{svc.version}</span>
                   </div>
-                  <div className="flex justify-between text-[11px]">
-                    <span className="font-bold tracking-wider uppercase" style={{ color: 'var(--text-3)' }}>Latência</span>
-                    <span
-                      className="font-mono font-bold"
-                      style={{ color: isOffline ? '#ff5252' : '#3fe56c' }}
-                    >
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="font-bold tracking-widest uppercase" style={{ color: 'var(--text-3)' }}>Latência</span>
+                    <span className="font-mono font-bold" style={{ color: isOffline ? '#ff5252' : st === 'checking' ? 'var(--text-3)' : '#3fe56c' }}>
                       {st === 'checking' ? '…' : (lat ?? 'N/A')}
                     </span>
                   </div>
