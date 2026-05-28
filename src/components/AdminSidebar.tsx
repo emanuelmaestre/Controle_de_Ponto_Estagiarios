@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, TrendingUp, BarChart2, Settings,
-  LogOut, Users, ChevronDown, X,
+  LogOut, Users, ChevronDown, X, Trophy,
 } from 'lucide-react'
 
 interface Props {
@@ -24,19 +24,21 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: '/admin',           label: 'Painel',           icon: LayoutDashboard, end: true },
-  { href: '/admin/interns', label: 'Cadastros', icon: Users },
-  { href: '/admin/workload',  label: 'Carga de Trabalho', icon: TrendingUp },
-  { href: '/admin/reports',   label: 'Relatórios',        icon: BarChart2 },
-  { href: '/admin/settings',  label: 'Configurações',     icon: Settings },
+  { href: '/admin',            label: 'Painel',           icon: LayoutDashboard, end: true },
+  { href: '/admin/interns',    label: 'Cadastros',        icon: Users },
+  { href: '/admin/workload',   label: 'Carga de Trabalho',icon: TrendingUp },
+  { href: '/admin/reports',    label: 'Relatórios',       icon: BarChart2 },
+  { href: '/admin/ranking',    label: 'Ranking',          icon: Trophy },
+  { href: '/admin/settings',   label: 'Configurações',    icon: Settings },
 ]
 
 const MOBILE_NAV = [
-  { href: '/admin',           label: 'Painel',      icon: LayoutDashboard, end: true },
-  { href: '/admin/interns',   label: 'Cadastros',   icon: Users },
-  { href: '/admin/workload',  label: 'Carga',       icon: TrendingUp },
-  { href: '/admin/reports',   label: 'Relatórios',  icon: BarChart2 },
-  { href: '/admin/settings',  label: 'Config',      icon: Settings },
+  { href: '/admin',            label: 'Painel',      icon: LayoutDashboard, end: true },
+  { href: '/admin/interns',    label: 'Cadastros',   icon: Users },
+  { href: '/admin/workload',   label: 'Carga',       icon: TrendingUp },
+  { href: '/admin/reports',    label: 'Relatórios',  icon: BarChart2 },
+  { href: '/admin/ranking',    label: 'Ranking',     icon: Trophy },
+  { href: '/admin/settings',   label: 'Config',      icon: Settings },
 ]
 
 const AVATAR_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#10b981','#f59e0b','#06b6d4']
