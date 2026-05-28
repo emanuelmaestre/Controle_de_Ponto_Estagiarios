@@ -6,7 +6,10 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { CheckCircle2, AlertTriangle, Loader2, Camera, Key, Mail, Lock, ChevronDown, GraduationCap } from 'lucide-react'
+import {
+  CheckCircle2, AlertTriangle, Loader2, Camera, Key,
+  Mail, Lock, Save, Send, RotateCcw,
+} from 'lucide-react'
 import { internSchema } from '@/lib/validations'
 import type { Profile } from '@/types/database'
 import DatePicker from '@/components/ui/DatePicker'
@@ -27,32 +30,104 @@ interface Props {
   intern?: Profile
 }
 
+/* ── Toggle iOS ─────────────────────────────────────── */
+function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!checked)}
+      className="relative flex-shrink-0 rounded-full transition-all duration-200"
+      style={{
+        width: 44, height: 24,
+        background: checked ? '#3fe56c' : 'rgba(0,200,83,0.15)',
+        border: checked ? '1px solid #3fe56c' : '1px solid rgba(0,200,83,0.25)',
+      }}
+    >
+      <motion.div
+        animate={{ x: checked ? 20 : 2 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        className="absolute top-0.5 w-5 h-5 rounded-full"
+        style={{ background: checked ? '#003912' : 'rgba(255,255,255,0.4)' }}
+      />
+    </button>
+  )
+}
+
+/* ── Input field ─────────────────────────────────────── */
+function Field({
+  label, error, children,
+}: { label: string; error?: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1">
+      <label className="block text-[10px] font-bold tracking-wider uppercase" style={{ color: 'var(--text-3)' }}>
+        {label}
+      </label>
+      {children}
+      {error && <p className="text-[10px]" style={{ color: 'var(--danger)' }}>{error}</p>}
+    </div>
+  )
+}
+
+function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <input
+      {...props}
+      className="w-full px-4 py-3 rounded-lg text-sm focus:outline-none transition-all"
+      style={{ background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text)' }}
+      onFocus={e => (e.target.style.borderColor = '#00c853')}
+      onBlur={e  => (e.target.style.borderColor = 'rgba(0,200,83,0.15)')}
+    />
+  )
+}
+
+/* ── Card wrapper ─────────────────────────────────────── */
+function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div
+      className={`rounded-xl p-6 ${className}`}
+      style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+    >
+      {children}
+    </div>
+  )
+}
+
+function CardTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[10px] font-bold tracking-widest uppercase mb-4" style={{ color: '#3fe56c' }}>
+      {children}
+    </p>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════ */
 export default function InternForm({ mode, intern }: Props) {
   const router = useRouter()
   const supabase = createSupabaseBrowserClient()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError]     = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
-  // Photo upload state
-  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoFile, setPhotoFile]     = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(intern?.photo_url ?? null)
   const [notifyEmail, setNotifyEmail] = useState(false)
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<InternFormValues>({
+  const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<InternFormValues>({
     resolver: zodResolver(internSchema),
-    defaultValues: intern ? {
-      full_name: intern.full_name,
-      email: intern.email,
-      nickname: intern.nickname ?? '',
-      course: intern.course ?? '',
-      internship_start: intern.internship_start ?? '',
-      internship_end: intern.internship_end ?? '',
-      is_active: intern.is_active,
-    } : {
-      is_active: true,
-    },
+    defaultValues: intern
+      ? {
+          full_name:        intern.full_name,
+          email:            intern.email,
+          nickname:         intern.nickname ?? '',
+          course:           intern.course ?? '',
+          internship_start: intern.internship_start ?? '',
+          internship_end:   intern.internship_end ?? '',
+          is_active:        intern.is_active,
+        }
+      : { is_active: true },
   })
+
+  const isActive = watch('is_active')
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -62,18 +137,13 @@ export default function InternForm({ mode, intern }: Props) {
   }
 
   const onSubmit = async (data: InternFormValues) => {
-    setLoading(true)
-    setError(null)
-    setSuccess(null)
+    setLoading(true); setError(null); setSuccess(null)
 
-    // Upload photo if selected
     let photoUrl: string | null = intern?.photo_url ?? null
     if (photoFile) {
-      const ext = photoFile.name.split('.').pop()
+      const ext  = photoFile.name.split('.').pop()
       const path = `avatars/${Date.now()}.${ext}`
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(path, photoFile, { upsert: true })
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(path, photoFile, { upsert: true })
       if (!uploadError) {
         const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
         photoUrl = urlData.publicUrl
@@ -81,243 +151,259 @@ export default function InternForm({ mode, intern }: Props) {
     }
 
     if (mode === 'create') {
-      const res = await fetch('/api/admin/create-intern', {
+      const res  = await fetch('/api/admin/create-intern', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...data, nickname: data.nickname || null, photo_url: photoUrl }),
       })
       const json = await res.json()
-      if (!res.ok) {
-        setError(json.error ?? 'Erro ao cadastrar.')
-        setLoading(false)
-        return
-      }
+      if (!res.ok) { setError(json.error ?? 'Erro ao cadastrar.'); setLoading(false); return }
       setSuccess('Estagiário cadastrado! Um e-mail de boas-vindas foi enviado.')
       setTimeout(() => router.push('/admin/interns'), 1500)
     } else if (intern) {
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({
-          full_name: data.full_name,
-          email: data.email,
-          nickname: data.nickname || null,
-          course: data.course || null,
-          internship_start: data.internship_start || null,
-          internship_end: data.internship_end || null,
-          is_active: data.is_active,
-          ...(photoUrl !== null ? { photo_url: photoUrl } : {}),
-        })
-        .eq('id', intern.id)
+      const { error: updateError } = await supabase.from('profiles').update({
+        full_name:        data.full_name,
+        email:            data.email,
+        nickname:         data.nickname || null,
+        course:           data.course   || null,
+        internship_start: data.internship_start || null,
+        internship_end:   data.internship_end   || null,
+        is_active:        data.is_active,
+        ...(photoUrl !== null ? { photo_url: photoUrl } : {}),
+      }).eq('id', intern.id)
 
-      if (updateError) {
-        setError('Erro ao salvar alterações.')
-      } else {
-        setSuccess('Dados atualizados com sucesso!')
-        router.refresh()
-      }
+      if (updateError) setError('Erro ao salvar alterações.')
+      else { setSuccess('Dados atualizados com sucesso!'); router.refresh() }
     }
     setLoading(false)
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+
+      {/* ── Feedback ── */}
       <AnimatePresence>
         {error && (
-          <motion.div
-            key="error"
-            initial={{ opacity: 0, height: 0, scale: 0.96 }}
-            animate={{ opacity: 1, height: 'auto', scale: 1 }}
-            exit={{ opacity: 0, height: 0, scale: 0.96 }}
-            transition={{ duration: 0.2 }}
-            className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3"
+          <motion.div key="err"
+            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+            className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm"
+            style={{ background: 'rgba(255,82,82,0.08)', border: '1px solid rgba(255,82,82,0.2)', color: 'var(--danger)' }}
           >
             <AlertTriangle size={14} className="flex-shrink-0" /> {error}
           </motion.div>
         )}
         {success && (
-          <motion.div
-            key="success"
-            initial={{ opacity: 0, height: 0, scale: 0.96 }}
-            animate={{ opacity: 1, height: 'auto', scale: 1 }}
-            exit={{ opacity: 0, height: 0, scale: 0.96 }}
-            transition={{ duration: 0.2 }}
-            className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3"
+          <motion.div key="ok"
+            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+            className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm"
+            style={{ background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.2)', color: 'var(--success)' }}
           >
             <CheckCircle2 size={14} className="flex-shrink-0" /> {success}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Foto de perfil */}
-      <div className="rounded-2xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--text)' }}>Foto de Perfil</h3>
-        <div className="flex flex-col items-center gap-3">
+      {/* ── 1. Imagem de Identificação ── */}
+      <Card className="flex items-center gap-8 group hover:border-primary/30 transition-all duration-300">
+        {/* Avatar circle */}
+        <label className="relative flex-shrink-0 cursor-pointer">
           <div
-            className="relative w-24 h-24 rounded-2xl overflow-hidden flex items-center justify-center"
-            style={{ background: 'var(--bg)', border: '2px dashed var(--border)' }}
+            className="w-32 h-32 rounded-full flex flex-col items-center justify-center overflow-hidden transition-all"
+            style={{
+              border: '2px dashed rgba(0,200,83,0.35)',
+              background: 'var(--bg)',
+            }}
           >
             {photoPreview ? (
-              <img src={photoPreview} alt="Pré-visualização" className="w-full h-full object-cover" />
+              <img src={photoPreview} alt="Prévia" className="w-full h-full object-cover" />
             ) : (
-              <Camera size={28} style={{ color: 'var(--text-3)', opacity: 0.5 }} />
+              <>
+                <Camera size={32} style={{ color: 'var(--text-3)' }} />
+                <span className="text-[9px] font-bold tracking-wider mt-1.5 uppercase" style={{ color: 'var(--text-3)' }}>
+                  CARREGAR FOTO
+                </span>
+              </>
             )}
           </div>
-          <label className="cursor-pointer text-sm font-bold hover:opacity-70 transition-opacity" style={{ color: 'var(--primary)' }}>
-            {photoPreview ? 'Trocar foto' : 'Adicionar foto'}
-            <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
-          </label>
+          <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+        </label>
+
+        {/* Info */}
+        <div className="flex-1">
+          <h4 className="text-2xl font-semibold mb-2" style={{ color: 'var(--text)' }}>
+            Imagem de Identificação
+          </h4>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-3)', maxWidth: 400 }}>
+            Carregue um retrato de alta resolução para a identidade digital do estagiário.
+            Tamanho recomendado: 400×400px. Formatos suportados: JPG, PNG.
+          </p>
         </div>
-      </div>
+      </Card>
 
-      {/* Dados Pessoais */}
-      <div className="rounded-2xl p-5 space-y-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Dados Pessoais</h3>
+      {/* ── 2. Grid: Dados Pessoais + Linha do Tempo Acadêmica ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        <div>
-          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>Nome completo *</label>
-          <input
-            {...register('full_name')}
-            type="text"
-            placeholder="Ex: Miltão Rei da Galáxia"
-            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
-            style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
-          />
-          {errors.full_name && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.full_name.message}</p>}
-        </div>
+        {/* Dados Pessoais */}
+        <Card className="space-y-4">
+          <CardTitle>Dados Pessoais</CardTitle>
 
-        <div>
-          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>Apelido</label>
-          <input
-            {...register('nickname')}
-            type="text"
-            placeholder="Ex: Miltinho"
-            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
-            style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
-          />
-          {errors.nickname && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.nickname.message}</p>}
-        </div>
+          <Field label="Nome Completo" error={errors.full_name?.message}>
+            <Input {...register('full_name')} placeholder="ex: Alan Turing" />
+          </Field>
 
-        <div>
-          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>E-mail *</label>
-          <input
-            {...register('email')}
-            type="email"
-            placeholder="Ex: milton@exemplo.com"
-            className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
-            style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
-          />
-          {errors.email && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.email.message}</p>}
-        </div>
+          <Field label="Apelido" error={errors.nickname?.message}>
+            <Input {...register('nickname')} placeholder="Como prefere ser chamado" />
+          </Field>
 
-        <div>
-          <label className="block text-xs font-bold mb-1.5 flex items-center gap-1.5" style={{ color: 'var(--text-2)' }}>
-            <GraduationCap size={12} style={{ color: 'var(--primary)' }} /> Graduação
-          </label>
-          <Controller
-            name="course"
-            control={control}
-            render={({ field }) => (
-              <CourseSelect value={field.value ?? ''} onChange={field.onChange} />
-            )}
-          />
-          {errors.course && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.course.message}</p>}
-        </div>
-      </div>
+          <Field label="Endereço de E-mail" error={errors.email?.message}>
+            <Input {...register('email')} type="email" placeholder="estagiario@chronoslab.com" />
+          </Field>
+        </Card>
 
-      {/* Período do estágio */}
-      <div className="rounded-2xl p-5 space-y-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Período do Estágio</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-bold mb-1.5" style={{ color: 'var(--text-2)' }}>Data de início</label>
+        {/* Linha do Tempo Acadêmica */}
+        <Card className="space-y-4">
+          <CardTitle>Linha do Tempo Acadêmica</CardTitle>
+
+          <Field label="Curso de Graduação" error={errors.course?.message}>
             <Controller
-              name="internship_start"
+              name="course"
+              control={control}
+              render={({ field }) => <CourseSelect value={field.value ?? ''} onChange={field.onChange} />}
+            />
+          </Field>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Data de Início" error={errors.internship_start?.message}>
+              <Controller
+                name="internship_start"
+                control={control}
+                render={({ field }) => (
+                  <DatePicker value={field.value ?? ''} onChange={field.onChange} placeholder="mm/dd/yyyy" />
+                )}
+              />
+            </Field>
+            <Field label="Data de Término" error={errors.internship_end?.message}>
+              <Controller
+                name="internship_end"
+                control={control}
+                render={({ field }) => (
+                  <DatePicker value={field.value ?? ''} onChange={field.onChange} placeholder="mm/dd/yyyy" />
+                )}
+              />
+            </Field>
+          </div>
+        </Card>
+      </div>
+
+      {/* ── 3. Grid: Preferências + Segurança ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        {/* Preferências do Sistema — col-span-2 */}
+        <Card className="md:col-span-2 space-y-4">
+          <CardTitle>Preferências do Sistema</CardTitle>
+
+          {/* Estagiário Ativo */}
+          <div
+            className="flex items-center justify-between p-4 rounded-lg"
+            style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(0,200,83,0.12)' }}
+          >
+            <div className="flex items-center gap-4">
+              <CheckCircle2 size={20} style={{ color: '#00c853', flexShrink: 0 }} />
+              <div>
+                <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>Estagiário Ativo</p>
+                <p className="text-xs" style={{ color: 'var(--text-3)' }}>
+                  Habilitar acesso aos instrumentos e logs do laboratório
+                </p>
+              </div>
+            </div>
+            <Controller
+              name="is_active"
               control={control}
               render={({ field }) => (
-                <DatePicker
-                  value={field.value ?? ''}
-                  onChange={field.onChange}
-                  placeholder="Selecionar início"
-                />
+                <Toggle checked={field.value} onChange={field.onChange} />
               )}
             />
-            {errors.internship_start && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.internship_start.message}</p>}
           </div>
+
+          {/* Receber Lembretes por E-mail */}
+          <div
+            className="flex items-center justify-between p-4 rounded-lg"
+            style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(0,200,83,0.12)' }}
+          >
+            <div className="flex items-center gap-4">
+              <Mail size={20} style={{ color: '#48e1a6', flexShrink: 0 }} />
+              <div>
+                <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>Receber Lembretes por E-mail</p>
+                <p className="text-xs" style={{ color: 'var(--text-3)' }}>
+                  Resumos semanais e notificações de turno
+                </p>
+              </div>
+            </div>
+            <Toggle checked={notifyEmail} onChange={setNotifyEmail} />
+          </div>
+        </Card>
+
+        {/* Segurança — col-span-1 */}
+        <Card className="flex flex-col justify-between">
           <div>
-            <label className="block text-xs font-bold mb-1.5" style={{ color: 'var(--text-2)' }}>Data de término</label>
-            <Controller
-              name="internship_end"
-              control={control}
-              render={({ field }) => (
-                <DatePicker
-                  value={field.value ?? ''}
-                  onChange={field.onChange}
-                  placeholder="Selecionar término"
-                />
-              )}
-            />
-            {errors.internship_end && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.internship_end.message}</p>}
+            <CardTitle>Segurança</CardTitle>
+            <p className="text-xs mb-6" style={{ color: 'var(--text-3)' }}>
+              Gerenciar credenciais de login e chaves de acesso ao sistema.
+            </p>
           </div>
-        </div>
+
+          {mode === 'edit' && intern ? (
+            <SecurityButtons internId={intern.id} />
+          ) : (
+            <div className="space-y-3">
+              <button
+                type="button"
+                disabled
+                className="w-full py-2.5 rounded-lg text-[11px] font-bold tracking-wider flex items-center justify-center gap-2 opacity-40 cursor-not-allowed"
+                style={{ border: '1px solid rgba(0,200,83,0.30)', color: '#3fe56c' }}
+              >
+                <Send size={13} /> LINK POR E-MAIL
+              </button>
+              <button
+                type="button"
+                disabled
+                className="w-full py-2.5 rounded-lg text-[11px] font-bold tracking-wider flex items-center justify-center gap-2 opacity-40 cursor-not-allowed"
+                style={{ background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-2)' }}
+              >
+                <RotateCcw size={13} /> DEFINIR SENHA
+              </button>
+              <p className="text-[10px] text-center" style={{ color: 'var(--text-3)' }}>
+                Disponível após o cadastro
+              </p>
+            </div>
+          )}
+        </Card>
       </div>
 
-      {/* Configurações */}
-      <div className="rounded-2xl p-5 space-y-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Configurações</h3>
-
-        <div className="flex items-center gap-3">
-          <input
-            {...register('is_active')}
-            type="checkbox"
-            id="is_active"
-            className="w-4 h-4 rounded accent-green-500"
-          />
-          <label htmlFor="is_active" className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>
-            Estagiário ativo (pode registrar ponto)
-          </label>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            id="notify_email"
-            checked={notifyEmail}
-            onChange={e => setNotifyEmail(e.target.checked)}
-            className="w-4 h-4 rounded accent-green-500"
-          />
-          <label htmlFor="notify_email" className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>
-            Receber lembretes por e-mail
-          </label>
-        </div>
-      </div>
-
-      {/* Redefinição de senha — apenas no modo edição */}
-      {mode === 'edit' && intern && (
-        <PasswordResetSection internId={intern.id} />
-      )}
-
-      <div className="flex gap-3 pt-1">
-        <motion.button
+      {/* ── 4. Footer ── */}
+      <div
+        className="pt-6 flex items-center justify-end gap-4"
+        style={{ borderTop: '1px solid rgba(0,200,83,0.12)' }}
+      >
+        <button
           type="button"
           onClick={() => router.back()}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.97 }}
-          className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-colors"
-          style={{ border: '1px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}
+          className="px-8 py-3 rounded-lg text-sm font-medium transition-colors hover:opacity-70"
+          style={{ color: 'var(--text-3)' }}
         >
           Cancelar
-        </motion.button>
+        </button>
         <motion.button
           type="submit"
           disabled={loading}
           whileHover={{ scale: 1.02, y: -1 }}
           whileTap={{ scale: 0.97 }}
-          className="flex-1 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
-          style={{ background: 'var(--primary)', color: 'white' }}
+          className="flex items-center gap-2 px-10 py-3 rounded-lg font-bold text-sm disabled:opacity-50 transition-all"
+          style={{ background: '#3fe56c', color: '#003912', boxShadow: '0 4px 16px rgba(63,229,108,0.30)' }}
         >
           {loading
             ? <><Loader2 size={14} className="animate-spin" /> Salvando...</>
-            : mode === 'create' ? 'Cadastrar' : 'Salvar alterações'
+            : <><Save size={15} /> {mode === 'create' ? 'Salvar Perfil' : 'Salvar Perfil'}</>
           }
         </motion.button>
       </div>
@@ -325,147 +411,107 @@ export default function InternForm({ mode, intern }: Props) {
   )
 }
 
-// ── Componente de redefinição de senha ──────────────────────
-function PasswordResetSection({ internId }: { internId: string }) {
-  const [mode, setMode] = useState<'idle' | 'email' | 'manual'>('idle')
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'err'>('idle')
-  const [message, setMessage] = useState('')
+/* ── Botões de segurança (modo edição) ─────────────────── */
+function SecurityButtons({ internId }: { internId: string }) {
+  const [mode,    setMode]    = useState<'idle' | 'email' | 'manual'>('idle')
+  const [pwd,     setPwd]     = useState('')
+  const [confirm, setConfirm] = useState('')
+  const [status,  setStatus]  = useState<'idle' | 'loading' | 'ok' | 'err'>('idle')
+  const [msg,     setMsg]     = useState('')
 
   const submit = async () => {
-    if (mode === 'manual' && newPassword !== confirmPassword) {
-      setMessage('As senhas não coincidem.')
-      setStatus('err')
-      return
-    }
+    if (mode === 'manual' && pwd !== confirm) { setMsg('Senhas não coincidem.'); setStatus('err'); return }
     setStatus('loading')
-    const res = await fetch('/api/admin/reset-intern-password', {
+    const res  = await fetch('/api/admin/reset-intern-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         intern_id: internId,
         action: mode === 'email' ? 'send_reset_email' : 'set_password',
-        new_password: mode === 'manual' ? newPassword : undefined,
+        new_password: mode === 'manual' ? pwd : undefined,
       }),
     })
     const json = await res.json()
     if (res.ok) {
-      setStatus('ok')
-      setMessage(json.message || 'Concluído!')
-      setNewPassword('')
-      setConfirmPassword('')
-      setTimeout(() => { setStatus('idle'); setMode('idle'); setMessage('') }, 3000)
+      setStatus('ok'); setMsg(json.message || 'Concluído!')
+      setPwd(''); setConfirm('')
+      setTimeout(() => { setStatus('idle'); setMode('idle'); setMsg('') }, 3000)
     } else {
-      setStatus('err')
-      setMessage(json.error || 'Erro. Tente novamente.')
+      setStatus('err'); setMsg(json.error || 'Erro. Tente novamente.')
     }
   }
 
-  return (
-    <div className="rounded-2xl p-5 space-y-3" style={{ background: 'rgba(217,119,6,0.06)', border: '1px solid rgba(217,119,6,0.2)' }}>
-      <h3 className="text-sm font-bold flex items-center gap-2" style={{ color: 'var(--warning)' }}>
-        <Key size={14} /> Redefinição de Senha
-      </h3>
-      <p className="text-xs" style={{ color: 'var(--text-2)' }}>
-        Como administrador, você pode redefinir a senha do estagiário de duas formas:
-      </p>
+  if (status === 'ok') return (
+    <div className="flex items-center gap-2 text-xs px-3 py-2.5 rounded-xl"
+      style={{ background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.2)', color: 'var(--success)' }}>
+      <CheckCircle2 size={13} /> {msg}
+    </div>
+  )
 
-      {status === 'ok' && (
-        <div className="flex items-center gap-2 text-sm rounded-xl px-4 py-3" style={{ background: 'rgba(22,163,74,0.1)', color: 'var(--success)', border: '1px solid rgba(22,163,74,0.2)' }}>
-          <CheckCircle2 size={14} className="flex-shrink-0" /> {message}
-        </div>
-      )}
+  if (mode === 'idle') return (
+    <div className="space-y-3">
+      <button type="button" onClick={() => setMode('email')}
+        className="w-full py-2.5 rounded-lg text-[11px] font-bold tracking-wider flex items-center justify-center gap-2 transition-all hover:opacity-80"
+        style={{ border: '1px solid rgba(0,200,83,0.30)', color: '#3fe56c', background: 'transparent' }}>
+        <Send size={13} /> LINK POR E-MAIL
+      </button>
+      <button type="button" onClick={() => setMode('manual')}
+        className="w-full py-2.5 rounded-lg text-[11px] font-bold tracking-wider flex items-center justify-center gap-2 transition-all hover:opacity-80"
+        style={{ background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-2)' }}>
+        <RotateCcw size={13} /> DEFINIR SENHA
+      </button>
+    </div>
+  )
+
+  if (mode === 'email') return (
+    <div className="space-y-3">
       {status === 'err' && (
-        <div className="flex items-center gap-2 text-sm rounded-xl px-4 py-3" style={{ background: 'rgba(239,68,68,0.1)', color: 'var(--danger)', border: '1px solid rgba(239,68,68,0.2)' }}>
-          <AlertTriangle size={14} className="flex-shrink-0" /> {message}
-        </div>
+        <p className="text-[10px]" style={{ color: 'var(--danger)' }}>{msg}</p>
       )}
+      <p className="text-xs" style={{ color: 'var(--text-3)' }}>
+        Um e-mail com link de redefinição será enviado ao estagiário.
+      </p>
+      <div className="flex gap-2">
+        <button type="button" onClick={() => setMode('idle')}
+          className="flex-1 py-2 rounded-lg text-[10px] font-bold transition-colors"
+          style={{ border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-3)' }}>
+          Cancelar
+        </button>
+        <button type="button" onClick={submit} disabled={status === 'loading'}
+          className="flex-1 py-2 rounded-lg text-[10px] font-bold transition-colors disabled:opacity-50"
+          style={{ background: '#3fe56c', color: '#003912' }}>
+          {status === 'loading' ? 'Enviando...' : 'Enviar'}
+        </button>
+      </div>
+    </div>
+  )
 
-      {mode === 'idle' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex gap-2 flex-wrap"
-        >
-          {[
-            { label: 'Enviar link por e-mail', icon: <Mail size={13} />, onClick: () => setMode('email') },
-            { label: 'Definir nova senha', icon: <Lock size={13} />, onClick: () => setMode('manual') },
-          ].map(({ label, icon, onClick }) => (
-            <motion.button
-              key={label}
-              type="button"
-              onClick={onClick}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.96 }}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl transition-colors"
-              style={{ background: 'var(--surface)', border: '1px solid rgba(217,119,6,0.25)', color: 'var(--warning)' }}
-            >
-              {icon} {label}
-            </motion.button>
-          ))}
-        </motion.div>
+  return (
+    <div className="space-y-2">
+      {status === 'err' && (
+        <p className="text-[10px]" style={{ color: 'var(--danger)' }}>{msg}</p>
       )}
-
-      {mode === 'email' && (
-        <div className="space-y-3">
-          <p className="text-xs" style={{ color: 'var(--text-2)' }}>
-            Um e-mail com link de redefinição será enviado ao estagiário.
-          </p>
-          <div className="flex gap-2">
-            <button type="button" onClick={() => setMode('idle')}
-              className="px-4 py-2 rounded-xl text-xs font-bold transition-colors"
-              style={{ border: '1px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}>
-              Cancelar
-            </button>
-            <button type="button" onClick={submit} disabled={status === 'loading'}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-white disabled:opacity-50 transition-colors"
-              style={{ background: 'var(--warning)' }}>
-              {status === 'loading' ? 'Enviando...' : 'Enviar e-mail'}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {mode === 'manual' && (
-        <div className="space-y-3">
-          <div>
-            <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>Nova senha</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-              placeholder="Mínimo 6 caracteres"
-              className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
-              style={{ background: 'var(--bg)', border: '1px solid rgba(217,119,6,0.3)', color: 'var(--text)' }}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>Confirmar nova senha</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-              placeholder="Repita a senha"
-              className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none"
-              style={{ background: 'var(--bg)', border: '1px solid rgba(217,119,6,0.3)', color: 'var(--text)' }}
-            />
-          </div>
-          <div className="flex gap-2">
-            <button type="button" onClick={() => { setMode('idle'); setNewPassword(''); setConfirmPassword('') }}
-              className="px-4 py-2 rounded-xl text-xs font-bold transition-colors"
-              style={{ border: '1px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}>
-              Cancelar
-            </button>
-            <button type="button" onClick={submit}
-              disabled={status === 'loading' || newPassword.length < 6 || newPassword !== confirmPassword}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-white disabled:opacity-50 transition-colors"
-              style={{ background: 'var(--warning)' }}>
-              {status === 'loading' ? 'Salvando...' : 'Salvar nova senha'}
-            </button>
-          </div>
-        </div>
-      )}
+      <input type="password" value={pwd} onChange={e => setPwd(e.target.value)}
+        placeholder="Nova senha (mín. 6 chars)"
+        className="w-full px-3 py-2 rounded-lg text-xs focus:outline-none"
+        style={{ background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.20)', color: 'var(--text)' }} />
+      <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)}
+        placeholder="Confirmar senha"
+        className="w-full px-3 py-2 rounded-lg text-xs focus:outline-none"
+        style={{ background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.20)', color: 'var(--text)' }} />
+      <div className="flex gap-2">
+        <button type="button" onClick={() => { setMode('idle'); setPwd(''); setConfirm('') }}
+          className="flex-1 py-2 rounded-lg text-[10px] font-bold"
+          style={{ border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-3)' }}>
+          Cancelar
+        </button>
+        <button type="button" onClick={submit}
+          disabled={status === 'loading' || pwd.length < 6 || pwd !== confirm}
+          className="flex-1 py-2 rounded-lg text-[10px] font-bold disabled:opacity-40"
+          style={{ background: '#3fe56c', color: '#003912' }}>
+          {status === 'loading' ? 'Salvando...' : 'Salvar'}
+        </button>
+      </div>
     </div>
   )
 }
