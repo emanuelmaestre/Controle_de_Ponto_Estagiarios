@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Check, Sprout, Tractor, Dna, FlaskConical, Microscope, Trees } from 'lucide-react'
 
@@ -137,8 +138,9 @@ export default function CourseSelect({ value, onChange }: Props) {
         </motion.span>
       </motion.button>
 
-      {/* Dropdown */}
-      <AnimatePresence>
+      {/* Dropdown — Portal para escapar de qualquer stacking context */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
         {open && (
           <motion.div
             initial={{ opacity: 0, y: -8, scale: 0.97 }}
@@ -150,12 +152,12 @@ export default function CourseSelect({ value, onChange }: Props) {
               top: dropPos.top,
               left: dropPos.left,
               width: dropPos.width || '100%',
-              zIndex: 9999,
+              zIndex: 99999,
               borderRadius: 14,
               overflow: 'hidden',
-              background: 'var(--surface, #0f2318)',
-              border: '1.5px solid var(--border)',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+              background: '#0f2318',
+              border: '1.5px solid rgba(0,200,83,0.25)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.8)',
             }}
           >
             {COURSES.map((course, i) => {
@@ -220,7 +222,9 @@ export default function CourseSelect({ value, onChange }: Props) {
             })}
           </motion.div>
         )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   )
 }
