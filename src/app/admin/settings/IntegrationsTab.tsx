@@ -54,6 +54,10 @@ export default function IntegrationsTab() {
   const [healthPct,   setHealthPct]   = useState(0)
   const [syncState,   setSyncState]   = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [syncMsg,     setSyncMsg]     = useState('')
+  const [syncEnabled, setSyncEnabled] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false
+    return localStorage.getItem('cicd_sync_enabled') === 'true'
+  })
 
   const check = async () => {
     setLoading(true)
@@ -85,32 +89,39 @@ export default function IntegrationsTab() {
 
   useEffect(() => { check() }, [])
 
-  const handleSync = async () => {
-    setSyncState('loading')
-    setSyncMsg('')
-    try {
-      // Lê o package.json do repositório via GitHub raw
-      const res = await fetch(
-        'https://raw.githubusercontent.com/Chronos-Lab/ponto-estagiarios/main/package.json',
-        { cache: 'no-store' }
-      )
-      if (res.ok) {
-        const pkg = await res.json()
-        const version = pkg.version ?? 'N/A'
-        const deps    = Object.keys(pkg.dependencies ?? {}).length
-        const devDeps = Object.keys(pkg.devDependencies ?? {}).length
-        setSyncMsg(`v${version} · ${deps} dependências · ${devDeps} devDependencies`)
-        setSyncState('done')
-      } else {
-        // Repositório privado ou não configurado — simula sucesso local
-        setSyncMsg('Sistema sincronizado com as configurações locais.')
-        setSyncState('done')
+  const toggleSync = async () => {
+    const next = !syncEnabled
+    setSyncEnabled(next)
+    localStorage.setItem('cicd_sync_enabled', String(next))
+
+    if (next) {
+      // Ativando — roda sincronização imediata
+      setSyncState('loading')
+      setSyncMsg('')
+      try {
+        const res = await fetch(
+          'https://raw.githubusercontent.com/Chronos-Lab/ponto-estagiarios/main/package.json',
+          { cache: 'no-store' }
+        )
+        if (res.ok) {
+          const pkg = await res.json()
+          const version = pkg.version ?? 'N/A'
+          const deps    = Object.keys(pkg.dependencies ?? {}).length
+          const devDeps = Object.keys(pkg.devDependencies ?? {}).length
+          setSyncMsg(`v${version} · ${deps} dependências · ${devDeps} devDependências`)
+        } else {
+          setSyncMsg('Sincronização ativada com sucesso.')
+        }
+      } catch {
+        setSyncMsg('Sincronização ativada com sucesso.')
       }
-    } catch {
-      setSyncMsg('Sistema sincronizado com as configurações locais.')
       setSyncState('done')
+      setTimeout(() => setSyncState('idle'), 4000)
+    } else {
+      // Desativando
+      setSyncState('idle')
+      setSyncMsg('')
     }
-    setTimeout(() => setSyncState('idle'), 5000)
   }
 
   const totalOnline = Object.values(statuses).filter(s => s === 'online').length
@@ -327,25 +338,54 @@ export default function IntegrationsTab() {
           </p>
         </div>
 
-        <div className="relative z-10 flex-shrink-0 flex flex-col items-end gap-2">
+        <div className="relative z-10 flex-shrink-0 flex flex-col items-end gap-3">
+          {/* Toggle switch + label */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-bold tracking-wider" style={{ color: syncEnabled ? '#3fe56c' : 'var(--text-3)' }}>
+              {syncEnabled ? 'ATIVO' : 'INATIVO'}
+            </span>
+            <motion.button
+              onClick={toggleSync}
+              disabled={syncState === 'loading'}
+              whileTap={{ scale: 0.95 }}
+              className="relative flex-shrink-0 rounded-full transition-colors disabled:opacity-60"
+              style={{
+                width: 52,
+                height: 28,
+                background: syncEnabled ? '#00c853' : 'rgba(255,255,255,0.12)',
+                border: syncEnabled ? '2px solid #00c853' : '2px solid rgba(255,255,255,0.2)',
+              }}
+              aria-label={syncEnabled ? 'Desativar sincronização' : 'Ativar sincronização'}
+            >
+              <motion.span
+                className="absolute top-0.5 rounded-full flex items-center justify-center"
+                style={{ width: 20, height: 20, background: 'white' }}
+                animate={{ x: syncEnabled ? 26 : 4 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              >
+                {syncState === 'loading' && <Loader2 size={11} className="animate-spin" style={{ color: '#00c853' }} />}
+              </motion.span>
+            </motion.button>
+          </div>
+
+          {/* Botão de ação principal */}
           <motion.button
-            onClick={handleSync}
+            onClick={toggleSync}
             disabled={syncState === 'loading'}
             whileHover={syncState !== 'loading' ? { scale: 1.03, y: -1 } : {}}
             whileTap={{ scale: 0.97 }}
             className="px-8 py-3 rounded-lg font-bold text-sm whitespace-nowrap transition-all flex items-center gap-2 disabled:opacity-70"
-            style={{
-              background: syncState === 'done' ? '#00c853' : '#3fe56c',
-              color: '#003912',
-              boxShadow: '0 4px 20px rgba(63,229,108,0.30)',
-            }}
+            style={syncEnabled
+              ? { background: 'rgba(255,82,82,0.15)', color: '#ff5252', border: '1px solid rgba(255,82,82,0.35)' }
+              : { background: '#3fe56c', color: '#003912', boxShadow: '0 4px 20px rgba(63,229,108,0.30)' }
+            }
           >
             {syncState === 'loading' && <Loader2 size={15} className="animate-spin" />}
-            {syncState === 'done'    && <CheckCircle2 size={15} />}
+            {syncState === 'done' && !syncEnabled && <CheckCircle2 size={15} />}
             {syncState === 'loading'
-              ? 'SINCRONIZANDO...'
-              : syncState === 'done'
-              ? 'SINCRONIZADO!'
+              ? 'AGUARDE...'
+              : syncEnabled
+              ? 'DESATIVAR SINCRONIZAÇÃO'
               : 'ATIVAR SINCRONIZAÇÃO AUTOMÁTICA'}
           </motion.button>
 

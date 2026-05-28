@@ -271,7 +271,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
               <Image src="/logo.svg" alt="Chronos" fill className="object-contain" />
             </div>
             <div>
-              <p className="text-[11px] font-black leading-none tracking-widest" style={{ color: 'white' }}>
+              <p className="text-[11px] font-black leading-none tracking-widest" style={{ color: '#3fe56c' }}>
                 CHRONOS <span style={{ color: '#C0392B' }}>LAB</span>
               </p>
               <p className="text-[8px] leading-none" style={{ color: 'rgba(255,255,255,0.35)' }}>
@@ -302,9 +302,9 @@ export default function AdminSidebar({ fullName, initials }: Props) {
               <div className="relative w-7 h-7 flex-shrink-0">
                 <Image src="/logo.svg" alt="Chronos" fill className="object-contain" />
               </div>
-              <h1 className="text-xl font-bold" style={{ color: 'white' }}>
-              Chronos <span style={{ color: '#C0392B' }}>Lab</span>
-            </h1>
+              <h1 className="text-xl font-bold" style={{ color: '#3fe56c' }}>
+                Chronos <span style={{ color: '#C0392B' }}>Lab</span>
+              </h1>
             </div>
             <p className="text-[11px] font-medium tracking-wider ml-9" style={{ color: 'rgba(255,255,255,0.35)' }}>
               Console de Administração
