@@ -5,16 +5,16 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { InternSchedule } from '@/types/database'
 import { toast } from 'sonner'
-import { Clock, Check, X, Loader2, Save } from 'lucide-react'
+import { Clock, CheckCircle2, Loader2 } from 'lucide-react'
 
 const DAYS = [
-  { key: 1, label: 'SEG', full: 'SEGUNDA-FEIRA',  color: 'var(--primary-light)' },
-  { key: 2, label: 'TER', full: 'TERÇA-FEIRA',    color: 'var(--primary-light)' },
-  { key: 3, label: 'QUA', full: 'QUARTA-FEIRA',   color: 'var(--primary-light)' },
-  { key: 4, label: 'QUI', full: 'QUINTA-FEIRA',   color: 'var(--primary-light)' },
-  { key: 5, label: 'SEX', full: 'SEXTA-FEIRA',    color: 'var(--primary-light)' },
-  { key: 6, label: 'SAB', full: 'SÁBADO',         color: 'var(--warning)' },
-  { key: 0, label: 'DOM', full: 'DOMINGO',        color: 'var(--accent-light)' },
+  { key: 1, abbr: 'SEG', full: 'Segunda-feira' },
+  { key: 2, abbr: 'TER', full: 'Terça-feira'  },
+  { key: 3, abbr: 'QUA', full: 'Quarta-feira' },
+  { key: 4, abbr: 'QUI', full: 'Quinta-feira' },
+  { key: 5, abbr: 'SEX', full: 'Sexta-feira'  },
+  { key: 6, abbr: 'SÁB', full: 'Sábado'       },
+  { key: 0, abbr: 'DOM', full: 'Domingo'      },
 ]
 
 interface Props {
@@ -23,7 +23,7 @@ interface Props {
   totalHoursRequired: number | null
 }
 
-type DaySchedule = { active: boolean; start: string; end: string }
+type DaySchedule = { active: boolean; start: string; end: string; editing: boolean }
 
 function calcHours(start: string, end: string): number {
   if (!start || !end) return 0
@@ -40,25 +40,38 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
     for (const d of DAYS) {
       const found = initialSchedules.find(s => s.day_of_week === d.key)
       map[d.key] = found
-        ? { active: found.is_active, start: found.expected_start.slice(0, 5), end: found.expected_end.slice(0, 5) }
-        : { active: false, start: '08:00', end: '12:00' }
+        ? { active: found.is_active, start: found.expected_start.slice(0, 5), end: found.expected_end.slice(0, 5), editing: false }
+        : { active: false, start: '08:00', end: '12:00', editing: false }
     }
     return map
   }
 
-  const [schedule, setSchedule] = useState<Record<number, DaySchedule>>(buildInitial)
+  const [schedule, setSchedule]     = useState<Record<number, DaySchedule>>(buildInitial)
+  const [original]                  = useState<Record<number, DaySchedule>>(buildInitial)
   const [totalHours, setTotalHours] = useState<number>(totalHoursRequired ?? 120)
-  const [saving, setSaving] = useState(false)
+  const [saving, setSaving]         = useState(false)
 
-  const weeklyHours = DAYS.filter(d => schedule[d.key]?.active)
+  const scheduledHours = DAYS.filter(d => schedule[d.key]?.active)
     .reduce((sum, d) => sum + calcHours(schedule[d.key].start, schedule[d.key].end), 0)
+  const remainingHours = Math.max(0, totalHours - scheduledHours)
 
   const toggleDay = (key: number) => {
-    setSchedule(prev => ({ ...prev, [key]: { ...prev[key], active: !prev[key].active } }))
+    setSchedule(prev => ({
+      ...prev,
+      [key]: { ...prev[key], active: !prev[key].active, editing: !prev[key].active },
+    }))
+  }
+
+  const setEditing = (key: number, val: boolean) => {
+    setSchedule(prev => ({ ...prev, [key]: { ...prev[key], editing: val } }))
   }
 
   const updateTime = (key: number, field: 'start' | 'end', value: string) => {
     setSchedule(prev => ({ ...prev, [key]: { ...prev[key], [field]: value } }))
+  }
+
+  const discard = () => {
+    setSchedule(buildInitial())
   }
 
   const save = async () => {
@@ -91,138 +104,152 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
 
-      {/* ── Carga horária total ───────────────────────── */}
-      <div className="rounded-xl px-4 py-3 flex items-center justify-between gap-4"
-        style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
-        <div className="min-w-0">
-          <p className="text-xs font-bold" style={{ color: 'var(--text)' }}>Carga Horária Total</p>
-          <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
-            Semana atual:&nbsp;
-            <span style={{ color: 'var(--primary-light)', fontWeight: 700 }}>{weeklyHours.toFixed(1)}h/sem</span>
+      {/* ── Header section ── */}
+      <div
+        className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-xl p-6"
+        style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+      >
+        <div>
+          <h3 className="text-base font-semibold" style={{ color: '#3fe56c' }}>Horário do Estagiário</h3>
+          <p className="text-sm mt-0.5" style={{ color: 'var(--text-3)' }}>
+            Gerencie turnos semanais e a capacidade total necessária para este perfil.
           </p>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <input
-            type="number" min={1} max={9999} value={totalHours}
-            onChange={e => setTotalHours(Number(e.target.value))}
-            className="w-20 text-center font-bold text-lg rounded-xl px-2 py-1.5 outline-none"
-            style={{ background: 'var(--surface)', border: '1.5px solid var(--border)', color: 'var(--text)' }}
-            onFocus={e => (e.target.style.borderColor = 'var(--primary)')}
-            onBlur={e  => (e.target.style.borderColor = 'var(--border)')}
-          />
-          <span className="text-xs font-bold" style={{ color: 'var(--text-3)' }}>H</span>
+        <div
+          className="flex items-center gap-3 rounded-lg px-4 py-3"
+          style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,200,83,0.15)' }}
+        >
+          <label className="text-[10px] font-bold tracking-wider whitespace-nowrap" style={{ color: '#3fe56c' }}>
+            TOTAL DE HORAS SEMANAIS
+          </label>
+          <div
+            className="flex items-center gap-2 rounded px-3 py-1"
+            style={{ background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.25)' }}
+          >
+            <input
+              type="number" min={1} max={9999} value={totalHours}
+              onChange={e => setTotalHours(Number(e.target.value))}
+              className="w-12 text-center font-bold text-lg outline-none bg-transparent"
+              style={{ color: 'var(--text)' }}
+            />
+            <span className="text-sm font-medium" style={{ color: 'var(--text-3)' }}>hrs / semana</span>
+          </div>
         </div>
       </div>
 
-      {/* ── Dias da semana ────────────────────────────── */}
-      <div className="space-y-2">
+      {/* ── Day rows ── */}
+      <div className="space-y-3">
         {DAYS.map((d, i) => {
           const ds = schedule[d.key]
-          const hours = ds.active ? calcHours(ds.start, ds.end) : 0
+          const timeRange = `${ds.start} — ${ds.end}`
 
           return (
             <motion.div
               key={d.key}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.035 }}
-              className="rounded-2xl overflow-hidden"
+              transition={{ delay: i * 0.04 }}
+              className="rounded-xl overflow-hidden transition-all"
               style={{
-                border: `1.5px solid ${ds.active ? 'var(--primary)' : 'var(--border)'}`,
-                background: ds.active ? 'var(--surface)' : 'var(--bg)',
-                boxShadow: ds.active ? 'var(--card-shadow)' : 'none',
-                transition: 'border-color 0.2s, background 0.2s',
+                background: 'var(--surface-card, #0f2318)',
+                border: `1px solid ${ds.active ? 'rgba(0,200,83,0.30)' : 'rgba(0,200,83,0.10)'}`,
+                opacity: ds.active ? 1 : 0.6,
               }}
             >
-              {/* ── Day header row ──── */}
-              <div className="flex items-center gap-3 px-3 py-2.5">
+              {/* Row */}
+              <div className="flex items-center gap-6 p-5">
 
-                {/* Toggle button */}
-                <motion.button
-                  type="button"
+                {/* Toggle */}
+                <button
                   onClick={() => toggleDay(d.key)}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.88 }}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all"
+                  className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-all"
                   style={{
-                    background: ds.active ? 'var(--primary)' : 'var(--bg-secondary)',
-                    border: `1.5px solid ${ds.active ? 'var(--primary)' : 'var(--border)'}`,
-                    boxShadow: ds.active ? '0 2px 10px rgba(30,92,45,0.4)' : 'none',
+                    background: ds.active ? 'rgba(0,200,83,0.15)' : 'var(--bg)',
+                    border: `1px solid ${ds.active ? 'rgba(0,200,83,0.40)' : 'rgba(0,200,83,0.15)'}`,
+                    color: ds.active ? '#00c853' : 'var(--text-3)',
                   }}
                 >
-                  <AnimatePresence mode="wait">
-                    {ds.active ? (
-                      <motion.div key="check" initial={{ scale: 0, rotate: -20 }} animate={{ scale: 1, rotate: 0 }} exit={{ scale: 0 }}>
-                        <Check size={14} color="white" />
-                      </motion.div>
-                    ) : (
-                      <motion.div key="x" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                        <X size={14} style={{ color: 'var(--text-3)' }} />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.button>
+                  <CheckCircle2 size={20} style={{ fill: ds.active ? 'rgba(0,200,83,0.15)' : 'transparent' }} />
+                </button>
 
-                {/* Day label pill */}
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <span className="text-[10px] font-black px-2 py-0.5 rounded-lg flex-shrink-0"
-                    style={{
-                      background: ds.active ? `${d.color}18` : 'var(--bg-secondary)',
-                      color: ds.active ? d.color : 'var(--text-3)',
-                      border: `1px solid ${ds.active ? `${d.color}30` : 'transparent'}`,
-                    }}>
-                    {d.label}
-                  </span>
-                  <span className="text-xs font-bold truncate"
-                    style={{ color: ds.active ? 'var(--text)' : 'var(--text-3)' }}>
-                    {d.full}
-                  </span>
+                {/* Day label */}
+                <div className="flex items-center gap-4 flex-shrink-0" style={{ minWidth: 160 }}>
+                  <div>
+                    <span className="block font-bold text-[11px] tracking-tight"
+                      style={{ color: ds.active ? '#3fe56c' : 'var(--text-3)' }}>
+                      {d.abbr}
+                    </span>
+                    <span className="font-medium text-sm" style={{ color: ds.active ? 'var(--text)' : 'var(--text-3)' }}>
+                      {d.full}
+                    </span>
+                  </div>
                 </div>
 
-                {/* Hours badge when active */}
-                {ds.active && hours > 0 && (
-                  <motion.span
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="text-[10px] font-black px-2 py-0.5 rounded-lg flex-shrink-0"
-                    style={{ background: 'rgba(30,92,45,0.12)', color: 'var(--primary-light)' }}
-                  >
-                    {hours.toFixed(1)}H
-                  </motion.span>
-                )}
+                {/* Time slot pill or empty text */}
+                <div className="flex-1 flex flex-wrap gap-3">
+                  {ds.active ? (
+                    <button
+                      onClick={() => setEditing(d.key, !ds.editing)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full transition-all"
+                      style={{
+                        background: 'var(--surface-variant)',
+                        border: `1px solid ${ds.editing ? 'rgba(0,200,83,0.50)' : 'rgba(0,200,83,0.20)'}`,
+                        color: 'var(--text)',
+                      }}
+                    >
+                      <Clock size={13} style={{ color: '#3fe56c' }} />
+                      <span className="text-sm font-medium">{timeRange}</span>
+                    </button>
+                  ) : (
+                    <span className="text-sm italic" style={{ color: 'var(--text-3)' }}>
+                      Nenhum horário configurado.
+                    </span>
+                  )}
+                </div>
+
+                {/* Add time button */}
+                <button
+                  onClick={() => { if (!ds.active) toggleDay(d.key); else setEditing(d.key, !ds.editing) }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold tracking-wider transition-all flex-shrink-0"
+                  style={ds.active
+                    ? { border: '1px solid rgba(0,200,83,0.30)', color: '#3fe56c', background: 'transparent' }
+                    : { border: '1px solid rgba(0,200,83,0.20)', color: 'var(--text-3)', background: 'transparent' }
+                  }
+                >
+                  + ADICIONAR HORÁRIO
+                </button>
               </div>
 
-              {/* ── Inline time inputs (shown when active) ──── */}
+              {/* Inline time inputs (when editing) */}
               <AnimatePresence>
-                {ds.active && (
+                {ds.active && ds.editing && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                    style={{ borderTop: '1px solid var(--border)' }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    style={{ borderTop: '1px solid rgba(0,200,83,0.12)' }}
                   >
-                    <div className="px-3 py-3 grid grid-cols-2 gap-3">
+                    <div className="px-5 py-4 grid grid-cols-2 gap-4">
                       {(['start', 'end'] as const).map(f => (
                         <div key={f}>
                           <label className="text-[10px] font-bold flex items-center gap-1 mb-1.5" style={{ color: 'var(--text-3)' }}>
-                            <Clock size={10} style={{ color: f === 'start' ? 'var(--success)' : 'var(--accent-light)' }} />
-                            {f === 'start' ? 'Entrada' : 'Saída'}
+                            <Clock size={10} /> {f === 'start' ? 'Entrada' : 'Saída'}
                           </label>
                           <input
                             type="time"
                             value={f === 'start' ? ds.start : ds.end}
                             onChange={e => updateTime(d.key, f, e.target.value)}
-                            className="w-full px-3 py-2 rounded-xl text-sm font-bold outline-none transition-all"
+                            className="w-full px-3 py-2 rounded-lg text-sm font-bold outline-none transition-all"
                             style={{
                               background: 'var(--bg)',
-                              border: `1.5px solid ${f === 'start' ? 'rgba(22,163,74,0.3)' : 'rgba(220,38,38,0.2)'}`,
+                              border: '1.5px solid rgba(0,200,83,0.20)',
                               color: 'var(--text)',
                             }}
-                            onFocus={e => (e.target.style.borderColor = f === 'start' ? 'var(--success)' : 'var(--accent)')}
-                            onBlur={e  => (e.target.style.borderColor = f === 'start' ? 'rgba(22,163,74,0.3)' : 'rgba(220,38,38,0.2)')}
+                            onFocus={e => (e.target.style.borderColor = '#3fe56c')}
+                            onBlur={e  => (e.target.style.borderColor = 'rgba(0,200,83,0.20)')}
                           />
                         </div>
                       ))}
@@ -235,24 +262,49 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
         })}
       </div>
 
-      {/* ── Save button ───────────────────────────────── */}
-      <motion.button
-        onClick={save}
-        disabled={saving}
-        whileHover={{ scale: 1.01, y: -1 }}
-        whileTap={{ scale: 0.98 }}
-        className="w-full py-3 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-        style={{
-          background: 'var(--primary)',
-          color: 'white',
-          boxShadow: '0 4px 18px rgba(30,92,45,0.4)',
-        }}
+      {/* ── Sticky bottom bar ── */}
+      <div
+        className="sticky bottom-0 rounded-xl mt-2 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4"
+        style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.20)', boxShadow: '0 -4px 20px rgba(0,0,0,0.3)' }}
       >
-        {saving
-          ? <><Loader2 size={15} className="animate-spin" /> Salvando...</>
-          : <><Save size={14} /> Salvar horário</>
-        }
-      </motion.button>
+        <div className="flex items-center gap-8">
+          <div>
+            <p className="text-[10px] font-bold tracking-wider mb-0.5" style={{ color: 'var(--text-3)' }}>HORAS AGENDADAS</p>
+            <p className="text-sm font-bold" style={{ color: 'var(--text)' }}>
+              {scheduledHours.toFixed(0)} / {totalHours} hrs
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] font-bold tracking-wider mb-0.5" style={{ color: 'var(--text-3)' }}>RESTANTE</p>
+            <p className="text-sm font-bold" style={{ color: remainingHours > 0 ? '#ffbf00' : '#00c853' }}>
+              {remainingHours.toFixed(0)} hrs
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={discard}
+            className="px-5 py-2.5 rounded-lg text-sm font-bold transition-all hover:opacity-80"
+            style={{ border: '1px solid rgba(0,200,83,0.20)', color: 'var(--text-3)', background: 'transparent' }}
+          >
+            DESCARTAR ALTERAÇÕES
+          </button>
+          <motion.button
+            onClick={save}
+            disabled={saving}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            className="px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 disabled:opacity-60"
+            style={{ background: '#3fe56c', color: '#003912' }}
+          >
+            {saving
+              ? <><Loader2 size={14} className="animate-spin" /> Salvando...</>
+              : 'SALVAR CRONOGRAMA'
+            }
+          </motion.button>
+        </div>
+      </div>
     </div>
   )
 }

@@ -4,10 +4,9 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Settings } from '@/types/database'
 import SettingsForm from './SettingsForm'
 import ChangePinForm from './ChangePinForm'
-import GeoSettings from './GeoSettings'
 import IntegrationsTab from './IntegrationsTab'
-import { Settings as SettingsIcon, Plug, Shield } from 'lucide-react'
 import { FadeIn } from '@/components/ui/MotionWrappers'
+import { FlaskConical } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,117 +31,167 @@ export default async function SettingsPage({ searchParams }: Props) {
     geo_enabled?: boolean; geo_lat?: number; geo_lng?: number; geo_radius_meters?: number
   }) | null
 
-  const geoConfig = settings ? {
-    id: settings.id,
-    geo_enabled: settings.geo_enabled ?? false,
-    geo_lat: settings.geo_lat ?? -17.485672,
-    geo_lng: settings.geo_lng ?? -48.2130547,
-    geo_radius_meters: settings.geo_radius_meters ?? 150,
-  } : null
-
-  const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'geral',       label: 'Geral',        icon: <SettingsIcon size={14} /> },
-    { key: 'integracoes', label: 'Integrações',   icon: <Plug size={14} /> },
-    { key: 'seguranca',   label: 'Segurança',     icon: <Shield size={14} /> },
+  const tabs: { key: Tab; label: string }[] = [
+    { key: 'geral',       label: 'Geral'       },
+    { key: 'integracoes', label: 'Integrações'  },
+    { key: 'seguranca',   label: 'Segurança'    },
   ]
 
   return (
     <div className="flex flex-col flex-1 min-h-0" style={{ background: 'var(--bg)' }}>
 
-      {/* ── TopAppBar ──────────────────────────────── */}
+      {/* ── TopAppBar ── */}
       <FadeIn delay={0}>
         <header
           className="flex items-center justify-between px-6 h-16 flex-shrink-0"
           style={{ background: 'var(--bg)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}
         >
-          <h2 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
-            Configurações
-          </h2>
+          <h2 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>Configurações</h2>
         </header>
       </FadeIn>
 
-      {/* ── Main content ───────────────────────────── */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-6" style={{ maxWidth: 900, margin: '0 auto', width: '100%' }}>
+      {/* ── Scrollable body ── */}
+      <div className="flex-1 min-h-0 overflow-y-auto p-6">
+        <div style={{ maxWidth: 940, margin: '0 auto' }}>
 
-        {/* Header */}
-        <FadeIn delay={0.04}>
-          <div className="mb-8">
-            <h3 className="text-3xl font-semibold" style={{ color: 'var(--text)' }}>
-              Configuração Geral
-            </h3>
-            <p className="text-base mt-1 preserve-case" style={{ color: 'var(--text-3)' }}>
-              Ajuste os parâmetros do sistema Chronos Lab.
-            </p>
-          </div>
-        </FadeIn>
+          {/* Page heading */}
+          <FadeIn delay={0.04}>
+            <div className="mb-8">
+              <h3 className="text-3xl font-semibold mb-1" style={{ color: 'var(--text)' }}>Configuração Geral</h3>
+              <p className="text-base" style={{ color: 'var(--text-3)' }}>
+                Gerencie os parâmetros operacionais do laboratório e as notificações automatizadas.
+              </p>
+            </div>
+          </FadeIn>
 
-        {/* Tab nav */}
-        <FadeIn delay={0.08}>
-          <div className="flex gap-2 mb-6">
-            {tabs.map(t => (
-              <Link
-                key={t.key}
-                href={`/admin/settings?tab=${t.key}`}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all"
-                style={activeTab === t.key
-                  ? { background: '#00c853', color: '#003912' }
-                  : { background: 'var(--surface-card, #0f2318)', color: 'var(--text-3)', border: '1px solid rgba(0,200,83,0.15)' }
-                }
-              >
-                <span className="flex-shrink-0">{t.icon}</span>
-                <span>{t.label}</span>
-              </Link>
-            ))}
-          </div>
-        </FadeIn>
+          {/* ── Underline tabs ── */}
+          <FadeIn delay={0.06}>
+            <div className="flex gap-8 mb-8" style={{ borderBottom: '1px solid rgba(0,200,83,0.15)' }}>
+              {tabs.map(t => (
+                <Link
+                  key={t.key}
+                  href={`/admin/settings?tab=${t.key}`}
+                  className="text-sm font-semibold transition-colors pb-4 inline-block"
+                  style={activeTab === t.key
+                    ? { color: '#3fe56c', borderBottom: '2px solid #3fe56c', marginBottom: -1 }
+                    : { color: 'var(--text-3)' }
+                  }
+                >
+                  {t.label}
+                </Link>
+              ))}
+            </div>
+          </FadeIn>
 
-        {/* Content */}
-        <FadeIn delay={0.12}>
-          <div
-            className="rounded-xl p-6"
-            style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
-          >
+          {/* ── Tab content ── */}
+          <FadeIn delay={0.1}>
+
+            {/* ══ GERAL ══ */}
             {activeTab === 'geral' && (
-              <div>
-                <h4 className="text-xl font-semibold mb-1" style={{ color: 'var(--text)' }}>
-                  Configurações do Laboratório
-                </h4>
-                <p className="text-sm mb-6 preserve-case" style={{ color: 'var(--text-3)' }}>
-                  Horários de lembrete, horas esperadas e e-mail de relatório.
-                </p>
-                <SettingsForm settings={settings} />
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+                {/* Form — 8 cols */}
+                <div className="md:col-span-8">
+                  <div
+                    className="rounded-xl p-6"
+                    style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+                  >
+                    <SettingsForm settings={settings} />
+                  </div>
+                </div>
+
+                {/* Sidebar — 4 cols */}
+                <div className="md:col-span-4 space-y-4">
+
+                  {/* Status card */}
+                  <div
+                    className="rounded-xl p-5"
+                    style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+                  >
+                    <p className="text-[10px] font-bold mb-4 tracking-widest" style={{ color: 'var(--text-3)' }}>
+                      STATUS DO SISTEMA
+                    </p>
+                    {[
+                      { label: 'Sincronização de Dados', badge: 'ATIVO' },
+                      { label: 'Backup Automático',      badge: 'ESTÁVEL' },
+                    ].map(({ label, badge }) => (
+                      <div
+                        key={label}
+                        className="flex items-center justify-between py-3"
+                        style={{ borderBottom: '1px solid rgba(0,200,83,0.08)' }}
+                      >
+                        <span className="text-sm" style={{ color: 'var(--text-2)' }}>{label}</span>
+                        <span
+                          className="px-2 py-0.5 text-[10px] font-bold rounded"
+                          style={{ background: 'rgba(0,200,83,0.10)', border: '1px solid #00c853', color: '#00c853' }}
+                        >
+                          {badge}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="flex items-center justify-between pt-3">
+                      <span className="text-sm" style={{ color: 'var(--text-2)' }}>Última Atualização</span>
+                      <span className="text-sm" style={{ color: 'var(--text-3)' }}>2h atrás</span>
+                    </div>
+                  </div>
+
+                  {/* Visual accent card */}
+                  <div
+                    className="rounded-xl p-6 relative overflow-hidden flex flex-col justify-end"
+                    style={{
+                      background: 'var(--surface-card, #0f2318)',
+                      border: '1px solid rgba(0,200,83,0.15)',
+                      minHeight: 180,
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0"
+                      style={{ background: 'linear-gradient(135deg, rgba(63,229,108,0.06) 0%, transparent 60%)' }}
+                    />
+                    <div className="absolute top-4 right-4 opacity-20">
+                      <FlaskConical size={64} style={{ color: '#3fe56c' }} />
+                    </div>
+                    <div className="relative z-10">
+                      <h4 className="text-base font-bold mb-1" style={{ color: '#3fe56c' }}>
+                        Laboratório de Precisão
+                      </h4>
+                      <p className="text-xs leading-relaxed" style={{ color: 'var(--text-3)' }}>
+                        Suas configurações definem a eficiência operacional de toda a pilha de instrumentação.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
+            {/* ══ INTEGRAÇÕES ══ */}
             {activeTab === 'integracoes' && (
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Plug size={16} style={{ color: 'var(--primary)' }} />
-                  <h4 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
-                    Integrações e Stacks
-                  </h4>
-                </div>
-                <p className="text-sm mb-6 preserve-case" style={{ color: 'var(--text-3)' }}>
-                  Status em tempo real dos serviços e dependências do sistema.
-                </p>
+              <div
+                className="rounded-xl p-6"
+                style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+              >
                 <IntegrationsTab />
               </div>
             )}
 
+            {/* ══ SEGURANÇA ══ */}
             {activeTab === 'seguranca' && (
-              <div>
+              <div
+                className="rounded-xl p-6"
+                style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+              >
                 <h4 className="text-xl font-semibold mb-1" style={{ color: 'var(--text)' }}>
                   PIN de Acesso Rápido
                 </h4>
-                <p className="text-sm mb-6 preserve-case" style={{ color: 'var(--text-3)' }}>
+                <p className="text-sm mb-6" style={{ color: 'var(--text-3)' }}>
                   O PIN permite que você entre no sistema sem digitar e-mail e senha.
                 </p>
                 <ChangePinForm userId={user.id} />
               </div>
             )}
-          </div>
-        </FadeIn>
 
+          </FadeIn>
+        </div>
       </div>
     </div>
   )

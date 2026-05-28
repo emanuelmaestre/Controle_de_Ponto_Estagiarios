@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { minutesToHours } from '@/lib/utils'
 import ReportExport from './ReportExport'
-import { Clock, ClipboardList, CheckCircle2, AlertCircle, XCircle, Search, BarChart2, Download } from 'lucide-react'
+import { Clock, ClipboardList, CheckCircle2, XCircle, Search, BarChart2, AlertCircle, Download, Mail, Printer } from 'lucide-react'
 import DatePicker from '@/components/ui/DatePicker'
 
 type PeriodType = 'daily' | 'weekly' | 'monthly' | 'custom'
@@ -30,15 +30,11 @@ interface ReportData {
   type: PeriodType
 }
 
-function getTodayStr() {
-  return new Date().toISOString().slice(0, 10)
-}
-
+function getTodayStr() { return new Date().toISOString().slice(0, 10) }
 function getCurrentMonth() {
   const now = new Date()
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
 }
-
 function getWeekStart(dateStr: string) {
   const d = new Date(dateStr + 'T12:00:00Z')
   const day = d.getUTCDay()
@@ -46,6 +42,42 @@ function getWeekStart(dateStr: string) {
   d.setUTCDate(d.getUTCDate() + diff)
   return d.toISOString().slice(0, 10)
 }
+
+/* ── Initials avatar ── */
+function InternAvatar({ name, color }: { name: string; color: string }) {
+  const initials = name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
+  return (
+    <div
+      className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+      style={{ background: color + '30', color }}
+    >
+      {initials}
+    </div>
+  )
+}
+
+/* ── Activity bar mini-chart ── */
+function ActivityBars({ approved, total }: { approved: number; total: number }) {
+  const bars = [0.4, 0.6, 1, 0.5, 0.8]
+  const pct = total > 0 ? approved / total : 0
+  return (
+    <div className="flex items-end gap-0.5 justify-end">
+      {bars.map((h, i) => (
+        <div
+          key={i}
+          className="w-1.5 rounded-full"
+          style={{
+            height: `${h * 32}px`,
+            background: '#3fe56c',
+            opacity: pct > 0.7 ? (0.4 + i * 0.15) : (0.2 + i * 0.1),
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+const AVATAR_COLORS = ['#3fe56c', '#48e1a6', '#95d69a', '#00c853', '#22d3ee', '#a78bfa', '#f97316', '#fbbf24']
 
 export default function ReportsClient() {
   const [periodType, setPeriodType] = useState<PeriodType>('monthly')
@@ -59,6 +91,7 @@ export default function ReportsClient() {
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
   const [applied, setApplied] = useState(false)
+  const [showExportMenu, setShowExportMenu] = useState(false)
 
   const monthOptions = Array.from({ length: 24 }, (_, i) => {
     const d = new Date()
@@ -96,17 +129,6 @@ export default function ReportsClient() {
 
   useEffect(() => { fetchData() }, []) // eslint-disable-line
 
-  const handleClear = () => {
-    setPeriodType('monthly')
-    setMonth(getCurrentMonth())
-    setDailyDate(getTodayStr())
-    setWeeklyDate(getTodayStr())
-    setCustomStart(getTodayStr())
-    setCustomEnd(getTodayStr())
-    setApplied(false)
-    setData(null)
-  }
-
   const totalMinutes  = data?.interns.reduce((a, i) => a + i.total_minutes, 0) ?? 0
   const totalApproved = data?.interns.reduce((a, i) => a + i.approved_sessions, 0) ?? 0
   const totalSessions = data?.interns.reduce((a, i) => a + i.total_sessions, 0) ?? 0
@@ -130,344 +152,399 @@ export default function ReportsClient() {
     return d.toISOString().slice(0, 10)
   })()
 
-  const periodTypeLabels: Record<PeriodType, string> = {
-    daily: 'Diário', weekly: 'Semanal', monthly: 'Mensal', custom: 'Personalizado'
+  const periodLabels: Record<PeriodType, string> = {
+    daily: 'Diário', weekly: 'Semanal', monthly: 'Mensal', custom: 'Personalizado',
   }
 
   return (
     <div className="flex flex-col flex-1 min-h-0" style={{ background: 'var(--bg)' }}>
       <style>{`@media print { .no-print { display: none !important; } body { background: white !important; } }`}</style>
 
-      {/* ── TopAppBar ──────────────────────────────── */}
+      {/* ── TopAppBar ── */}
       <header
         className="no-print flex items-center justify-between px-6 h-16 flex-shrink-0"
         style={{ background: 'var(--bg)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}
       >
-        <h2 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
-          Relatórios
-        </h2>
-        <ReportExport
-          data={exportData}
-          label={data?.label ?? ''}
-          disabled={!data || data.interns.length === 0}
-        />
-      </header>
-
-      {/* ── Main content ──────────────────────────── */}
-      <main className="flex-1 min-h-0 overflow-y-auto">
-        <div className="p-6 space-y-6" style={{ maxWidth: 1400, margin: '0 auto' }}>
-
-          {/* Header */}
-          <div>
-            <h3 className="text-3xl font-semibold" style={{ color: 'var(--text)' }}>
-              Matriz de Desempenho
-            </h3>
-            <p className="text-base mt-1 preserve-case" style={{ color: 'var(--text-3)' }}>
-              {data && applied
-                ? `${periodTypeLabels[data.type]} · ${data.label}`
-                : 'Selecione um período para visualizar os dados.'
-              }
-            </p>
-          </div>
-
-          {/* Filtros */}
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>Relatórios</h2>
+          <div className="hidden md:block h-5 w-px" style={{ background: 'rgba(0,200,83,0.20)' }} />
           <div
-            className="rounded-xl p-6 no-print"
+            className="hidden md:flex items-center rounded-full px-4 py-1.5"
             style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
           >
-            <h4 className="text-base font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--text)' }}>
-              <Search size={16} style={{ color: 'var(--primary)' }} />
-              Filtrar por Período
-            </h4>
+            <Search size={15} style={{ color: 'var(--text-3)', marginRight: 8 }} />
+            <input
+              readOnly
+              placeholder="Pesquisar estagiários ou projetos..."
+              className="bg-transparent border-none outline-none text-sm w-52"
+              style={{ color: 'var(--text-3)' }}
+            />
+          </div>
+        </div>
+      </header>
 
-            {/* Period type buttons */}
-            <div className="flex flex-wrap gap-2 mb-5">
-              {(['daily', 'weekly', 'monthly', 'custom'] as PeriodType[]).map(t => (
-                <motion.button
-                  key={t}
-                  onClick={() => setPeriodType(t)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="px-5 py-2 rounded-lg text-sm font-semibold transition-all"
-                  style={periodType === t
-                    ? { background: '#00c853', color: '#003912' }
-                    : { background: 'var(--surface-variant)', color: 'var(--text-3)', border: '1px solid rgba(0,200,83,0.15)' }
-                  }
-                >
-                  {periodTypeLabels[t]}
-                </motion.button>
-              ))}
+      {/* ── Main content ── */}
+      <main className="flex-1 min-h-0 overflow-y-auto">
+        <div className="p-6 space-y-8" style={{ maxWidth: 1400, margin: '0 auto' }}>
+
+          {/* ── Filters & export row ── */}
+          <section className="no-print flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-3">
+              <p className="text-[10px] font-bold tracking-widest" style={{ color: 'var(--text-3)' }}>
+                PERÍODO DO RELATÓRIO
+              </p>
+
+              {/* Period type tabs - contained group */}
+              <div
+                className="flex p-1 rounded-lg w-fit"
+                style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+              >
+                {(['daily', 'weekly', 'monthly', 'custom'] as PeriodType[]).map(t => (
+                  <button
+                    key={t}
+                    onClick={() => setPeriodType(t)}
+                    className="px-5 py-2 text-sm font-medium rounded-md transition-all"
+                    style={periodType === t
+                      ? { background: 'rgba(0,200,83,0.20)', color: '#84c48a', fontWeight: 700 }
+                      : { color: 'var(--text-3)' }
+                    }
+                  >
+                    {periodLabels[t]}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-4">
-              {periodType === 'daily' && (
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>Data</label>
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Period-specific picker */}
+              <div className="flex flex-col gap-1.5">
+                {periodType !== 'custom' && (
+                  <label className="text-[11px]" style={{ color: 'var(--text-3)' }}>Seleção</label>
+                )}
+
+                {periodType === 'daily' && (
                   <DatePicker value={dailyDate} onChange={v => setDailyDate(v || getTodayStr())} placeholder="Selecionar data" />
-                </div>
-              )}
-
-              {periodType === 'weekly' && (
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>Qualquer dia da semana</label>
-                  <DatePicker value={weeklyDate} onChange={v => setWeeklyDate(v || getTodayStr())} placeholder="Selecionar data" />
-                  {weeklyDate && (
-                    <p className="text-xs font-medium" style={{ color: 'var(--primary)' }}>
-                      {new Date(weekStart + 'T12:00:00Z').toLocaleDateString('pt-BR')} &mdash; {new Date(weekEnd + 'T12:00:00Z').toLocaleDateString('pt-BR')}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {periodType === 'monthly' && (
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>Mês e ano</label>
+                )}
+                {periodType === 'weekly' && (
+                  <div>
+                    <DatePicker value={weeklyDate} onChange={v => setWeeklyDate(v || getTodayStr())} placeholder="Qualquer dia da semana" />
+                    {weeklyDate && (
+                      <p className="text-xs mt-1 font-medium" style={{ color: 'var(--primary)' }}>
+                        {new Date(weekStart + 'T12:00:00Z').toLocaleDateString('pt-BR')} — {new Date(weekEnd + 'T12:00:00Z').toLocaleDateString('pt-BR')}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {periodType === 'monthly' && (
                   <select
                     value={month}
                     onChange={e => setMonth(e.target.value)}
-                    className="px-4 py-2.5 rounded-lg text-sm focus:outline-none min-w-[200px] font-medium preserve-case"
-                    style={{ background: 'var(--surface-variant)', border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text)' }}
+                    className="px-4 py-2.5 rounded-lg text-sm focus:outline-none min-w-[180px] font-medium capitalize"
+                    style={{
+                      background: 'var(--surface-card, #0f2318)',
+                      border: '1px solid rgba(0,200,83,0.15)',
+                      color: 'var(--text)',
+                    }}
                   >
-                    {monthOptions.map(o => (
-                      <option key={o.value} value={o.value}>{o.label}</option>
-                    ))}
+                    {monthOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                   </select>
-                </div>
-              )}
-
-              {periodType === 'custom' && (
-                <>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>Data inicial</label>
-                    <DatePicker value={customStart} onChange={v => setCustomStart(v || getTodayStr())} placeholder="Data inicial" />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold" style={{ color: 'var(--text-3)' }}>Data final</label>
-                    <DatePicker value={customEnd} onChange={v => setCustomEnd(v || getTodayStr())} min={customStart} placeholder="Data final" />
-                  </div>
-                </>
-              )}
-
-              <div className="flex gap-2 sm:ml-auto">
-                {applied && (
-                  <button
-                    onClick={handleClear}
-                    className="px-4 py-2.5 rounded-lg text-sm font-semibold transition-all hover:opacity-70"
-                    style={{ border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-2)', background: 'var(--surface-variant)' }}
-                  >
-                    Limpar
-                  </button>
                 )}
+                {periodType === 'custom' && (
+                  <div className="flex gap-2">
+                    <div>
+                      <label className="text-[11px] mb-1 block" style={{ color: 'var(--text-3)' }}>Data inicial</label>
+                      <DatePicker value={customStart} onChange={v => setCustomStart(v || getTodayStr())} placeholder="Início" />
+                    </div>
+                    <div>
+                      <label className="text-[11px] mb-1 block" style={{ color: 'var(--text-3)' }}>Data final</label>
+                      <DatePicker value={customEnd} onChange={v => setCustomEnd(v || getTodayStr())} min={customStart} placeholder="Fim" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Export buttons — outline style matching reference */}
+              <div className="flex items-center gap-2 mt-auto">
                 <button
-                  onClick={fetchData} disabled={loading}
-                  className="px-6 py-2.5 rounded-lg text-sm font-bold transition-all disabled:opacity-60 flex items-center gap-2 hover:opacity-90"
-                  style={{ background: '#00c853', color: '#003912' }}
+                  onClick={async () => {
+                    if (!exportData.length) return
+                    const XLSX = await import('xlsx')
+                    const wsData = [
+                      [`Relatório de Horas — ${data?.label}`],
+                      [],
+                      ['Nome', 'Apelido', 'E-mail', 'Curso', 'Total Horas', 'Sessões', 'Aprovadas', 'Reprovadas'],
+                      ...exportData.map(r => [r.nome, r.apelido, r.email, r.curso, r.total_horas, r.sessoes, r.aprovados, r.reprovados]),
+                    ]
+                    const ws = XLSX.utils.aoa_to_sheet(wsData)
+                    ws['!cols'] = [{ wch: 28 }, { wch: 16 }, { wch: 28 }, { wch: 20 }, { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 10 }]
+                    const wb = XLSX.utils.book_new()
+                    XLSX.utils.book_append_sheet(wb, ws, 'Relatório')
+                    XLSX.writeFile(wb, `relatorio-${(data?.label ?? 'dados').replace(/\//g, '-')}.xlsx`)
+                  }}
+                  disabled={!data || data.interns.length === 0}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all disabled:opacity-40 hover:opacity-80"
+                  style={{
+                    background: 'rgba(149,214,154,0.08)',
+                    border: '1px solid #95d69a',
+                    color: '#95d69a',
+                  }}
                 >
-                  {loading ? (
-                    <><span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin inline-block" /> Carregando...</>
-                  ) : <><Search size={14} /> Aplicar</>}
+                  <Download size={16} /> Excel
+                </button>
+                <button
+                  onClick={() => window.print()}
+                  disabled={!data}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all disabled:opacity-40 hover:opacity-80"
+                  style={{
+                    background: 'rgba(255,82,82,0.08)',
+                    border: '1px solid #ff5252',
+                    color: '#ff5252',
+                  }}
+                >
+                  <Printer size={16} /> PDF
+                </button>
+                <button
+                  disabled={!data || data.interns.length === 0}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all disabled:opacity-40 hover:opacity-80"
+                  style={{
+                    background: 'rgba(72,225,166,0.08)',
+                    border: '1px solid #48e1a6',
+                    color: '#48e1a6',
+                  }}
+                >
+                  <Mail size={16} /> E-mail
                 </button>
               </div>
-            </div>
-          </div>
 
-          {/* Erro */}
+              {/* Apply button */}
+              <button
+                onClick={fetchData}
+                disabled={loading}
+                className="mt-auto px-6 py-2.5 rounded-lg text-sm font-bold disabled:opacity-60 flex items-center gap-2"
+                style={{ background: '#3fe56c', color: '#003912' }}
+              >
+                {loading
+                  ? <><span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin inline-block" /> Carregando...</>
+                  : <><Search size={14} /> Aplicar</>
+                }
+              </button>
+            </div>
+          </section>
+
+          {/* Error */}
           {error && (
             <div className="text-sm rounded-xl px-4 py-3 flex items-center gap-2"
-              style={{ background: 'rgba(255,82,82,0.08)', border: '1px solid rgba(255,82,82,0.25)', color: 'var(--danger)' }}>
-              <AlertCircle size={14} style={{ flexShrink: 0 }} /> {error}
+              style={{ background: 'rgba(255,82,82,0.08)', border: '1px solid rgba(255,82,82,0.25)', color: '#ff5252' }}>
+              <AlertCircle size={14} /> {error}
               <button onClick={fetchData} className="ml-auto underline hover:opacity-70">Tentar novamente</button>
             </div>
           )}
 
-          {/* Skeleton */}
-          {loading && !data && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="rounded-xl p-5 animate-pulse h-24"
-                  style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }} />
-              ))}
-            </div>
-          )}
-
-          {/* Cards de resumo */}
+          {/* ── Summary metric cards with ghost icons ── */}
           <AnimatePresence>
-            {data && !loading && (
-              <motion.div
-                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="grid grid-cols-2 md:grid-cols-4 gap-3"
+            {(data || loading) && (
+              <motion.section
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
               >
-                <SummaryCard label="Total de Horas"  value={minutesToHours(totalMinutes)} color="#95d69a"  icon={<Clock size={16}        />} delay={0} />
-                <SummaryCard label="Sessões"          value={totalSessions}               color="#3fe56c"  icon={<ClipboardList size={16} />} delay={0.05} />
-                <SummaryCard label="Aprovadas"        value={totalApproved}               color="#00c853"  icon={<CheckCircle2 size={16}  />} delay={0.1} />
-                <SummaryCard label="Reprovadas"       value={totalRejected}               color="#ff5252"  icon={<XCircle size={16}       />} delay={0.15} />
-              </motion.div>
+                {[
+                  { label: 'Total de Horas',  value: loading ? '—' : minutesToHours(totalMinutes), color: '#3fe56c',  icon: <Clock    size={64} />, barWidth: 75 },
+                  { label: 'Sessões',         value: loading ? '—' : totalSessions,               color: 'var(--text)', icon: <BarChart2 size={64} />, barWidth: 60 },
+                  { label: 'Aprovados',       value: loading ? '—' : totalApproved,               color: '#00c853',  icon: <CheckCircle2 size={64} />, barWidth: 95 },
+                  { label: 'Rejeitados',      value: loading ? '—' : totalRejected,               color: '#ff5252',  icon: <XCircle   size={64} />, barWidth: 15 },
+                ].map((card, i) => (
+                  <motion.div
+                    key={card.label}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.06 }}
+                    className="rounded-xl p-6 relative overflow-hidden group transition-all duration-300"
+                    style={{
+                      background: 'rgba(15,35,24,0.7)',
+                      backdropFilter: 'blur(8px)',
+                      border: '1px solid rgba(0,200,83,0.15)',
+                    }}
+                  >
+                    {/* Ghost watermark icon */}
+                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none"
+                      style={{ color: card.color }}>
+                      {card.icon}
+                    </div>
+                    <p className="text-[10px] font-bold tracking-wider mb-2" style={{ color: 'var(--text-3)' }}>
+                      {card.label.toUpperCase()}
+                    </p>
+                    <div className="flex items-baseline gap-2">
+                      <h4 className="text-4xl font-bold" style={{ color: card.color }}>{card.value}</h4>
+                    </div>
+                    <div className="mt-4 w-full h-1 rounded-full overflow-hidden" style={{ background: 'rgba(0,200,83,0.10)' }}>
+                      <div className="h-full rounded-full"
+                        style={{
+                          width: `${card.barWidth}%`,
+                          background: card.color,
+                          boxShadow: card.color !== 'var(--text)' ? `0 0 8px ${card.color}80` : 'none',
+                        }} />
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.section>
             )}
           </AnimatePresence>
 
-          {/* Tabela */}
+          {/* ── Data table ── */}
           {data && !loading && (
-            <motion.div
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.15 }}
+            <motion.section
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
               className="rounded-xl overflow-hidden"
-              style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+              style={{ background: 'rgba(15,35,24,0.7)', border: '1px solid rgba(0,200,83,0.15)' }}
             >
-              {data.interns.length > 0 ? (
-                <>
-                  {/* Mobile: card list */}
-                  <div className="md:hidden space-y-2 p-4">
-                    {data.interns.map((intern, i) => (
-                      <motion.div
-                        key={intern.id}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.2, delay: i * 0.04 }}
-                        className="rounded-xl p-4"
-                        style={{ background: 'var(--surface-variant)', border: '1px solid rgba(0,200,83,0.15)' }}
-                      >
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <div className="min-w-0">
-                            <p className="font-bold text-sm preserve-case truncate" style={{ color: 'var(--text)' }}>
-                              {intern.full_name}
-                              {intern.nickname && <span className="ml-1 font-normal text-xs" style={{ color: 'var(--text-3)' }}>({intern.nickname})</span>}
-                            </p>
-                            {intern.course && <p className="text-xs preserve-case truncate" style={{ color: 'var(--text-3)' }}>{intern.course}</p>}
-                          </div>
-                          <span className="font-bold text-base flex-shrink-0" style={{ color: intern.total_minutes > 0 ? '#95d69a' : 'var(--text-3)' }}>
-                            {intern.total_minutes > 0 ? minutesToHours(intern.total_minutes) : '—'}
-                          </span>
-                        </div>
-                        <div className="flex gap-2 flex-wrap">
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: 'rgba(0,200,83,0.08)', color: 'var(--text-3)', border: '1px solid rgba(0,200,83,0.15)' }}>
-                            {intern.total_sessions} sessões
-                          </span>
-                          {intern.approved_sessions > 0 && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: 'rgba(0,200,83,0.10)', color: '#00c853', border: '1px solid rgba(0,200,83,0.3)' }}>
-                              {intern.approved_sessions} aprov.
-                            </span>
-                          )}
-                          {intern.rejected_sessions > 0 && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: 'rgba(255,82,82,0.10)', color: '#ff5252', border: '1px solid rgba(255,82,82,0.3)' }}>
-                              {intern.rejected_sessions} reprov.
-                            </span>
-                          )}
-                        </div>
-                      </motion.div>
-                    ))}
-                    <div className="rounded-xl p-4 flex items-center justify-between" style={{ background: 'var(--surface-variant)', border: '1px solid rgba(0,200,83,0.15)' }}>
-                      <span className="text-xs font-bold" style={{ color: 'var(--text-3)' }}>Total — {data.interns.length} estagiários</span>
-                      <span className="font-bold" style={{ color: '#95d69a' }}>{minutesToHours(totalMinutes)}</span>
-                    </div>
-                  </div>
+              {/* Table header */}
+              <div
+                className="p-6 flex items-center justify-between"
+                style={{ borderBottom: '1px solid rgba(0,200,83,0.12)', background: 'rgba(0,0,0,0.15)' }}
+              >
+                <h3 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
+                  Matriz de Desempenho de Estagiários
+                </h3>
+                <div className="flex gap-2">
+                  <button className="p-2 rounded-lg transition-colors hover:opacity-70">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--text-3)' }}>
+                      <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="9" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
 
-                  {/* Desktop: table */}
-                  <div className="hidden md:block overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr style={{ background: 'var(--surface-variant)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}>
-                          <th className="text-left px-5 py-4 text-xs font-semibold" style={{ color: 'var(--text-3)' }}>Estagiário</th>
-                          <th className="text-center px-4 py-4 text-xs font-semibold" style={{ color: '#95d69a' }}>Horas</th>
-                          <th className="text-center px-4 py-4 text-xs font-semibold" style={{ color: 'var(--text-3)' }}>Sessões</th>
-                          <th className="text-center px-4 py-4 text-xs font-semibold" style={{ color: '#00c853' }}>Aprov.</th>
-                          <th className="text-center px-4 py-4 text-xs font-semibold" style={{ color: '#ff5252' }}>Reprov.</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {data.interns.map((intern, i) => (
+              {data.interns.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr style={{ background: 'rgba(0,0,0,0.20)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
+                        {['Estagiário', 'Horas', 'Sessões', 'Aprovados', 'Rejeitados', 'Atividade'].map(h => (
+                          <th key={h} className="px-6 py-4 text-[10px] font-semibold tracking-widest" style={{ color: 'var(--text-3)' }}>
+                            {h.toUpperCase()}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody style={{ borderTop: 'none' }}>
+                      {data.interns.map((intern, i) => {
+                        const color = AVATAR_COLORS[i % AVATAR_COLORS.length]
+                        const handle = intern.nickname
+                          ? `@${intern.nickname.toLowerCase().replace(/\s+/g, '_')}`
+                          : `@${intern.full_name.toLowerCase().split(' ')[0]}`
+                        return (
                           <motion.tr
                             key={intern.id}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.2, delay: i * 0.04 }}
-                            style={{ borderTop: '1px solid rgba(0,200,83,0.08)' }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: i * 0.04 }}
+                            className="group transition-colors"
+                            style={{ borderBottom: '1px solid rgba(0,200,83,0.07)' }}
+                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(63,229,108,0.04)')}
+                            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                           >
-                            <td className="px-5 py-4">
-                              <p className="font-semibold preserve-case" style={{ color: 'var(--text)' }}>
-                                {intern.full_name}
-                                {intern.nickname && <span className="ml-2 text-xs font-normal" style={{ color: 'var(--text-3)' }}>({intern.nickname})</span>}
+                            <td className="px-6 py-5">
+                              <div className="flex items-center gap-4">
+                                <InternAvatar name={intern.full_name} color={color} />
+                                <div>
+                                  <p className="text-sm font-bold transition-colors group-hover:text-green-400" style={{ color: 'var(--text)' }}>
+                                    {intern.full_name}
+                                  </p>
+                                  <p className="text-[11px]" style={{ color: 'var(--text-3)' }}>
+                                    {handle}{intern.course ? ` • ${intern.course}` : ''}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-5">
+                              <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>
+                                {intern.total_minutes > 0 ? minutesToHours(intern.total_minutes) : '—'}
                               </p>
-                              {intern.course && <p className="text-xs mt-0.5 preserve-case" style={{ color: 'var(--text-3)' }}>{intern.course}</p>}
                             </td>
-                            <td className="px-4 py-4 text-center font-bold" style={{ color: intern.total_minutes > 0 ? '#95d69a' : 'var(--text-3)' }}>
-                              {intern.total_minutes > 0 ? minutesToHours(intern.total_minutes) : '—'}
+                            <td className="px-6 py-5 text-sm font-medium" style={{ color: 'var(--text-2)' }}>
+                              {intern.total_sessions || '—'}
                             </td>
-                            <td className="px-4 py-4 text-center font-medium" style={{ color: 'var(--text-2)' }}>{intern.total_sessions || '—'}</td>
-                            <td className="px-4 py-4 text-center">
+                            <td className="px-6 py-5">
                               {intern.approved_sessions > 0
-                                ? <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold" style={{ background: 'rgba(0,200,83,0.10)', color: '#00c853', border: '1px solid rgba(0,200,83,0.3)' }}>{intern.approved_sessions}</span>
-                                : <span style={{ color: 'var(--text-3)' }}>—</span>}
+                                ? <span className="px-3 py-1 rounded-full text-[11px] font-bold"
+                                    style={{ background: 'rgba(0,200,83,0.10)', border: '1px solid rgba(0,200,83,0.30)', color: '#00c853' }}>
+                                    {intern.approved_sessions}
+                                  </span>
+                                : <span style={{ color: 'var(--text-3)' }}>—</span>
+                              }
                             </td>
-                            <td className="px-4 py-4 text-center">
+                            <td className="px-6 py-5">
                               {intern.rejected_sessions > 0
-                                ? <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold" style={{ background: 'rgba(255,82,82,0.10)', color: '#ff5252', border: '1px solid rgba(255,82,82,0.3)' }}>{intern.rejected_sessions}</span>
-                                : <span style={{ color: 'var(--text-3)' }}>—</span>}
+                                ? <span className="px-3 py-1 rounded-full text-[11px] font-bold"
+                                    style={{ background: 'rgba(255,82,82,0.10)', border: '1px solid rgba(255,82,82,0.30)', color: '#ff5252' }}>
+                                    {intern.rejected_sessions}
+                                  </span>
+                                : <span style={{ color: 'var(--text-3)' }}>—</span>
+                              }
+                            </td>
+                            <td className="px-6 py-5 text-right">
+                              <ActivityBars
+                                approved={intern.approved_sessions}
+                                total={intern.total_sessions}
+                              />
                             </td>
                           </motion.tr>
-                        ))}
-                      </tbody>
-                      <tfoot style={{ borderTop: '2px solid rgba(0,200,83,0.15)', background: 'var(--surface-variant)' }}>
-                        <tr>
-                          <td className="px-5 py-4 text-sm font-bold" style={{ color: 'var(--text-3)' }}>Total — {data.interns.length} estagiários</td>
-                          <td className="px-4 py-4 text-center font-bold" style={{ color: '#95d69a' }}>{minutesToHours(totalMinutes)}</td>
-                          <td className="px-4 py-4 text-center font-bold" style={{ color: 'var(--text)' }}>{totalSessions}</td>
-                          <td className="px-4 py-4 text-center font-bold" style={{ color: '#00c853' }}>{totalApproved}</td>
-                          <td className="px-4 py-4 text-center font-bold" style={{ color: '#ff5252' }}>{totalRejected}</td>
-                        </tr>
-                      </tfoot>
-                    </table>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+
+                  {/* Pagination footer */}
+                  <div
+                    className="px-6 py-4 flex items-center justify-between"
+                    style={{ borderTop: '1px solid rgba(0,200,83,0.10)', background: 'rgba(0,0,0,0.10)' }}
+                  >
+                    <span className="text-xs" style={{ color: 'var(--text-3)' }}>
+                      Mostrando 1–{data.interns.length} de {data.interns.length} estagiários
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        disabled
+                        className="px-4 py-1.5 rounded-lg text-xs font-medium disabled:opacity-40"
+                        style={{ border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-3)' }}
+                      >
+                        Anterior
+                      </button>
+                      <button
+                        disabled
+                        className="px-4 py-1.5 rounded-lg text-xs font-medium disabled:opacity-40"
+                        style={{ border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-3)' }}
+                      >
+                        Próximo
+                      </button>
+                    </div>
                   </div>
-                </>
+                </div>
               ) : (
                 <div className="py-20 text-center">
                   <BarChart2 size={48} className="mx-auto mb-4" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
                   <p className="font-semibold text-base mb-1" style={{ color: 'var(--text)' }}>Nenhum dado encontrado</p>
-                  <p className="text-sm preserve-case" style={{ color: 'var(--text-3)' }}>Não há registros para o período selecionado.</p>
+                  <p className="text-sm" style={{ color: 'var(--text-3)' }}>Não há registros para o período selecionado.</p>
                 </div>
               )}
-            </motion.div>
+            </motion.section>
           )}
 
-          {/* Estado inicial */}
+          {/* Initial state */}
           {!data && !loading && !error && (
             <div className="py-20 text-center">
               <Search size={48} className="mx-auto mb-4" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
               <p className="font-semibold text-base mb-1" style={{ color: 'var(--text)' }}>Selecione um período</p>
-              <p className="text-sm preserve-case" style={{ color: 'var(--text-3)' }}>Configure o filtro acima e clique em Aplicar.</p>
+              <p className="text-sm" style={{ color: 'var(--text-3)' }}>Configure o filtro acima e clique em Aplicar.</p>
             </div>
           )}
+
         </div>
       </main>
     </div>
-  )
-}
-
-function SummaryCard({ label, value, color, icon, delay = 0 }: {
-  label: string
-  value: string | number
-  color: string
-  icon: React.ReactNode
-  delay?: number
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.88, y: 10 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ duration: 0.3, delay, type: 'spring', stiffness: 280, damping: 22 }}
-      whileHover={{ scale: 1.02, y: -2 }}
-      className="rounded-xl p-5 relative overflow-hidden"
-      style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
-    >
-      <div className="flex justify-between items-start mb-3">
-        <div className="p-2 rounded-lg" style={{ background: `${color}15`, color }}>
-          {icon}
-        </div>
-      </div>
-      <p className="text-3xl font-bold mb-1" style={{ color }}>
-        {value}
-      </p>
-      <p className="text-xs font-semibold preserve-case" style={{ color: 'var(--text-3)' }}>{label}</p>
-    </motion.div>
   )
 }
