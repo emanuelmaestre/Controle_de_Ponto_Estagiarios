@@ -4,7 +4,8 @@ import { useState, Suspense, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion'
 import Link from 'next/link'
-import { Eye, EyeOff, User, Mail, BookOpen, Lock, CheckCircle2, ArrowRight, Loader2, AlertCircle, Tag } from 'lucide-react'
+import { Eye, EyeOff, User, Mail, Lock, CheckCircle2, ArrowRight, Loader2, AlertCircle, Tag } from 'lucide-react'
+import CourseSelect from '@/components/ui/CourseSelect'
 
 // ── Floating particle ────────────────────────────────
 function Particle({ delay, x, size }: { delay: number; x: number; size: number }) {
@@ -258,12 +259,12 @@ function RegisterContent() {
                 onFocus={e => (e.target.style.borderColor = '#3fe56c')}
                 onBlur={e => (e.target.style.borderColor = 'rgba(0,200,83,0.18)')} />
             </Field>
-            <Field label="Curso" icon={<BookOpen size={15} />}>
-              <input type="text" value={form.course} onChange={e => set('course', e.target.value)}
-                placeholder="Ex: Agronomia" className={inputCls} style={inputStyle}
-                onFocus={e => (e.target.style.borderColor = '#3fe56c')}
-                onBlur={e => (e.target.style.borderColor = 'rgba(0,200,83,0.18)')} />
-            </Field>
+            <div>
+              <label className="block text-[10px] font-bold tracking-widest mb-1.5" style={{ color: 'rgba(63,229,108,0.7)' }}>
+                CURSO DE GRADUAÇÃO
+              </label>
+              <CourseSelect value={form.course} onChange={v => set('course', v)} />
+            </div>
             <motion.button type="submit" whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.01 }}
               className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mt-2"
               style={{ background: '#00c853', color: '#003912' }}>
