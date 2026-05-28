@@ -5,7 +5,7 @@ import { minutesToHours } from '@/lib/utils'
 import type { Profile, MonthlyHours, InternSchedule } from '@/types/database'
 import {
   TrendingUp, Users, CheckCircle2, AlertTriangle,
-  Clock, Eye, XCircle, AlertCircle,
+  Clock, Eye, XCircle, AlertCircle, CalendarDays,
 } from 'lucide-react'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import AnimatedNumber from '@/components/ui/AnimatedNumber'
@@ -149,9 +149,18 @@ export default async function WorkloadPage() {
           <h2 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
             Carga Horária
           </h2>
-          <p className="text-sm preserve-case capitalize" style={{ color: 'var(--text-3)' }}>
-            {currentMonth}
-          </p>
+          <div
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
+            style={{
+              background: 'var(--surface-card, #0f2318)',
+              border: '1px solid rgba(0,200,83,0.20)',
+            }}
+          >
+            <CalendarDays size={13} style={{ color: '#3fe56c', flexShrink: 0 }} />
+            <span className="text-xs font-semibold preserve-case capitalize" style={{ color: 'var(--text-2)' }}>
+              {currentMonth}
+            </span>
+          </div>
         </header>
       </FadeIn>
 
