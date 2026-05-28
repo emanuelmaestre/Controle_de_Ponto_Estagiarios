@@ -154,6 +154,28 @@ function RegisterContent() {
 
   const set = (field: string, value: string) => setForm(p => ({ ...p, [field]: value }))
 
+  // ── Validação em tempo real ──────────────────────────
+  const nameHint = (() => {
+    const v = form.full_name.trim()
+    if (!v) return null
+    const words = v.split(' ').filter(Boolean)
+    if (words.length < 2) return '💡 Informe nome e sobrenome — ex: "Maria Silva"'
+    if (words.some(w => w.length < 2)) return '💡 Cada parte do nome deve ter ao menos 2 letras'
+    return null
+  })()
+
+  const emailHint = (() => {
+    const v = form.email.trim()
+    if (!v) return null
+    if (!v.includes('@')) return '💡 Falta o @ no e-mail — ex: "nome@gmail.com"'
+    const [local, domain] = v.split('@')
+    if (!local) return '💡 Coloque algo antes do @ — ex: "nome@gmail.com"'
+    if (!domain) return '💡 Coloque o domínio após o @ — ex: "@gmail.com"'
+    if (!domain.includes('.')) return '💡 Domínio incompleto — ex: "@gmail.com"'
+    if (domain.endsWith('.')) return '💡 E-mail incompleto — ex: "@gmail.com"'
+    return null
+  })()
+
   const nextStep = () => {
     if (!form.full_name.trim())
       return setError('Nome completo é obrigatório.')
@@ -282,10 +304,19 @@ function RegisterContent() {
             className="space-y-4">
             <Field label="Nome Completo *" icon={<User size={15} />}>
               <input type="text" value={form.full_name} onChange={e => set('full_name', e.target.value)}
-                placeholder="Seu nome completo" required className={inputCls} style={inputStyle}
-                onFocus={e => (e.target.style.borderColor = '#3fe56c')}
-                onBlur={e => (e.target.style.borderColor = 'rgba(0,200,83,0.18)')} />
+                placeholder="Ex: Maria Silva" required className={inputCls}
+                style={{ ...inputStyle, borderColor: nameHint ? 'rgba(255,191,0,0.45)' : 'rgba(0,200,83,0.18)' }}
+                onFocus={e => (e.target.style.borderColor = nameHint ? 'rgba(255,191,0,0.6)' : '#3fe56c')}
+                onBlur={e => (e.target.style.borderColor = nameHint ? 'rgba(255,191,0,0.45)' : 'rgba(0,200,83,0.18)')} />
             </Field>
+            <AnimatePresence>
+              {nameHint && (
+                <motion.p key="nameHint" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="text-[11px] -mt-2 px-1" style={{ color: '#ffbf00' }}>
+                  {nameHint}
+                </motion.p>
+              )}
+            </AnimatePresence>
             <Field label="Apelido (opcional)" icon={<Tag size={15} />}>
               <input type="text" value={form.nickname} onChange={e => set('nickname', e.target.value)}
                 placeholder="Como te chamam" className={inputCls} style={inputStyle}
@@ -294,10 +325,19 @@ function RegisterContent() {
             </Field>
             <Field label="E-mail *" icon={<Mail size={15} />}>
               <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
-                placeholder="seu@email.com" required className={inputCls} style={inputStyle}
-                onFocus={e => (e.target.style.borderColor = '#3fe56c')}
-                onBlur={e => (e.target.style.borderColor = 'rgba(0,200,83,0.18)')} />
+                placeholder="seu@email.com" required className={inputCls}
+                style={{ ...inputStyle, borderColor: emailHint ? 'rgba(255,191,0,0.45)' : 'rgba(0,200,83,0.18)' }}
+                onFocus={e => (e.target.style.borderColor = emailHint ? 'rgba(255,191,0,0.6)' : '#3fe56c')}
+                onBlur={e => (e.target.style.borderColor = emailHint ? 'rgba(255,191,0,0.45)' : 'rgba(0,200,83,0.18)')} />
             </Field>
+            <AnimatePresence>
+              {emailHint && (
+                <motion.p key="emailHint" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="text-[11px] -mt-2 px-1" style={{ color: '#ffbf00' }}>
+                  {emailHint}
+                </motion.p>
+              )}
+            </AnimatePresence>
             <div>
               <label className="block text-[10px] font-bold tracking-widest mb-1.5" style={{ color: 'rgba(63,229,108,0.7)' }}>
                 CURSO DE GRADUAÇÃO *
