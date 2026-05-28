@@ -131,23 +131,24 @@
    Nav lateral permanece escuro (contraste profissional)
 ────────────────────────────────────────────────────── */
 [data-theme="light"] {
-  /* Fundo geral: verde-água suave, longe do branco puro */
-  --bg:                    #e8f2eb;
-  --bg-secondary:          #dceee1;
+  /* Fundo: branco gelo com leve toque verde */
+  --bg:                    #f0f7f2;
+  --bg-secondary:          #e6f0e9;
 
-  /* Cards/superfícies: branco levemente esverdeado */
-  --surface:               #f4faf6;
-  --surface-2:             #eaf4ed;
-  --surface-card:          #f4faf6;
+  /* Cards: branco puro — contraste limpo contra o fundo */
+  --surface:               #ffffff;
+  --surface-2:             #f5faf6;
+  --surface-card:          #ffffff;
+  /* Containers internos: verde pastel claro (sem cinza) */
   --surface-container-low: #eaf4ed;
-  --surface-container:     #dceee1;
-  --surface-container-high:#cce5d2;
-  --surface-variant:       #dceee1;
+  --surface-container:     #e0f0e4;
+  --surface-container-high:#d2e9d7;
+  --surface-variant:       #e0f0e4;
 
-  /* Bordas verdes suaves mas visíveis */
-  --border:                rgba(0, 140, 60, 0.22);
-  --border-hover:          rgba(0, 140, 60, 0.45);
-  --border-low-opacity:    rgba(0, 140, 60, 0.12);
+  /* Bordas verdes com boa presença */
+  --border:                rgba(0, 130, 55, 0.20);
+  --border-hover:          rgba(0, 130, 55, 0.42);
+  --border-low-opacity:    rgba(0, 130, 55, 0.10);
 
   /* Texto: escuro com contraste adequado */
   --text:                  #0a1a0e;
