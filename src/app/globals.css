@@ -259,17 +259,17 @@ input::-webkit-textfield-decoration-container {
    NAV LINK HOVER
 ══════════════════════════════════════════════════════ */
 .nav-link {
-  color: var(--nav-muted);
-  border-left: 4px solid transparent;
+  color: var(--text-3);
 }
 .nav-link:hover {
-  background: var(--nav-hover);
-  color: var(--nav-fg);
-  border-left-color: rgba(0, 200, 83, 0.3);
+  background: var(--surface-variant);
+  color: var(--text);
 }
-.nav-link-active {
-  background: var(--nav-active);
+.nav-link-active,
+.nav-link[aria-current="page"] {
+  background: rgba(17,82,36,0.10);
   color: var(--primary);
+  font-weight: 700;
   border-left: 4px solid var(--primary);
 }
 

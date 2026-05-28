@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { getServerUser, getServerProfile } from '@/lib/supabase/cached'
-import { Home, Users, BarChart2, Settings, TrendingUp, LogOut } from 'lucide-react'
+import { LayoutDashboard, Clock, BarChart2, Settings, LogOut } from 'lucide-react'
 import ThemeToggle from './ThemeToggle'
 
 export default async function AdminNav() {
@@ -11,11 +11,10 @@ export default async function AdminNav() {
     : { data: null }
 
   const navItems = [
-    { href: '/admin',           label: 'INÍCIO',      icon: <Home       size={16} /> },
-    { href: '/admin/interns',   label: 'ESTAGIÁRIOS', icon: <Users      size={16} /> },
-    { href: '/admin/workload',  label: 'CARGA',       icon: <TrendingUp size={16} /> },
-    { href: '/admin/reports',   label: 'RELATÓRIOS',  icon: <BarChart2  size={16} /> },
-    { href: '/admin/settings',  label: 'CONFIG',      icon: <Settings   size={16} /> },
+    { href: '/admin',           label: 'Dashboard',  icon: <LayoutDashboard size={20} /> },
+    { href: '/admin/workload',  label: 'Workload',   icon: <Clock           size={20} /> },
+    { href: '/admin/reports',   label: 'Reports',    icon: <BarChart2       size={20} /> },
+    { href: '/admin/settings',  label: 'Settings',   icon: <Settings        size={20} /> },
   ]
 
   const initials = profile?.full_name
@@ -29,36 +28,39 @@ export default async function AdminNav() {
         className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 z-50"
         style={{
           width: 260,
-          background: 'var(--nav-bg)',
+          background: 'var(--surface, #07170c)',
           borderRight: '1px solid rgba(0,200,83,0.15)',
         }}
       >
         {/* Logo area */}
-        <Link
-          href="/admin"
-          className="flex items-center gap-3 px-5 py-5 flex-shrink-0"
-          style={{ borderBottom: '1px solid rgba(0,200,83,0.10)' }}
-        >
-          <div className="relative h-9 w-9 flex-shrink-0">
-            <Image src="/logo.svg" alt="ChronosLab" fill className="object-contain" />
-          </div>
-          <div className="flex flex-col">
-            <p className="text-[13px] font-black leading-none tracking-wider" style={{ color: '#3fe56c' }}>
-              CHRONOS<span style={{ color: '#d4e8d5' }}>LAB</span>
-            </p>
-            <p className="text-[9px] leading-none mt-1 tracking-widest" style={{ color: 'var(--text-3)' }}>
-              CONTROLE DE PONTO
-            </p>
-          </div>
-        </Link>
+        <div className="px-6 mb-10 pt-6">
+          <Link href="/admin" className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded flex items-center justify-center flex-shrink-0"
+              style={{ background: 'rgba(63,229,108,0.2)', border: '1px solid rgba(63,229,108,0.4)' }}
+            >
+              <div className="relative h-6 w-6">
+                <Image src="/logo.svg" alt="Chronos Lab" fill className="object-contain" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-lg font-bold leading-none" style={{ color: '#3fe56c' }}>
+                Chronos Lab
+              </h1>
+              <p className="text-[10px] tracking-widest font-bold mt-0.5" style={{ color: 'var(--text-3)' }}>
+                Admin Console
+              </p>
+            </div>
+          </Link>
+        </div>
 
         {/* Nav items */}
-        <nav className="flex-1 flex flex-col gap-0.5 px-3 pt-4">
+        <nav className="flex-1 space-y-2 px-3">
           {navItems.map(item => (
             <Link
               key={item.href}
               href={item.href}
-              className="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-[11px] font-bold tracking-wide transition-all duration-150"
+              className="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-base transition-all duration-200 active:scale-[0.98]"
             >
               <span className="flex-shrink-0">{item.icon}</span>
               <span>{item.label}</span>
@@ -66,44 +68,14 @@ export default async function AdminNav() {
           ))}
         </nav>
 
-        {/* Bottom: theme + user + logout */}
-        <div className="flex-shrink-0 px-3 pb-4 space-y-2" style={{ borderTop: '1px solid rgba(0,200,83,0.10)', paddingTop: 12 }}>
-          {/* User info */}
-          <div
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg"
-            style={{ background: 'var(--surface-container-high, #1d2e21)' }}
-          >
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0"
-              style={{
-                background: 'var(--surface-variant)',
-                color: 'var(--primary)',
-                outline: '2px solid rgba(0,200,83,0.3)',
-              }}
-              title={profile?.full_name ?? 'Gerente'}
-            >
-              {initials}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-bold leading-none truncate" style={{ color: 'var(--text)' }}>
-                {profile?.full_name?.split(' ')[0] ?? 'Gerente'}
-              </p>
-              <p className="text-[9px] mt-0.5 tracking-widest" style={{ color: 'var(--text-3)' }}>ADMIN</p>
-            </div>
-            <ThemeToggle compact />
-          </div>
-
-          {/* Logout */}
+        {/* Bottom: logout */}
+        <div className="mt-auto px-3 pb-6">
           <form action="/api/auth/signout" method="POST" className="w-full">
             <button
-              className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-[11px] font-bold tracking-wide transition-all hover:opacity-90"
-              style={{
-                background: 'rgba(255,82,82,0.08)',
-                border: '1px solid rgba(255,82,82,0.2)',
-                color: 'var(--danger)',
-              }}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-base transition-colors duration-200 hover:opacity-90"
+              style={{ color: 'var(--text-3)' }}
             >
-              <LogOut size={14} /> SAIR
+              <LogOut size={20} /> Logout
             </button>
           </form>
         </div>
@@ -113,24 +85,24 @@ export default async function AdminNav() {
       <header
         className="md:hidden sticky top-0 z-50 shadow-md"
         style={{
-          background: 'var(--nav-bg)',
+          background: 'var(--surface, #07170c)',
           borderBottom: '1px solid rgba(0,200,83,0.15)',
         }}
       >
         <div className="w-full px-4 h-14 flex items-center gap-3">
           <Link href="/admin" className="flex items-center gap-2.5 flex-shrink-0">
-            <div className="relative h-8 w-8 flex-shrink-0">
-              <Image src="/logo.svg" alt="ChronosLab" fill className="object-contain" />
+            <div className="relative h-7 w-7 flex-shrink-0">
+              <Image src="/logo.svg" alt="Chronos Lab" fill className="object-contain" />
             </div>
-            <p className="text-[11px] font-black leading-none tracking-wide" style={{ color: '#3fe56c' }}>
-              CHRONOS<span style={{ color: '#d4e8d5' }}>LAB</span>
-            </p>
+            <span className="text-base font-bold" style={{ color: '#3fe56c' }}>
+              Chronos Lab
+            </span>
           </Link>
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-3 ml-auto">
             <ThemeToggle compact />
             <div
-              className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black"
-              style={{ background: 'var(--surface-variant)', color: 'var(--primary)', border: '2px solid rgba(0,200,83,0.3)' }}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+              style={{ background: 'var(--surface-variant)', color: 'var(--primary)', border: '1px solid rgba(63,229,108,0.3)' }}
             >
               {initials}
             </div>
@@ -142,7 +114,7 @@ export default async function AdminNav() {
       <nav
         className="md:hidden fixed bottom-0 left-0 right-0 z-50"
         style={{
-          background: 'var(--surface-card)',
+          background: 'var(--surface-card, #0f2318)',
           borderTop: '1px solid rgba(0,200,83,0.15)',
           boxShadow: '0 -4px 24px rgba(0,0,0,0.4)',
         }}
@@ -156,7 +128,7 @@ export default async function AdminNav() {
               style={{ color: 'var(--text-3)' }}
             >
               <span>{item.icon}</span>
-              <span className="text-[8px] font-semibold tracking-wide">{item.label}</span>
+              <span className="text-[9px] font-medium">{item.label}</span>
             </Link>
           ))}
         </div>
