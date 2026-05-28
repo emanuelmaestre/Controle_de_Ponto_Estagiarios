@@ -155,23 +155,35 @@ function RegisterContent() {
   const set = (field: string, value: string) => setForm(p => ({ ...p, [field]: value }))
 
   const nextStep = () => {
-    if (!form.full_name.trim()) { setError('Nome completo é obrigatório.'); return }
-    if (!form.email.trim() || !form.email.includes('@')) { setError('E-mail inválido.'); return }
+    if (!form.full_name.trim())
+      return setError('Nome completo é obrigatório.')
+    if (form.full_name.trim().split(' ').filter(Boolean).length < 2)
+      return setError('Informe o nome completo (nome e sobrenome).')
+    if (!form.email.trim() || !form.email.includes('@') || !form.email.includes('.'))
+      return setError('Informe um e-mail válido.')
+    if (!form.course)
+      return setError('Selecione o curso de graduação.')
     setError(null)
     setStep(1)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (form.password.length < 6) { setError('Senha mínimo 6 caracteres.'); return }
-    if (form.password !== form.confirm) { setError('As senhas não coincidem.'); return }
+    if (form.password.length < 6) return setError('A senha deve ter no mínimo 6 caracteres.')
+    if (form.password !== form.confirm) return setError('As senhas não coincidem.')
     setError(null)
     setLoading(true)
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ full_name: form.full_name.trim(), nickname: form.nickname.trim() || null, email: form.email.trim().toLowerCase(), course: form.course.trim() || null, password: form.password }),
+        body: JSON.stringify({
+          full_name: form.full_name.trim(),
+          nickname: form.nickname.trim() || null,
+          email: form.email.trim().toLowerCase(),
+          course: form.course || null,
+          password: form.password,
+        }),
       })
       const json = await res.json()
       if (!res.ok) { setError(json.error || 'Erro ao criar conta.'); return }
@@ -274,7 +286,7 @@ function RegisterContent() {
                 onFocus={e => (e.target.style.borderColor = '#3fe56c')}
                 onBlur={e => (e.target.style.borderColor = 'rgba(0,200,83,0.18)')} />
             </Field>
-            <Field label="Apelido" icon={<Tag size={15} />}>
+            <Field label="Apelido (opcional)" icon={<Tag size={15} />}>
               <input type="text" value={form.nickname} onChange={e => set('nickname', e.target.value)}
                 placeholder="Como te chamam" className={inputCls} style={inputStyle}
                 onFocus={e => (e.target.style.borderColor = '#3fe56c')}
@@ -288,12 +300,20 @@ function RegisterContent() {
             </Field>
             <div>
               <label className="block text-[10px] font-bold tracking-widest mb-1.5" style={{ color: 'rgba(63,229,108,0.7)' }}>
-                CURSO DE GRADUAÇÃO
+                CURSO DE GRADUAÇÃO *
               </label>
               <CourseSelect value={form.course} onChange={v => set('course', v)} />
+              {!form.course && (
+                <p className="text-[10px] mt-1" style={{ color: 'rgba(255,82,82,0.7)' }}>
+                  Selecione seu curso para continuar
+                </p>
+              )}
             </div>
-            <motion.button type="submit" whileTap={{ scale: 0.97 }} whileHover={{ scale: 1.01 }}
-              className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mt-2"
+            <motion.button type="submit"
+              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.01 }}
+              disabled={!form.full_name.trim() || !form.email.trim() || !form.course}
+              className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 mt-2 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ background: '#00c853', color: '#003912' }}>
               Continuar <ArrowRight size={16} />
             </motion.button>
