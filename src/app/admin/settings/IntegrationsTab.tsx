@@ -297,17 +297,6 @@ export default function IntegrationsTab() {
               <span className="text-[11px] font-mono" style={{ color: 'var(--text-3)' }}>{dep.version}</span>
             </motion.div>
           ))}
-          <button
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold tracking-wider transition-all"
-            style={{
-              border: '1px dashed rgba(0,200,83,0.25)',
-              color: 'var(--text-3)',
-              background: 'transparent',
-            }}
-          >
-            <Plus size={13} />
-            ADICIONAR MÓDULO
-          </button>
         </div>
       </div>
 

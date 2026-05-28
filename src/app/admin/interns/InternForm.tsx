@@ -10,6 +10,7 @@ import {
   CheckCircle2, AlertTriangle, Loader2, Camera, Key,
   Mail, Lock, Save, Send, RotateCcw,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { internSchema } from '@/lib/validations'
 import { formatFullName } from '@/lib/utils'
 import type { Profile } from '@/types/database'
@@ -173,8 +174,8 @@ export default function InternForm({ mode, intern }: Props) {
         ...(photoUrl !== null ? { photo_url: photoUrl } : {}),
       }).eq('id', intern.id)
 
-      if (updateError) setError('Erro ao salvar alterações.')
-      else { setSuccess('Dados atualizados com sucesso!'); router.refresh() }
+      if (updateError) { setError('Erro ao salvar alterações.'); toast.error('Erro ao salvar alterações.') }
+      else { setSuccess('Dados atualizados com sucesso!'); toast.success('Perfil salvo com sucesso!'); router.refresh() }
     }
     setLoading(false)
   }
