@@ -26,11 +26,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { href: '/admin',           label: 'Painel',           icon: LayoutDashboard, end: true },
-  {
-    label: 'Cadastros',
-    icon: Users,
-    children: [{ href: '/admin/interns', label: 'Estagiários' }],
-  },
+  { href: '/admin/interns', label: 'Cadastros', icon: Users },
   { href: '/admin/workload',  label: 'Carga de Trabalho', icon: TrendingUp },
   { href: '/admin/reports',   label: 'Relatórios',        icon: BarChart2 },
   { href: '/admin/settings',  label: 'Configurações',     icon: Settings },
