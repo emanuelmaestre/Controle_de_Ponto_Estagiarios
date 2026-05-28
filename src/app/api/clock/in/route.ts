@@ -59,10 +59,6 @@ export async function POST(req: NextRequest) {
         .insert({
           intern_id: user.id,
           clock_in: new Date().toISOString(),
-          geo_lat: geo_lat ?? null,
-          geo_lng: geo_lng ?? null,
-          geo_status: isManager ? 'admin_exempt' : isGeoExempt ? 'user_exempt' : 'geo_disabled',
-          geo_blocked: false,
         })
         .select('id, clock_in')
         .single()
@@ -146,11 +142,6 @@ export async function POST(req: NextRequest) {
       .insert({
         intern_id: user.id,
         clock_in: new Date().toISOString(),
-        geo_lat,
-        geo_lng,
-        geo_distance: distanceRounded,
-        geo_status: 'approved',
-        geo_blocked: false,
       })
       .select('id, clock_in')
       .single()
