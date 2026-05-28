@@ -166,12 +166,7 @@ export default async function SettingsPage({ searchParams }: Props) {
 
             {/* ══ INTEGRAÇÕES ══ */}
             {activeTab === 'integracoes' && (
-              <div
-                className="rounded-xl p-6"
-                style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
-              >
-                <IntegrationsTab />
-              </div>
+              <IntegrationsTab />
             )}
 
             {/* ══ SEGURANÇA ══ */}

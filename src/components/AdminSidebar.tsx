@@ -32,7 +32,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: '/admin',            label: 'Início',      icon: Home,        end: true },
+  { href: '/admin',            label: 'Painel',           icon: Home,        end: true },
   {
     label: 'Cadastros',
     icon: FolderOpen,
@@ -40,14 +40,14 @@ const NAV_ITEMS: NavItem[] = [
       { href: '/admin/interns', label: 'Estagiários' },
     ],
   },
-  { href: '/admin/workload',  label: 'Carga',       icon: TrendingUp },
-  { href: '/admin/reports',   label: 'Relatórios',  icon: BarChart2 },
-  { href: '/admin/settings',  label: 'Config',      icon: Settings },
+  { href: '/admin/workload',  label: 'Carga de Trabalho', icon: TrendingUp },
+  { href: '/admin/reports',   label: 'Relatórios',        icon: BarChart2 },
+  { href: '/admin/settings',  label: 'Configurações',     icon: Settings },
 ]
 
 // 5 items for mobile bottom nav
 const MOBILE_NAV = [
-  { href: '/admin',            label: 'Início',      icon: Home,        end: true },
+  { href: '/admin',            label: 'Painel',      icon: Home,        end: true },
   { href: '/admin/interns',   label: 'Cadastros',   icon: FolderOpen },
   { href: '/admin/workload',  label: 'Carga',       icon: TrendingUp },
   { href: '/admin/reports',   label: 'Relatórios',  icon: BarChart2 },

@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { RefreshCw, Wifi, WifiOff, AlertTriangle, Database, Cloud, Zap, GitBranch } from 'lucide-react'
+import {
+  RefreshCw, Database, Cloud, Zap, GitBranch, Tag, Plus,
+  Wifi, WifiOff, AlertTriangle,
+} from 'lucide-react'
 
 type ServiceStatus = 'online' | 'offline' | 'degraded' | 'checking'
 
@@ -11,43 +14,44 @@ interface Service {
   label: string
   description: string
   icon: React.ReactNode
-  version?: string
+  version: string
 }
 
 const SERVICES: Service[] = [
-  { key: 'supabase', label: 'Supabase',  description: 'Banco de dados e auth',      icon: <Database  size={16} />, version: '@supabase/ssr 0.10' },
-  { key: 'vercel',   label: 'Vercel',    description: 'Hospedagem e deploy',        icon: <Cloud     size={16} />, version: 'Produção' },
-  { key: 'nextjs',   label: 'Next.js',   description: 'Framework full-stack',       icon: <Zap       size={16} />, version: '16.2.6' },
-  { key: 'github',   label: 'GitHub',    description: 'Controle de versão e CI/CD', icon: <GitBranch size={16} />, version: 'main' },
+  { key: 'supabase', label: 'Supabase',  description: 'Banco de Dados PostgreSQL & Auth',  icon: <Database  size={22} />, version: 'v2.39.2' },
+  { key: 'vercel',   label: 'Vercel',    description: 'Edge Hosting & Deployment',         icon: <Cloud     size={22} />, version: 'LATEST'  },
+  { key: 'nextjs',   label: 'Next.js',   description: 'Framework de Aplicação',            icon: <Zap       size={22} />, version: '16.2.6'  },
+  { key: 'github',   label: 'GitHub',    description: 'Sistema de Controle de Versão',     icon: <GitBranch size={22} />, version: 'N/A'     },
 ]
 
-const STACK_INFO = [
-  { label: 'BCRYPTJS',        version: '3.0',    color: '#10b981' },
-  { label: 'FRAMER MOTION',   version: '12',     color: '#ff0055' },
-  { label: 'LUCIDE REACT',    version: '1.16',   color: '#fbbf24' },
-  { label: 'NEXT.JS',         version: '16.2.6', color: '#ffffff' },
-  { label: 'REACT',           version: '19.2',   color: '#61dafb' },
-  { label: 'REACT HOOK FORM', version: '7.76',   color: '#ec4899' },
-  { label: 'REACT QUERY',     version: '5.100',  color: '#ef4444' },
-  { label: 'RECHARTS',        version: '3.8',    color: '#22d3ee' },
-  { label: 'SONNER',          version: '2.0',    color: '#8b5cf6' },
-  { label: 'SUPABASE JS',     version: '2.106',  color: '#3ecf8e' },
-  { label: 'SWR',             version: '2.4',    color: '#a78bfa' },
-  { label: 'TAILWIND CSS',    version: '4',      color: '#38bdf8' },
-  { label: 'TYPESCRIPT',      version: '5',      color: '#3178c6' },
-  { label: 'XLSX',            version: '0.18',   color: '#84cc16' },
-  { label: 'ZOD',             version: '4.4',    color: '#60a5fa' },
-  { label: 'ZUSTAND',         version: '5.0',    color: '#f97316' },
+const DEPS = [
+  { label: 'TypeScript',     version: 'v5.3',   color: '#60a5fa' },
+  { label: 'Tailwind CSS',   version: 'v4',     color: '#3fe56c' },
+  { label: 'Supabase-js',    version: 'v2.106', color: '#34d399' },
+  { label: 'Framer Motion',  version: 'v12',    color: '#a78bfa' },
+  { label: 'Lucide React',   version: 'v1.16',  color: '#00c853' },
+  { label: 'Zustand',        version: 'v5.0',   color: '#fb923c' },
+  { label: 'React Hook Form',version: 'v7.76',  color: '#f472b6' },
+  { label: 'Sonner',         version: 'v2.0',   color: '#818cf8' },
+  { label: 'XLSX',           version: 'v0.18',  color: '#84cc16' },
+  { label: 'Zod',            version: 'v4.4',   color: '#38bdf8' },
 ]
+
+const statusConfig: Record<ServiceStatus, { color: string; bg: string; border: string; label: string; pulse: boolean }> = {
+  online:   { color: '#00c853', bg: 'rgba(0,200,83,0.10)',  border: '#00c853', label: 'DISPONÍVEL',  pulse: true  },
+  degraded: { color: '#ffbf00', bg: 'rgba(255,191,0,0.10)', border: '#ffbf00', label: 'DEGRADADO',   pulse: false },
+  offline:  { color: '#ff5252', bg: 'rgba(255,82,82,0.10)', border: '#ff5252', label: 'INDISPONÍVEL',pulse: false },
+  checking: { color: 'var(--text-3)', bg: 'rgba(148,163,184,0.10)', border: 'rgba(148,163,184,0.3)', label: 'VERIFICANDO', pulse: false },
+}
 
 export default function IntegrationsTab() {
-  const [statuses, setStatuses] = useState<Record<string, ServiceStatus>>({
+  const [statuses,    setStatuses]    = useState<Record<string, ServiceStatus>>({
     supabase: 'checking', vercel: 'checking', nextjs: 'checking', github: 'checking',
   })
-  const [latencies, setLatencies]   = useState<Record<string, number>>({})
-  const [details,   setDetails]     = useState<Record<string, string>>({})
+  const [latencies,   setLatencies]   = useState<Record<string, number | string>>({})
+  const [loading,     setLoading]     = useState(false)
   const [lastChecked, setLastChecked] = useState<Date | null>(null)
-  const [loading, setLoading]       = useState(false)
+  const [healthPct,   setHealthPct]   = useState(0)
 
   const check = async () => {
     setLoading(true)
@@ -59,158 +63,245 @@ export default function IntegrationsTab() {
           services: Record<string, { status: ServiceStatus; latency?: number; detail?: string }>
         }
         const ns: Record<string, ServiceStatus> = {}
-        const nl: Record<string, number>        = {}
-        const nd: Record<string, string>        = {}
+        const nl: Record<string, number | string> = {}
         for (const [k, v] of Object.entries(data.services)) {
           ns[k] = v.status
-          if (v.latency) nl[k] = v.latency
-          if (v.detail)  nd[k] = v.detail
+          nl[k] = v.latency ? `${v.latency}ms` : (v.status === 'offline' ? 'Esgotado' : 'N/A')
         }
-        setStatuses(ns); setLatencies(nl); setDetails(nd)
+        setStatuses(ns)
+        setLatencies(nl)
+        const online = Object.values(ns).filter(s => s === 'online').length
+        setHealthPct(Math.round((online / SERVICES.length) * 100))
         setLastChecked(new Date())
       }
     } catch {
       setStatuses({ supabase: 'offline', vercel: 'offline', nextjs: 'offline', github: 'offline' })
+      setHealthPct(0)
     }
     setLoading(false)
   }
 
   useEffect(() => { check() }, [])
 
-  const statusConfig: Record<ServiceStatus, { color: string; bg: string; label: string; icon: React.ReactNode }> = {
-    online:   { color: 'var(--success)', bg: 'rgba(22,163,74,0.1)',   label: 'Disponível',  icon: <Wifi size={10} /> },
-    degraded: { color: 'var(--warning)', bg: 'rgba(217,119,6,0.1)',   label: 'Degradado',   icon: <AlertTriangle size={10} /> },
-    offline:  { color: 'var(--danger)',  bg: 'rgba(220,38,38,0.1)',   label: 'Ausente',     icon: <WifiOff size={10} /> },
-    checking: { color: 'var(--text-3)', bg: 'rgba(148,163,184,0.1)', label: 'Verificando', icon: <span className="w-2.5 h-2.5 rounded-full border-2 border-current border-t-transparent animate-spin inline-block" /> },
-  }
-
-  const totalOnline   = Object.values(statuses).filter(s => s === 'online').length
-  const totalServices = SERVICES.length
+  const totalOnline = Object.values(statuses).filter(s => s === 'online').length
 
   return (
-    <div className="flex flex-col gap-3 h-full">
+    <div className="flex flex-col gap-6">
 
-      {/* ── Header: status + refresh ── */}
-      <div className="flex items-center justify-between flex-shrink-0">
-        <div>
-          <p className="text-xs font-bold" style={{ color: 'var(--text)' }}>STATUS DOS SERVIÇOS</p>
-          <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
-            {totalOnline}/{totalServices} OPERACIONAIS
-            {lastChecked && ` — ${lastChecked.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`}
-          </p>
+      {/* ── 1. Saúde Geral do Sistema ── */}
+      <div
+        className="rounded-xl p-6"
+        style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
+          <div>
+            <h3 className="text-2xl font-semibold mb-1" style={{ color: 'var(--text)' }}>
+              Saúde Geral do Sistema
+            </h3>
+            <p className="text-sm" style={{ color: 'var(--text-3)' }}>
+              Desempenho agregado em tempo real de toda a infraestrutura em nuvem conectada.
+            </p>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <p className="text-5xl font-bold leading-none" style={{ color: '#3fe56c' }}>
+              {totalOnline === 0 && statuses.supabase === 'checking' ? '…' : `${Math.round((totalOnline / SERVICES.length) * 100)}%`}
+            </p>
+            <p className="text-[10px] font-bold tracking-wider mt-1" style={{ color: '#00c853' }}>OTIMIZADO</p>
+          </div>
         </div>
-        <button
-          onClick={check} disabled={loading}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[10px] font-bold transition-all hover:opacity-80 disabled:opacity-50"
-          style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text-2)' }}
+
+        {/* Progress bar */}
+        <div
+          className="w-full rounded-full overflow-hidden"
+          style={{ height: 16, background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.15)' }}
         >
-          <motion.div animate={loading ? { rotate: 360 } : { rotate: 0 }} transition={{ duration: 1, repeat: loading ? Infinity : 0, ease: 'linear' }}>
-            <RefreshCw size={11} />
-          </motion.div>
-          ATUALIZAR
-        </button>
-      </div>
-
-      {/* ── Saúde geral ── */}
-      <div className="rounded-xl px-3 py-2 flex-shrink-0" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
-        <div className="flex justify-between text-[10px] font-bold mb-1.5" style={{ color: 'var(--text-3)' }}>
-          <span>SAÚDE GERAL</span>
-          <span style={{ color: 'var(--success)' }}>{Math.round((totalOnline / totalServices) * 100)}%</span>
-        </div>
-        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
           <motion.div
-            className="h-full rounded-full"
-            style={{ background: 'var(--success)' }}
-            initial={{ width: 0 }}
-            animate={{ width: `${(totalOnline / totalServices) * 100}%` }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          />
+            className="h-full rounded-full relative"
+            style={{ background: 'linear-gradient(90deg, #00c853, #3fe56c)' }}
+            initial={{ width: '0%' }}
+            animate={{ width: `${(totalOnline / SERVICES.length) * 100}%` }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="absolute inset-0 rounded-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15))' }} />
+          </motion.div>
+        </div>
+        <div className="flex justify-between mt-2">
+          <span className="text-[10px] font-bold tracking-wider" style={{ color: 'var(--text-3)' }}>0% CRÍTICO</span>
+          <span className="text-[10px] font-bold tracking-wider" style={{ color: 'var(--text-3)' }}>100% OPERACIONAL</span>
         </div>
       </div>
 
-      {/* ── Service cards 2×2 / 4×1 em telas largas ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 flex-shrink-0">
-        {SERVICES.map((svc, i) => {
-          const st  = statuses[svc.key] ?? 'checking'
-          const cfg = statusConfig[st]
-          return (
-            <motion.div
-              key={svc.key}
-              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.06 }}
-              className="rounded-xl p-3"
-              style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}
-            >
-              {/* Top row */}
-              <div className="flex items-center justify-between gap-2 mb-1.5">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ background: 'var(--surface)', color: 'var(--primary)' }}>
+      {/* ── 2. Clusters de Serviço ── */}
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>Clusters de Serviço</h3>
+          <button
+            onClick={check}
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold tracking-wider transition-all hover:opacity-80 disabled:opacity-50"
+            style={{ border: '1px solid rgba(0,200,83,0.25)', color: '#3fe56c', background: 'transparent' }}
+          >
+            <motion.div animate={loading ? { rotate: 360 } : { rotate: 0 }} transition={{ duration: 1, repeat: loading ? Infinity : 0, ease: 'linear' }}>
+              <RefreshCw size={13} />
+            </motion.div>
+            ESCANEAR NÓS NOVAMENTE
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          {SERVICES.map((svc, i) => {
+            const st  = statuses[svc.key] ?? 'checking'
+            const cfg = statusConfig[st]
+            const lat = latencies[svc.key]
+            const isOffline = st === 'offline'
+
+            return (
+              <motion.div
+                key={svc.key}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.07 }}
+                className="rounded-xl p-6 transition-all"
+                style={{
+                  background: 'var(--surface-card, #0f2318)',
+                  border: '1px solid rgba(0,200,83,0.15)',
+                  opacity: isOffline ? 0.85 : 1,
+                }}
+              >
+                {/* Top: icon + badge */}
+                <div className="flex items-start justify-between mb-6">
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background: 'var(--bg)',
+                      border: '1px solid rgba(0,200,83,0.15)',
+                      color: isOffline ? '#ff5252' : '#3fe56c',
+                    }}
+                  >
                     {svc.icon}
                   </div>
-                  <div>
-                    <p className="font-bold text-[11px] leading-none" style={{ color: 'var(--text)' }}>{svc.label}</p>
-                    {svc.version && <p className="text-[9px] font-mono mt-0.5" style={{ color: 'var(--text-3)' }}>{svc.version}</p>}
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={st}
+                      initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }}
+                      className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-bold"
+                      style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color }}
+                    >
+                      {cfg.pulse ? (
+                        <span className="relative flex w-1.5 h-1.5">
+                          <span className="animate-ping absolute inline-flex w-full h-full rounded-full opacity-75" style={{ background: cfg.color }} />
+                          <span className="relative inline-flex w-1.5 h-1.5 rounded-full" style={{ background: cfg.color }} />
+                        </span>
+                      ) : (
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: cfg.color }} />
+                      )}
+                      {cfg.label}
+                    </motion.span>
+                  </AnimatePresence>
+                </div>
+
+                {/* Name + description */}
+                <h4 className="font-bold text-lg mb-1" style={{ color: 'var(--text)' }}>{svc.label}</h4>
+                <p className="text-sm mb-6" style={{ color: 'var(--text-3)' }}>{svc.description}</p>
+
+                {/* Version + Latency */}
+                <div className="space-y-3">
+                  <div className="flex justify-between text-[11px]">
+                    <span className="font-bold tracking-wider uppercase" style={{ color: 'var(--text-3)' }}>Versão</span>
+                    <span className="font-mono font-bold" style={{ color: 'var(--text)' }}>{svc.version}</span>
+                  </div>
+                  <div className="flex justify-between text-[11px]">
+                    <span className="font-bold tracking-wider uppercase" style={{ color: 'var(--text-3)' }}>Latência</span>
+                    <span
+                      className="font-mono font-bold"
+                      style={{ color: isOffline ? '#ff5252' : '#3fe56c' }}
+                    >
+                      {st === 'checking' ? '…' : (lat ?? 'N/A')}
+                    </span>
                   </div>
                 </div>
-                {/* Status badge */}
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={st}
-                    initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}
-                    transition={{ duration: 0.15 }}
-                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold flex-shrink-0"
-                    style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.color}30` }}
-                  >
-                    {cfg.icon} {cfg.label}
-                  </motion.span>
-                </AnimatePresence>
-              </div>
-
-              {/* Bottom: detail + latency + pulse */}
-              <div className="flex items-center justify-between gap-1">
-                <div className="flex items-center gap-1">
-                  {st === 'online' && (
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: 'var(--success)' }} />
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ background: 'var(--success)' }} />
-                    </span>
-                  )}
-                  {details[svc.key] && (
-                    <p className="text-[9px] truncate" style={{ color: 'var(--text-3)' }}>
-                      {details[svc.key]?.toUpperCase()}
-                    </p>
-                  )}
-                </div>
-                {latencies[svc.key] && (
-                  <span className="text-[9px] font-bold tabular-nums flex-shrink-0"
-                    style={{ color: latencies[svc.key] < 500 ? 'var(--success)' : 'var(--warning)' }}>
-                    {latencies[svc.key]}MS
-                  </span>
-                )}
-              </div>
-            </motion.div>
-          )
-        })}
+              </motion.div>
+            )
+          })}
+        </div>
       </div>
 
-      {/* ── Stack badges ── */}
-      <div className="flex-1 min-h-0">
-        <p className="text-[10px] font-bold mb-2" style={{ color: 'var(--text-3)' }}>BIBLIOTECAS E DEPENDÊNCIAS</p>
-        <div className="flex flex-wrap gap-1.5">
-          {STACK_INFO.map(pkg => (
-            <motion.span
-              key={pkg.label}
-              initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.2 }}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-bold"
-              style={{ background: `${pkg.color}15`, border: `1px solid ${pkg.color}30`, color: pkg.color }}
-            >
-              <span className="w-1 h-1 rounded-full" style={{ background: pkg.color }} />
-              {pkg.label} <span style={{ opacity: 0.6 }}>v{pkg.version}</span>
-            </motion.span>
-          ))}
+      {/* ── 3. Dependências Principais ── */}
+      <div
+        className="rounded-xl p-6"
+        style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+      >
+        <div className="flex items-center gap-3 mb-5">
+          <Tag size={18} style={{ color: '#3fe56c' }} />
+          <h3 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>Dependências Principais</h3>
         </div>
+        <div className="flex flex-wrap gap-3">
+          {DEPS.map((dep, i) => (
+            <motion.div
+              key={dep.label}
+              initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.03 }}
+              className="flex items-center gap-3 px-4 py-2 rounded-lg cursor-default transition-all"
+              style={{
+                background: 'var(--bg)',
+                border: '1px solid rgba(0,200,83,0.15)',
+              }}
+              whileHover={{ borderColor: 'rgba(0,200,83,0.40)' }}
+            >
+              <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: dep.color }} />
+              <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>{dep.label}</span>
+              <span className="text-[11px] font-mono" style={{ color: 'var(--text-3)' }}>{dep.version}</span>
+            </motion.div>
+          ))}
+          <button
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold tracking-wider transition-all"
+            style={{
+              border: '1px dashed rgba(0,200,83,0.25)',
+              color: 'var(--text-3)',
+              background: 'transparent',
+            }}
+          >
+            <Plus size={13} />
+            ADICIONAR MÓDULO
+          </button>
+        </div>
+      </div>
+
+      {/* ── 4. Sincronização CI/CD Automatizada ── */}
+      <div
+        className="relative overflow-hidden rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+        style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+      >
+        {/* background glows */}
+        <div className="absolute -right-20 -bottom-20 w-64 h-64 rounded-full pointer-events-none"
+          style={{ background: 'rgba(63,229,108,0.05)', filter: 'blur(40px)' }} />
+        <div className="absolute -left-20 -top-20 w-48 h-48 rounded-full pointer-events-none"
+          style={{ background: 'rgba(149,214,154,0.04)', filter: 'blur(40px)' }} />
+
+        <div className="relative z-10">
+          <h4 className="text-2xl font-bold mb-2" style={{ color: 'var(--text)' }}>
+            Sincronização CI/CD Automatizada
+          </h4>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-3)', maxWidth: 480 }}>
+            O Chronos Lab pode detectar automaticamente e atualizar as tags de configuração com base no arquivo{' '}
+            <code
+              className="px-1.5 py-0.5 rounded text-sm"
+              style={{ background: 'var(--bg)', color: '#3fe56c', border: '1px solid rgba(0,200,83,0.20)' }}
+            >
+              package.json
+            </code>{' '}
+            do seu repositório.
+          </p>
+        </div>
+
+        <motion.button
+          whileHover={{ scale: 1.03, y: -1 }}
+          whileTap={{ scale: 0.97 }}
+          className="relative z-10 px-8 py-3 rounded-lg font-bold text-sm whitespace-nowrap flex-shrink-0 transition-all"
+          style={{ background: '#3fe56c', color: '#003912', boxShadow: '0 4px 20px rgba(63,229,108,0.30)' }}
+        >
+          ATIVAR SINCRONIZAÇÃO AUTOMÁTICA
+        </motion.button>
       </div>
 
     </div>
