@@ -126,7 +126,7 @@ export default function InternForm({ mode, intern }: Props) {
           internship_end:   intern.internship_end ?? '',
           is_active:        intern.is_active,
         }
-      : { is_active: true },
+      : { is_active: true, internship_start: new Date().toISOString().slice(0, 10) },
   })
 
   const isActive = watch('is_active')

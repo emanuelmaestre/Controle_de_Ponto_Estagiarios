@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         email: data.email.toLowerCase(),
         nickname: nickname,
         course: data.course || null,
-        internship_start: data.internship_start || null,
+        internship_start: data.internship_start || new Date().toISOString().slice(0, 10),
         internship_end: data.internship_end || null,
         is_active: data.is_active ?? true,
         role: 'intern',
