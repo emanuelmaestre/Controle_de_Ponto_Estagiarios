@@ -31,9 +31,9 @@ export default async function AdminPage() {
   const avatarColors = ['#3b82f6','#8b5cf6','#ec4899','#10b981','#f59e0b','#06b6d4']
 
   const statusCfg: Record<string, { label: string; color: string; bg: string; border: string }> = {
-    ativo:   { label: 'NO LABORATÓRIO', color: 'var(--success)', bg: 'rgba(22,163,74,0.10)',  border: 'rgba(22,163,74,0.25)'  },
-    saiu:    { label: 'SAIU HOJE',      color: 'var(--info)',    bg: 'rgba(14,165,233,0.10)', border: 'rgba(14,165,233,0.25)' },
-    ausente: { label: 'AUSENTE',        color: 'var(--text-3)',  bg: 'var(--bg)',             border: 'var(--border)'         },
+    ativo:   { label: 'NO LABORATÓRIO', color: '#00c853', bg: 'rgba(0,200,83,0.10)',   border: 'rgba(0,200,83,0.3)'   },
+    saiu:    { label: 'SAIU HOJE',      color: '#95d69a', bg: 'rgba(149,214,154,0.08)',border: 'rgba(149,214,154,0.2)'},
+    ausente: { label: 'AUSENTE',        color: 'var(--text-3)', bg: 'var(--surface-container)', border: 'var(--border)' },
   }
 
   const stats = [
@@ -42,16 +42,16 @@ export default async function AdminPage() {
       label: 'PRESENTES',
       value: activeCount,
       sub: 'no laboratório',
-      color: 'var(--success)',
-      bg: 'rgba(22,163,74,0.08)',
+      color: '#00c853',
+      bg: 'rgba(0,200,83,0.08)',
     },
     {
       icon: <Users size={16} />,
       label: 'ESTAGIÁRIOS',
       value: totalCount,
       sub: `${saiuCount} saíram hoje`,
-      color: 'var(--info)',
-      bg: 'rgba(14,165,233,0.08)',
+      color: 'var(--secondary)',
+      bg: 'rgba(149,214,154,0.08)',
     },
     {
       icon: <AlertTriangle size={16} />,
@@ -59,7 +59,7 @@ export default async function AdminPage() {
       value: ausenteCount,
       sub: ausenteCount > 0 ? 'verificar hoje' : 'todos presentes',
       color: ausenteCount > 0 ? 'var(--danger)' : 'var(--text-3)',
-      bg: ausenteCount > 0 ? 'rgba(220,38,38,0.08)' : 'var(--bg)',
+      bg: ausenteCount > 0 ? 'rgba(255,82,82,0.08)' : 'var(--surface-container)',
     },
   ]
 
@@ -82,8 +82,8 @@ export default async function AdminPage() {
             </div>
             <Link
               href="/admin/interns/new"
-              className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold px-3 py-2 rounded-xl transition-all hover:opacity-90"
-              style={{ background: 'var(--primary)', color: 'white' }}
+              className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold px-3 py-2 rounded-lg transition-all hover:opacity-90"
+              style={{ background: '#00c853', color: '#003912' }}
             >
               + NOVO ESTAGIÁRIO
             </Link>
@@ -95,8 +95,7 @@ export default async function AdminPage() {
           {stats.map((s, i) => (
             <FadeIn key={s.label} delay={i * 0.04}>
               <div
-                className="rounded-2xl p-3.5"
-                style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
+                className="card-surface rounded-2xl p-3.5 transition-all"
               >
                 <div className="p-1.5 rounded-lg w-fit mb-2" style={{ background: s.bg, color: s.color }}>
                   {s.icon}
@@ -122,8 +121,8 @@ export default async function AdminPage() {
               </div>
               <Link
                 href="/admin/interns"
-                className="text-[9px] font-bold px-2.5 py-1.5 rounded-xl"
-                style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text-3)' }}
+                className="text-[9px] font-bold px-2.5 py-1.5 rounded-lg"
+                style={{ background: 'var(--surface-card)', border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-3)' }}
               >
                 VER TODOS
               </Link>
@@ -141,19 +140,20 @@ export default async function AdminPage() {
                     <StaggerItem key={intern.id}>
                       <Link
                         href={`/admin/interns/${intern.id}`}
-                        className="group flex items-center gap-3 rounded-2xl p-3.5 transition-all hover:shadow-md"
-                        style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
+                        className="group card-surface flex items-center gap-3 rounded-2xl p-3.5 transition-all"
                       >
                         {/* Avatar */}
                         {intern.photo_url ? (
                           <img
                             src={intern.photo_url}
                             alt={intern.full_name}
-                            className="w-9 h-9 rounded-xl object-cover flex-shrink-0"
+                            className="w-9 h-9 rounded-full object-cover flex-shrink-0 ring-2"
+                            style={{ ringColor: 'rgba(0,200,83,0.3)' }}
                           />
                         ) : (
                           <div
-                            className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs flex-shrink-0 text-white"
+                            className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 text-white ring-2"
+                            style={{ background: avatarBg, border: '2px solid rgba(0,200,83,0.25)' }}
                             style={{ background: avatarBg }}
                           >
                             {initials}
@@ -197,16 +197,15 @@ export default async function AdminPage() {
           ) : (
             <FadeIn>
               <div
-                className="flex-1 rounded-3xl flex flex-col items-center justify-center py-10"
-                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+                className="flex-1 card-surface rounded-3xl flex flex-col items-center justify-center py-10"
               >
                 <Users size={44} className="mx-auto mb-3" style={{ color: "var(--text-3)", opacity: 0.35 }} />
                 <p className="font-bold text-sm mb-1" style={{ color: 'var(--text)' }}>NENHUM ESTAGIÁRIO CADASTRADO</p>
                 <p className="text-xs mb-4" style={{ color: 'var(--text-3)' }}>Comece adicionando o primeiro estagiário.</p>
                 <Link
                   href="/admin/interns/new"
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold transition-all hover:opacity-90"
-                  style={{ background: 'var(--primary)', color: 'white' }}
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold transition-all hover:opacity-90"
+                  style={{ background: '#00c853', color: '#003912' }}
                 >
                   + ADICIONAR ESTAGIÁRIO
                 </Link>

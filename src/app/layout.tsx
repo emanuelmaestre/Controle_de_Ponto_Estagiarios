@@ -6,7 +6,12 @@ import { Toaster } from 'sonner'
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
 import NavigationProgress from '@/components/NavigationProgress'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+  weight: ['400', '500', '600', '700', '800', '900'],
+})
 
 export const metadata: Metadata = {
   title: 'ChronosLab — Controle de Ponto',
@@ -20,7 +25,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#1e5c2d',
+  themeColor: '#07170c',
   width: 'device-width',
   initialScale: 1,
 }
@@ -40,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${inter.variable} font-sans min-h-full`}>
+      <body className={`${inter.variable} font-sans min-h-full`} style={{ fontFamily: 'var(--font-inter), Inter, sans-serif' }}>
         <ThemeProvider>
           <NavigationProgress />
           {children}

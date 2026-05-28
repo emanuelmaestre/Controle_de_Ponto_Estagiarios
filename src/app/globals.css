@@ -1,147 +1,89 @@
 @import "tailwindcss";
 
 /* ══════════════════════════════════════════════════════
-   TEMA LIGHT (padrão)
+   STITCH DESIGN SYSTEM — ChronosLab
+   Paleta: verde escuro profundo + verde neon primário
 ══════════════════════════════════════════════════════ */
 :root,
-[data-theme="light"] {
-  --bg:            #f0f4f8;
-  --bg-secondary:  #e4eaf2;
-  --surface:       #ffffff;
-  --surface-2:     #f8fafc;
-  --border:        #e2e8f0;
-  --border-hover:  #cbd5e1;
-
-  --text:          #0f172a;
-  --text-2:        #475569;
-  --text-3:        #94a3b8;
-
-  --primary:       #1e5c2d;
-  --primary-light: #2d8a42;
-  --primary-dark:  #154020;
-  --primary-fg:    #ffffff;
-
-  --accent:        #c0392b;
-  --accent-light:  #e74c3c;
-  --accent-fg:     #ffffff;
-
-  --success:       #16a34a;
-  --warning:       #d97706;
-  --danger:        #dc2626;
-  --info:          #0ea5e9;
-
-  --nav-bg:        #1e5c2d;
-  --nav-fg:        #ffffff;
-  --nav-muted:     rgba(255,255,255,0.65);
-  --nav-hover:     rgba(255,255,255,0.12);
-  --nav-active:    rgba(255,255,255,0.18);
-
-  --card-shadow:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-  --card-shadow-md:0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
-
-  --ring:          rgba(30,92,45,0.25);
-  --input-bg:      #f8fafc;
-}
-
-/* ══════════════════════════════════════════════════════
-   TEMA DARK
-══════════════════════════════════════════════════════ */
-[data-theme="dark"] {
-  --bg:            #0f1117;
-  --bg-secondary:  #161b22;
-  --surface:       #1c2128;
-  --surface-2:     #22272e;
-  --border:        #30363d;
-  --border-hover:  #484f58;
-
-  --text:          #e6edf3;
-  --text-2:        #8b949e;
-  --text-3:        #484f58;
-
-  --primary:       #3fb950;
-  --primary-light: #56d364;
-  --primary-dark:  #238636;
-  --primary-fg:    #0d1117;
-
-  --accent:        #f85149;
-  --accent-light:  #ff7b72;
-  --accent-fg:     #0d1117;
-
-  --success:       #3fb950;
-  --warning:       #d29922;
-  --danger:        #f85149;
-  --info:          #58a6ff;
-
-  --nav-bg:        #161b22;
-  --nav-fg:        #e6edf3;
-  --nav-muted:     #8b949e;
-  --nav-hover:     rgba(255,255,255,0.06);
-  --nav-active:    rgba(63,185,80,0.15);
-
-  --card-shadow:   0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
-  --card-shadow-md:0 4px 12px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
-
-  --ring:          rgba(63,185,80,0.3);
-  --input-bg:      #0d1117;
-}
-
-/* ══════════════════════════════════════════════════════
-   TEMA LAB (ChronosLab — verde escuro + laranja)
-══════════════════════════════════════════════════════ */
+[data-theme="light"],
+[data-theme="dark"],
 [data-theme="lab"] {
-  --bg:            #071510;
-  --bg-secondary:  #0c1f18;
-  --surface:       #0f2a1e;
-  --surface-2:     #142e22;
-  --border:        #1e4a34;
-  --border-hover:  #2d6a4a;
+  /* Backgrounds */
+  --bg:                    #07170c;
+  --bg-secondary:          #0f1f14;
+  --surface:               #07170c;
+  --surface-2:             #0f1f14;
+  --surface-card:          #0f2318;
+  --surface-container-low: #0f1f14;
+  --surface-container:     #132317;
+  --surface-container-high:#1d2e21;
+  --surface-variant:       #28392c;
 
-  --text:          #d4edda;
-  --text-2:        #8ab99a;
-  --text-3:        #4d7a5c;
+  /* Borders */
+  --border:                rgba(0, 200, 83, 0.15);
+  --border-hover:          rgba(0, 200, 83, 0.25);
+  --border-low-opacity:    rgba(0, 200, 83, 0.15);
 
-  --primary:       #2d8a42;
-  --primary-light: #3cb85a;
-  --primary-dark:  #1e6b35;
-  --primary-fg:    #ffffff;
+  /* Text */
+  --text:                  #d4e8d5;
+  --text-2:                #bbcbb8;
+  --text-3:                #869583;
 
-  --accent:        #c0392b;
-  --accent-light:  #e74c3c;
-  --accent-fg:     #ffffff;
+  /* Primary */
+  --primary:               #3fe56c;
+  --primary-light:         #3fe56c;
+  --primary-dark:          #00c853;
+  --primary-fg:            #003912;
+  --primary-container:     #00c853;
+  --on-primary:            #003912;
 
-  --success:       #27ae60;
-  --warning:       #f39c12;
-  --danger:        #e74c3c;
-  --info:          #2980b9;
+  /* Secondary */
+  --secondary:             #95d69a;
 
-  --nav-bg:        #071510;
-  --nav-fg:        #d4edda;
-  --nav-muted:     #4d7a5c;
-  --nav-hover:     rgba(45,138,66,0.15);
-  --nav-active:    rgba(45,138,66,0.25);
+  /* Status */
+  --status-active:         #00c853;
+  --status-attention:      #ffbf00;
+  --status-error:          #ff5252;
 
-  --card-shadow:   0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4);
-  --card-shadow-md:0 4px 16px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+  /* Semantic */
+  --success:               #00c853;
+  --warning:               #ffbf00;
+  --danger:                #ff5252;
+  --error:                 #ffb4ab;
+  --info:                  #95d69a;
 
-  --ring:          rgba(45,138,66,0.35);
-  --input-bg:      #071510;
+  /* Nav (sidebar) */
+  --nav-bg:                #07170c;
+  --nav-fg:                #d4e8d5;
+  --nav-muted:             #869583;
+  --nav-hover:             rgba(0, 200, 83, 0.08);
+  --nav-active:            rgba(0, 200, 83, 0.12);
+
+  /* Shadows */
+  --card-shadow:           0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4);
+  --card-shadow-md:        0 4px 16px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+  --card-glow:             0 0 12px rgba(0, 200, 83, 0.1);
+
+  /* Misc */
+  --ring:                  rgba(0, 200, 83, 0.3);
+  --input-bg:              #0f1f14;
+  --outline:               #869583;
 }
 
 /* ══════════════════════════════════════════════════════
    BASE STYLES
 ══════════════════════════════════════════════════════ */
 @theme inline {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
 
 *, *::before, *::after {
-  transition-property: background-color, border-color, color;
+  transition-property: background-color, border-color, color, box-shadow;
   transition-duration: 200ms;
   transition-timing-function: ease;
 }
 
-/* Exceções — não animar transforms/opacity globalmente */
 button, a, input, select, textarea {
   transition-property: background-color, border-color, color, box-shadow, opacity, transform;
 }
@@ -153,10 +95,10 @@ html {
 body {
   background: var(--bg);
   color: var(--text);
+  font-family: 'Inter', sans-serif;
   font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Sistema em maiúsculas — identidade visual ChronosLab */
   text-transform: uppercase;
   letter-spacing: 0.025em;
 }
@@ -171,7 +113,6 @@ code, pre,
   letter-spacing: normal !important;
 }
 
-/* Emails exibidos como texto (não input) também preservam */
 [data-email],
 .email-display {
   text-transform: none !important;
@@ -179,18 +120,42 @@ code, pre,
 }
 
 /* ══════════════════════════════════════════════════════
+   CARD UTILITY CLASSES
+══════════════════════════════════════════════════════ */
+.card-surface {
+  background: var(--surface-card);
+  border: 1px solid rgba(0, 200, 83, 0.15);
+  border-radius: 16px;
+  transition: box-shadow 200ms ease, border-color 200ms ease;
+}
+.card-surface:hover {
+  box-shadow: 0 0 12px rgba(0, 200, 83, 0.1);
+  border-color: rgba(0, 200, 83, 0.25);
+}
+
+.status-badge-active {
+  background: rgba(0, 200, 83, 0.1);
+  border: 1px solid #00c853;
+  color: #00c853;
+}
+.status-badge-absent {
+  background: rgba(255, 82, 82, 0.1);
+  border: 1px solid #ff5252;
+  color: #ff5252;
+}
+.status-badge-attention {
+  background: rgba(255, 191, 0, 0.1);
+  border: 1px solid #ffbf00;
+  color: #ffbf00;
+}
+
+/* ══════════════════════════════════════════════════════
    GLASS
 ══════════════════════════════════════════════════════ */
 .glass {
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(7, 23, 12, 0.88);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-}
-[data-theme="dark"] .glass {
-  background: rgba(22, 27, 34, 0.85);
-}
-[data-theme="lab"] .glass {
-  background: rgba(7, 21, 16, 0.88);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -198,14 +163,12 @@ code, pre,
 ══════════════════════════════════════════════════════ */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-secondary); }
-::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 99px; }
+::-webkit-scrollbar-thumb { background: var(--surface-variant); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
 
-/* Esconde scrollbar em todo o sistema — scroll ainda funciona via touch/mouse */
 * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
 *::-webkit-scrollbar { display: none !important; }
 
-/* Utilitário auxiliar (caso necessário pontualmente) */
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
@@ -217,7 +180,7 @@ code, pre,
   100% { background-position:  200% 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);
+  background: linear-gradient(90deg, var(--surface-card) 25%, var(--surface-variant) 50%, var(--surface-card) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -241,6 +204,12 @@ code, pre,
   animation: pulse-ring 1.5s ease-out infinite;
 }
 
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(0, 200, 83, 0.15); }
+  50%       { box-shadow: 0 0 20px rgba(0, 200, 83, 0.3); }
+}
+.glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
+
 /* ══════════════════════════════════════════════════════
    HIDE NATIVE BROWSER PASSWORD ICONS
 ══════════════════════════════════════════════════════ */
@@ -253,23 +222,30 @@ input::-webkit-textfield-decoration-container {
 }
 
 /* ══════════════════════════════════════════════════════
-   NAV LINK HOVER (Server Component safe — no JS handlers)
+   NAV LINK HOVER
 ══════════════════════════════════════════════════════ */
 .nav-link {
   color: var(--nav-muted);
+  border-left: 4px solid transparent;
 }
 .nav-link:hover {
   background: var(--nav-hover);
   color: var(--nav-fg);
+  border-left-color: rgba(0, 200, 83, 0.3);
+}
+.nav-link-active {
+  background: var(--nav-active);
+  color: var(--primary);
+  border-left: 4px solid var(--primary);
 }
 
 /* ══════════════════════════════════════════════════════
    NPROGRESS BAR
 ══════════════════════════════════════════════════════ */
 #nprogress .bar {
-  background: var(--primary-light) !important;
+  background: var(--primary) !important;
   height: 3px !important;
 }
 #nprogress .peg {
-  box-shadow: 0 0 10px var(--primary-light), 0 0 5px var(--primary-light) !important;
+  box-shadow: 0 0 10px var(--primary), 0 0 5px var(--primary) !important;
 }

@@ -32,7 +32,7 @@ export default async function InternsPage() {
 
 
       {/* Header compacto */}
-      <div className="flex-shrink-0" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+      <div className="flex-shrink-0" style={{ background: 'var(--surface-card)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}>
         <div className="px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <BackButton href="/admin" />
@@ -46,8 +46,8 @@ export default async function InternsPage() {
           </div>
           <Link
             href="/admin/interns/new"
-            className="flex items-center gap-1.5 font-bold text-[10px] px-3 py-2 rounded-xl transition-all hover:opacity-90 flex-shrink-0"
-            style={{ background: 'var(--primary)', color: 'white' }}
+            className="flex items-center gap-1.5 font-bold text-[10px] px-3 py-2 rounded-lg transition-all hover:opacity-90 flex-shrink-0"
+            style={{ background: '#00c853', color: '#003912' }}
           >
             <UserPlus size={13} /> NOVO ESTAGIÁRIO
           </Link>
@@ -131,15 +131,14 @@ function InternCard({
   return (
     <Link
       href={`/admin/interns/${intern.id}`}
-      className="group flex items-center gap-3 rounded-2xl px-4 py-3 transition-all hover:shadow-md"
-      style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
+      className="group card-surface flex items-center gap-3 rounded-2xl px-4 py-3 transition-all"
     >
       {intern.photo_url ? (
-        <img src={intern.photo_url} alt={intern.full_name} className="w-9 h-9 rounded-xl object-cover flex-shrink-0" />
+        <img src={intern.photo_url} alt={intern.full_name} className="w-9 h-9 rounded-full object-cover flex-shrink-0" style={{ border: '2px solid rgba(0,200,83,0.25)' }} />
       ) : (
         <div
-          className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs flex-shrink-0 text-white"
-          style={{ background: color }}
+          className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 text-white"
+          style={{ background: color, border: '2px solid rgba(0,200,83,0.2)' }}
         >
           {initials}
         </div>
@@ -157,9 +156,9 @@ function InternCard({
       <span
         className="text-[9px] font-bold px-2 py-1 rounded-full flex-shrink-0"
         style={{
-          background: isActive ? 'rgba(22,163,74,0.10)' : 'var(--bg)',
-          color: isActive ? 'var(--success)' : 'var(--text-3)',
-          border: `1px solid ${isActive ? 'rgba(22,163,74,0.25)' : 'var(--border)'}`,
+          background: isActive ? 'rgba(0,200,83,0.10)' : 'var(--surface-container)',
+          color: isActive ? '#00c853' : 'var(--text-3)',
+          border: `1px solid ${isActive ? 'rgba(0,200,83,0.3)' : 'rgba(0,200,83,0.10)'}`,
         }}
       >
         {isActive ? 'ATIVO' : 'INATIVO'}

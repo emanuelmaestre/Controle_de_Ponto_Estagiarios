@@ -73,7 +73,7 @@ export default async function WorkloadPage() {
   rows.sort((a, b) => a.pct - b.pct)
 
   const getColor = (pct: number) =>
-    pct >= 100 ? 'var(--success)' : pct >= 75 ? 'var(--info)' : pct >= 40 ? 'var(--primary)' : 'var(--warning)'
+    pct >= 100 ? '#00c853' : pct >= 75 ? '#3fe56c' : pct >= 40 ? '#95d69a' : '#ffbf00'
   const getLabel = (pct: number) =>
     pct >= 100 ? 'CONCLUÍDO' : pct >= 75 ? 'QUASE LÁ' : pct >= 40 ? 'EM DIA' : 'ATENÇÃO'
 
@@ -84,7 +84,7 @@ export default async function WorkloadPage() {
 
 
       {/* Header */}
-      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ background: 'var(--surface-card)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}>
         <div className="px-4 sm:px-6 py-4">
           <div className="flex items-center gap-3 mb-2">
             <BackButton href="/admin" />
@@ -104,7 +104,7 @@ export default async function WorkloadPage() {
               <div
                 key={c.label}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold"
-                style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text-2)' }}
+                style={{ background: 'var(--surface-container)', border: '1px solid rgba(0,200,83,0.12)', color: 'var(--text-2)' }}
               >
                 <span style={{ color: c.color }}>{c.value}</span> {c.label}
               </div>
@@ -134,8 +134,7 @@ export default async function WorkloadPage() {
             <StaggerItem key={r.id}>
             <Link
               href={`/admin/interns/${r.id}`}
-              className="block rounded-2xl p-4 transition-all hover:shadow-md hover:-translate-y-0.5"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--card-shadow)' }}
+              className="block card-surface rounded-2xl p-4 transition-all hover:-translate-y-0.5"
             >
               <div className="flex items-center gap-4">
                 {/* Avatar */}
@@ -163,7 +162,7 @@ export default async function WorkloadPage() {
                   </div>
 
                   {/* Progress bar */}
-                  <div className="h-2 rounded-full overflow-hidden mb-1.5" style={{ background: 'var(--bg)' }}>
+                  <div className="h-2 rounded-full overflow-hidden mb-1.5" style={{ background: 'var(--surface-variant)' }}>
                     <div
                       className="h-full rounded-full transition-all duration-700"
                       style={{ width: `${r.pct}%`, background: color }}

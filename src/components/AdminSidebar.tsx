@@ -121,23 +121,24 @@ export default function AdminSidebar({ fullName, initials }: Props) {
             className="relative flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors"
             style={{
               background: active
-                ? 'linear-gradient(135deg, rgba(74,222,128,0.15), rgba(14,165,233,0.08))'
+                ? 'rgba(0, 200, 83, 0.12)'
                 : hoveredItem === item.href
-                ? 'rgba(255,255,255,0.06)'
+                ? 'rgba(0, 200, 83, 0.06)'
                 : 'transparent',
-              border: active ? '1px solid rgba(74,222,128,0.2)' : '1px solid transparent',
+              border: active ? '1px solid rgba(0,200,83,0.2)' : '1px solid transparent',
+              borderLeft: active ? '4px solid #00c853' : '4px solid transparent',
             }}
           >
             {active && (
               <motion.div
                 layoutId="activeIndicator"
                 className="absolute left-0 top-1/2 -translate-y-1/2 rounded-r-full"
-                style={{ width: 3, height: 22, background: '#4ade80' }}
+                style={{ width: 3, height: 22, background: '#00c853' }}
                 transition={{ type: 'spring', stiffness: 380, damping: 30 }}
               />
             )}
             <div className="relative flex-shrink-0">
-              <motion.div animate={active ? { color: '#4ade80' } : { color: 'rgba(255,255,255,0.45)' }}>
+              <motion.div animate={active ? { color: '#00c853' } : { color: 'var(--text-3)' }}>
                 <Icon size={17} />
               </motion.div>
               {active && (
@@ -145,7 +146,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="absolute inset-0 rounded-full blur-sm"
-                  style={{ background: 'rgba(74,222,128,0.3)', zIndex: -1 }}
+                  style={{ background: 'rgba(0,200,83,0.25)', zIndex: -1 }}
                 />
               )}
             </div>
@@ -157,7 +158,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                   exit={{ opacity: 0, x: -8, width: 0 }}
                   transition={{ duration: 0.16 }}
                   className="text-[11px] font-bold whitespace-nowrap overflow-hidden"
-                  style={{ color: active ? 'white' : 'rgba(255,255,255,0.5)' }}
+                  style={{ color: active ? '#3fe56c' : 'var(--text-2)' }}
                 >
                   {item.label}
                 </motion.span>
@@ -223,23 +224,24 @@ export default function AdminSidebar({ fullName, initials }: Props) {
           className="w-full relative flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors"
           style={{
             background: groupActive && !isOpen
-              ? 'linear-gradient(135deg, rgba(74,222,128,0.15), rgba(14,165,233,0.08))'
+              ? 'rgba(0, 200, 83, 0.12)'
               : hoveredItem === item.label
-              ? 'rgba(255,255,255,0.06)'
+              ? 'rgba(0, 200, 83, 0.06)'
               : 'transparent',
-            border: groupActive && !isOpen ? '1px solid rgba(74,222,128,0.2)' : '1px solid transparent',
+            border: groupActive && !isOpen ? '1px solid rgba(0,200,83,0.2)' : '1px solid transparent',
+            borderLeft: groupActive && !isOpen ? '4px solid #00c853' : '4px solid transparent',
           }}
         >
           {groupActive && !isOpen && (
             <motion.div
               layoutId="activeIndicator"
               className="absolute left-0 top-1/2 -translate-y-1/2 rounded-r-full"
-              style={{ width: 3, height: 22, background: '#4ade80' }}
+              style={{ width: 3, height: 22, background: '#00c853' }}
               transition={{ type: 'spring', stiffness: 380, damping: 30 }}
             />
           )}
           <div className="relative flex-shrink-0">
-            <motion.div animate={groupActive ? { color: '#4ade80' } : { color: 'rgba(255,255,255,0.45)' }}>
+            <motion.div animate={groupActive ? { color: '#00c853' } : { color: 'var(--text-3)' }}>
               <Icon size={17} />
             </motion.div>
           </div>
@@ -251,7 +253,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                 exit={{ opacity: 0, x: -8, width: 0 }}
                 transition={{ duration: 0.16 }}
                 className="flex-1 text-left text-[11px] font-bold whitespace-nowrap overflow-hidden"
-                style={{ color: groupActive ? 'white' : 'rgba(255,255,255,0.5)' }}
+                style={{ color: groupActive ? '#3fe56c' : 'var(--text-2)' }}
               >
                 {item.label.toUpperCase()}
               </motion.span>
@@ -318,23 +320,22 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                         whileTap={{ scale: 0.97 }}
                         className="relative flex items-center gap-2 rounded-lg px-3 py-2"
                         style={{
-                          background: childActive
-                            ? 'linear-gradient(135deg, rgba(74,222,128,0.12), rgba(14,165,233,0.06))'
-                            : 'transparent',
-                          border: childActive ? '1px solid rgba(74,222,128,0.15)' : '1px solid transparent',
+                          background: childActive ? 'rgba(0,200,83,0.1)' : 'transparent',
+                          border: childActive ? '1px solid rgba(0,200,83,0.15)' : '1px solid transparent',
+                          borderLeft: childActive ? '3px solid #00c853' : '3px solid transparent',
                         }}
                       >
                         {childActive && (
                           <motion.div
                             layoutId="activeIndicator"
                             className="absolute left-0 top-1/2 -translate-y-1/2 rounded-r-full"
-                            style={{ width: 2, height: 16, background: '#4ade80' }}
+                            style={{ width: 2, height: 16, background: '#00c853' }}
                             transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                           />
                         )}
                         <span
                           className="text-[11px] font-bold whitespace-nowrap"
-                          style={{ color: childActive ? '#4ade80' : 'rgba(255,255,255,0.45)' }}
+                          style={{ color: childActive ? '#3fe56c' : 'var(--text-2)' }}
                         >
                           {child.label.toUpperCase()}
                         </span>
@@ -361,7 +362,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
           style={{
             height: 52,
             background: 'var(--nav-bg)',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            borderBottom: '1px solid rgba(0,200,83,0.12)',
           }}
         >
           <div className="flex items-center gap-2">
@@ -370,7 +371,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
             </div>
             <div>
               <p className="text-[10px] font-black leading-none tracking-widest" style={{ color: 'white' }}>
-                CHRONOS <span style={{ color: '#4ade80' }}>LAB</span>
+                CHRONOS <span style={{ color: '#3fe56c' }}>LAB</span>
               </p>
               <p className="text-[8px] leading-none" style={{ color: 'rgba(255,255,255,0.35)' }}>
                 CONTROLE DE PONTO
@@ -394,7 +395,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
           style={{
             height: '100dvh',
             background: 'var(--nav-bg)',
-            borderRight: '1px solid rgba(255,255,255,0.06)',
+            borderRight: '1px solid rgba(0,200,83,0.15)',
             overflow: 'hidden',
           }}
         >
@@ -419,7 +420,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
           {/* ── Logo ─────────────────────────── */}
           <div
             className="flex-shrink-0 flex items-center"
-            style={{ height: 64, borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '0 10px', gap: 8 }}
+            style={{ height: 64, borderBottom: '1px solid rgba(0,200,83,0.10)', padding: '0 10px', gap: 8 }}
           >
             {/* Toggle button — always visible, on the left when collapsed */}
             <motion.button
@@ -461,7 +462,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                   </motion.div>
                   <div>
                     <p className="text-[11px] font-black leading-none tracking-widest whitespace-nowrap" style={{ color: 'white' }}>
-                      CHRONOS <span style={{ color: '#4ade80' }}>LAB</span>
+                      CHRONOS <span style={{ color: '#3fe56c' }}>LAB</span>
                     </p>
                     <p className="text-[9px] leading-none mt-0.5 whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.3)' }}>
                       CONTROLE DE PONTO
@@ -482,7 +483,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
           </nav>
 
           {/* ── Divider ─────────────────────── */}
-          <div className="mx-3 mb-2" style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
+          <div className="mx-3 mb-2" style={{ height: 1, background: 'rgba(0,200,83,0.10)' }} />
 
           {/* ── Bottom: user + actions ─────────── */}
           <div className="px-2 pb-4 space-y-1 flex-shrink-0">
@@ -493,7 +494,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
             <motion.div
               whileHover={{ scale: 1.02 }}
               className="flex items-center gap-2.5 rounded-xl px-2.5 py-2 cursor-default"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)' }}
+              style={{ background: 'var(--surface-container-high, #1d2e21)', border: '1px solid rgba(0,200,83,0.12)' }}
             >
               <div
                 className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-black flex-shrink-0"
@@ -522,10 +523,10 @@ export default function AdminSidebar({ fullName, initials }: Props) {
             <form action="/api/auth/signout" method="POST">
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.02, background: 'rgba(239,68,68,0.12)' }}
+                whileHover={{ scale: 1.02, background: 'rgba(255,82,82,0.1)' }}
                 whileTap={{ scale: 0.97 }}
                 className="w-full flex items-center gap-2.5 rounded-xl px-2.5 py-2 transition-colors"
-                style={{ color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.06)' }}
+                style={{ color: 'var(--danger)', border: '1px solid rgba(255,82,82,0.15)' }}
               >
                 <LogOut size={15} className="flex-shrink-0" />
                 <AnimatePresence>
@@ -550,7 +551,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
             transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
             className="absolute bottom-20 right-2 pointer-events-none"
           >
-            <Leaf size={28} style={{ color: '#4ade80' }} />
+            <Leaf size={28} style={{ color: '#3fe56c' }} />
           </motion.div>
         </motion.aside>
       )}
@@ -563,7 +564,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
           className="fixed bottom-0 left-0 right-0 z-50 flex"
           style={{
             background: 'var(--nav-bg)',
-            borderTop: '1px solid rgba(255,255,255,0.08)',
+            borderTop: '1px solid rgba(0,200,83,0.15)',
             paddingBottom: 'env(safe-area-inset-bottom)',
           }}
         >
@@ -579,7 +580,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                 <div className="relative">
                   <Icon
                     size={20}
-                    style={{ color: active ? '#4ade80' : 'rgba(255,255,255,0.4)' }}
+                    style={{ color: active ? '#3fe56c' : 'var(--text-3)' }}
                   />
                 </div>
                 <span
@@ -592,7 +593,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                   <motion.div
                     layoutId="mobileActiveBar"
                     className="absolute top-0 left-1/2 -translate-x-1/2 rounded-b-full"
-                    style={{ width: 24, height: 2, background: '#4ade80' }}
+                    style={{ width: 24, height: 2, background: '#00c853' }}
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
