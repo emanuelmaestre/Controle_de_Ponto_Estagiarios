@@ -74,12 +74,11 @@ export default async function AdminNav() {
             style={{ background: 'var(--surface-container-high, #1d2e21)' }}
           >
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0 ring-2"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0"
               style={{
                 background: 'var(--surface-variant)',
                 color: 'var(--primary)',
-                ringColor: 'rgba(0,200,83,0.25)',
-                border: '2px solid rgba(0,200,83,0.3)',
+                outline: '2px solid rgba(0,200,83,0.3)',
               }}
               title={profile?.full_name ?? 'Gerente'}
             >

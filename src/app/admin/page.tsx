@@ -147,14 +147,13 @@ export default async function AdminPage() {
                           <img
                             src={intern.photo_url}
                             alt={intern.full_name}
-                            className="w-9 h-9 rounded-full object-cover flex-shrink-0 ring-2"
-                            style={{ ringColor: 'rgba(0,200,83,0.3)' }}
+                            className="w-9 h-9 rounded-full object-cover flex-shrink-0"
+                            style={{ outline: '2px solid rgba(0,200,83,0.3)' }}
                           />
                         ) : (
                           <div
-                            className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 text-white ring-2"
-                            style={{ background: avatarBg, border: '2px solid rgba(0,200,83,0.25)' }}
-                            style={{ background: avatarBg }}
+                            className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 text-white"
+                            style={{ background: avatarBg, outline: '2px solid rgba(0,200,83,0.25)' }}
                           >
                             {initials}
                           </div>
