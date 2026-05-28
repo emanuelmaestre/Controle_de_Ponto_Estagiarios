@@ -6,6 +6,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-mo
 import Link from 'next/link'
 import { Eye, EyeOff, User, Mail, Lock, CheckCircle2, ArrowRight, Loader2, AlertCircle, Tag } from 'lucide-react'
 import CourseSelect from '@/components/ui/CourseSelect'
+import SelfieGate from '@/components/SelfieGate'
 
 // ── Floating particle ────────────────────────────────
 function Particle({ delay, x, size }: { delay: number; x: number; size: number }) {
@@ -81,7 +82,7 @@ function ChronosIllustration() {
 }
 
 // ── Step progress ────────────────────────────────────
-const STEPS = ['Pessoal', 'Acesso']
+const STEPS = ['Pessoal', 'Acesso', 'Foto']
 
 function StepDots({ step }: { step: number }) {
   return (
@@ -148,6 +149,7 @@ function RegisterContent() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [showPass, setShowPass] = useState(false)
+  const [newUserId, setNewUserId] = useState<string | null>(null)
   const [form, setForm] = useState({ full_name: '', nickname: '', email: '', course: '', password: '', confirm: '' })
 
   const set = (field: string, value: string) => setForm(p => ({ ...p, [field]: value }))
@@ -173,11 +175,36 @@ function RegisterContent() {
       })
       const json = await res.json()
       if (!res.ok) { setError(json.error || 'Erro ao criar conta.'); return }
-      setSuccess(true)
+      // Vai para step de foto obrigatória
+      setNewUserId(json.userId)
+      setStep(2)
     } catch { setError('Erro de conexão.') } finally { setLoading(false) }
   }
 
   const passwordOk = form.confirm.length > 0 && form.password === form.confirm && form.password.length >= 6
+
+  // ── Step 2: Foto obrigatória (após conta criada) ────
+  if (step === 2 && newUserId) return (
+    <div className="w-full">
+      <div className="text-center mb-4">
+        <p className="text-xs font-bold tracking-widest" style={{ color: 'rgba(63,229,108,0.6)' }}>
+          PASSO 3 DE 3
+        </p>
+        <h2 className="text-lg font-black mt-1" style={{ color: 'white' }}>
+          Foto de identificação
+        </h2>
+        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          Obrigatória para concluir o cadastro
+        </p>
+      </div>
+      <SelfieGate
+        hasPhoto={false}
+        internId={newUserId}
+        onComplete={() => setSuccess(true)}
+      />
+      {/* After SelfieGate closes (hasPhoto becomes true), redirect to login */}
+    </div>
+  )
 
   // ── Success screen ──────────────────────────────────
   if (success) return (

@@ -12,11 +12,12 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 interface Props {
   hasPhoto: boolean
   internId: string
+  onComplete?: () => void
 }
 
 type PermState = 'unknown' | 'granted' | 'prompt' | 'denied'
 
-export default function SelfieGate({ hasPhoto, internId }: Props) {
+export default function SelfieGate({ hasPhoto, internId, onComplete }: Props) {
   const router = useRouter()
   const supabase = createSupabaseBrowserClient()
 
@@ -176,7 +177,11 @@ export default function SelfieGate({ hasPhoto, internId }: Props) {
         .from('profiles').update({ photo_url: publicUrl }).eq('id', internId)
       if (profileErr) throw profileErr
       setDone(true)
-      setTimeout(() => { setVisible(false); router.refresh() }, 1600)
+      setTimeout(() => {
+        setVisible(false)
+        if (onComplete) onComplete()
+        else router.refresh()
+      }, 1600)
     } catch (e) {
       console.error(e)
       setCamError('Erro ao salvar foto. Tente novamente.')

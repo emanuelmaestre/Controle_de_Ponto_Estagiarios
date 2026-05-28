@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Erro ao criar perfil.' }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true, message: 'Cadastro realizado!' })
+    return NextResponse.json({ success: true, userId: authData.user.id, message: 'Cadastro realizado!' })
   } catch (err) {
     console.error('[register]', err)
     return NextResponse.json({ error: 'Erro interno.' }, { status: 500 })
