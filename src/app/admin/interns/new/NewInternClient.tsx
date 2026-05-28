@@ -193,7 +193,7 @@ export default function NewInternClient() {
             </AnimatePresence>
 
             {/* ── 1. Imagem de Identificação ── */}
-            <Card className="flex items-center gap-8">
+            <Card className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
               <label className="relative flex-shrink-0 cursor-pointer group">
                 <div
                   className="w-32 h-32 rounded-full flex flex-col items-center justify-center overflow-hidden transition-all group-hover:border-primary/60"
@@ -217,8 +217,8 @@ export default function NewInternClient() {
                 <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
               </label>
 
-              <div className="flex-1">
-                <h4 className="text-2xl font-semibold mb-2" style={{ color: 'var(--text)' }}>
+              <div className="flex-1 text-center sm:text-left">
+                <h4 className="text-xl sm:text-2xl font-semibold mb-2" style={{ color: 'var(--text)' }}>
                   Imagem de Identificação
                 </h4>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--text-3)', maxWidth: 400 }}>

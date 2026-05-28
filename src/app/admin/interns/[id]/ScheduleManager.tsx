@@ -121,7 +121,7 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
           className="flex items-center gap-3 rounded-lg px-4 py-3"
           style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,200,83,0.15)' }}
         >
-          <label className="text-[10px] font-bold tracking-wider whitespace-nowrap" style={{ color: '#3fe56c' }}>
+          <label className="text-[10px] font-bold tracking-wider" style={{ color: '#3fe56c' }}>
             TOTAL DE HORAS SEMANAIS
           </label>
           <div
@@ -159,12 +159,12 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
               }}
             >
               {/* Row */}
-              <div className="flex items-center gap-6 p-5">
+              <div className="flex items-center gap-3 sm:gap-6 p-4 sm:p-5">
 
                 {/* Toggle */}
                 <button
                   onClick={() => toggleDay(d.key)}
-                  className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-all"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-all"
                   style={{
                     background: ds.active ? 'rgba(0,200,83,0.15)' : 'var(--bg)',
                     border: `1px solid ${ds.active ? 'rgba(0,200,83,0.40)' : 'rgba(0,200,83,0.15)'}`,
@@ -175,7 +175,7 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
                 </button>
 
                 {/* Day label */}
-                <div className="flex items-center gap-4 flex-shrink-0" style={{ minWidth: 160 }}>
+                <div className="flex items-center gap-2 flex-shrink-0" style={{ minWidth: 90 }}>
                   <div>
                     <span className="block font-bold text-[11px] tracking-tight"
                       style={{ color: ds.active ? '#3fe56c' : 'var(--text-3)' }}>
@@ -212,13 +212,14 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
                 {/* Add time button */}
                 <button
                   onClick={() => { if (!ds.active) toggleDay(d.key); else setEditing(d.key, !ds.editing) }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold tracking-wider transition-all flex-shrink-0"
+                  className="flex items-center gap-1.5 px-2 sm:px-4 py-2 rounded-lg text-[11px] font-bold tracking-wider transition-all flex-shrink-0"
                   style={ds.active
                     ? { border: '1px solid rgba(0,200,83,0.30)', color: '#3fe56c', background: 'transparent' }
                     : { border: '1px solid rgba(0,200,83,0.20)', color: 'var(--text-3)', background: 'transparent' }
                   }
                 >
-                  + ADICIONAR HORÁRIO
+                  <span>+</span>
+                  <span className="hidden sm:inline">ADICIONAR HORÁRIO</span>
                 </button>
               </div>
 

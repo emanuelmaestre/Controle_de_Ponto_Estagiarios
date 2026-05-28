@@ -204,7 +204,7 @@ export default function InternForm({ mode, intern }: Props) {
       </AnimatePresence>
 
       {/* ── 1. Imagem de Identificação ── */}
-      <Card className="flex items-center gap-8 group hover:border-primary/30 transition-all duration-300">
+      <Card className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 group hover:border-primary/30 transition-all duration-300">
         {/* Avatar circle */}
         <label className="relative flex-shrink-0 cursor-pointer">
           <div
@@ -229,7 +229,7 @@ export default function InternForm({ mode, intern }: Props) {
         </label>
 
         {/* Info */}
-        <div className="flex-1">
+        <div className="flex-1 text-center sm:text-left">
           <h4 className="text-2xl font-semibold mb-2" style={{ color: 'var(--text)' }}>
             Imagem de Identificação
           </h4>
