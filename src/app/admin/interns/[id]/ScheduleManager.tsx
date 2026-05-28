@@ -277,6 +277,7 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
                             type="time"
                             value={f === 'start' ? ds.start : ds.end}
                             onChange={e => updateTime(d.key, f, e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); setEditing(d.key, false) } }}
                             className="w-full px-3 py-2 rounded-lg text-sm font-bold outline-none transition-all"
                             style={{
                               background: 'var(--bg)',
