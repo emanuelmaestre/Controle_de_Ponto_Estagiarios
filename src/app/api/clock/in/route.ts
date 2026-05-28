@@ -61,7 +61,6 @@ export async function POST(req: NextRequest) {
           clock_in: new Date().toISOString(),
           geo_lat: geo_lat ?? null,
           geo_lng: geo_lng ?? null,
-          geo_accuracy: geo_accuracy ?? null,
           geo_status: isManager ? 'admin_exempt' : isGeoExempt ? 'user_exempt' : 'geo_disabled',
           geo_blocked: false,
         })
@@ -149,7 +148,6 @@ export async function POST(req: NextRequest) {
         clock_in: new Date().toISOString(),
         geo_lat,
         geo_lng,
-        geo_accuracy: geo_accuracy ?? null,
         geo_distance: distanceRounded,
         geo_status: 'approved',
         geo_blocked: false,
