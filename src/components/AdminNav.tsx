@@ -11,7 +11,7 @@ export default async function AdminNav() {
     : { data: null }
 
   const navItems = [
-    { href: '/admin',           label: 'Dashboard',      icon: <LayoutDashboard size={20} /> },
+    { href: '/admin',           label: 'Painel',         icon: <LayoutDashboard size={20} /> },
     { href: '/admin/workload',  label: 'Carga Horária',  icon: <Clock           size={20} /> },
     { href: '/admin/reports',   label: 'Relatórios',     icon: <BarChart2       size={20} /> },
     { href: '/admin/settings',  label: 'Configurações',  icon: <Settings        size={20} /> },

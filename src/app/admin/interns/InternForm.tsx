@@ -150,20 +150,20 @@ export default function InternForm({ mode, intern }: Props) {
 
       {/* Foto de perfil */}
       <div className="rounded-2xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--text)' }}>FOTO DE PERFIL</h3>
+        <h3 className="text-sm font-semibold mb-4" style={{ color: 'var(--text)' }}>Foto de Perfil</h3>
         <div className="flex flex-col items-center gap-3">
           <div
             className="relative w-24 h-24 rounded-2xl overflow-hidden flex items-center justify-center"
             style={{ background: 'var(--bg)', border: '2px dashed var(--border)' }}
           >
             {photoPreview ? (
-              <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+              <img src={photoPreview} alt="Pré-visualização" className="w-full h-full object-cover" />
             ) : (
               <Camera size={28} style={{ color: 'var(--text-3)', opacity: 0.5 }} />
             )}
           </div>
           <label className="cursor-pointer text-sm font-bold hover:opacity-70 transition-opacity" style={{ color: 'var(--primary)' }}>
-            {photoPreview ? 'TROCAR FOTO' : 'ADICIONAR FOTO'}
+            {photoPreview ? 'Trocar foto' : 'Adicionar foto'}
             <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
           </label>
         </div>
@@ -171,10 +171,10 @@ export default function InternForm({ mode, intern }: Props) {
 
       {/* Dados Pessoais */}
       <div className="rounded-2xl p-5 space-y-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>DADOS PESSOAIS</h3>
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Dados Pessoais</h3>
 
         <div>
-          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>NOME COMPLETO *</label>
+          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>Nome completo *</label>
           <input
             {...register('full_name')}
             type="text"
@@ -186,7 +186,7 @@ export default function InternForm({ mode, intern }: Props) {
         </div>
 
         <div>
-          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>APELIDO</label>
+          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>Apelido</label>
           <input
             {...register('nickname')}
             type="text"
@@ -198,7 +198,7 @@ export default function InternForm({ mode, intern }: Props) {
         </div>
 
         <div>
-          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>E-MAIL *</label>
+          <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>E-mail *</label>
           <input
             {...register('email')}
             type="email"
@@ -211,7 +211,7 @@ export default function InternForm({ mode, intern }: Props) {
 
         <div>
           <label className="block text-xs font-bold mb-1.5 flex items-center gap-1.5" style={{ color: 'var(--text-2)' }}>
-            <GraduationCap size={12} style={{ color: 'var(--primary)' }} /> GRADUAÇÃO
+            <GraduationCap size={12} style={{ color: 'var(--primary)' }} /> Graduação
           </label>
           <Controller
             name="course"
@@ -226,10 +226,10 @@ export default function InternForm({ mode, intern }: Props) {
 
       {/* Período do estágio */}
       <div className="rounded-2xl p-5 space-y-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>PERÍODO DO ESTÁGIO</h3>
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Período do Estágio</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold mb-1.5" style={{ color: 'var(--text-2)' }}>DATA DE INÍCIO</label>
+            <label className="block text-xs font-bold mb-1.5" style={{ color: 'var(--text-2)' }}>Data de início</label>
             <Controller
               name="internship_start"
               control={control}
@@ -244,7 +244,7 @@ export default function InternForm({ mode, intern }: Props) {
             {errors.internship_start && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.internship_start.message}</p>}
           </div>
           <div>
-            <label className="block text-xs font-bold mb-1.5" style={{ color: 'var(--text-2)' }}>DATA DE TÉRMINO</label>
+            <label className="block text-xs font-bold mb-1.5" style={{ color: 'var(--text-2)' }}>Data de término</label>
             <Controller
               name="internship_end"
               control={control}
@@ -263,7 +263,7 @@ export default function InternForm({ mode, intern }: Props) {
 
       {/* Configurações */}
       <div className="rounded-2xl p-5 space-y-3" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>CONFIGURAÇÕES</h3>
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--text)' }}>Configurações</h3>
 
         <div className="flex items-center gap-3">
           <input
@@ -305,7 +305,7 @@ export default function InternForm({ mode, intern }: Props) {
           className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-colors"
           style={{ border: '1px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}
         >
-          CANCELAR
+          Cancelar
         </motion.button>
         <motion.button
           type="submit"
@@ -316,8 +316,8 @@ export default function InternForm({ mode, intern }: Props) {
           style={{ background: 'var(--primary)', color: 'white' }}
         >
           {loading
-            ? <><Loader2 size={14} className="animate-spin" /> SALVANDO...</>
-            : mode === 'create' ? 'CADASTRAR' : 'SALVAR ALTERAÇÕES'
+            ? <><Loader2 size={14} className="animate-spin" /> Salvando...</>
+            : mode === 'create' ? 'Cadastrar' : 'Salvar alterações'
           }
         </motion.button>
       </div>
@@ -365,7 +365,7 @@ function PasswordResetSection({ internId }: { internId: string }) {
   return (
     <div className="rounded-2xl p-5 space-y-3" style={{ background: 'rgba(217,119,6,0.06)', border: '1px solid rgba(217,119,6,0.2)' }}>
       <h3 className="text-sm font-bold flex items-center gap-2" style={{ color: 'var(--warning)' }}>
-        <Key size={14} /> REDEFINIÇÃO DE SENHA
+        <Key size={14} /> Redefinição de Senha
       </h3>
       <p className="text-xs" style={{ color: 'var(--text-2)' }}>
         Como administrador, você pode redefinir a senha do estagiário de duas formas:
@@ -389,8 +389,8 @@ function PasswordResetSection({ internId }: { internId: string }) {
           className="flex gap-2 flex-wrap"
         >
           {[
-            { label: 'ENVIAR LINK POR E-MAIL', icon: <Mail size={13} />, onClick: () => setMode('email') },
-            { label: 'DEFINIR NOVA SENHA', icon: <Lock size={13} />, onClick: () => setMode('manual') },
+            { label: 'Enviar link por e-mail', icon: <Mail size={13} />, onClick: () => setMode('email') },
+            { label: 'Definir nova senha', icon: <Lock size={13} />, onClick: () => setMode('manual') },
           ].map(({ label, icon, onClick }) => (
             <motion.button
               key={label}
@@ -416,12 +416,12 @@ function PasswordResetSection({ internId }: { internId: string }) {
             <button type="button" onClick={() => setMode('idle')}
               className="px-4 py-2 rounded-xl text-xs font-bold transition-colors"
               style={{ border: '1px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}>
-              CANCELAR
+              Cancelar
             </button>
             <button type="button" onClick={submit} disabled={status === 'loading'}
               className="px-4 py-2 rounded-xl text-xs font-bold text-white disabled:opacity-50 transition-colors"
               style={{ background: 'var(--warning)' }}>
-              {status === 'loading' ? 'ENVIANDO...' : 'ENVIAR E-MAIL'}
+              {status === 'loading' ? 'Enviando...' : 'Enviar e-mail'}
             </button>
           </div>
         </div>
@@ -430,7 +430,7 @@ function PasswordResetSection({ internId }: { internId: string }) {
       {mode === 'manual' && (
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>NOVA SENHA</label>
+            <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>Nova senha</label>
             <input
               type="password"
               value={newPassword}
@@ -441,7 +441,7 @@ function PasswordResetSection({ internId }: { internId: string }) {
             />
           </div>
           <div>
-            <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>CONFIRMAR NOVA SENHA</label>
+            <label className="block text-xs font-bold mb-1" style={{ color: 'var(--text-2)' }}>Confirmar nova senha</label>
             <input
               type="password"
               value={confirmPassword}
@@ -455,13 +455,13 @@ function PasswordResetSection({ internId }: { internId: string }) {
             <button type="button" onClick={() => { setMode('idle'); setNewPassword(''); setConfirmPassword('') }}
               className="px-4 py-2 rounded-xl text-xs font-bold transition-colors"
               style={{ border: '1px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}>
-              CANCELAR
+              Cancelar
             </button>
             <button type="button" onClick={submit}
               disabled={status === 'loading' || newPassword.length < 6 || newPassword !== confirmPassword}
               className="px-4 py-2 rounded-xl text-xs font-bold text-white disabled:opacity-50 transition-colors"
               style={{ background: 'var(--warning)' }}>
-              {status === 'loading' ? 'SALVANDO...' : 'SALVAR NOVA SENHA'}
+              {status === 'loading' ? 'Salvando...' : 'Salvar nova senha'}
             </button>
           </div>
         </div>

@@ -196,7 +196,7 @@ export default function NewInternClient() {
 
                 {/* Nome completo */}
                 <div>
-                  <Label icon={<User size={9} />} text="NOME COMPLETO *" />
+                  <Label icon={<User size={9} />} text="Nome completo *" />
                   <input {...register('full_name')} type="text" placeholder="Ex: Miltão Rei da Galáxia"
                     className={inp} style={inpStyle} onFocus={onFocus} onBlur={onBlur} />
                   {errors.full_name && <p className="text-[10px] mt-0.5" style={{ color: 'var(--danger)' }}>{errors.full_name.message}</p>}
@@ -205,12 +205,12 @@ export default function NewInternClient() {
                 {/* Apelido + E-mail */}
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label icon={<Tag size={9} />} text="APELIDO" />
+                    <Label icon={<Tag size={9} />} text="Apelido" />
                     <input {...register('nickname')} type="text" placeholder="Ex: Miltinho"
                       className={inp} style={inpStyle} onFocus={onFocus} onBlur={onBlur} />
                   </div>
                   <div>
-                    <Label icon={<Mail size={9} />} text="E-MAIL *" />
+                    <Label icon={<Mail size={9} />} text="E-mail *" />
                     <input {...register('email')} type="email" placeholder="Ex: milton@exemplo.com"
                       className={inp} style={inpStyle} onFocus={onFocus} onBlur={onBlur} />
                     {errors.email && <p className="text-[10px] mt-0.5" style={{ color: 'var(--danger)' }}>{errors.email.message}</p>}
@@ -219,7 +219,7 @@ export default function NewInternClient() {
 
                 {/* Graduação */}
                 <div>
-                  <Label icon={<GraduationCap size={9} />} text="GRADUAÇÃO" />
+                  <Label icon={<GraduationCap size={9} />} text="Graduação" />
                   <Controller
                     name="course"
                     control={control}
@@ -268,8 +268,8 @@ export default function NewInternClient() {
             <Card title="Período do Estágio">
               <div className="space-y-2">
                 {[
-                  { name: 'internship_start' as const, label: 'INÍCIO' },
-                  { name: 'internship_end' as const,   label: 'TÉRMINO' },
+                  { name: 'internship_start' as const, label: 'Início' },
+                  { name: 'internship_end' as const,   label: 'Término' },
                 ].map(f => (
                   <div key={f.name}>
                     <Label icon={<Calendar size={9} />} text={f.label} />

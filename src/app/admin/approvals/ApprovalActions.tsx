@@ -123,7 +123,7 @@ export default function ApprovalActions({ recordId, approverId }: Props) {
               className="rounded-2xl w-full max-w-md p-6"
               style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}
             >
-              <h3 className="font-bold text-lg mb-1" style={{ color: 'var(--text)' }}>REPROVAR REGISTRO</h3>
+              <h3 className="font-bold text-lg mb-1" style={{ color: 'var(--text)' }}>Reprovar Registro</h3>
               <p className="text-sm mb-4" style={{ color: 'var(--text-3)' }}>
                 Informe o motivo da reprovação. O estagiário será notificado.
               </p>
@@ -154,7 +154,7 @@ export default function ApprovalActions({ recordId, approverId }: Props) {
                     className="flex-1 py-2.5 rounded-xl text-xs font-bold"
                     style={{ border: '1px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}
                   >
-                    CANCELAR
+                    Cancelar
                   </motion.button>
                   <motion.button
                     type="submit"
@@ -164,7 +164,7 @@ export default function ApprovalActions({ recordId, approverId }: Props) {
                     className="flex-1 py-2.5 rounded-xl text-xs font-bold text-white disabled:opacity-50 flex items-center justify-center gap-1.5"
                     style={{ background: 'var(--danger)' }}
                   >
-                    {loading ? <><Loader2 size={14} className="animate-spin" /> REPROVANDO...</> : 'CONFIRMAR REPROVAÇÃO'}
+                    {loading ? <><Loader2 size={14} className="animate-spin" /> Reprovando...</> : 'Confirmar reprovação'}
                   </motion.button>
                 </div>
               </form>

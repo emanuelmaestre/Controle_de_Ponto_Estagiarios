@@ -15,10 +15,10 @@ interface Service {
 }
 
 const SERVICES: Service[] = [
-  { key: 'supabase', label: 'SUPABASE',  description: 'BANCO DE DADOS E AUTH',      icon: <Database  size={16} />, version: '@supabase/ssr 0.10' },
-  { key: 'vercel',   label: 'VERCEL',    description: 'HOSPEDAGEM E DEPLOY',        icon: <Cloud     size={16} />, version: 'PRODUÇÃO' },
-  { key: 'nextjs',   label: 'NEXT.JS',   description: 'FRAMEWORK FULL-STACK',       icon: <Zap       size={16} />, version: '16.2.6' },
-  { key: 'github',   label: 'GITHUB',    description: 'CONTROLE DE VERSÃO E CI/CD', icon: <GitBranch size={16} />, version: 'MAIN' },
+  { key: 'supabase', label: 'Supabase',  description: 'Banco de dados e auth',      icon: <Database  size={16} />, version: '@supabase/ssr 0.10' },
+  { key: 'vercel',   label: 'Vercel',    description: 'Hospedagem e deploy',        icon: <Cloud     size={16} />, version: 'Produção' },
+  { key: 'nextjs',   label: 'Next.js',   description: 'Framework full-stack',       icon: <Zap       size={16} />, version: '16.2.6' },
+  { key: 'github',   label: 'GitHub',    description: 'Controle de versão e CI/CD', icon: <GitBranch size={16} />, version: 'main' },
 ]
 
 const STACK_INFO = [
@@ -78,10 +78,10 @@ export default function IntegrationsTab() {
   useEffect(() => { check() }, [])
 
   const statusConfig: Record<ServiceStatus, { color: string; bg: string; label: string; icon: React.ReactNode }> = {
-    online:   { color: 'var(--success)', bg: 'rgba(22,163,74,0.1)',   label: 'DISPONÍVEL',  icon: <Wifi size={10} /> },
-    degraded: { color: 'var(--warning)', bg: 'rgba(217,119,6,0.1)',   label: 'DEGRADADO',   icon: <AlertTriangle size={10} /> },
-    offline:  { color: 'var(--danger)',  bg: 'rgba(220,38,38,0.1)',   label: 'AUSENTE',     icon: <WifiOff size={10} /> },
-    checking: { color: 'var(--text-3)', bg: 'rgba(148,163,184,0.1)', label: 'VERIFICANDO', icon: <span className="w-2.5 h-2.5 rounded-full border-2 border-current border-t-transparent animate-spin inline-block" /> },
+    online:   { color: 'var(--success)', bg: 'rgba(22,163,74,0.1)',   label: 'Disponível',  icon: <Wifi size={10} /> },
+    degraded: { color: 'var(--warning)', bg: 'rgba(217,119,6,0.1)',   label: 'Degradado',   icon: <AlertTriangle size={10} /> },
+    offline:  { color: 'var(--danger)',  bg: 'rgba(220,38,38,0.1)',   label: 'Ausente',     icon: <WifiOff size={10} /> },
+    checking: { color: 'var(--text-3)', bg: 'rgba(148,163,184,0.1)', label: 'Verificando', icon: <span className="w-2.5 h-2.5 rounded-full border-2 border-current border-t-transparent animate-spin inline-block" /> },
   }
 
   const totalOnline   = Object.values(statuses).filter(s => s === 'online').length

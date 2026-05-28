@@ -67,7 +67,7 @@ export default function ReportExport({ data, label, disabled }: Props) {
       onClick: exportExcel,
       disabled: !!disabled || loading || data.length === 0,
       icon: loading ? <Loader2 size={14} className="animate-spin" /> : <FileSpreadsheet size={14} />,
-      label: loading ? 'GERANDO…' : 'EXCEL',
+      label: loading ? 'Gerando…' : 'Excel',
       color: '#059669',
       glow: 'rgba(5,150,105,0.35)',
     },
@@ -85,7 +85,7 @@ export default function ReportExport({ data, label, disabled }: Props) {
       onClick: () => setEmailModal(true),
       disabled: !!disabled || data.length === 0,
       icon: <Mail size={14} />,
-      label: 'E-MAIL',
+      label: 'E-mail',
       color: '#2563eb',
       glow: 'rgba(37,99,235,0.3)',
     },
@@ -143,7 +143,7 @@ export default function ReportExport({ data, label, disabled }: Props) {
                     <Mail size={15} style={{ color: '#3b82f6' }} />
                   </div>
                   <div>
-                    <p className="font-black text-sm" style={{ color: 'var(--text)' }}>ENVIAR RELATÓRIO</p>
+                    <p className="font-black text-sm" style={{ color: 'var(--text)' }}>Enviar Relatório</p>
                     <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>Período: {label}</p>
                   </div>
                 </div>
@@ -161,7 +161,7 @@ export default function ReportExport({ data, label, disabled }: Props) {
               {/* Body */}
               <div className="px-6 py-5 space-y-4">
                 <div>
-                  <label className="block text-[11px] font-bold mb-1.5" style={{ color: 'var(--text-2)' }}>DESTINATÁRIO</label>
+                  <label className="block text-[11px] font-bold mb-1.5" style={{ color: 'var(--text-2)' }}>Destinatário</label>
                   <input
                     type="email"
                     value={emailTo}
@@ -209,7 +209,7 @@ export default function ReportExport({ data, label, disabled }: Props) {
                     className="flex-1 py-2.5 rounded-xl text-sm font-bold"
                     style={{ border: '1.5px solid var(--border)', color: 'var(--text-2)', background: 'var(--bg)' }}
                   >
-                    CANCELAR
+                    Cancelar
                   </motion.button>
                   <motion.button
                     onClick={sendEmail}
@@ -220,8 +220,8 @@ export default function ReportExport({ data, label, disabled }: Props) {
                     style={{ background: '#2563eb', boxShadow: '0 4px 14px rgba(37,99,235,0.4)' }}
                   >
                     {emailStatus === 'sending'
-                      ? <><Loader2 size={13} className="animate-spin" /> ENVIANDO…</>
-                      : 'ENVIAR'
+                      ? <><Loader2 size={13} className="animate-spin" /> Enviando…</>
+                      : 'Enviar'
                     }
                   </motion.button>
                 </div>

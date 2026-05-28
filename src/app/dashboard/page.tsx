@@ -18,7 +18,7 @@ export const dynamic = 'force-dynamic'
 // ─── Helpers de gamificação ─────────────────────────────────
 function getHourStatus(pct: number) {
   if (pct >= 100) return {
-    label: 'CARGA CONCLUÍDA',
+    label: 'Carga Concluída',
     color: 'var(--success)',
     bg: 'rgba(22,163,74,0.10)',
     border: 'rgba(22,163,74,0.25)',
@@ -27,7 +27,7 @@ function getHourStatus(pct: number) {
     sub: 'Continue sendo um exemplo de dedicação e compromisso.',
   }
   if (pct >= 80) return {
-    label: 'QUASE LÁ',
+    label: 'Quase lá',
     color: 'var(--info)',
     bg: 'rgba(14,165,233,0.10)',
     border: 'rgba(14,165,233,0.25)',
@@ -36,7 +36,7 @@ function getHourStatus(pct: number) {
     sub: 'Mantenha o ritmo — você está indo muito bem!',
   }
   if (pct >= 50) return {
-    label: 'EM DIA',
+    label: 'Em dia',
     color: 'var(--primary)',
     bg: 'rgba(30,92,45,0.10)',
     border: 'rgba(30,92,45,0.25)',
@@ -45,7 +45,7 @@ function getHourStatus(pct: number) {
     sub: 'Continue comparecendo para manter sua carga em dia.',
   }
   if (pct >= 25) return {
-    label: 'ATENÇÃO',
+    label: 'Atenção',
     color: 'var(--warning)',
     bg: 'rgba(217,119,6,0.10)',
     border: 'rgba(217,119,6,0.25)',
@@ -54,7 +54,7 @@ function getHourStatus(pct: number) {
     sub: 'Organize sua agenda para manter o ritmo e evitar pendências.',
   }
   return {
-    label: 'HORAS PENDENTES',
+    label: 'Horas Pendentes',
     color: 'var(--danger)',
     bg: 'rgba(220,38,38,0.10)',
     border: 'rgba(220,38,38,0.25)',
@@ -123,9 +123,9 @@ export default async function DashboardPage() {
 
   const greeting = (() => {
     const h = new Date().getHours()
-    if (h < 12) return 'BOM DIA'
-    if (h < 18) return 'BOA TARDE'
-    return 'BOA NOITE'
+    if (h < 12) return 'Bom dia'
+    if (h < 18) return 'Boa tarde'
+    return 'Boa noite'
   })()
 
   const weekDay = new Date().toLocaleDateString('pt-BR', { weekday: 'long' }).toUpperCase()
@@ -175,7 +175,7 @@ export default async function DashboardPage() {
           >
             {/* Status badge */}
             <div className="flex items-center justify-between mb-5">
-              <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>PROGRESSO DO MÊS</p>
+              <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>Progresso do Mês</p>
               <span
                 className="text-[10px] font-bold px-2.5 py-1 rounded-full"
                 style={{ background: status.bg, color: status.color, border: `1px solid ${status.border}` }}
@@ -189,22 +189,22 @@ export default async function DashboardPage() {
               <ProgressRing pct={pct} size={100} strokeWidth={10} color={status.color}>
                 <div className="text-center">
                   <p className="text-2xl font-black leading-none" style={{ color: status.color }}>{pct}%</p>
-                  <p className="text-[9px] font-bold mt-0.5" style={{ color: 'var(--text-3)' }}>CUMPRIDO</p>
+                  <p className="text-[9px] font-bold mt-0.5" style={{ color: 'var(--text-3)' }}>cumprido</p>
                 </div>
               </ProgressRing>
 
               <div className="flex-1 space-y-3">
                 <div>
-                  <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>HORAS CUMPRIDAS</p>
+                  <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>Horas cumpridas</p>
                   <p className="text-xl font-black" style={{ color: 'var(--text)' }}>{minutesToHours(monthMinutes)}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>META TOTAL</p>
+                  <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>Meta total</p>
                   <p className="text-base font-bold" style={{ color: 'var(--text-2)' }}>{profile?.total_hours_required ?? 120}h</p>
                 </div>
                 {remainingMins > 0 && (
                   <div>
-                    <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>FALTAM</p>
+                    <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>Faltam</p>
                     <p className="text-base font-bold" style={{ color: status.color }}>{minutesToHours(remainingMins)}</p>
                   </div>
                 )}
@@ -230,7 +230,7 @@ export default async function DashboardPage() {
           {[
             {
               icon: <Calendar size={14} />,
-              label: 'HOJE',
+              label: 'Hoje',
               value: minutesToHours(todayMinutes),
               color: 'var(--info)',
               bg: 'rgba(14,165,233,0.08)',
@@ -238,8 +238,8 @@ export default async function DashboardPage() {
             },
             {
               icon: <TrendingUp size={14} />,
-              label: 'MÊS',
-              value: `${monthData?.approved_sessions ?? 0} SESS.`,
+              label: 'Mês',
+              value: `${monthData?.approved_sessions ?? 0} sess.`,
               color: 'var(--success)',
               bg: 'rgba(22,163,74,0.08)',
               delay: 0.1,
@@ -278,7 +278,7 @@ export default async function DashboardPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-bold" style={{ color: 'var(--text)' }}>
-                  HORÁRIO PREVISTO HOJE
+                  Horário previsto hoje
                 </p>
                 <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
                   {todaySchedule.expected_start?.slice(0, 5)} &mdash; {todaySchedule.expected_end?.slice(0, 5)}
@@ -291,7 +291,7 @@ export default async function DashboardPage() {
                   className="text-[9px] font-bold px-2 py-1 rounded-full flex-shrink-0"
                   style={{ background: 'rgba(22,163,74,0.12)', color: 'var(--success)', border: '1px solid rgba(22,163,74,0.25)' }}
                 >
-                  EM ANDAMENTO
+                  Em andamento
                 </span>
               )}
             </div>
@@ -320,7 +320,7 @@ export default async function DashboardPage() {
                 className="px-5 py-3.5 flex items-center justify-between"
                 style={{ borderBottom: '1px solid var(--border)' }}
               >
-                <h2 className="text-xs font-bold" style={{ color: 'var(--text)' }}>REGISTROS DE HOJE</h2>
+                <h2 className="text-xs font-bold" style={{ color: 'var(--text)' }}>Registros de hoje</h2>
                 <span
                   className="text-[10px] font-bold px-2 py-0.5 rounded-full"
                   style={{ background: 'var(--bg)', color: 'var(--text-3)', border: '1px solid var(--border)' }}
@@ -367,16 +367,16 @@ export default async function DashboardPage() {
         <div className="max-w-lg mx-auto flex">
           <Link href="/dashboard" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--primary)' }}>
             <Home size={18} />
-            <span className="text-[10px] font-bold">INICIO</span>
+            <span className="text-[10px] font-bold">Início</span>
           </Link>
           <Link href="/history" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
             <ClipboardList size={18} />
-            <span className="text-[10px] font-bold">HISTÓRICO</span>
+            <span className="text-[10px] font-bold">Histórico</span>
           </Link>
           <form action="/api/auth/signout" method="POST" className="flex-1">
             <button type="submit" className="w-full flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
               <LogOut size={18} />
-              <span className="text-[10px] font-bold">SAIR</span>
+              <span className="text-[10px] font-bold">Sair</span>
             </button>
           </form>
         </div>

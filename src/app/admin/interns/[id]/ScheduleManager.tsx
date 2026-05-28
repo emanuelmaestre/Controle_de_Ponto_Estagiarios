@@ -81,9 +81,9 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
             .update({ is_active: false }).eq('intern_id', internId).eq('day_of_week', d.key)
         }
       }
-      toast.success('HORÁRIO SALVO COM SUCESSO')
+      toast.success('Horário salvo com sucesso!')
     } catch (e) {
-      toast.error('ERRO AO SALVAR HORÁRIO')
+      toast.error('Erro ao salvar horário.')
       console.error(e)
     } finally {
       setSaving(false)
@@ -97,10 +97,10 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
       <div className="rounded-xl px-4 py-3 flex items-center justify-between gap-4"
         style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
         <div className="min-w-0">
-          <p className="text-xs font-bold" style={{ color: 'var(--text)' }}>CARGA HORÁRIA TOTAL</p>
+          <p className="text-xs font-bold" style={{ color: 'var(--text)' }}>Carga Horária Total</p>
           <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
-            SEMANA ATUAL:&nbsp;
-            <span style={{ color: 'var(--primary-light)', fontWeight: 700 }}>{weeklyHours.toFixed(1)}H/SEM</span>
+            Semana atual:&nbsp;
+            <span style={{ color: 'var(--primary-light)', fontWeight: 700 }}>{weeklyHours.toFixed(1)}h/sem</span>
           </p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -209,7 +209,7 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
                         <div key={f}>
                           <label className="text-[10px] font-bold flex items-center gap-1 mb-1.5" style={{ color: 'var(--text-3)' }}>
                             <Clock size={10} style={{ color: f === 'start' ? 'var(--success)' : 'var(--accent-light)' }} />
-                            {f === 'start' ? 'ENTRADA' : 'SAÍDA'}
+                            {f === 'start' ? 'Entrada' : 'Saída'}
                           </label>
                           <input
                             type="time"
@@ -249,8 +249,8 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
         }}
       >
         {saving
-          ? <><Loader2 size={15} className="animate-spin" /> SALVANDO...</>
-          : <><Save size={14} /> SALVAR HORÁRIO</>
+          ? <><Loader2 size={15} className="animate-spin" /> Salvando...</>
+          : <><Save size={14} /> Salvar horário</>
         }
       </motion.button>
     </div>
