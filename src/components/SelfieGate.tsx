@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Camera, RotateCcw, Check, Loader2, AlertTriangle, ShieldCheck,
-  FlipHorizontal2, RefreshCw, ExternalLink, Lock, Chrome,
+  FlipHorizontal2, RefreshCw, ExternalLink, Lock, Globe,
 } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
@@ -211,7 +211,7 @@ export default function SelfieGate({ hasPhoto, internId }: Props) {
         {/* Chrome */}
         <div>
           <div className="flex items-center gap-1.5 mb-1.5">
-            <Chrome size={11} style={{ color: 'var(--text-3)' }} />
+            <Globe size={11} style={{ color: 'var(--text-3)' }} />
             <p className="text-[10px] font-black uppercase tracking-wide" style={{ color: 'var(--text-2)' }}>Chrome / Edge</p>
           </div>
           <ol className="space-y-1.5 pl-1">
