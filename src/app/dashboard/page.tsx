@@ -8,8 +8,7 @@ import SelfieGate from '@/components/SelfieGate'
 import StatusBadge from '@/components/StatusBadge'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/MotionWrappers'
-import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell } from 'lucide-react'
-// Trophy já importado — usado no bottom nav
+import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell, AlertTriangle } from 'lucide-react'
 import LiveClock from '@/components/ui/LiveClock'
 import type { RecordStatus } from '@/types/database'
 
@@ -113,6 +112,21 @@ export default async function DashboardPage() {
     .eq('is_active', true)
     .maybeSingle()
 
+  // ── Detecção de ponto em aberto esquecido ───────────
+  const openRecordWarning = (() => {
+    if (!openRecord) return null
+    const clockInDate = openRecord.clock_in.slice(0, 10)
+    const hoursOpen = (Date.now() - new Date(openRecord.clock_in).getTime()) / 3_600_000
+    if (clockInDate < today) {
+      const dayLabel = new Date(clockInDate + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })
+      return `Você esqueceu de registrar a saída de ${dayLabel}. Registre agora para não perder a sessão.`
+    }
+    if (hoursOpen > 10) {
+      return `Seu ponto está em aberto há mais de ${Math.floor(hoursOpen)} horas. Não esqueça de registrar a saída!`
+    }
+    return null
+  })()
+
   const todayMinutes = todayRecords?.reduce((acc, r) => acc + (r.duration_minutes ?? 0), 0) ?? 0
   const monthMinutes = monthData?.total_minutes ?? 0
   const totalRequiredMins = (profile?.total_hours_required ?? 120) * 60
@@ -177,6 +191,19 @@ export default async function DashboardPage() {
           </form>
         </div>
       </header>
+
+      {/* ── Aviso ponto em aberto ───────────────────────── */}
+      {openRecordWarning && (
+        <div
+          className="flex-shrink-0 flex items-start gap-3 px-5 py-3"
+          style={{ background: 'rgba(255,191,0,0.10)', borderBottom: '1px solid rgba(255,191,0,0.20)' }}
+        >
+          <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" style={{ color: '#ffbf00' }} />
+          <p className="text-xs leading-relaxed font-medium" style={{ color: '#ffbf00' }}>
+            {openRecordWarning}
+          </p>
+        </div>
+      )}
 
       <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-lg mx-auto w-full px-4 py-4 space-y-3 pb-24">
 

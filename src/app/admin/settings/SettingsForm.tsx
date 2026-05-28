@@ -115,45 +115,6 @@ export default function SettingsForm({ settings }: Props) {
         </motion.div>
       ))}
 
-      <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25, delay: 0.05 }}>
-        <div>
-          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-2, #374151)' }}>Lembrete de entrada (horário)</label>
-          <input
-            {...register('reminder_in_time')}
-            type="time"
-            className={inputCls}
-            style={inputStyle}
-            onFocus={e => (e.target.style.borderColor = 'var(--primary, #1e7a38)')}
-            onBlur={e => (e.target.style.borderColor = 'var(--border, #e5e7eb)')}
-          />
-          {errors.reminder_in_time && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.reminder_in_time.message}</p>}
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-2, #374151)' }}>Lembrete de saída (após X horas)</label>
-          <input
-            {...register('reminder_out_after_hours', { valueAsNumber: true })}
-            type="number" min={1} max={12}
-            className={inputCls}
-            style={inputStyle}
-            onFocus={e => (e.target.style.borderColor = 'var(--primary, #1e7a38)')}
-            onBlur={e => (e.target.style.borderColor = 'var(--border, #e5e7eb)')}
-          />
-          {errors.reminder_out_after_hours && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.reminder_out_after_hours.message}</p>}
-        </div>
-      </motion.div>
-
-      <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25, delay: 0.1 }}>
-        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-2, #374151)' }}>Horas diárias esperadas</label>
-        <input
-          {...register('expected_daily_hours', { valueAsNumber: true })}
-          type="number" min={1} max={12}
-          className={inputCls}
-          style={inputStyle}
-          onFocus={e => (e.target.style.borderColor = 'var(--primary, #1e7a38)')}
-          onBlur={e => (e.target.style.borderColor = 'var(--border, #e5e7eb)')}
-        />
-        {errors.expected_daily_hours && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.expected_daily_hours.message}</p>}
-      </motion.div>
 
       <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25, delay: 0.15 }}>
         <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-2, #374151)' }}>E-mail para relatórios mensais (opcional)</label>
