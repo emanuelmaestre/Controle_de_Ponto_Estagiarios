@@ -131,20 +131,25 @@
    Nav lateral permanece escuro (contraste profissional)
 ────────────────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg:                    #f7faf8;
-  --bg-secondary:          #eef5f0;
-  --surface:               #ffffff;
-  --surface-2:             #eef5f0;
-  --surface-card:          #ffffff;
-  --surface-container-low: #eef5f0;
-  --surface-container:     #e3efe6;
-  --surface-container-high:#d4e8d7;
-  --surface-variant:       #e3efe6;
+  /* Fundo geral: verde-água suave, longe do branco puro */
+  --bg:                    #e8f2eb;
+  --bg-secondary:          #dceee1;
 
-  --border:                rgba(0, 160, 70, 0.20);
-  --border-hover:          rgba(0, 160, 70, 0.38);
-  --border-low-opacity:    rgba(0, 160, 70, 0.12);
+  /* Cards/superfícies: branco levemente esverdeado */
+  --surface:               #f4faf6;
+  --surface-2:             #eaf4ed;
+  --surface-card:          #f4faf6;
+  --surface-container-low: #eaf4ed;
+  --surface-container:     #dceee1;
+  --surface-container-high:#cce5d2;
+  --surface-variant:       #dceee1;
 
+  /* Bordas verdes suaves mas visíveis */
+  --border:                rgba(0, 140, 60, 0.22);
+  --border-hover:          rgba(0, 140, 60, 0.45);
+  --border-low-opacity:    rgba(0, 140, 60, 0.12);
+
+  /* Texto: escuro com contraste adequado */
   --text:                  #0a1a0e;
   --text-2:                #1e3d26;
   --text-3:                #4a7258;
@@ -176,9 +181,9 @@
   --nav-active:            rgba(0, 200, 83, 0.14);
   --nav-active-border:     #00c853;
 
-  --card-shadow:           0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
-  --card-shadow-md:        0 4px 16px rgba(0,0,0,0.09), 0 2px 6px rgba(0,0,0,0.05);
-  --card-glow:             0 0 12px rgba(0, 150, 60, 0.08);
+  --card-shadow:           0 1px 4px rgba(0,80,30,0.10), 0 1px 2px rgba(0,80,30,0.06);
+  --card-shadow-md:        0 4px 16px rgba(0,80,30,0.12), 0 2px 6px rgba(0,80,30,0.07);
+  --card-glow:             0 0 12px rgba(0, 150, 60, 0.10);
 
   --ring:                  rgba(0, 150, 60, 0.25);
   --input-bg:              #ffffff;
