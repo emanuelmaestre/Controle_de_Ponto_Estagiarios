@@ -52,11 +52,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Toaster
             richColors
             position="top-right"
+            gap={8}
+            duration={4000}
             toastOptions={{
               style: {
-                background: 'var(--surface)',
+                background: 'var(--surface-card)',
                 color: 'var(--text)',
                 border: '1px solid var(--border)',
+                borderRadius: '14px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.45)',
+                fontSize: '13px',
+                fontWeight: 500,
+                padding: '12px 16px',
+              },
+              classNames: {
+                toast: 'items-start',
+                title: 'font-bold text-sm',
+                description: 'text-xs opacity-75',
               },
             }}
           />

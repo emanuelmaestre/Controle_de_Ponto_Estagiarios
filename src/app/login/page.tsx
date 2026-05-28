@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence, useAnimation } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Eye, EyeOff, Mail, Lock, AlertCircle, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, AlertCircle, Loader2, CheckCircle2, ShieldCheck, ArrowBigUp } from 'lucide-react'
 import { toast } from 'sonner'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { loginSchema, type LoginInput } from '@/lib/validations'
@@ -152,6 +152,7 @@ function LoginContent() {
   const [pinEmail, setPinEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [capsLock, setCapsLock] = useState(false)
   const [error, setError] = useState<string | null>(
     errorParam === 'conta-inativa' ? 'Conta desativada. Contate o responsável.' : null
   )
@@ -392,9 +393,32 @@ function LoginContent() {
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-3)' }}>
-                    Senha
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>
+                      Senha
+                    </label>
+                    {/* ── Caps Lock badge ── */}
+                    <AnimatePresence>
+                      {capsLock && (
+                        <motion.span
+                          initial={{ opacity: 0, scale: 0.6, y: -4 }}
+                          animate={{ opacity: 1, scale: 1, y: 0,
+                            transition: { type: 'spring', stiffness: 380, damping: 18 }
+                          }}
+                          exit={{ opacity: 0, scale: 0.7, y: -4, transition: { duration: 0.15 } }}
+                          className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black tracking-widest select-none"
+                          style={{
+                            background: 'rgba(255,191,0,0.15)',
+                            border: '1px solid rgba(255,191,0,0.45)',
+                            color: '#ffbf00',
+                          }}
+                        >
+                          <ArrowBigUp size={11} className="fill-current" />
+                          CAPS LOCK ATIVO
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </div>
                   <div className="relative">
                     <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-3)' }} />
                     <input
@@ -405,11 +429,16 @@ function LoginContent() {
                       className="w-full pl-9 pr-10 py-3 rounded-xl text-sm outline-none transition-all"
                       style={{
                         background: 'var(--input-bg)',
-                        border: `1.5px solid ${errors.password ? 'var(--danger)' : 'var(--border)'}`,
+                        border: `1.5px solid ${capsLock ? 'rgba(255,191,0,0.5)' : errors.password ? 'var(--danger)' : 'var(--border)'}`,
                         color: 'var(--text)',
                       }}
-                      onFocus={e  => (e.target.style.borderColor = 'var(--primary)')}
-                      onBlur={e   => (e.target.style.borderColor = errors.password ? 'var(--danger)' : 'var(--border)')}
+                      onKeyDown={e => setCapsLock(e.getModifierState('CapsLock'))}
+                      onKeyUp={e   => setCapsLock(e.getModifierState('CapsLock'))}
+                      onFocus={e   => (e.target.style.borderColor = capsLock ? 'rgba(255,191,0,0.6)' : 'var(--primary)')}
+                      onBlur={e    => {
+                        e.target.style.borderColor = capsLock ? 'rgba(255,191,0,0.5)'
+                          : errors.password ? 'var(--danger)' : 'var(--border)'
+                      }}
                     />
                     <button type="button" onClick={() => setShowPassword(v => !v)} tabIndex={-1}
                       className="absolute right-3 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-80"
@@ -417,7 +446,23 @@ function LoginContent() {
                       {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
                   </div>
-                  {errors.password && (
+                  {/* Caps Lock tooltip abaixo do campo */}
+                  <AnimatePresence>
+                    {capsLock && (
+                      <motion.p
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="text-[10px] mt-1.5 flex items-center gap-1 overflow-hidden"
+                        style={{ color: '#ffbf00' }}
+                      >
+                        <ArrowBigUp size={10} className="fill-current flex-shrink-0" />
+                        Caps Lock ligado — sua senha pode estar incorreta.
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                  {errors.password && !capsLock && (
                     <motion.p initial={{ opacity:0,y:-4 }} animate={{ opacity:1,y:0 }}
                       className="text-xs mt-1 flex items-center gap-1" style={{ color: 'var(--danger)' }}>
                       <AlertCircle size={11} /> {errors.password.message}
