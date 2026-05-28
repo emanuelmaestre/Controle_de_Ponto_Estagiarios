@@ -9,6 +9,7 @@ import StatusBadge from '@/components/StatusBadge'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/MotionWrappers'
 import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell } from 'lucide-react'
+// Trophy já importado — usado no bottom nav
 import LiveClock from '@/components/ui/LiveClock'
 import type { RecordStatus } from '@/types/database'
 
@@ -373,6 +374,10 @@ export default async function DashboardPage() {
           <Link href="/history" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
             <ClipboardList size={18} />
             <span className="text-[10px] font-bold">Histórico</span>
+          </Link>
+          <Link href="/intern-ranking" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
+            <Trophy size={18} />
+            <span className="text-[10px] font-bold">Ranking</span>
           </Link>
           <form action="/api/auth/signout" method="POST" className="flex-1">
             <button type="submit" className="w-full flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
