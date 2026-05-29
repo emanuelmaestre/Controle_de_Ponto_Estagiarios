@@ -7,6 +7,7 @@ import ChangePinForm from './ChangePinForm'
 import IntegrationsTab from './IntegrationsTab'
 import NormalizeNamesButton from './NormalizeNamesButton'
 import FixStartDatesButton from './FixStartDatesButton'
+import SyncProfilesButton from './SyncProfilesButton'
 import { FadeIn } from '@/components/ui/MotionWrappers'
 import { FlaskConical } from 'lucide-react'
 
@@ -140,6 +141,7 @@ export default async function SettingsPage({ searchParams }: Props) {
                   {/* Normalizar nomes */}
                   <NormalizeNamesButton />
                   <FixStartDatesButton />
+                  <SyncProfilesButton />
 
                   {/* Dica rápida */}
                   <div
