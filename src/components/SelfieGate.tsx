@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -359,7 +360,9 @@ export default function SelfieGate({ hasPhoto, internId, formData, onComplete }:
     </motion.div>
   )
 
-  return (
+  // Usa Portal para escapar de qualquer stacking context (backdropFilter, transform, etc.)
+  // sem isso, o modal fica preso dentro do card pai e não cobre a tela toda
+  const modalContent = (
     <AnimatePresence>
       {visible && (
         <motion.div
@@ -620,4 +623,7 @@ export default function SelfieGate({ hasPhoto, internId, formData, onComplete }:
       )}
     </AnimatePresence>
   )
+
+  if (typeof document === 'undefined') return null
+  return createPortal(modalContent, document.body)
 }
