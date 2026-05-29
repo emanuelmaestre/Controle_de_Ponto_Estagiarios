@@ -172,7 +172,8 @@ export default async function DashboardPage() {
   return (
     <MobileOnlyGuard>
     <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
-      <SelfieGate hasPhoto={!!profile?.photo_url} internId={user.id} />
+      {/* Foto opcional no dashboard — só abre se não tiver foto E o usuário ainda não dispensou */}
+      <SelfieGate hasPhoto={true} internId={user.id} />
 
       {/* ── Header ─────────────────────────────────────── */}
       <header className="flex-shrink-0" style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
