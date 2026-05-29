@@ -1,74 +1,28 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseServiceClient } from '@/lib/supabase/server'
+import { NextRequest } from 'next/server'
+import { createSupabaseServerClient } from '@/infra/supabase/server'
+import { createContainer } from '@/infra/container'
+import { handleError, ok } from '@/lib/api-helpers'
 
 export async function POST(request: NextRequest) {
+  const body = await request.json()
+  const { fullName, email, password, course } = body
+
+  if (!fullName || !email || !password) {
+    return handleError(new Error('Nome, email e senha sao obrigatorios'))
+  }
+
+  const serverClient = await createSupabaseServerClient()
+  const container = createContainer(serverClient)
+
   try {
-    const { full_name, nickname, email, course, password } = await request.json()
-
-    if (!full_name || !email || !password) {
-      return NextResponse.json({ error: 'Campos obrigatórios não preenchidos.' }, { status: 400 })
-    }
-    if (password.length < 6) {
-      return NextResponse.json({ error: 'A senha deve ter no mínimo 6 caracteres.' }, { status: 400 })
-    }
-
-    const supabaseAdmin = createSupabaseServiceClient()
-
-    // Verificar se email já existe no profiles
-    const { data: existing } = await supabaseAdmin
-      .from('profiles')
-      .select('id')
-      .eq('email', email.toLowerCase())
-      .maybeSingle()
-
-    if (existing) {
-      return NextResponse.json({ error: 'Este e-mail já está cadastrado no sistema.' }, { status: 409 })
-    }
-
-    // Verificar se email existe em auth.users (usuário órfão — perfil deletado mas auth não)
-    const { data: authList } = await supabaseAdmin.auth.admin.listUsers()
-    const orphanUser = authList?.users?.find(u => u.email === email.toLowerCase())
-    if (orphanUser) {
-      // Deleta o usuário órfão e recria com os novos dados
-      await supabaseAdmin.auth.admin.deleteUser(orphanUser.id)
-    }
-
-    // Criar usuário no auth
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email: email.toLowerCase(),
+    const user = await container.registerUseCase().execute({
+      fullName,
+      email,
       password,
-      email_confirm: true,
+      course,
     })
-
-    if (authError) {
-      console.error('[register] authError:', authError.message)
-      if (authError.message.toLowerCase().includes('already') || authError.message.toLowerCase().includes('registered')) {
-        return NextResponse.json({ error: 'Este e-mail já está cadastrado. Tente fazer login.' }, { status: 409 })
-      }
-      return NextResponse.json({ error: `Erro ao criar conta: ${authError.message}` }, { status: 500 })
-    }
-
-    // Criar profile
-    const { error: profileError } = await supabaseAdmin.from('profiles').upsert({
-      id: authData.user.id,
-      full_name,
-      nickname: nickname || null,
-      email: email.toLowerCase(),
-      course: course || null,
-      role: 'intern',
-      is_active: true,
-      internship_start: new Date().toISOString().slice(0, 10),
-    }, { onConflict: 'id' })
-
-    if (profileError) {
-      // Rollback: deletar auth user se profile falhar
-      await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
-      return NextResponse.json({ error: 'Erro ao criar perfil.' }, { status: 500 })
-    }
-
-    return NextResponse.json({ success: true, userId: authData.user.id, message: 'Cadastro realizado!' })
-  } catch (err) {
-    console.error('[register]', err)
-    return NextResponse.json({ error: 'Erro interno.' }, { status: 500 })
+    return ok({ userId: user.id })
+  } catch (error) {
+    return handleError(error)
   }
 }
