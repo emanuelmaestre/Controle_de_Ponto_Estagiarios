@@ -400,6 +400,13 @@ input, select, textarea {
   font-size: 16px;
 }
 
+/* Placeholder sutil em todos os inputs */
+input::placeholder,
+textarea::placeholder {
+  color: rgba(212,232,213,0.30);
+  opacity: 1;
+}
+
 /* Remove fundo branco do autofill do browser nos inputs escuros */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
