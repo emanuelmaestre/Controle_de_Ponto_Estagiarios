@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
 import MobileOnlyGuard from '@/components/MobileOnlyGuard'
 import { formatTime, minutesToHours } from '@/lib/utils'
 import ClockButton from '@/components/ClockButton'
@@ -68,11 +68,35 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
+  let { data: profile } = await supabase
     .from('profiles')
     .select('full_name, total_hours_required, role, photo_url')
     .eq('id', user.id)
     .maybeSingle()
+
+  // Se perfil não encontrado, tenta reparar automaticamente (UUID divergente)
+  if (!profile) {
+    const admin = createSupabaseServiceClient()
+    const { data: profileByEmail } = await admin
+      .from('profiles')
+      .select('id, full_name, total_hours_required, role, photo_url, email, course, nickname, internship_start, is_active')
+      .eq('email', user.email!)
+      .maybeSingle()
+
+    if (profileByEmail) {
+      // Migra o profile para o UUID correto
+      const oldId = profileByEmail.id
+      if (oldId !== user.id) {
+        const { full_name, total_hours_required, role, photo_url, email, course, nickname, internship_start, is_active } = profileByEmail
+        await admin.from('profiles').insert({
+          id: user.id, full_name, total_hours_required, role, photo_url,
+          email, course, nickname, internship_start, is_active,
+        })
+        await admin.from('profiles').delete().eq('id', oldId)
+        profile = { full_name, total_hours_required, role, photo_url }
+      }
+    }
+  }
 
   // Administradores não registram ponto — redirecionar para o painel admin
   if (profile?.role === 'manager') redirect('/admin')
