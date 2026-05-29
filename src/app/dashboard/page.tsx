@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { ensureProfile } from '@/lib/ensureProfile'
 import MobileOnlyGuard from '@/components/MobileOnlyGuard'
 import { formatTime, minutesToHours } from '@/lib/utils'
 import ClockButton from '@/components/ClockButton'
@@ -74,34 +75,9 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .maybeSingle()
 
-  // Se perfil não encontrado por UUID, busca por email (UUID divergente)
-  if (!profile && user.email) {
-    const admin = createSupabaseServiceClient()
-    const { data: profileByEmail } = await admin
-      .from('profiles')
-      .select('id, full_name, total_hours_required, role, photo_url, email, course, nickname, internship_start, is_active')
-      .eq('email', user.email)
-      .maybeSingle()
-
-    if (profileByEmail) {
-      // Usa os dados imediatamente para esta requisição
-      profile = {
-        full_name: profileByEmail.full_name,
-        total_hours_required: profileByEmail.total_hours_required,
-        role: profileByEmail.role,
-        photo_url: profileByEmail.photo_url,
-      }
-      // Corrige UUID em background: deleta antigo e insere com UUID correto
-      if (profileByEmail.id !== user.id) {
-        const { full_name, total_hours_required, role, photo_url, email, course, nickname, internship_start, is_active } = profileByEmail
-        admin.from('profiles').delete().eq('id', profileByEmail.id).then(() => {
-          admin.from('profiles').insert({
-            id: user.id, full_name, total_hours_required, role, photo_url,
-            email, course, nickname, internship_start, is_active,
-          })
-        })
-      }
-    }
+  // Garante perfil (cria/migra de forma segura e síncrona se necessário)
+  if (!profile) {
+    profile = await ensureProfile(user.id, user.email ?? null)
   }
 
   // Administradores não registram ponto — redirecionar para o painel admin
