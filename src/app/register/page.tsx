@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense, useEffect } from 'react'
+import { useState, Suspense, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion'
 import Link from 'next/link'
@@ -195,6 +195,11 @@ function RegisterContent() {
 
   const set = (field: string, value: string) => setForm(p => ({ ...p, [field]: value }))
 
+  const isDesktop = useMemo(() => {
+    if (typeof window === 'undefined') return false
+    return !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Tablet/i.test(navigator.userAgent)
+  }, [])
+
   // ── Validação em tempo real ──────────────────────────
   const nameHint = (() => {
     const v = form.full_name.trim()
@@ -256,23 +261,25 @@ function RegisterContent() {
         </p>
       </div>
 
-      {/* Aviso desktop */}
-      <motion.div
-        initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
-        className="mb-4 rounded-xl px-4 py-3 flex items-start gap-3"
-        style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)' }}
-      >
-        <Monitor size={15} className="flex-shrink-0 mt-0.5" style={{ color: '#fbbf24' }} />
-        <div>
-          <p className="text-xs font-bold mb-0.5" style={{ color: '#fbbf24' }}>
-            Você está acessando pelo computador
-          </p>
-          <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(251,191,36,0.7)' }}>
-            O cadastro pode ser feito aqui, mas a câmera do computador pode ser bloqueada pelo navegador.
-            Se isso acontecer, use a opção <strong style={{ color: '#fbbf24' }}>"Escolher da Galeria"</strong> para enviar uma foto do seu computador.
-          </p>
-        </div>
-      </motion.div>
+      {/* Aviso desktop — só aparece em computadores */}
+      {isDesktop && (
+        <motion.div
+          initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
+          className="mb-4 rounded-xl px-4 py-3 flex items-start gap-3"
+          style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)' }}
+        >
+          <Monitor size={15} className="flex-shrink-0 mt-0.5" style={{ color: '#fbbf24' }} />
+          <div>
+            <p className="text-xs font-bold mb-0.5" style={{ color: '#fbbf24' }}>
+              Você está acessando pelo computador
+            </p>
+            <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(251,191,36,0.7)' }}>
+              O cadastro pode ser feito aqui, mas a câmera do computador pode ser bloqueada pelo navegador.
+              Se isso acontecer, use a opção <strong style={{ color: '#fbbf24' }}>"Escolher da Galeria"</strong> para enviar uma foto do seu computador.
+            </p>
+          </div>
+        </motion.div>
+      )}
 
       <SelfieGate
         hasPhoto={false}
