@@ -399,3 +399,14 @@ input::-webkit-textfield-decoration-container {
 input, select, textarea {
   font-size: 16px;
 }
+
+/* Remove fundo branco do autofill do browser nos inputs escuros */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px #0a1a10 inset !important;
+  -webkit-text-fill-color: #d4e8d5 !important;
+  caret-color: #3fe56c;
+  transition: background-color 9999s ease-in-out 0s;
+}

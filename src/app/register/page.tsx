@@ -324,11 +324,24 @@ function RegisterContent() {
                 onBlur={e => (e.target.style.borderColor = 'rgba(0,200,83,0.18)')} />
             </Field>
             <Field label="E-mail *" icon={<Mail size={15} />}>
-              <input type="email" value={form.email} onChange={e => set('email', e.target.value)}
-                placeholder="seu@email.com" required className={inputCls}
-                style={{ ...inputStyle, borderColor: emailHint ? 'rgba(255,191,0,0.45)' : 'rgba(0,200,83,0.18)' }}
+              <input
+                type="text"
+                inputMode="email"
+                autoComplete="email"
+                value={form.email}
+                onChange={e => set('email', e.target.value)}
+                placeholder="ex: nome@gmail.com"
+                required
+                className={inputCls}
+                style={{
+                  ...inputStyle,
+                  borderColor: emailHint ? 'rgba(255,191,0,0.45)' : 'rgba(0,200,83,0.18)',
+                  WebkitTextFillColor: '#d4e8d5',
+                  caretColor: '#3fe56c',
+                }}
                 onFocus={e => (e.target.style.borderColor = emailHint ? 'rgba(255,191,0,0.6)' : '#3fe56c')}
-                onBlur={e => (e.target.style.borderColor = emailHint ? 'rgba(255,191,0,0.45)' : 'rgba(0,200,83,0.18)')} />
+                onBlur={e => (e.target.style.borderColor = emailHint ? 'rgba(255,191,0,0.45)' : 'rgba(0,200,83,0.18)')}
+              />
             </Field>
             <AnimatePresence>
               {emailHint && (
