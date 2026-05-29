@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { ensureProfile } from '@/lib/ensureProfile'
+import { isGeoExemptEmail } from '@/lib/geoExempt'
 
 // Haversine formula — distance between two GPS coords in meters
 function haversine(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -30,9 +31,8 @@ export async function POST(req: NextRequest) {
       user_agent?: string
     }
 
-    // Usuários isentos de verificação de localização (temporário)
-    const GEO_EXEMPT_EMAILS = ['emanuelmaestree@gmail.com']
-    const isGeoExempt = GEO_EXEMPT_EMAILS.includes(user.email ?? '')
+    // Usuários isentos de verificação de localização
+    const isGeoExempt = isGeoExemptEmail(user.email)
 
     // Get profile (role + name) — garante/cria de forma segura se necessário
     let { data: profile } = await supabase

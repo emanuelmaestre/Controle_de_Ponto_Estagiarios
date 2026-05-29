@@ -11,6 +11,7 @@ import { formatTime } from '@/lib/utils'
 
 interface Props {
   openRecord: { id: string; clock_in: string } | null
+  geoExempt?: boolean
 }
 
 type Phase =
@@ -37,7 +38,7 @@ function formatElapsed(seconds: number): string {
   return `${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`
 }
 
-export default function ClockButton({ openRecord }: Props) {
+export default function ClockButton({ openRecord, geoExempt = false }: Props) {
   const router = useRouter()
   const [phase, setPhase] = useState<Phase>('idle')
   const [elapsed, setElapsed] = useState(0)
@@ -127,6 +128,12 @@ export default function ClockButton({ openRecord }: Props) {
         setErrorMsg('Sem conexão. Verifique sua internet.')
         setPhase('error')
       }
+    }
+
+    // Usuário isento de localização — registra direto, sem pedir GPS
+    if (geoExempt) {
+      await sendRequest('exempt')
+      return
     }
 
     // Request geolocation

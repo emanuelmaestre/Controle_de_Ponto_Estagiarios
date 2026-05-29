@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { ensureProfile } from '@/lib/ensureProfile'
+import { isGeoExemptEmail } from '@/lib/geoExempt'
 import MobileOnlyGuard from '@/components/MobileOnlyGuard'
 import { formatTime, minutesToHours } from '@/lib/utils'
 import ClockButton from '@/components/ClockButton'
@@ -342,7 +343,7 @@ export default async function DashboardPage() {
 
 {/* ── Botao de ponto ──────────────────────────── */}
         <ScaleIn delay={0.2}>
-          <ClockButton openRecord={openRecord ?? null} />
+          <ClockButton openRecord={openRecord ?? null} geoExempt={isGeoExemptEmail(user.email)} />
         </ScaleIn>
 
         {/* ── Registros de hoje ───────────────────────── */}
