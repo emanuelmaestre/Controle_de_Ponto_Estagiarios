@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Home, ClipboardList, Trophy, LogOut, Star, Zap, Lock } from 'lucide-react'
+import { Home, ClipboardList, Trophy, LogOut, Star, Zap, Lock, User } from 'lucide-react'
 
 const PODIUM = [
   { pos: 2, label: '2º', height: 72,  color: '#94a3b8', glow: 'rgba(148,163,184,0.15)' },
@@ -125,6 +125,9 @@ export default function InternRankingContent() {
           </Link>
           <Link href="/intern-ranking" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: '#fbbf24' }}>
             <Trophy size={18} /><span className="text-[10px] font-bold">Ranking</span>
+          </Link>
+          <Link href="/profile" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
+            <User size={18} /><span className="text-[10px] font-bold">Perfil</span>
           </Link>
           <form action="/api/auth/signout" method="POST" className="flex-1">
             <button type="submit" className="w-full flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>

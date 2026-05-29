@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Home, ClipboardList, Trophy, LogOut, ArrowLeft } from 'lucide-react'
+import { Home, ClipboardList, Trophy, LogOut, ArrowLeft, User } from 'lucide-react'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { ensureProfile } from '@/lib/ensureProfile'
 import MobileOnlyGuard from '@/components/MobileOnlyGuard'
@@ -72,6 +72,9 @@ export default async function ProfilePage() {
             </Link>
             <Link href="/intern-ranking" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
               <Trophy size={18} /><span className="text-[10px] font-bold">Ranking</span>
+            </Link>
+            <Link href="/profile" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--primary)' }}>
+              <User size={18} /><span className="text-[10px] font-bold">Perfil</span>
             </Link>
             <form action="/api/auth/signout" method="POST" className="flex-1">
               <button type="submit" className="w-full flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>

@@ -7,7 +7,7 @@ import StatusBadge from '@/components/StatusBadge'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import type { RecordStatus } from '@/types/database'
-import { Home, ClipboardList, LogOut, Trophy } from 'lucide-react'
+import { Home, ClipboardList, LogOut, Trophy, User } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -178,6 +178,10 @@ export default async function HistoryPage() {
           <Link href="/intern-ranking" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
             <Trophy size={18} />
             <span className="text-[10px] font-bold">RANKING</span>
+          </Link>
+          <Link href="/profile" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
+            <User size={18} />
+            <span className="text-[10px] font-bold">PERFIL</span>
           </Link>
           <form action="/api/auth/signout" method="POST" className="flex-1">
             <button type="submit" className="w-full flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
