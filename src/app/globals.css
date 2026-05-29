@@ -414,17 +414,20 @@ textarea::-webkit-input-placeholder {
   -webkit-text-fill-color: rgba(212,232,213,0.28) !important;
 }
 
-/* Remove fundo branco do autofill do browser nos inputs escuros */
+/* Remove fundo branco do autofill do browser nos inputs escuros.
+   O webkit-autofill ignora background-color — o único jeito confiável é
+   box-shadow inset com cor sólida cobrindo toda a área do input. */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active,
 input[data-autocompleted] {
-  -webkit-box-shadow: 0 0 0px 9999px rgba(0,0,0,0.25) inset !important;
-  box-shadow: 0 0 0px 9999px rgba(0,0,0,0.25) inset !important;
+  /* Cor do fundo do login (#0f1f14) e cadastro (#0a1a10) — usando o mais escuro */
+  -webkit-box-shadow: 0 0 0px 9999px #0a1410 inset !important;
+  box-shadow: 0 0 0px 9999px #0a1410 inset !important;
   -webkit-text-fill-color: #d4e8d5 !important;
   color: #d4e8d5 !important;
   caret-color: #3fe56c !important;
-  background-color: transparent !important;
+  background-color: #0a1410 !important;
   transition: background-color 99999s ease-in-out 0s !important;
 }
