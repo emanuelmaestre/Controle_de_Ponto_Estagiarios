@@ -84,16 +84,28 @@ export default async function DashboardPage() {
       .maybeSingle()
 
     if (profileByEmail) {
-      // Migra o profile para o UUID correto
       const oldId = profileByEmail.id
       if (oldId !== user.id) {
+        // Deleta o antigo PRIMEIRO (evita violação de unique constraint no email)
+        await admin.from('profiles').delete().eq('id', oldId)
+        // Insere com o UUID correto
         const { full_name, total_hours_required, role, photo_url, email, course, nickname, internship_start, is_active } = profileByEmail
-        await admin.from('profiles').insert({
+        const { error: insertErr } = await admin.from('profiles').insert({
           id: user.id, full_name, total_hours_required, role, photo_url,
           email, course, nickname, internship_start, is_active,
         })
-        await admin.from('profiles').delete().eq('id', oldId)
-        profile = { full_name, total_hours_required, role, photo_url }
+        if (!insertErr) {
+          profile = { full_name, total_hours_required, role, photo_url }
+        }
+      } else {
+        // UUID já é o correto mas a query por id retornou null — problema de RLS
+        // Força o profile para o que achamos por email
+        profile = {
+          full_name: profileByEmail.full_name,
+          total_hours_required: profileByEmail.total_hours_required,
+          role: profileByEmail.role,
+          photo_url: profileByEmail.photo_url,
+        }
       }
     }
   }
