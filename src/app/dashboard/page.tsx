@@ -160,8 +160,8 @@ export default async function DashboardPage() {
       {/* ── Header ─────────────────────────────────────── */}
       <header className="flex-shrink-0" style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
         <div className="max-w-lg mx-auto px-5 py-4 flex items-center justify-between gap-3">
-          {/* Avatar + nome */}
-          <div className="flex items-center gap-3 min-w-0">
+          {/* Avatar + nome (toque abre o perfil) */}
+          <Link href="/profile" className="flex items-center gap-3 min-w-0">
             {profile?.photo_url ? (
               <img src={profile.photo_url} alt={firstName} className="w-10 h-10 rounded-full object-cover flex-shrink-0" style={{ border: '2px solid rgba(0,200,83,0.4)' }} />
             ) : (
@@ -184,7 +184,7 @@ export default async function DashboardPage() {
                 <LiveClock className="text-[10px] font-bold tabular-nums" style={{ color: 'rgba(255,255,255,0.55)' }} />
               </div>
             </div>
-          </div>
+          </Link>
           {/* Sair */}
           <form action="/api/auth/signout" method="POST" className="flex-shrink-0">
             <button
