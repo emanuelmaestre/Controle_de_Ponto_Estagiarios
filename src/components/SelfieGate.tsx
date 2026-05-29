@@ -11,13 +11,20 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
 interface Props {
   hasPhoto: boolean
-  internId: string
+  internId?: string
+  formData?: {
+    full_name: string
+    nickname: string | null
+    email: string
+    course: string | null
+    password: string
+  }
   onComplete?: () => void
 }
 
 type PermState = 'unknown' | 'granted' | 'prompt' | 'denied'
 
-export default function SelfieGate({ hasPhoto, internId, onComplete }: Props) {
+export default function SelfieGate({ hasPhoto, internId, formData, onComplete }: Props) {
   const router = useRouter()
   const supabase = createSupabaseBrowserClient()
 
@@ -192,15 +199,29 @@ export default function SelfieGate({ hasPhoto, internId, onComplete }: Props) {
     if (!capturedBlob) return
     setUploading(true)
     try {
-      const fileName = `${internId}/selfie_${Date.now()}.jpg`
+      const fileName = `${internId || 'temp'}/selfie_${Date.now()}.jpg`
       const { error: upErr } = await supabase.storage
         .from('avatars')
         .upload(fileName, capturedBlob, { upsert: true, contentType: 'image/jpeg' })
       if (upErr) throw upErr
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName)
-      const { error: profileErr } = await supabase
-        .from('profiles').update({ photo_url: publicUrl }).eq('id', internId)
-      if (profileErr) throw profileErr
+
+      // ── Novo fluxo: cria usuário APÓS salvar foto ──
+      if (formData) {
+        const regRes = await fetch('/api/auth/register-with-photo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...formData, photo_url: publicUrl })
+        })
+        const regJson = await regRes.json()
+        if (!regRes.ok) throw new Error(regJson.error || 'Erro ao criar conta')
+      } else {
+        // Fluxo antigo: apenas atualiza foto no profile existente
+        const { error: profileErr } = await supabase
+          .from('profiles').update({ photo_url: publicUrl }).eq('id', internId)
+        if (profileErr) throw profileErr
+      }
+
       setDone(true)
       setTimeout(() => {
         setVisible(false)
@@ -211,7 +232,6 @@ export default function SelfieGate({ hasPhoto, internId, onComplete }: Props) {
       const msg = e?.message || String(e) || 'Erro desconhecido'
       console.error('[SelfieGate upload error]', msg, e)
 
-      // Mensagem mais específica baseada no tipo de erro
       let userMsg = 'Erro ao salvar foto. Tente novamente.'
       if (msg.includes('storage') || msg.includes('permission')) {
         userMsg = 'Permissão negada. Verifique as configurações do Supabase.'
@@ -219,6 +239,8 @@ export default function SelfieGate({ hasPhoto, internId, onComplete }: Props) {
         userMsg = 'Arquivo muito grande. Tente uma foto menor.'
       } else if (msg.includes('network')) {
         userMsg = 'Erro de conexão. Verifique sua internet.'
+      } else if (msg.includes('email')) {
+        userMsg = 'Este e-mail já está cadastrado.'
       }
 
       setCamError(userMsg)

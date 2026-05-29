@@ -191,7 +191,6 @@ function RegisterContent() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [showPass, setShowPass] = useState(false)
-  const [newUserId, setNewUserId] = useState<string | null>(null)
   const [form, setForm] = useState({ full_name: '', nickname: '', email: '', course: '', password: '', confirm: '' })
 
   const set = (field: string, value: string) => setForm(p => ({ ...p, [field]: value }))
@@ -236,31 +235,14 @@ function RegisterContent() {
     if (form.password.length < 6) return setError('A senha deve ter no mínimo 6 caracteres.')
     if (form.password !== form.confirm) return setError('As senhas não coincidem.')
     setError(null)
-    setLoading(true)
-    try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          full_name: form.full_name.trim(),
-          nickname: form.nickname.trim() || null,
-          email: form.email.trim().toLowerCase(),
-          course: form.course || null,
-          password: form.password,
-        }),
-      })
-      const json = await res.json()
-      if (!res.ok) { setError(json.error || 'Erro ao criar conta.'); return }
-      // Vai para step de foto obrigatória
-      setNewUserId(json.userId)
-      setStep(2)
-    } catch { setError('Erro de conexão.') } finally { setLoading(false) }
+    // Step 1: Apenas valida, NÃO cria usuário ainda
+    setStep(2)
   }
 
   const passwordOk = form.confirm.length > 0 && form.password === form.confirm && form.password.length >= 6
 
-  // ── Step 2: Foto obrigatória (após conta criada) ────
-  if (step === 2 && newUserId) return (
+  // ── Step 2: Foto obrigatória (conta ainda NÃO criada) ────
+  if (step === 2) return (
     <div className="w-full">
       <div className="text-center mb-4">
         <p className="text-xs font-bold tracking-widest" style={{ color: 'rgba(63,229,108,0.6)' }}>
@@ -276,6 +258,13 @@ function RegisterContent() {
       <SelfieGate
         hasPhoto={false}
         internId={newUserId}
+        formData={{
+          full_name: form.full_name.trim(),
+          nickname: form.nickname.trim() || null,
+          email: form.email.trim().toLowerCase(),
+          course: form.course || null,
+          password: form.password,
+        }}
         onComplete={() => setSuccess(true)}
       />
       {/* After SelfieGate closes (hasPhoto becomes true), redirect to login */}
