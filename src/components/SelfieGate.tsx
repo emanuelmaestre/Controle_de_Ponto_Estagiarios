@@ -216,7 +216,7 @@ export default function SelfieGate({ hasPhoto, internId, formData, onComplete }:
         })
         const regJson = await regRes.json()
         if (!regRes.ok) throw new Error(regJson.error || 'Erro ao criar conta')
-      } else {
+      } else if (internId) {
         // Fluxo antigo (atualização de foto de usuário existente): upload direto
         const fileName = `${internId}/selfie_${Date.now()}.jpg`
         const { error: upErr } = await supabase.storage
