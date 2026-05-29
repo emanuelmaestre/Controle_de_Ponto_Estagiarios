@@ -3,10 +3,10 @@ import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import MobileOnlyGuard from '@/components/MobileOnlyGuard'
 import { formatDate, formatTime, minutesToHours } from '@/lib/utils'
-import StatusBadge from '@/components/StatusBadge'
+// StatusBadge removido — registros aprovados automaticamente, sem fluxo de aprovação
 import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
-import type { RecordStatus } from '@/types/database'
+// RecordStatus removido — sem fluxo de aprovação
 import { Home, ClipboardList, LogOut, Trophy, User } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -131,7 +131,7 @@ export default async function HistoryPage() {
                             : null}
                         </p>
                       </div>
-                      <StatusBadge status={record.status as RecordStatus} />
+                      {/* Badge de status removido — registros liberados sem aprovação */}
                     </div>
                     {record.activities && record.activities.length > 0 && (
                       <div className="px-4 py-3 space-y-1.5">

@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
         .insert({
           intern_id: user.id,
           clock_in: new Date().toISOString(),
+          status: 'approved' as const,
         })
         .select('id, clock_in')
         .single()

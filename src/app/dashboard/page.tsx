@@ -385,7 +385,7 @@ export default async function DashboardPage() {
                           <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>{minutesToHours(r.duration_minutes)}</p>
                         )}
                       </div>
-                      <StatusBadge status={r.status as RecordStatus} />
+                      {/* Badge de status removido — sem fluxo de aprovação */}
                     </div>
                   </StaggerItem>
                 ))}
