@@ -135,7 +135,7 @@ function Field({ label, icon, error, children }: { label: string; icon: React.Re
   )
 }
 
-const inputCls = "w-full pl-10 pr-4 py-3 rounded-xl font-medium outline-none transition-all"
+const inputCls = "w-full pl-10 pr-4 py-2.5 rounded-xl font-medium outline-none transition-all"
 const inputStyle = {
   background: 'rgba(0,0,0,0.25)',
   border: '1px solid rgba(0,200,83,0.18)',
@@ -301,7 +301,7 @@ function RegisterContent() {
           <motion.div key="step0"
             initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
             transition={{ duration: 0.3 }}
-            className="space-y-4">
+            className="space-y-3">
             <Field label="Nome Completo *" icon={<User size={15} />}>
               <input type="text" value={form.full_name} onChange={e => set('full_name', e.target.value)}
                 placeholder="Ex: Maria Silva" required className={inputCls}
@@ -546,7 +546,7 @@ export default function RegisterPage() {
             style={{ background: 'rgba(15,35,24,0.95)', border: '1px solid rgba(0,200,83,0.15)', backdropFilter: 'blur(20px)', boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,200,83,0.05)' }}
           >
             {/* Card header */}
-            <div className="px-5 sm:px-8 pt-6 sm:pt-8 pb-5 sm:pb-6" style={{ borderBottom: '1px solid rgba(0,200,83,0.08)' }}>
+            <div className="px-5 sm:px-8 pt-5 pb-4" style={{ borderBottom: '1px solid rgba(0,200,83,0.08)' }}>
               <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
                 className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
@@ -560,7 +560,7 @@ export default function RegisterPage() {
             </div>
 
             {/* Form — px menor no mobile para caber na tela */}
-            <div className="px-5 sm:px-8 py-5 sm:py-6">
+            <div className="px-5 sm:px-8 py-4">
               <Suspense fallback={
                 <div className="flex justify-center py-8">
                   <Loader2 size={24} className="animate-spin" style={{ color: '#00c853' }} />

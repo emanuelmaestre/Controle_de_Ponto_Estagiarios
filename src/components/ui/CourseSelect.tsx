@@ -1,173 +1,217 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Check, Sprout, Tractor, Dna, FlaskConical, Microscope, Trees, X } from 'lucide-react'
 
 const COURSES = [
-  { value: 'BACHARELADO EM AGRONOMIA',                    label: 'Bacharelado em Agronomia',                    icon: Sprout,      color: '#4ade80', bg: 'rgba(74,222,128,0.12)'  },
-  { value: 'TÉCNICO EM AGROPECUÁRIA',                     label: 'Técnico em Agropecuária',                     icon: Tractor,     color: '#fb923c', bg: 'rgba(251,146,60,0.12)'  },
-  { value: 'LICENCIATURA EM CIÊNCIAS BIOLÓGICAS',         label: 'Lic. em Ciências Biológicas',                 icon: Dna,         color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
-  { value: 'MESTRADO EM PROTEÇÃO DE PLANTAS',             label: 'Mestrado em Proteção de Plantas',             icon: FlaskConical,color: '#38bdf8', bg: 'rgba(56,189,248,0.12)'  },
-  { value: 'TÉCNICO EM BIOTECNOLOGIA',                    label: 'Técnico em Biotecnologia',                    icon: Microscope,  color: '#f472b6', bg: 'rgba(244,114,182,0.12)' },
-  { value: 'CONSERVAÇÃO DOS RECURSOS NATURAIS DO CERRADO',label: 'Conservação dos Recursos Naturais do Cerrado',icon: Trees,       color: '#86efac', bg: 'rgba(134,239,172,0.12)' },
+  { value: 'BACHARELADO EM AGRONOMIA',                     label: 'Bacharelado em Agronomia',                     icon: Sprout,       color: '#4ade80', bg: 'rgba(74,222,128,0.12)'  },
+  { value: 'TÉCNICO EM AGROPECUÁRIA',                      label: 'Técnico em Agropecuária',                      icon: Tractor,      color: '#fb923c', bg: 'rgba(251,146,60,0.12)'  },
+  { value: 'LICENCIATURA EM CIÊNCIAS BIOLÓGICAS',          label: 'Lic. em Ciências Biológicas',                  icon: Dna,          color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
+  { value: 'MESTRADO EM PROTEÇÃO DE PLANTAS',              label: 'Mestrado em Proteção de Plantas',              icon: FlaskConical, color: '#38bdf8', bg: 'rgba(56,189,248,0.12)'  },
+  { value: 'TÉCNICO EM BIOTECNOLOGIA',                     label: 'Técnico em Biotecnologia',                     icon: Microscope,   color: '#f472b6', bg: 'rgba(244,114,182,0.12)' },
+  { value: 'CONSERVAÇÃO DOS RECURSOS NATURAIS DO CERRADO', label: 'Conservação dos Recursos Naturais do Cerrado', icon: Trees,        color: '#86efac', bg: 'rgba(134,239,172,0.12)' },
 ]
 
-interface Props {
-  value: string
-  onChange: (val: string) => void
+interface Props { value: string; onChange: (val: string) => void }
+
+function isTouchDevice() {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(hover: none) and (pointer: coarse)').matches
 }
 
 export default function CourseSelect({ value, onChange }: Props) {
-  const [open, setOpen]         = useState(false)
-  const [mounted, setMounted]   = useState(false)
-  const ref                     = useRef<HTMLDivElement>(null)
-  const selected                = COURSES.find(c => c.value === value) ?? null
+  const [open, setOpen]       = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const [rect, setRect]       = useState<DOMRect | null>(null)
+  const btnRef                = useRef<HTMLButtonElement>(null)
+  const selected              = COURSES.find(c => c.value === value) ?? null
+  const mobile                = mounted && isTouchDevice()
 
   useEffect(() => { setMounted(true) }, [])
 
-  // Fecha ao clicar fora (desktop)
+  // Bloqueia scroll do body quando aberto
   useEffect(() => {
-    if (!open) return
-    const handler = (e: MouseEvent | TouchEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    document.addEventListener('touchstart', handler)
-    return () => {
-      document.removeEventListener('mousedown', handler)
-      document.removeEventListener('touchstart', handler)
-    }
-  }, [open])
-
-  // Bloqueia scroll do body quando aberto no mobile
-  useEffect(() => {
-    if (open) document.body.style.overflow = 'hidden'
-    else document.body.style.overflow = ''
+    document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [open])
 
-  const select = (val: string) => { onChange(val); setOpen(false) }
+  // Fecha ao clicar fora (desktop)
+  useEffect(() => {
+    if (!open || mobile) return
+    const handler = (e: MouseEvent) => {
+      if (btnRef.current && !btnRef.current.closest('[data-course-select]')?.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    setTimeout(() => document.addEventListener('click', handler), 0)
+    return () => document.removeEventListener('click', handler)
+  }, [open, mobile])
+
+  const handleOpen = useCallback(() => {
+    if (!open && btnRef.current) setRect(btnRef.current.getBoundingClientRect())
+    setOpen(o => !o)
+  }, [open])
+
+  const select = useCallback((val: string) => {
+    onChange(val)
+    setOpen(false)
+  }, [onChange])
 
   return (
-    <div ref={ref} style={{ position: 'relative', userSelect: 'none' }}>
-
-      {/* ── Trigger button ── */}
-      <motion.button
+    <div data-course-select="" style={{ position: 'relative' }}>
+      {/* ── Trigger ── */}
+      <button
+        ref={btnRef}
         type="button"
-        onClick={() => setOpen(o => !o)}
-        whileTap={{ scale: 0.98 }}
-        className="w-full flex items-center gap-2 px-3 py-3 rounded-xl font-medium outline-none"
+        onClick={handleOpen}
         style={{
+          width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+          padding: '11px 12px', borderRadius: 12, outline: 'none', cursor: 'pointer',
           background: 'rgba(0,0,0,0.25)',
           border: `1.5px solid ${open ? '#3fe56c' : 'rgba(0,200,83,0.18)'}`,
-          color: selected ? '#d4e8d5' : 'rgba(212,232,213,0.4)',
-          transition: 'border-color 0.2s',
+          color: selected ? '#d4e8d5' : 'rgba(212,232,213,0.35)',
+          fontSize: 16, transition: 'border-color 0.2s',
         }}
       >
         {selected ? (
-          <span className="flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center" style={{ background: selected.bg }}>
+          <span style={{ width: 24, height: 24, borderRadius: 8, flexShrink: 0, background: selected.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <selected.icon size={13} style={{ color: selected.color }} />
           </span>
         ) : (
-          <span className="flex-shrink-0 w-6 h-6 rounded-lg flex items-center justify-center" style={{ background: 'rgba(0,200,83,0.08)' }}>
-            <Sprout size={13} style={{ color: 'rgba(0,200,83,0.4)' }} />
+          <span style={{ width: 24, height: 24, borderRadius: 8, flexShrink: 0, background: 'rgba(0,200,83,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Sprout size={13} style={{ color: 'rgba(0,200,83,0.35)' }} />
           </span>
         )}
-        <span className="flex-1 text-left text-sm" style={{ fontSize: 16 }}>
+        <span style={{ flex: 1, textAlign: 'left', fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {selected ? selected.label : 'Selecione o curso'}
         </span>
-        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown size={16} style={{ color: 'rgba(0,200,83,0.5)' }} />
-        </motion.span>
-      </motion.button>
+        <ChevronDown size={15} style={{ color: 'rgba(0,200,83,0.5)', flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+      </button>
 
-      {/* ── Bottom sheet (Portal) ── */}
       {mounted && createPortal(
         <AnimatePresence>
           {open && (
             <>
-              {/* Backdrop */}
-              <motion.div
-                key="backdrop"
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onClick={() => setOpen(false)}
-                style={{
-                  position: 'fixed', inset: 0, zIndex: 99998,
-                  background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)',
-                }}
-              />
-
-              {/* Sheet */}
-              <motion.div
-                key="sheet"
-                initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-                transition={{ type: 'spring', stiffness: 380, damping: 38 }}
-                style={{
-                  position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 99999,
-                  background: '#0a1f10',
-                  borderTop: '1.5px solid rgba(0,200,83,0.20)',
-                  borderRadius: '20px 20px 0 0',
-                  paddingBottom: 'env(safe-area-inset-bottom)',
-                  maxHeight: '80dvh',
-                  display: 'flex', flexDirection: 'column',
-                }}
-              >
-                {/* Handle + header */}
-                <div style={{ padding: '12px 20px 8px', borderBottom: '1px solid rgba(0,200,83,0.10)', flexShrink: 0 }}>
-                  <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,200,83,0.25)', margin: '0 auto 12px' }} />
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <p style={{ color: '#3fe56c', fontSize: 12, fontWeight: 800, letterSpacing: '0.12em' }}>CURSO DE GRADUAÇÃO</p>
-                    <button type="button" onClick={() => setOpen(false)}
-                      style={{ color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-                      <X size={18} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Options list */}
-                <div style={{ overflowY: 'auto', flex: 1, padding: '8px 0' }}>
-                  {COURSES.map((course) => {
+              {/* ── DESKTOP: dropdown ── */}
+              {!mobile && rect && (
+                <motion.div
+                  key="desktop-drop"
+                  initial={{ opacity: 0, y: -6, scaleY: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scaleY: 1 }}
+                  exit={{ opacity: 0, y: -4, scaleY: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  style={{
+                    position: 'fixed',
+                    top: rect.bottom + 4,
+                    left: rect.left,
+                    width: rect.width,
+                    zIndex: 99999,
+                    background: '#0a1f10',
+                    border: '1.5px solid rgba(0,200,83,0.25)',
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                    boxShadow: '0 16px 48px rgba(0,0,0,0.7)',
+                    transformOrigin: 'top',
+                  }}
+                >
+                  {COURSES.map((course, i) => {
                     const Icon = course.icon
-                    const isSelected = value === course.value
+                    const isSel = value === course.value
                     return (
                       <button
                         key={course.value}
                         type="button"
-                        onClick={() => select(course.value)}
+                        onMouseDown={e => { e.preventDefault(); select(course.value) }}
                         style={{
-                          width: '100%', display: 'flex', alignItems: 'center', gap: 14,
-                          padding: '14px 20px',
-                          background: isSelected ? course.bg : 'transparent',
-                          border: 'none', cursor: 'pointer',
-                          borderBottom: '1px solid rgba(0,200,83,0.06)',
-                          textAlign: 'left',
+                          width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                          padding: '10px 14px', border: 'none', cursor: 'pointer', textAlign: 'left',
+                          background: isSel ? course.bg : 'transparent',
+                          borderBottom: i < COURSES.length - 1 ? '1px solid rgba(0,200,83,0.07)' : 'none',
+                          color: isSel ? course.color : '#d4e8d5',
+                          fontSize: 13, fontWeight: isSel ? 700 : 400,
+                          transition: 'background 0.15s',
                         }}
+                        onMouseEnter={e => { if (!isSel) (e.currentTarget as HTMLElement).style.background = 'rgba(0,200,83,0.06)' }}
+                        onMouseLeave={e => { if (!isSel) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
                       >
-                        <span style={{
-                          width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                          background: course.bg, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                          <Icon size={18} style={{ color: course.color }} />
+                        <span style={{ width: 28, height: 28, borderRadius: 8, flexShrink: 0, background: course.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Icon size={14} style={{ color: course.color }} />
                         </span>
-                        <span style={{ flex: 1, color: isSelected ? course.color : '#d4e8d5', fontSize: 14, fontWeight: isSelected ? 700 : 500, lineHeight: 1.3 }}>
-                          {course.label}
-                        </span>
-                        {isSelected && (
-                          <span style={{
-                            width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
-                            background: course.color, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          }}>
-                            <Check size={13} color="#003912" strokeWidth={3} />
-                          </span>
-                        )}
+                        <span style={{ flex: 1 }}>{course.label}</span>
+                        {isSel && <Check size={13} style={{ color: course.color, flexShrink: 0 }} />}
                       </button>
                     )
                   })}
-                </div>
-              </motion.div>
+                </motion.div>
+              )}
+
+              {/* ── MOBILE: bottom sheet ── */}
+              {mobile && (
+                <>
+                  <motion.div
+                    key="mob-backdrop"
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    onPointerDown={() => setOpen(false)}
+                    style={{ position: 'fixed', inset: 0, zIndex: 99998, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(3px)' }}
+                  />
+                  <motion.div
+                    key="mob-sheet"
+                    initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 40 }}
+                    style={{
+                      position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 99999,
+                      background: '#0a1f10',
+                      borderTop: '1.5px solid rgba(0,200,83,0.20)',
+                      borderRadius: '20px 20px 0 0',
+                      paddingBottom: 'env(safe-area-inset-bottom)',
+                    }}
+                  >
+                    {/* Handle */}
+                    <div style={{ padding: '12px 20px 0' }}>
+                      <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,200,83,0.25)', margin: '0 auto 10px' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 10, borderBottom: '1px solid rgba(0,200,83,0.10)' }}>
+                        <p style={{ color: '#3fe56c', fontSize: 11, fontWeight: 800, letterSpacing: '0.12em', margin: 0 }}>CURSO DE GRADUAÇÃO</p>
+                        <button type="button" onPointerDown={() => setOpen(false)} style={{ color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex' }}>
+                          <X size={18} />
+                        </button>
+                      </div>
+                    </div>
+                    {/* Items */}
+                    {COURSES.map((course) => {
+                      const Icon = course.icon
+                      const isSel = value === course.value
+                      return (
+                        <button
+                          key={course.value}
+                          type="button"
+                          onPointerDown={e => { e.stopPropagation(); select(course.value) }}
+                          style={{
+                            width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+                            padding: '13px 20px', border: 'none', cursor: 'pointer', textAlign: 'left',
+                            background: isSel ? course.bg : 'transparent',
+                            borderBottom: '1px solid rgba(0,200,83,0.06)',
+                            color: isSel ? course.color : '#d4e8d5',
+                            fontSize: 15, fontWeight: isSel ? 700 : 400,
+                          }}
+                        >
+                          <span style={{ width: 38, height: 38, borderRadius: 10, flexShrink: 0, background: course.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Icon size={17} style={{ color: course.color }} />
+                          </span>
+                          <span style={{ flex: 1, lineHeight: 1.3 }}>{course.label}</span>
+                          {isSel && (
+                            <span style={{ width: 22, height: 22, borderRadius: '50%', background: course.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <Check size={12} color="#003912" strokeWidth={3} />
+                            </span>
+                          )}
+                        </button>
+                      )
+                    })}
+                  </motion.div>
+                </>
+              )}
             </>
           )}
         </AnimatePresence>,
