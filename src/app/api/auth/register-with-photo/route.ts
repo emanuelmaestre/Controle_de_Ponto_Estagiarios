@@ -37,6 +37,13 @@ export async function POST(request: NextRequest) {
       email: email.toLowerCase(),
       password,
       email_confirm: true,
+      // Salva dados do cadastro nos metadados do auth user
+      // Permite recuperar nome/curso se o profile for deletado acidentalmente
+      user_metadata: {
+        full_name,
+        nickname: nickname || null,
+        course: course || null,
+      },
     })
 
     if (authError) {

@@ -67,15 +67,20 @@ export async function ensureProfile(
     }
   }
 
-  // 3) Não existe em lugar nenhum — cria um perfil mínimo (recuperação).
-  //    O usuário pode completar nome/curso depois na página de perfil.
-  const fallbackName = email ? email.split('@')[0] : 'Estagiário'
+  // 3) Não existe em lugar nenhum — tenta recuperar metadados do auth user
+  //    (salvos durante o cadastro) antes de criar perfil mínimo.
+  const { data: authUser } = await admin.auth.admin.getUserById(userId)
+  const meta = authUser?.user?.user_metadata ?? {}
+  const fallbackName = meta.full_name || (email ? email.split('@')[0] : 'Estagiário')
+
   const { data: created } = await admin
     .from('profiles')
     .insert({
       id: userId,
       email: email ?? `${userId}@sememail.local`,
       full_name: fallbackName,
+      nickname: meta.nickname || null,
+      course: meta.course || null,
       role: 'intern',
       is_active: true,
       internship_start: new Date().toISOString().slice(0, 10),
