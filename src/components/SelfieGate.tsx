@@ -236,44 +236,50 @@ export default function SelfieGate({ hasPhoto, internId, onComplete }: Props) {
       </div>
 
       {/* Steps */}
-      <div className="px-4 py-3 space-y-2.5">
+      <div className="px-4 py-3 space-y-3">
 
-        {/* Chrome */}
+        {/* Android Chrome */}
         <div>
           <div className="flex items-center gap-1.5 mb-1.5">
-            <Globe size={11} style={{ color: 'var(--text-3)' }} />
-            <p className="text-[10px] font-black uppercase tracking-wide" style={{ color: 'var(--text-2)' }}>Chrome / Edge</p>
+            <span style={{ fontSize: 11 }}>🤖</span>
+            <p className="text-[10px] font-black uppercase tracking-wide" style={{ color: 'var(--text-2)' }}>Android — Chrome</p>
           </div>
           <ol className="space-y-1.5 pl-1">
             {[
-              { icon: '🔒', text: 'Clique no cadeado 🔒 na barra de endereços' },
-              { icon: '📷', text: 'Encontre "Câmera" na lista' },
-              { icon: '✅', text: 'Mude para "Permitir"' },
-              { icon: '🔄', text: 'Recarregue a página' },
-            ].map((step, i) => (
+              'Toque no ícone 🔒 na barra de endereços',
+              'Toque em "Permissões"',
+              'Toque em "Câmera" → selecione "Permitir"',
+              'Recarregue a página',
+            ].map((text, i) => (
               <li key={i} className="flex items-start gap-2">
                 <span className="flex-shrink-0 w-4 h-4 rounded-full text-[8px] font-black flex items-center justify-center mt-0.5"
-                  style={{ background: 'rgba(239,68,68,0.15)', color: 'var(--danger)' }}>
-                  {i + 1}
-                </span>
-                <p className="text-[10px] leading-tight" style={{ color: 'var(--text-2)' }}>{step.text}</p>
+                  style={{ background: 'rgba(239,68,68,0.15)', color: 'var(--danger)' }}>{i + 1}</span>
+                <p className="text-[10px] leading-tight" style={{ color: 'var(--text-2)' }}>{text}</p>
               </li>
             ))}
           </ol>
         </div>
 
-        {/* Visual hint */}
-        <div className="rounded-xl px-3 py-2.5 flex items-center gap-2"
-          style={{ background: 'rgba(239,68,68,0.08)', border: '1px dashed rgba(239,68,68,0.25)' }}>
-          <span className="text-base flex-shrink-0">🔒</span>
-          <div>
-            <p className="text-[9px] font-bold" style={{ color: 'var(--danger)' }}>
-              ONDE FICA O CADEADO?
-            </p>
-            <p className="text-[9px]" style={{ color: 'rgba(239,68,68,0.7)' }}>
-              À esquerda do endereço <span className="font-bold">controle-de-ponto-estagiarios.vercel.app</span> na barra do navegador.
-            </p>
+        {/* iPhone Safari */}
+        <div>
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <span style={{ fontSize: 11 }}>🍎</span>
+            <p className="text-[10px] font-black uppercase tracking-wide" style={{ color: 'var(--text-2)' }}>iPhone — Safari</p>
           </div>
+          <ol className="space-y-1.5 pl-1">
+            {[
+              'Abra Ajustes do iPhone',
+              'Role até "Safari" → toque em "Safari"',
+              'Toque em "Câmera" → selecione "Permitir"',
+              'Volte ao site e recarregue',
+            ].map((text, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="flex-shrink-0 w-4 h-4 rounded-full text-[8px] font-black flex items-center justify-center mt-0.5"
+                  style={{ background: 'rgba(239,68,68,0.15)', color: 'var(--danger)' }}>{i + 1}</span>
+                <p className="text-[10px] leading-tight" style={{ color: 'var(--text-2)' }}>{text}</p>
+              </li>
+            ))}
+          </ol>
         </div>
 
         {/* Buttons */}

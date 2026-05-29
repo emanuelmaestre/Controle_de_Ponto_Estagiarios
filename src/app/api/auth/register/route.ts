@@ -41,10 +41,14 @@ export async function POST(request: NextRequest) {
     })
 
     if (authError) {
-      return NextResponse.json({ error: 'Erro ao criar conta. Tente novamente.' }, { status: 500 })
+      console.error('[register] authError:', authError.message)
+      if (authError.message.toLowerCase().includes('already') || authError.message.toLowerCase().includes('registered')) {
+        return NextResponse.json({ error: 'Este e-mail já está cadastrado. Tente fazer login.' }, { status: 409 })
+      }
+      return NextResponse.json({ error: `Erro ao criar conta: ${authError.message}` }, { status: 500 })
     }
 
-    // Criar profile como intern INATIVO (precisa aprovação do admin)
+    // Criar profile
     const { error: profileError } = await supabaseAdmin.from('profiles').upsert({
       id: authData.user.id,
       full_name,
@@ -53,6 +57,7 @@ export async function POST(request: NextRequest) {
       course: course || null,
       role: 'intern',
       is_active: true,
+      internship_start: new Date().toISOString().slice(0, 10),
     }, { onConflict: 'id' })
 
     if (profileError) {
