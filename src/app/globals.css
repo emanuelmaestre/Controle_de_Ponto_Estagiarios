@@ -411,9 +411,13 @@ textarea::placeholder {
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0px 1000px #0a1a10 inset !important;
+input:-webkit-autofill:active,
+input[data-autocompleted] {
+  -webkit-box-shadow: 0 0 0px 9999px rgba(0,0,0,0.25) inset !important;
+  box-shadow: 0 0 0px 9999px rgba(0,0,0,0.25) inset !important;
   -webkit-text-fill-color: #d4e8d5 !important;
-  caret-color: #3fe56c;
-  transition: background-color 9999s ease-in-out 0s;
+  color: #d4e8d5 !important;
+  caret-color: #3fe56c !important;
+  background-color: transparent !important;
+  transition: background-color 99999s ease-in-out 0s !important;
 }
