@@ -137,10 +137,14 @@ function Field({ label, icon, error, children }: { label: string; icon: React.Re
 
 const inputCls = "w-full pl-10 pr-4 py-2.5 rounded-xl font-medium outline-none transition-all"
 const inputStyle = {
-  background: 'rgba(0,0,0,0.25)',
+  background: '#0d1f12',
   border: '1px solid rgba(0,200,83,0.18)',
   color: '#d4e8d5',
-  fontSize: '16px', // evita zoom automático no iOS Safari
+  fontSize: '16px',
+  WebkitAppearance: 'none' as const,
+  appearance: 'none' as const,
+  WebkitTextFillColor: '#d4e8d5',
+  WebkitBoxShadow: '0 0 0px 9999px #0d1f12 inset',
 }
 
 function RegisterContent() {
@@ -337,7 +341,6 @@ function RegisterContent() {
                   ...inputStyle,
                   borderColor: emailHint ? 'rgba(255,191,0,0.45)' : 'rgba(0,200,83,0.18)',
                   caretColor: '#3fe56c',
-                  WebkitBoxShadow: '0 0 0px 9999px rgba(0,0,0,0.25) inset',
                 }}
                 onFocus={e => (e.target.style.borderColor = emailHint ? 'rgba(255,191,0,0.6)' : '#3fe56c')}
                 onBlur={e => (e.target.style.borderColor = emailHint ? 'rgba(255,191,0,0.45)' : 'rgba(0,200,83,0.18)')}
