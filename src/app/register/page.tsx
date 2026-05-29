@@ -4,7 +4,7 @@ import { useState, Suspense, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion'
 import Link from 'next/link'
-import { Eye, EyeOff, User, Mail, Lock, CheckCircle2, ArrowRight, Loader2, AlertCircle, Tag, Monitor, Smartphone } from 'lucide-react'
+import { Eye, EyeOff, User, Mail, Lock, CheckCircle2, ArrowRight, Loader2, AlertCircle, Tag, Monitor } from 'lucide-react'
 import CourseSelect from '@/components/ui/CourseSelect'
 import SelfieGate from '@/components/SelfieGate'
 
@@ -317,45 +317,15 @@ function RegisterContent() {
       </motion.div>
 
       <motion.h2 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-        className="text-2xl font-black mb-1" style={{ color: '#3fe56c' }}>
+        className="text-2xl font-black mb-2" style={{ color: '#3fe56c' }}>
         Cadastro concluído!
       </motion.h2>
       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-        className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.45)' }}>
-        Bem-vindo ao Chronos Lab.
+        className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.45)' }}>
+        Bem-vindo ao Chronos Lab. Seu acesso está pronto.
       </motion.p>
 
-      {/* Aviso: acesso apenas via celular */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-        className="w-full rounded-2xl p-4 mb-6"
-        style={{ background: 'rgba(251,191,36,0.07)', border: '1px solid rgba(251,191,36,0.25)' }}
-      >
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <Smartphone size={18} style={{ color: '#fbbf24' }} />
-          <p className="text-sm font-black" style={{ color: '#fbbf24' }}>Acesso apenas pelo celular</p>
-        </div>
-        <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(251,191,36,0.7)' }}>
-          O cadastro foi feito aqui no computador, mas o acesso ao sistema de ponto é <strong style={{ color: '#fbbf24' }}>exclusivo para celular ou tablet</strong>.
-        </p>
-        <div className="mt-3 flex items-center justify-center gap-2 rounded-xl px-3 py-2"
-          style={{ background: 'rgba(251,191,36,0.10)' }}>
-          <span style={{ fontSize: 16 }}>📱</span>
-          <p className="text-[11px] font-bold" style={{ color: '#fbbf24' }}>
-            Abra <span style={{ color: 'white' }}>controle-de-ponto-estagiarios.vercel.app</span> no seu celular e faça login
-          </p>
-        </div>
-      </motion.div>
-
-      {/* Separador */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.75 }}
-        className="w-full flex items-center gap-3 mb-4">
-        <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.08)' }} />
-        <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>ou se estiver no celular</span>
-        <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.08)' }} />
-      </motion.div>
-
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="w-full">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="w-full">
         <Link href="/login"
           className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-sm"
           style={{ background: '#00c853', color: '#003912' }}>

@@ -87,7 +87,14 @@ interface Props {
   children: React.ReactNode
 }
 
+// ⚠️ RESTRIÇÃO DESATIVADA TEMPORARIAMENTE
+// Para reativar o bloqueio de desktop, troque RESTRICT_TO_MOBILE para true.
+const RESTRICT_TO_MOBILE = false
+
 export default async function MobileOnlyGuard({ children }: Props) {
+  // Restrição desativada — libera acesso em qualquer dispositivo
+  if (!RESTRICT_TO_MOBILE) return <>{children}</>
+
   const headersList = await headers()
   const ua = headersList.get('user-agent') ?? ''
   const mobile = isMobileUA(ua)
