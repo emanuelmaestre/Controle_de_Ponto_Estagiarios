@@ -20,63 +20,105 @@ function Particle({ delay, x, size }: { delay: number; x: number; size: number }
   )
 }
 
-// ── Animated stopwatch SVG ───────────────────────────
+// ── Animated Chronos Lab illustration ───────────────
 function ChronosIllustration() {
   return (
-    <motion.div className="relative flex items-center justify-center" style={{ width: 220, height: 220 }}>
-      {/* Outer glow ring */}
-      <motion.div
-        className="absolute rounded-full"
-        style={{ width: 220, height: 220, border: '1px solid rgba(0,200,83,0.15)', background: 'rgba(0,200,83,0.03)' }}
-        animate={{ scale: [1, 1.05, 1], opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="absolute rounded-full"
-        style={{ width: 180, height: 180, border: '1px solid rgba(0,200,83,0.20)', background: 'rgba(0,200,83,0.04)' }}
-        animate={{ scale: [1.05, 1, 1.05], opacity: [1, 0.5, 1] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-      />
+    <motion.div className="relative flex flex-col items-center justify-center" style={{ width: 280, height: 280 }}>
 
-      {/* Stopwatch SVG */}
-      <motion.svg
-        width="130" height="130" viewBox="0 0 180 180" fill="none"
-        animate={{ rotate: [0, 2, -2, 0] }}
-        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <circle cx="90" cy="105" r="52" fill="none" stroke="#00c853" strokeWidth="5"/>
-        <rect x="74" y="30" width="32" height="12" rx="6" fill="#00c853"/>
-        <line x1="90" y1="42" x2="90" y2="53" stroke="#00c853" strokeWidth="6" strokeLinecap="round"/>
-        <line x1="38" y1="65" x2="48" y2="75" stroke="#00c853" strokeWidth="4" strokeLinecap="round"/>
-        <line x1="142" y1="65" x2="132" y2="75" stroke="#00c853" strokeWidth="4" strokeLinecap="round"/>
-        <motion.line
-          x1="90" y1="105" x2="90" y2="68"
-          stroke="#3fe56c" strokeWidth="5" strokeLinecap="round"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
-          style={{ transformOrigin: '90px 105px' }}
-        />
-        <motion.line
-          x1="90" y1="105" x2="115" y2="87"
-          stroke="#00c853" strokeWidth="3.5" strokeLinecap="round"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
-          style={{ transformOrigin: '90px 105px' }}
-        />
-        <circle cx="90" cy="105" r="6" fill="#3fe56c"/>
-      </motion.svg>
-
-      {/* Orbiting dots */}
-      {[0, 60, 120, 180, 240, 300].map((deg, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{ width: i % 2 === 0 ? 6 : 4, height: i % 2 === 0 ? 6 : 4, background: i % 2 === 0 ? '#00c853' : '#3fe56c' }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 10 + i * 2, repeat: Infinity, ease: 'linear', delay: i * 0.3 }}
-          initial={{ x: Math.cos((deg * Math.PI) / 180) * 105, y: Math.sin((deg * Math.PI) / 180) * 105 }}
+      {/* Pulse rings */}
+      {[280, 240, 200].map((size, i) => (
+        <motion.div key={i} className="absolute rounded-full"
+          style={{ width: size, height: size, border: `1px solid rgba(0,200,83,${0.08 + i * 0.04})` }}
+          animate={{ scale: [1, 1.04, 1], opacity: [0.4, 0.9, 0.4] }}
+          transition={{ duration: 3 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
         />
       ))}
+
+      {/* Rotating dashed ring */}
+      <motion.svg className="absolute" width="220" height="220" viewBox="0 0 220 220"
+        animate={{ rotate: 360 }} transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}>
+        <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(0,200,83,0.15)"
+          strokeWidth="1" strokeDasharray="6 10" />
+      </motion.svg>
+
+      {/* Counter-rotating dashed ring */}
+      <motion.svg className="absolute" width="180" height="180" viewBox="0 0 180 180"
+        animate={{ rotate: -360 }} transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}>
+        <circle cx="90" cy="90" r="82" fill="none" stroke="rgba(0,200,83,0.10)"
+          strokeWidth="1" strokeDasharray="3 14" />
+      </motion.svg>
+
+      {/* Main stopwatch — logo fiel */}
+      <motion.div className="relative flex items-center justify-center"
+        style={{ width: 140, height: 140, zIndex: 10 }}
+        animate={{ y: [0, -4, 0] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}>
+
+        {/* Glow behind */}
+        <div className="absolute rounded-full" style={{
+          width: 110, height: 110, top: 15,
+          background: 'radial-gradient(circle, rgba(0,200,83,0.18) 0%, transparent 70%)',
+          filter: 'blur(8px)',
+        }} />
+
+        <svg width="140" height="140" viewBox="0 0 180 180" fill="none">
+          {/* Body */}
+          <circle cx="90" cy="105" r="52" fill="rgba(0,200,83,0.05)" stroke="#00c853" strokeWidth="5"/>
+          {/* Tick marks */}
+          {[0,30,60,90,120,150,180,210,240,270,300,330].map((a, i) => {
+            const r1 = 46, r2 = i % 3 === 0 ? 38 : 42
+            const rad = (a - 90) * Math.PI / 180
+            return <line key={a}
+              x1={90 + r1 * Math.cos(rad)} y1={105 + r1 * Math.sin(rad)}
+              x2={90 + r2 * Math.cos(rad)} y2={105 + r2 * Math.sin(rad)}
+              stroke={i % 3 === 0 ? '#3fe56c' : 'rgba(0,200,83,0.35)'} strokeWidth={i % 3 === 0 ? 2.5 : 1.5} strokeLinecap="round"/>
+          })}
+          {/* Crown/top button */}
+          <rect x="74" y="30" width="32" height="12" rx="6" fill="#00c853"/>
+          <line x1="90" y1="42" x2="90" y2="53" stroke="#00c853" strokeWidth="6" strokeLinecap="round"/>
+          {/* Side buttons */}
+          <line x1="38" y1="65" x2="50" y2="77" stroke="#00c853" strokeWidth="4.5" strokeLinecap="round"/>
+          <line x1="142" y1="65" x2="130" y2="77" stroke="#00c853" strokeWidth="4.5" strokeLinecap="round"/>
+          {/* Minutes hand */}
+          <motion.line x1="90" y1="105" x2="115" y2="87"
+            stroke="rgba(0,200,83,0.6)" strokeWidth="3" strokeLinecap="round"
+            animate={{ rotate: 360 }} transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+            style={{ transformOrigin: '90px 105px' }} />
+          {/* Seconds hand */}
+          <motion.line x1="90" y1="105" x2="90" y2="65"
+            stroke="#3fe56c" strokeWidth="4" strokeLinecap="round"
+            animate={{ rotate: 360 }} transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+            style={{ transformOrigin: '90px 105px' }} />
+          {/* Center dot */}
+          <circle cx="90" cy="105" r="5" fill="#00c853"/>
+          <circle cx="90" cy="105" r="2.5" fill="#3fe56c"/>
+        </svg>
+      </motion.div>
+
+      {/* Logo text below */}
+      <motion.div className="flex flex-col items-center mt-3" style={{ zIndex: 10 }}
+        initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+        <p style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.5px', lineHeight: 1, color: '#3fe56c' }}>
+          Chronos <span style={{ color: '#C0392B' }}>Lab</span>
+        </p>
+        <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.22em', color: 'rgba(0,200,83,0.4)', marginTop: 3 }}>
+          CONTROLE DE PONTO
+        </p>
+      </motion.div>
+
+      {/* Orbiting dots on outer ring */}
+      {[0, 72, 144, 216, 288].map((deg, i) => {
+        const r = 128
+        const rad = ((deg - 90) * Math.PI) / 180
+        return (
+          <motion.div key={i} className="absolute rounded-full"
+            style={{ width: 5, height: 5, background: '#00c853', top: '50%', left: '50%', marginTop: -2.5, marginLeft: -2.5 }}
+            animate={{ rotate: 360 }}
+            transition={{ duration: 18, repeat: Infinity, ease: 'linear', delay: i * 0.4 }}
+            initial={{ x: Math.cos(rad) * r, y: Math.sin(rad) * r }}
+          />
+        )
+      })}
     </motion.div>
   )
 }
