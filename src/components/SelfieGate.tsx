@@ -199,24 +199,31 @@ export default function SelfieGate({ hasPhoto, internId, formData, onComplete }:
     if (!capturedBlob) return
     setUploading(true)
     try {
-      const fileName = `${internId || 'temp'}/selfie_${Date.now()}.jpg`
-      const { error: upErr } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, capturedBlob, { upsert: true, contentType: 'image/jpeg' })
-      if (upErr) throw upErr
-      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName)
-
-      // ── Novo fluxo: cria usuário APÓS salvar foto ──
+      // ── Novo fluxo: envia foto + dados para o servidor (service role faz upload) ──
       if (formData) {
+        // Converte blob para base64
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve((reader.result as string).split(',')[1])
+          reader.onerror = reject
+          reader.readAsDataURL(capturedBlob)
+        })
+
         const regRes = await fetch('/api/auth/register-with-photo', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...formData, photo_url: publicUrl })
+          body: JSON.stringify({ ...formData, photo_base64: base64 })
         })
         const regJson = await regRes.json()
         if (!regRes.ok) throw new Error(regJson.error || 'Erro ao criar conta')
       } else {
-        // Fluxo antigo: apenas atualiza foto no profile existente
+        // Fluxo antigo (atualização de foto de usuário existente): upload direto
+        const fileName = `${internId}/selfie_${Date.now()}.jpg`
+        const { error: upErr } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, capturedBlob, { upsert: true, contentType: 'image/jpeg' })
+        if (upErr) throw upErr
+        const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName)
         const { error: profileErr } = await supabase
           .from('profiles').update({ photo_url: publicUrl }).eq('id', internId)
         if (profileErr) throw profileErr
