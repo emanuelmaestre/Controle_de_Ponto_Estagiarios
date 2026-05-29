@@ -179,13 +179,10 @@ function Field({ label, icon, error, children }: { label: string; icon: React.Re
 
 const inputCls = "w-full pl-10 pr-4 py-2.5 rounded-xl font-medium outline-none transition-all"
 const inputStyle = {
-  background: '#0d1f12',
+  background: 'rgba(0,0,0,0.25)',
   border: '1px solid rgba(0,200,83,0.18)',
   color: '#d4e8d5',
   fontSize: '16px',
-  WebkitAppearance: 'none' as const,
-  appearance: 'none' as const,
-  WebkitBoxShadow: '0 0 0px 9999px #0d1f12 inset',
 }
 
 function RegisterContent() {
