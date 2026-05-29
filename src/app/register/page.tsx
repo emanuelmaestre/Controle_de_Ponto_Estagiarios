@@ -337,7 +337,6 @@ function RegisterContent() {
                   ...inputStyle,
                   borderColor: emailHint ? 'rgba(255,191,0,0.45)' : 'rgba(0,200,83,0.18)',
                   caretColor: '#3fe56c',
-                  WebkitTextFillColor: '#d4e8d5',
                   WebkitBoxShadow: '0 0 0px 9999px rgba(0,0,0,0.25) inset',
                 }}
                 onFocus={e => (e.target.style.borderColor = emailHint ? 'rgba(255,191,0,0.6)' : '#3fe56c')}
