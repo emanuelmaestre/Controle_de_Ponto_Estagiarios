@@ -74,38 +74,32 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .maybeSingle()
 
-  // Se perfil não encontrado, tenta reparar automaticamente (UUID divergente)
-  if (!profile) {
+  // Se perfil não encontrado por UUID, busca por email (UUID divergente)
+  if (!profile && user.email) {
     const admin = createSupabaseServiceClient()
     const { data: profileByEmail } = await admin
       .from('profiles')
       .select('id, full_name, total_hours_required, role, photo_url, email, course, nickname, internship_start, is_active')
-      .eq('email', user.email!)
+      .eq('email', user.email)
       .maybeSingle()
 
     if (profileByEmail) {
-      const oldId = profileByEmail.id
-      if (oldId !== user.id) {
-        // Deleta o antigo PRIMEIRO (evita violação de unique constraint no email)
-        await admin.from('profiles').delete().eq('id', oldId)
-        // Insere com o UUID correto
+      // Usa os dados imediatamente para esta requisição
+      profile = {
+        full_name: profileByEmail.full_name,
+        total_hours_required: profileByEmail.total_hours_required,
+        role: profileByEmail.role,
+        photo_url: profileByEmail.photo_url,
+      }
+      // Corrige UUID em background: deleta antigo e insere com UUID correto
+      if (profileByEmail.id !== user.id) {
         const { full_name, total_hours_required, role, photo_url, email, course, nickname, internship_start, is_active } = profileByEmail
-        const { error: insertErr } = await admin.from('profiles').insert({
-          id: user.id, full_name, total_hours_required, role, photo_url,
-          email, course, nickname, internship_start, is_active,
+        admin.from('profiles').delete().eq('id', profileByEmail.id).then(() => {
+          admin.from('profiles').insert({
+            id: user.id, full_name, total_hours_required, role, photo_url,
+            email, course, nickname, internship_start, is_active,
+          })
         })
-        if (!insertErr) {
-          profile = { full_name, total_hours_required, role, photo_url }
-        }
-      } else {
-        // UUID já é o correto mas a query por id retornou null — problema de RLS
-        // Força o profile para o que achamos por email
-        profile = {
-          full_name: profileByEmail.full_name,
-          total_hours_required: profileByEmail.total_hours_required,
-          role: profileByEmail.role,
-          photo_url: profileByEmail.photo_url,
-        }
       }
     }
   }

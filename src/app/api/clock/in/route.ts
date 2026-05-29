@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
 
 // Haversine formula — distance between two GPS coords in meters
 function haversine(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -33,12 +33,42 @@ export async function POST(req: NextRequest) {
     const GEO_EXEMPT_EMAILS = ['emanuelmaestree@gmail.com']
     const isGeoExempt = GEO_EXEMPT_EMAILS.includes(user.email ?? '')
 
-    // Get profile (role + name)
-    const { data: profile } = await supabase
+    // Get profile (role + name) — fallback por email se UUID divergente
+    let { data: profile } = await supabase
       .from('profiles')
       .select('role, full_name')
       .eq('id', user.id)
       .maybeSingle()
+
+    if (!profile && user.email) {
+      // Busca por email via service role e tenta corrigir o UUID
+      const admin = createSupabaseServiceClient()
+      const { data: profileByEmail } = await admin
+        .from('profiles')
+        .select('id, role, full_name, email, course, nickname, photo_url, internship_start, is_active, total_hours_required')
+        .eq('email', user.email)
+        .maybeSingle()
+
+      if (profileByEmail) {
+        profile = { role: profileByEmail.role, full_name: profileByEmail.full_name }
+        // Corrige UUID: deleta antigo e insere com UUID correto
+        if (profileByEmail.id !== user.id) {
+          await admin.from('profiles').delete().eq('id', profileByEmail.id)
+          await admin.from('profiles').insert({
+            id: user.id,
+            full_name: profileByEmail.full_name,
+            email: profileByEmail.email,
+            course: profileByEmail.course,
+            nickname: profileByEmail.nickname,
+            photo_url: profileByEmail.photo_url,
+            internship_start: profileByEmail.internship_start,
+            is_active: profileByEmail.is_active,
+            total_hours_required: profileByEmail.total_hours_required,
+            role: profileByEmail.role,
+          })
+        }
+      }
+    }
 
     if (!profile) return NextResponse.json({ error: 'Perfil não encontrado' }, { status: 404 })
 
