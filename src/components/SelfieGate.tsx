@@ -207,9 +207,21 @@ export default function SelfieGate({ hasPhoto, internId, onComplete }: Props) {
         if (onComplete) onComplete()
         else router.refresh()
       }, 1600)
-    } catch (e) {
-      console.error(e)
-      setCamError('Erro ao salvar foto. Tente novamente.')
+    } catch (e: any) {
+      const msg = e?.message || String(e) || 'Erro desconhecido'
+      console.error('[SelfieGate upload error]', msg, e)
+
+      // Mensagem mais específica baseada no tipo de erro
+      let userMsg = 'Erro ao salvar foto. Tente novamente.'
+      if (msg.includes('storage') || msg.includes('permission')) {
+        userMsg = 'Permissão negada. Verifique as configurações do Supabase.'
+      } else if (msg.includes('size') || msg.includes('payload')) {
+        userMsg = 'Arquivo muito grande. Tente uma foto menor.'
+      } else if (msg.includes('network')) {
+        userMsg = 'Erro de conexão. Verifique sua internet.'
+      }
+
+      setCamError(userMsg)
       setUploading(false)
     }
   }
