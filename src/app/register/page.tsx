@@ -371,7 +371,7 @@ function RegisterContent() {
                 inputMode="email"
                 autoComplete="email"
                 value={form.email}
-                onChange={e => set('email', e.target.value)}
+                onChange={e => set('email', e.target.value.toLowerCase())}
                 placeholder="ex: nome@gmail.com"
                 required
                 className={inputCls}
