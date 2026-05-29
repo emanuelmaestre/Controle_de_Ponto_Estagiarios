@@ -143,7 +143,6 @@ const inputStyle = {
   fontSize: '16px',
   WebkitAppearance: 'none' as const,
   appearance: 'none' as const,
-  WebkitTextFillColor: '#d4e8d5',
   WebkitBoxShadow: '0 0 0px 9999px #0d1f12 inset',
 }
 

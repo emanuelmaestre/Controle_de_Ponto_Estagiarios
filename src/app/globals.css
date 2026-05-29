@@ -400,11 +400,18 @@ input, select, textarea {
   font-size: 16px;
 }
 
-/* Placeholder sutil em todos os inputs */
+/* Placeholder sutil em todos os inputs (desktop e mobile iOS) */
 input::placeholder,
 textarea::placeholder {
-  color: rgba(212,232,213,0.30);
-  opacity: 1;
+  color: rgba(212,232,213,0.28) !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: rgba(212,232,213,0.28) !important;
+}
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: rgba(212,232,213,0.28) !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: rgba(212,232,213,0.28) !important;
 }
 
 /* Remove fundo branco do autofill do browser nos inputs escuros */
