@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Camera, RotateCcw, Check, Loader2, AlertTriangle, ShieldCheck,
-  FlipHorizontal2, RefreshCw, ExternalLink, Lock, Globe,
+  FlipHorizontal2, RefreshCw, ExternalLink, Lock, Globe, ImagePlus,
 } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
@@ -163,6 +163,31 @@ export default function SelfieGate({ hasPhoto, internId, onComplete }: Props) {
     startCamera(facingMode)
   }
 
+  // ── Upload from gallery/file ─────────────────────────
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = ev => {
+      const img = new window.Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const size = Math.min(img.width, img.height)
+        canvas.width = size; canvas.height = size
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size)
+        canvas.toBlob(blob => {
+          if (!blob) return
+          setCapturedBlob(blob)
+          setCapturedUrl(canvas.toDataURL('image/jpeg', 0.9))
+          stopStream()
+        }, 'image/jpeg', 0.9)
+      }
+      img.src = ev.target?.result as string
+    }
+    reader.readAsDataURL(file)
+  }
+
   const upload = async () => {
     if (!capturedBlob) return
     setUploading(true)
@@ -270,6 +295,18 @@ export default function SelfieGate({ hasPhoto, internId, onComplete }: Props) {
           >
             <ExternalLink size={11} /> RECARREGAR
           </motion.button>
+        </div>
+
+        {/* Alternativa: enviar da galeria */}
+        <div className="pt-2" style={{ borderTop: '1px solid rgba(0,0,0,0.15)', marginTop: 4 }}>
+          <p className="text-[10px] text-center mb-2" style={{ color: 'var(--text-3)' }}>
+            Ou envie uma foto da sua galeria
+          </p>
+          <label className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] font-bold cursor-pointer w-full"
+            style={{ background: 'rgba(0,200,83,0.10)', border: '1px solid rgba(0,200,83,0.30)', color: 'var(--primary)' }}>
+            <ImagePlus size={13} /> ESCOLHER DA GALERIA
+            <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+          </label>
         </div>
       </div>
     </motion.div>
