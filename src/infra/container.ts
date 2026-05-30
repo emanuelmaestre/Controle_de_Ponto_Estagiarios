@@ -13,6 +13,8 @@ import { CreateInternUseCase } from '@/application/use-cases/intern/CreateIntern
 import { ListInternsUseCase } from '@/application/use-cases/intern/ListInternsUseCase'
 import { ToggleInternActiveUseCase } from '@/application/use-cases/intern/ToggleInternActiveUseCase'
 import { GetMonthlyReportUseCase } from '@/application/use-cases/report/GetMonthlyReportUseCase'
+import { UpdateProfileUseCase } from '@/application/use-cases/intern/UpdateProfileUseCase'
+import { GetRankingUseCase } from '@/application/use-cases/report/GetRankingUseCase'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 function makeRepos(supabase: SupabaseClient) {
@@ -43,6 +45,8 @@ export function createContainer(serverClient: SupabaseClient) {
     listInternsUseCase: () => new ListInternsUseCase(repos.user),
     toggleInternActiveUseCase: () => new ToggleInternActiveUseCase(repos.user),
     getMonthlyReportUseCase: () => new GetMonthlyReportUseCase(repos.user, repos.record, repos.activity),
+    updateProfileUseCase: () => new UpdateProfileUseCase(repos.user),
+    getRankingUseCase: () => new GetRankingUseCase(repos.user, repos.record),
     repos,
     auth,
   }

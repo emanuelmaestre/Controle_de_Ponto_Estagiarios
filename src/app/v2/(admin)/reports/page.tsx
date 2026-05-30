@@ -62,13 +62,22 @@ export default function ReportsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold">Relatorios</h2>
-        <button
-          onClick={exportCSV}
-          disabled={report.length === 0}
-          className="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white text-sm rounded-xl transition-colors"
-        >
-          Exportar CSV
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={exportCSV}
+            disabled={report.length === 0}
+            className="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white text-sm rounded-xl transition-colors"
+          >
+            CSV
+          </button>
+          <a
+            href={`/api/reports/export?month=${month}&year=${year}&format=pdf`}
+            target="_blank"
+            className={`px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-xl transition-colors inline-block ${report.length === 0 ? 'opacity-50 pointer-events-none' : ''}`}
+          >
+            PDF
+          </a>
+        </div>
       </div>
 
       {/* Month Selector */}

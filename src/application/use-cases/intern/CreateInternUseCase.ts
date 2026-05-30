@@ -26,6 +26,7 @@ export class CreateInternUseCase {
       dto.email,
       UserRole.INTERN,
       dto.course ?? null,
+      null,
       true,
       new Date(),
     )

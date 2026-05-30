@@ -7,6 +7,7 @@ export class User {
     public email: string,
     public role: UserRole,
     public course: string | null,
+    public photoUrl: string | null,
     public isActive: boolean,
     public readonly createdAt: Date,
   ) {}

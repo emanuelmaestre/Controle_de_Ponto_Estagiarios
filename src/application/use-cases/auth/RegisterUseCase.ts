@@ -23,6 +23,7 @@ export class RegisterUseCase {
       dto.email,
       UserRole.INTERN,
       dto.course ?? null,
+      null,
       true,
       new Date(),
     )

@@ -43,6 +43,7 @@ export class SupabaseUserRepository implements IUserRepository {
       email: user.email,
       role: user.role,
       course: user.course,
+      photo_url: user.photoUrl,
       is_active: user.isActive,
     })
   }
@@ -54,6 +55,7 @@ export class SupabaseUserRepository implements IUserRepository {
         full_name: user.fullName,
         email: user.email,
         course: user.course,
+        photo_url: user.photoUrl,
         is_active: user.isActive,
       })
       .eq('id', user.id)
@@ -66,6 +68,7 @@ export class SupabaseUserRepository implements IUserRepository {
       row.email,
       row.role as UserRole,
       row.course,
+      row.photo_url ?? null,
       row.is_active,
       new Date(row.created_at),
     )

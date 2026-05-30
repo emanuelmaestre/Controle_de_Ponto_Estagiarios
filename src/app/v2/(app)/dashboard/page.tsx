@@ -100,6 +100,7 @@ export default async function DashboardPage() {
       <nav className="fixed bottom-0 inset-x-0 bg-gray-900 border-t border-gray-800 flex justify-around py-3">
         <a href="/v2/dashboard" className="text-green-400 text-xs font-medium">Inicio</a>
         <a href="/v2/history" className="text-gray-500 text-xs">Historico</a>
+        <a href="/v2/ranking" className="text-gray-500 text-xs">Ranking</a>
         <a href="/v2/profile" className="text-gray-500 text-xs">Perfil</a>
       </nav>
     </div>
