@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 const PUBLIC_PATHS = ['/login', '/register', '/set-password', '/setup-pin', '/offline', '/api/auth', '/_next', '/favicon', '/icons', '/sw.js', '/manifest.json', '/v2/login', '/v2/register']
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Deixar arquivos estáticos e rotas públicas passarem
