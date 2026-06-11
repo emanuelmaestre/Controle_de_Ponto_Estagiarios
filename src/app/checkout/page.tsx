@@ -40,11 +40,11 @@ export default async function CheckoutPage({ searchParams }: Props) {
 
   return (
     <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
-      <header className="flex-shrink-0" style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+      <header className="flex-shrink-0" style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
         <div className="max-w-lg mx-auto px-4 py-4">
-          <h1 className="font-bold text-base" style={{ color: 'white' }}>REGISTRAR SAÍDA</h1>
-          <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            Entrada as {formatTime(record.clock_in)}
+          <h1 className="font-bold text-base" style={{ color: 'var(--text)' }}>REGISTRAR SAÍDA</h1>
+          <p className="text-sm mt-0.5" style={{ color: 'var(--text-3)' }}>
+            Entrada às {formatTime(record.clock_in)}
           </p>
         </div>
       </header>
