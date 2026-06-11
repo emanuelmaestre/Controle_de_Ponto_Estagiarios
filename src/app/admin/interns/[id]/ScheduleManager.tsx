@@ -6,6 +6,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { InternSchedule } from '@/types/database'
 import { toast } from 'sonner'
 import { Clock, CheckCircle2, Loader2, X, Plus, AlertTriangle } from 'lucide-react'
+import { slotMinutes, weeklyMinutes, formatHm } from '@/lib/schedule'
 
 const DAYS = [
   { key: 1, abbr: 'SEG', full: 'Segunda-feira' },
@@ -24,13 +25,6 @@ interface Props {
 }
 
 type Slot = { key: string; start: string; end: string }
-
-function calcHours(start: string, end: string): number {
-  if (!start || !end) return 0
-  const [sh, sm] = start.split(':').map(Number)
-  const [eh, em] = end.split(':').map(Number)
-  return (eh * 60 + em - (sh * 60 + sm)) / 60
-}
 
 const newSlot = (start = '08:00', end = '12:00'): Slot => ({
   key: (globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36)), start, end,
@@ -54,17 +48,16 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
   const [totalHours, setTotalHours] = useState<number>(totalHoursRequired ?? 120)
   const [saving, setSaving]         = useState(false)
 
-  const allSlots = DAYS.flatMap(d => schedule[d.key])
-  const scheduledHours = allSlots
-    .filter(s => calcHours(s.start, s.end) > 0)
-    .reduce((sum, s) => sum + calcHours(s.start, s.end), 0)
-  const remainingHours = Math.max(0, totalHours - scheduledHours)
-  const hasInvalid = allSlots.some(s => calcHours(s.start, s.end) <= 0)
+  // ── Cálculo (fonte única: lib/schedule) ──
+  const weeklyMin     = weeklyMinutes(schedule)               // soma real dos turnos da semana
+  const totalLoadMin  = Math.max(0, totalHours) * 60          // carga total obrigatória do estágio
+  const remainingMin  = Math.max(0, totalLoadMin - weeklyMin)
+  const allSlots      = DAYS.flatMap(d => schedule[d.key])
+  const hasInvalid    = allSlots.some(s => s.start && s.end && slotMinutes(s.start, s.end) === null)
 
   const addSlot = (day: number) => {
     setSchedule(prev => {
       const slots = prev[day]
-      // Sugere começar onde o último turno terminou
       const last = slots[slots.length - 1]
       const start = last ? last.end : '08:00'
       return { ...prev, [day]: [...slots, newSlot(start, start)] }
@@ -99,14 +92,14 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
         .from('profiles').update({ total_hours_required: totalHours }).eq('id', internId)
       if (profileErr) throw profileErr
 
-      // Substitui todos os horários: apaga os existentes e insere os atuais
+      // Substitui todos os horários: apaga os existentes e insere os atuais válidos
       const { error: delErr } = await supabase
         .from('intern_schedules').delete().eq('intern_id', internId)
       if (delErr) throw delErr
 
       const rows = DAYS.flatMap(d =>
         schedule[d.key]
-          .filter(s => calcHours(s.start, s.end) > 0)
+          .filter(s => slotMinutes(s.start, s.end) !== null)
           .map(s => ({
             intern_id: internId,
             day_of_week: d.key,
@@ -135,7 +128,7 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
 
       {/* ── Header section ── */}
       <div
-        className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-xl p-6"
+        className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 rounded-xl p-6"
         style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
       >
         <div>
@@ -144,24 +137,42 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
             Adicione quantos turnos precisar por dia. Ideal para horários personalizados.
           </p>
         </div>
-        <div
-          className="flex items-center gap-3 rounded-lg px-4 py-3"
-          style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,200,83,0.15)' }}
-        >
-          <label className="text-[10px] font-bold tracking-wider" style={{ color: '#3fe56c' }}>
-            TOTAL DE HORAS SEMANAIS
-          </label>
+
+        <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+          {/* Carga total obrigatória (editável) */}
           <div
-            className="flex items-center gap-2 rounded px-3 py-1"
-            style={{ background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.25)' }}
+            className="flex items-center justify-between gap-3 rounded-lg px-4 py-3"
+            style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,200,83,0.15)' }}
           >
-            <input
-              type="number" min={1} max={9999} value={totalHours}
-              onChange={e => setTotalHours(Number(e.target.value))}
-              className="w-12 text-center font-bold text-lg outline-none bg-transparent"
-              style={{ color: 'var(--text)' }}
-            />
-            <span className="text-sm font-medium" style={{ color: 'var(--text-3)' }}>hrs / semana</span>
+            <label className="text-[10px] font-bold tracking-wider" style={{ color: 'var(--text-3)' }}>
+              CARGA HORÁRIA TOTAL
+            </label>
+            <div
+              className="flex items-center gap-2 rounded px-3 py-1"
+              style={{ background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.25)' }}
+            >
+              <input
+                type="number" min={1} max={9999} value={totalHours}
+                onChange={e => setTotalHours(Number(e.target.value))}
+                className="w-12 text-center font-bold text-lg outline-none bg-transparent"
+                style={{ color: 'var(--text)' }}
+              />
+              <span className="text-sm font-medium" style={{ color: 'var(--text-3)' }}>hrs</span>
+            </div>
+          </div>
+
+          {/* Total de horas semanais (somente leitura — soma dos turnos) */}
+          <div
+            className="flex items-center justify-between gap-3 rounded-lg px-4 py-3"
+            style={{ background: 'rgba(0,200,83,0.08)', border: '1px solid rgba(0,200,83,0.30)' }}
+          >
+            <label className="text-[10px] font-bold tracking-wider" style={{ color: '#3fe56c' }}>
+              TOTAL DE HORAS SEMANAIS
+            </label>
+            <span className="font-bold text-lg tabular-nums" style={{ color: 'var(--text)' }}>
+              {formatHm(weeklyMin)}
+              <span className="text-xs font-medium ml-1" style={{ color: 'var(--text-3)' }}>/semana</span>
+            </span>
           </div>
         </div>
       </div>
@@ -171,6 +182,7 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
         {DAYS.map((d, i) => {
           const slots = schedule[d.key]
           const active = slots.length > 0
+          const dayMin = slots.reduce((sum, s) => sum + (slotMinutes(s.start, s.end) ?? 0), 0)
 
           return (
             <motion.div
@@ -218,6 +230,8 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
                   {active ? (
                     <span className="text-sm font-medium" style={{ color: 'var(--text-3)' }}>
                       {slots.length} {slots.length === 1 ? 'turno' : 'turnos'}
+                      <span className="mx-1.5" style={{ opacity: 0.4 }}>·</span>
+                      <span style={{ color: '#3fe56c' }}>{formatHm(dayMin)}</span>
                     </span>
                   ) : (
                     <span className="text-sm italic" style={{ color: 'var(--text-3)' }}>
@@ -250,7 +264,8 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
                     <div className="px-4 sm:px-5 py-4 space-y-3">
                       <AnimatePresence initial={false}>
                         {slots.map((s, idx) => {
-                          const invalid = calcHours(s.start, s.end) <= 0
+                          const min = slotMinutes(s.start, s.end)
+                          const invalid = !!s.start && !!s.end && min === null
                           return (
                             <motion.div
                               key={s.key}
@@ -259,53 +274,62 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, x: 10 }}
                               transition={{ duration: 0.18 }}
-                              className="flex items-end gap-3"
                             >
-                              <span
-                                className="text-[10px] font-bold w-5 text-center pb-2.5 flex-shrink-0"
-                                style={{ color: 'var(--text-3)' }}
-                              >
-                                {idx + 1}
-                              </span>
+                              <div className="flex items-end gap-3">
+                                <span
+                                  className="text-[10px] font-bold w-5 text-center pb-2.5 flex-shrink-0"
+                                  style={{ color: 'var(--text-3)' }}
+                                >
+                                  {idx + 1}
+                                </span>
 
-                              {(['start', 'end'] as const).map(f => (
-                                <div key={f} className="flex-1 min-w-0">
-                                  <label className="text-[10px] font-bold flex items-center gap-1 mb-1.5" style={{ color: 'var(--text-3)' }}>
-                                    <Clock size={10} /> {f === 'start' ? 'Entrada' : 'Saída'}
-                                  </label>
-                                  <input
-                                    type="time"
-                                    value={f === 'start' ? s.start : s.end}
-                                    onChange={e => updateSlot(d.key, s.key, f, e.target.value)}
-                                    className="w-full px-3 py-2 rounded-lg text-sm font-bold outline-none transition-all"
-                                    style={{
-                                      background: 'var(--bg)',
-                                      border: `1.5px solid ${invalid ? 'rgba(255,82,82,0.6)' : 'rgba(0,200,83,0.20)'}`,
-                                      color: 'var(--text)',
-                                    }}
-                                    onFocus={e => (e.target.style.borderColor = invalid ? '#ff5252' : '#3fe56c')}
-                                    onBlur={e  => (e.target.style.borderColor = invalid ? 'rgba(255,82,82,0.6)' : 'rgba(0,200,83,0.20)')}
-                                  />
-                                </div>
-                              ))}
+                                {(['start', 'end'] as const).map(f => (
+                                  <div key={f} className="flex-1 min-w-0">
+                                    <label className="text-[10px] font-bold flex items-center gap-1 mb-1.5" style={{ color: 'var(--text-3)' }}>
+                                      <Clock size={10} /> {f === 'start' ? 'Entrada' : 'Saída'}
+                                    </label>
+                                    <input
+                                      type="time"
+                                      value={f === 'start' ? s.start : s.end}
+                                      onChange={e => updateSlot(d.key, s.key, f, e.target.value)}
+                                      className="w-full px-3 py-2 rounded-lg text-sm font-bold outline-none transition-all"
+                                      style={{
+                                        background: 'var(--bg)',
+                                        border: `1.5px solid ${invalid ? 'rgba(255,82,82,0.6)' : 'rgba(0,200,83,0.20)'}`,
+                                        color: 'var(--text)',
+                                      }}
+                                      onFocus={e => (e.target.style.borderColor = invalid ? '#ff5252' : '#3fe56c')}
+                                      onBlur={e  => (e.target.style.borderColor = invalid ? 'rgba(255,82,82,0.6)' : 'rgba(0,200,83,0.20)')}
+                                    />
+                                  </div>
+                                ))}
 
-                              {/* Hours badge */}
-                              <span
-                                className="text-[11px] font-bold pb-2.5 w-12 text-right flex-shrink-0"
-                                style={{ color: invalid ? 'var(--danger)' : 'var(--text-3)' }}
-                              >
-                                {invalid ? '—' : `${calcHours(s.start, s.end).toFixed(1)}h`}
-                              </span>
+                                {/* Hours badge */}
+                                <span
+                                  className="text-[11px] font-bold pb-2.5 w-14 text-right flex-shrink-0 tabular-nums"
+                                  style={{ color: invalid ? 'var(--danger)' : 'var(--text-3)' }}
+                                >
+                                  {min !== null ? formatHm(min) : '—'}
+                                </span>
 
-                              {/* Remove */}
-                              <button
-                                onClick={() => removeSlot(d.key, s.key)}
-                                title="Remover turno"
-                                className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-all hover:opacity-70"
-                                style={{ border: '1px solid rgba(255,82,82,0.25)', color: 'rgba(255,82,82,0.8)', background: 'transparent' }}
-                              >
-                                <X size={15} />
-                              </button>
+                                {/* Remove */}
+                                <button
+                                  onClick={() => removeSlot(d.key, s.key)}
+                                  title="Remover turno"
+                                  className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-all hover:opacity-70"
+                                  style={{ border: '1px solid rgba(255,82,82,0.25)', color: 'rgba(255,82,82,0.8)', background: 'transparent' }}
+                                >
+                                  <X size={15} />
+                                </button>
+                              </div>
+
+                              {/* Mensagem de turno inválido (não quebra o formulário) */}
+                              {invalid && (
+                                <p className="text-[11px] mt-1.5 ml-8 flex items-center gap-1" style={{ color: 'var(--danger)' }}>
+                                  <AlertTriangle size={11} />
+                                  A saída deve ser depois da entrada.
+                                </p>
+                              )}
                             </motion.div>
                           )
                         })}
@@ -319,22 +343,6 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
         })}
       </div>
 
-      {/* ── Invalid warning ── */}
-      <AnimatePresence>
-        {hasInvalid && (
-          <motion.div
-            initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm"
-            style={{ background: 'rgba(255,82,82,0.08)', border: '1px solid rgba(255,82,82,0.25)' }}
-          >
-            <AlertTriangle size={16} style={{ color: 'var(--danger)' }} />
-            <span style={{ color: 'var(--danger)' }}>
-              Há turnos com a saída anterior ou igual à entrada. Corrija para salvar.
-            </span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* ── Sticky bottom bar ── */}
       <div
         className="sticky bottom-0 rounded-xl mt-2 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4"
@@ -343,14 +351,14 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
         <div className="flex items-center gap-8">
           <div>
             <p className="text-[10px] font-bold tracking-wider mb-0.5" style={{ color: 'var(--text-3)' }}>HORAS AGENDADAS</p>
-            <p className="text-sm font-bold" style={{ color: 'var(--text)' }}>
-              {scheduledHours.toFixed(0)} / {totalHours} hrs
+            <p className="text-sm font-bold tabular-nums" style={{ color: 'var(--text)' }}>
+              {formatHm(weeklyMin)} / {totalHours} hrs
             </p>
           </div>
           <div>
             <p className="text-[10px] font-bold tracking-wider mb-0.5" style={{ color: 'var(--text-3)' }}>RESTANTE</p>
-            <p className="text-sm font-bold" style={{ color: remainingHours > 0 ? '#ffbf00' : '#00c853' }}>
-              {remainingHours.toFixed(0)} hrs
+            <p className="text-sm font-bold tabular-nums" style={{ color: remainingMin > 0 ? '#ffbf00' : '#00c853' }}>
+              {formatHm(remainingMin)}
             </p>
           </div>
         </div>
