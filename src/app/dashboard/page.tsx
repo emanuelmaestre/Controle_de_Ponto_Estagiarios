@@ -109,15 +109,25 @@ export default async function DashboardPage() {
     .gte('month', monthStart)
     .maybeSingle()
 
-  // Horario de hoje
+  // Horario de hoje (pode haver múltiplos turnos no mesmo dia)
   const todayDow = new Date().getDay()
-  const { data: todaySchedule } = await supabase
+  const { data: todaySchedules } = await supabase
     .from('intern_schedules')
     .select('expected_start, expected_end, expected_hours')
     .eq('intern_id', user.id)
     .eq('day_of_week', todayDow)
     .eq('is_active', true)
-    .maybeSingle()
+    .order('expected_start', { ascending: true })
+
+  const todaySlots = todaySchedules ?? []
+  const todaySchedule = todaySlots.length > 0
+    ? {
+        expected_start: todaySlots[0].expected_start,
+        expected_end: todaySlots[todaySlots.length - 1].expected_end,
+        expected_hours: todaySlots.reduce((sum, s) => sum + (s.expected_hours ?? 0), 0),
+        slots: todaySlots,
+      }
+    : null
 
   // ── Detecção de ponto em aberto esquecido ───────────
   const openRecordWarning = (() => {
@@ -323,7 +333,7 @@ export default async function DashboardPage() {
                   Horário previsto hoje
                 </p>
                 <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
-                  {todaySchedule.expected_start?.slice(0, 5)} &mdash; {todaySchedule.expected_end?.slice(0, 5)}
+                  {todaySchedule.slots.map(s => `${s.expected_start.slice(0, 5)}–${s.expected_end.slice(0, 5)}`).join(', ')}
                   &nbsp;&middot;&nbsp;{(todaySchedule.expected_hours ?? 0).toFixed(1)}h previstas
                   &nbsp;&middot;&nbsp;{minutesToHours(todayMinutes)} realizadas
                 </p>
