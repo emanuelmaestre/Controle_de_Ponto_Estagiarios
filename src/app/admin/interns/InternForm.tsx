@@ -18,6 +18,8 @@ import type { Profile } from '@/types/database'
 import DatePicker from '@/components/ui/DatePicker'
 import CourseSelect from '@/components/ui/CourseSelect'
 import ImageCropModal from '@/components/ui/ImageCropModal'
+import WebcamModal from '@/components/ui/WebcamModal'
+import { useIsMobile } from '@/hooks/useIsMobile'
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'image/gif', 'image/bmp']
 const MAX_SIZE_MB = 5
@@ -119,8 +121,10 @@ export default function InternForm({ mode, intern }: Props) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(intern?.photo_url ?? null)
   const [cropSrc, setCropSrc]           = useState<string | null>(null)
   const [photoError, setPhotoError]     = useState<string | null>(null)
-  const fileInputRef  = useRef<HTMLInputElement>(null)
+  const [showWebcam, setShowWebcam]     = useState(false)
+  const fileInputRef   = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
+  const isMobile = useIsMobile()
 
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<InternFormValues>({
     resolver: zodResolver(internSchema),
@@ -249,6 +253,14 @@ export default function InternForm({ mode, intern }: Props) {
         )}
       </AnimatePresence>
 
+      {/* ── Webcam modal (desktop) ── */}
+      {showWebcam && (
+        <WebcamModal
+          onCapture={src => { setShowWebcam(false); setCropSrc(src) }}
+          onCancel={() => setShowWebcam(false)}
+        />
+      )}
+
       {/* ── Crop modal ── */}
       {cropSrc && (
         <ImageCropModal
@@ -325,23 +337,34 @@ export default function InternForm({ mode, intern }: Props) {
               />
             </label>
 
-            {/* Camera capture (mobile) */}
-            <label className="cursor-pointer">
-              <span
+            {/* Camera — mobile: abre câmera nativa / desktop: abre webcam */}
+            {isMobile ? (
+              <label className="cursor-pointer">
+                <span
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all hover:opacity-80"
+                  style={{ background: 'rgba(0,200,83,0.08)', border: '1px solid rgba(0,200,83,0.2)', color: 'var(--text-2, #a0c4a8)' }}
+                >
+                  <Camera size={13} /> Câmera
+                </span>
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="user"
+                  className="hidden"
+                  onChange={handlePhotoChange}
+                />
+              </label>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowWebcam(true)}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all hover:opacity-80"
                 style={{ background: 'rgba(0,200,83,0.08)', border: '1px solid rgba(0,200,83,0.2)', color: 'var(--text-2, #a0c4a8)' }}
               >
                 <Camera size={13} /> Câmera
-              </span>
-              <input
-                ref={cameraInputRef}
-                type="file"
-                accept="image/*"
-                capture="user"
-                className="hidden"
-                onChange={handlePhotoChange}
-              />
-            </label>
+              </button>
+            )}
           </div>
         </div>
       </Card>
