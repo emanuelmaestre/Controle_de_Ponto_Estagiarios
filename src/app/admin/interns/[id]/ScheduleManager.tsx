@@ -348,20 +348,7 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
         className="sticky bottom-0 rounded-xl mt-2 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4"
         style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.20)', boxShadow: '0 -4px 20px rgba(0,0,0,0.3)' }}
       >
-        <div className="flex items-center gap-8">
-          <div>
-            <p className="text-[10px] font-bold tracking-wider mb-0.5" style={{ color: 'var(--text-3)' }}>HORAS AGENDADAS</p>
-            <p className="text-sm font-bold tabular-nums" style={{ color: 'var(--text)' }}>
-              {formatHm(weeklyMin)} / {totalHours} hrs
-            </p>
-          </div>
-          <div>
-            <p className="text-[10px] font-bold tracking-wider mb-0.5" style={{ color: 'var(--text-3)' }}>RESTANTE</p>
-            <p className="text-sm font-bold tabular-nums" style={{ color: remainingMin > 0 ? '#ffbf00' : '#00c853' }}>
-              {formatHm(remainingMin)}
-            </p>
-          </div>
-        </div>
+        <div />
 
         <div className="flex items-center gap-3">
           <button
