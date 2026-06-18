@@ -28,7 +28,6 @@ export default function SettingsForm({ settings }: Props) {
       reminder_in_time: (settings?.reminder_in_time ?? '08:00').slice(0, 5),
       reminder_out_after_hours: settings?.reminder_out_after_hours ?? 6,
       expected_daily_hours: settings?.expected_daily_hours ?? 4,
-      report_email: settings?.report_email ?? '',
     },
   })
 
@@ -44,7 +43,6 @@ export default function SettingsForm({ settings }: Props) {
         reminder_in_time: data.reminder_in_time,
         reminder_out_after_hours: data.reminder_out_after_hours,
         expected_daily_hours: data.expected_daily_hours,
-        report_email: data.report_email || null,
       })
       .eq('id', settings?.id ?? '')
 
@@ -116,19 +114,6 @@ export default function SettingsForm({ settings }: Props) {
       ))}
 
 
-      <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25, delay: 0.15 }}>
-        <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-2, #374151)' }}>E-mail para relatórios mensais (opcional)</label>
-        <input
-          {...register('report_email')}
-          type="email"
-          placeholder="relatorio@exemplo.com"
-          className={inputCls}
-          style={inputStyle}
-          onFocus={e => (e.target.style.borderColor = 'var(--primary, #1e7a38)')}
-          onBlur={e => (e.target.style.borderColor = 'var(--border, #e5e7eb)')}
-        />
-        {errors.report_email && <p className="text-xs mt-1" style={{ color: 'var(--danger)' }}>{errors.report_email.message}</p>}
-      </motion.div>
 
       <motion.button
         type="submit"

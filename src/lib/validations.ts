@@ -98,7 +98,6 @@ export const settingsSchema = z.object({
     .min(1, 'Mínimo 1 hora')
     .max(12, 'Máximo 12 horas'),
   lab_name: z.string().min(2, 'Informe o nome do laboratório'),
-  report_email: z.string().email('E-mail inválido').optional().or(z.literal('')),
 })
 export type SettingsInput = z.infer<typeof settingsSchema>
 
