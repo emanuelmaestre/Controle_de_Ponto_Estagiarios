@@ -1,14 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence } from 'framer-motion'
+import imageCompression from 'browser-image-compression'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import {
   CheckCircle2, AlertTriangle, Loader2, Camera, Key,
-  Mail, Lock, Save, Send, RotateCcw,
+  Mail, Lock, Save, Send, RotateCcw, Upload, X,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { internSchema } from '@/lib/validations'
@@ -16,6 +17,10 @@ import { formatFullName } from '@/lib/utils'
 import type { Profile } from '@/types/database'
 import DatePicker from '@/components/ui/DatePicker'
 import CourseSelect from '@/components/ui/CourseSelect'
+import ImageCropModal from '@/components/ui/ImageCropModal'
+
+const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'image/gif', 'image/bmp']
+const MAX_SIZE_MB = 5
 
 type InternFormValues = {
   full_name: string
@@ -110,9 +115,13 @@ export default function InternForm({ mode, intern }: Props) {
   const [error, setError]     = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
-  const [photoFile, setPhotoFile]     = useState<File | null>(null)
+  const [photoFile, setPhotoFile]       = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(intern?.photo_url ?? null)
-  const [notifyEmail, setNotifyEmail] = useState(false)
+  const [cropSrc, setCropSrc]           = useState<string | null>(null)
+  const [photoError, setPhotoError]     = useState<string | null>(null)
+  const [notifyEmail, setNotifyEmail]   = useState(false)
+  const fileInputRef  = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
 
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<InternFormValues>({
     resolver: zodResolver(internSchema),
@@ -131,11 +140,47 @@ export default function InternForm({ mode, intern }: Props) {
 
   const isActive = watch('is_active')
 
+  const handleFileSelected = (file: File) => {
+    setPhotoError(null)
+    if (!ACCEPTED_TYPES.includes(file.type) && !file.name.match(/\.(heic|heif)$/i)) {
+      setPhotoError('Formato não suportado. Use JPG, PNG, WebP, HEIC ou GIF.')
+      return
+    }
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      setPhotoError(`Arquivo muito grande. Máximo ${MAX_SIZE_MB}MB.`)
+      return
+    }
+    setCropSrc(URL.createObjectURL(file))
+  }
+
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    setPhotoFile(file)
-    setPhotoPreview(URL.createObjectURL(file))
+    handleFileSelected(file)
+    e.target.value = ''
+  }
+
+  const handleCropConfirm = async (croppedFile: File, preview: string) => {
+    setCropSrc(null)
+    try {
+      const compressed = await imageCompression(croppedFile, {
+        maxSizeMB: 0.5,
+        maxWidthOrHeight: 600,
+        useWebWorker: true,
+      })
+      setPhotoFile(compressed as File)
+      setPhotoPreview(preview)
+      toast.success('Foto ajustada e comprimida!')
+    } catch {
+      setPhotoFile(croppedFile)
+      setPhotoPreview(preview)
+    }
+  }
+
+  const handleRemovePhoto = () => {
+    setPhotoFile(null)
+    setPhotoPreview(null)
+    setPhotoError(null)
   }
 
   const onSubmit = async (data: InternFormValues) => {
@@ -205,16 +250,22 @@ export default function InternForm({ mode, intern }: Props) {
         )}
       </AnimatePresence>
 
+      {/* ── Crop modal ── */}
+      {cropSrc && (
+        <ImageCropModal
+          src={cropSrc}
+          onConfirm={handleCropConfirm}
+          onCancel={() => setCropSrc(null)}
+        />
+      )}
+
       {/* ── 1. Imagem de Identificação ── */}
-      <Card className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 group hover:border-primary/30 transition-all duration-300">
+      <Card className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 hover:border-primary/30 transition-all duration-300">
         {/* Avatar circle */}
-        <label className="relative flex-shrink-0 cursor-pointer">
+        <div className="relative flex-shrink-0">
           <div
             className="w-32 h-32 rounded-full flex flex-col items-center justify-center overflow-hidden transition-all"
-            style={{
-              border: '2px dashed rgba(0,200,83,0.35)',
-              background: 'var(--bg)',
-            }}
+            style={{ border: '2px dashed rgba(0,200,83,0.35)', background: 'var(--bg)' }}
           >
             {photoPreview ? (
               <img src={photoPreview} alt="Prévia" className="w-full h-full object-cover" />
@@ -222,23 +273,77 @@ export default function InternForm({ mode, intern }: Props) {
               <>
                 <Camera size={32} style={{ color: 'var(--text-3)' }} />
                 <span className="text-[9px] font-bold tracking-wider mt-1.5 uppercase" style={{ color: 'var(--text-3)' }}>
-                  CARREGAR FOTO
+                  FOTO
                 </span>
               </>
             )}
           </div>
-          <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
-        </label>
+          {/* Remove button */}
+          {photoPreview && (
+            <button
+              type="button"
+              onClick={handleRemovePhoto}
+              className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center transition-colors hover:opacity-80"
+              style={{ background: '#ef4444', border: '2px solid #0a1a0f' }}
+            >
+              <X size={11} color="white" />
+            </button>
+          )}
+        </div>
 
-        {/* Info */}
-        <div className="flex-1 text-center sm:text-left">
-          <h4 className="text-2xl font-semibold mb-2" style={{ color: 'var(--text)' }}>
-            Imagem de Identificação
-          </h4>
-          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-3)', maxWidth: 400 }}>
-            Carregue um retrato de alta resolução para a identidade digital do estagiário.
-            Tamanho recomendado: 400×400px. Formatos suportados: JPG, PNG.
-          </p>
+        {/* Info + buttons */}
+        <div className="flex-1 text-center sm:text-left space-y-3">
+          <div>
+            <h4 className="text-2xl font-semibold mb-1" style={{ color: 'var(--text)' }}>
+              Imagem de Identificação
+            </h4>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-3)', maxWidth: 400 }}>
+              JPG, PNG, WebP, HEIC, GIF — máx. {MAX_SIZE_MB}MB. A foto será recortada em círculo.
+            </p>
+          </div>
+
+          {photoError && (
+            <p className="text-xs flex items-center gap-1.5" style={{ color: 'var(--danger, #ef4444)' }}>
+              <AlertTriangle size={12} /> {photoError}
+            </p>
+          )}
+
+          <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+            {/* Upload from device */}
+            <label className="cursor-pointer">
+              <span
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all hover:opacity-80"
+                style={{ border: '1px solid rgba(0,200,83,0.35)', color: '#3fe56c' }}
+              >
+                <Upload size={13} /> Escolher arquivo
+              </span>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif,image/gif,image/bmp"
+                className="hidden"
+                onChange={handlePhotoChange}
+              />
+            </label>
+
+            {/* Camera capture (mobile) */}
+            <label className="cursor-pointer">
+              <span
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all hover:opacity-80"
+                style={{ background: 'rgba(0,200,83,0.08)', border: '1px solid rgba(0,200,83,0.2)', color: 'var(--text-2, #a0c4a8)' }}
+              >
+                <Camera size={13} /> Câmera
+              </span>
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="user"
+                className="hidden"
+                onChange={handlePhotoChange}
+              />
+            </label>
+          </div>
         </div>
       </Card>
 
