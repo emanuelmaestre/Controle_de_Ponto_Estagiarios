@@ -9,7 +9,6 @@ import NormalizeNamesButton from './NormalizeNamesButton'
 import FixStartDatesButton from './FixStartDatesButton'
 import SyncProfilesButton from './SyncProfilesButton'
 import { FadeIn } from '@/components/ui/MotionWrappers'
-import { FlaskConical } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -104,68 +103,17 @@ export default async function SettingsPage({ searchParams }: Props) {
                 </div>
 
                 {/* Sidebar — 4 cols */}
-                <div className="md:col-span-4 space-y-4">
-
-                  {/* Status card */}
+                <div className="md:col-span-4">
                   <div
-                    className="rounded-xl p-5"
+                    className="rounded-xl p-5 space-y-3"
                     style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
                   >
-                    <p className="text-[10px] font-bold mb-4 tracking-widest" style={{ color: 'var(--text-3)' }}>
-                      STATUS DO SISTEMA
+                    <p className="text-[10px] font-bold tracking-widest mb-1" style={{ color: 'var(--text-3)' }}>
+                      UTILITÁRIOS
                     </p>
-                    {[
-                      { label: 'Sincronização de Dados', badge: 'ATIVO' },
-                      { label: 'Backup Automático',      badge: 'ESTÁVEL' },
-                    ].map(({ label, badge }) => (
-                      <div
-                        key={label}
-                        className="flex items-center justify-between py-3"
-                        style={{ borderBottom: '1px solid rgba(0,200,83,0.08)' }}
-                      >
-                        <span className="text-sm" style={{ color: 'var(--text-2)' }}>{label}</span>
-                        <span
-                          className="px-2 py-0.5 text-[10px] font-bold rounded"
-                          style={{ background: 'rgba(0,200,83,0.10)', border: '1px solid #00c853', color: '#00c853' }}
-                        >
-                          {badge}
-                        </span>
-                      </div>
-                    ))}
-                    <div className="flex items-center justify-between pt-3">
-                      <span className="text-sm" style={{ color: 'var(--text-2)' }}>Última Atualização</span>
-                      <span className="text-sm" style={{ color: 'var(--text-3)' }}>2h atrás</span>
-                    </div>
-                  </div>
-
-                  {/* Normalizar nomes */}
-                  <NormalizeNamesButton />
-                  <FixStartDatesButton />
-                  <SyncProfilesButton />
-
-                  {/* Dica rápida */}
-                  <div
-                    className="rounded-xl p-5 relative overflow-hidden"
-                    style={{
-                      background: 'var(--surface-card, #0f2318)',
-                      border: '1px solid rgba(0,200,83,0.15)',
-                    }}
-                  >
-                    <div
-                      className="absolute inset-0"
-                      style={{ background: 'linear-gradient(135deg, rgba(63,229,108,0.05) 0%, transparent 60%)' }}
-                    />
-                    <div className="absolute top-3 right-3 opacity-15">
-                      <FlaskConical size={52} style={{ color: '#3fe56c' }} />
-                    </div>
-                    <div className="relative z-10">
-                      <p className="text-[10px] font-bold tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
-                        DICA
-                      </p>
-                      <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
-                        Configure o lembrete de entrada para que os estagiários recebam notificação no horário certo e nunca percam um registro.
-                      </p>
-                    </div>
+                    <NormalizeNamesButton />
+                    <FixStartDatesButton />
+                    <SyncProfilesButton />
                   </div>
                 </div>
               </div>
