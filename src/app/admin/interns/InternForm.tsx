@@ -8,8 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import imageCompression from 'browser-image-compression'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import {
-  CheckCircle2, AlertTriangle, Loader2, Camera, Key,
-  Mail, Lock, Save, Send, RotateCcw, Upload, X,
+  CheckCircle2, AlertTriangle, Loader2, Camera,
+  Lock, Save, RotateCcw, Upload, X, Send,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { internSchema } from '@/lib/validations'
@@ -119,7 +119,6 @@ export default function InternForm({ mode, intern }: Props) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(intern?.photo_url ?? null)
   const [cropSrc, setCropSrc]           = useState<string | null>(null)
   const [photoError, setPhotoError]     = useState<string | null>(null)
-  const [notifyEmail, setNotifyEmail]   = useState(false)
   const fileInputRef  = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
 
@@ -432,22 +431,6 @@ export default function InternForm({ mode, intern }: Props) {
             />
           </div>
 
-          {/* Receber Lembretes por E-mail */}
-          <div
-            className="flex items-center justify-between p-4 rounded-lg"
-            style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(0,200,83,0.12)' }}
-          >
-            <div className="flex items-center gap-4">
-              <Mail size={20} style={{ color: '#48e1a6', flexShrink: 0 }} />
-              <div>
-                <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>Receber Lembretes por E-mail</p>
-                <p className="text-xs" style={{ color: 'var(--text-3)' }}>
-                  Resumos semanais e notificações de turno
-                </p>
-              </div>
-            </div>
-            <Toggle checked={notifyEmail} onChange={setNotifyEmail} />
-          </div>
         </Card>
 
         {/* Segurança — col-span-1 */}
@@ -467,15 +450,7 @@ export default function InternForm({ mode, intern }: Props) {
                 type="button"
                 disabled
                 className="w-full py-2.5 rounded-lg text-[11px] font-bold tracking-wider flex items-center justify-center gap-2 opacity-40 cursor-not-allowed"
-                style={{ border: '1px solid rgba(0,200,83,0.30)', color: '#3fe56c' }}
-              >
-                <Send size={13} /> LINK POR E-MAIL
-              </button>
-              <button
-                type="button"
-                disabled
-                className="w-full py-2.5 rounded-lg text-[11px] font-bold tracking-wider flex items-center justify-center gap-2 opacity-40 cursor-not-allowed"
-                style={{ background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-2)' }}
+                style={{ background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.3)', color: '#3fe56c' }}
               >
                 <RotateCcw size={13} /> DEFINIR SENHA
               </button>
@@ -520,7 +495,7 @@ export default function InternForm({ mode, intern }: Props) {
 
 /* ── Botões de segurança (modo edição) ─────────────────── */
 function SecurityButtons({ internId }: { internId: string }) {
-  const [mode,    setMode]    = useState<'idle' | 'email' | 'manual'>('idle')
+  const [mode,    setMode]    = useState<'idle' | 'manual'>('idle')
   const [pwd,     setPwd]     = useState('')
   const [confirm, setConfirm] = useState('')
   const [status,  setStatus]  = useState<'idle' | 'loading' | 'ok' | 'err'>('idle')
@@ -557,41 +532,14 @@ function SecurityButtons({ internId }: { internId: string }) {
 
   if (mode === 'idle') return (
     <div className="space-y-3">
-      <button type="button" onClick={() => setMode('email')}
-        className="w-full py-2.5 rounded-lg text-[11px] font-bold tracking-wider flex items-center justify-center gap-2 transition-all hover:opacity-80"
-        style={{ border: '1px solid rgba(0,200,83,0.30)', color: '#3fe56c', background: 'transparent' }}>
-        <Send size={13} /> LINK POR E-MAIL
-      </button>
       <button type="button" onClick={() => setMode('manual')}
         className="w-full py-2.5 rounded-lg text-[11px] font-bold tracking-wider flex items-center justify-center gap-2 transition-all hover:opacity-80"
-        style={{ background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-2)' }}>
+        style={{ background: 'var(--bg)', border: '1px solid rgba(0,200,83,0.3)', color: '#3fe56c' }}>
         <RotateCcw size={13} /> DEFINIR SENHA
       </button>
     </div>
   )
 
-  if (mode === 'email') return (
-    <div className="space-y-3">
-      {status === 'err' && (
-        <p className="text-[10px]" style={{ color: 'var(--danger)' }}>{msg}</p>
-      )}
-      <p className="text-xs" style={{ color: 'var(--text-3)' }}>
-        Um e-mail com link de redefinição será enviado ao estagiário.
-      </p>
-      <div className="flex gap-2">
-        <button type="button" onClick={() => setMode('idle')}
-          className="flex-1 py-2 rounded-lg text-[10px] font-bold transition-colors"
-          style={{ border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-3)' }}>
-          Cancelar
-        </button>
-        <button type="button" onClick={submit} disabled={status === 'loading'}
-          className="flex-1 py-2 rounded-lg text-[10px] font-bold transition-colors disabled:opacity-50"
-          style={{ background: '#3fe56c', color: '#003912' }}>
-          {status === 'loading' ? 'Enviando...' : 'Enviar'}
-        </button>
-      </div>
-    </div>
-  )
 
   return (
     <div className="space-y-2">
