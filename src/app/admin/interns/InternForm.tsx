@@ -509,7 +509,7 @@ function SecurityButtons({ internId }: { internId: string }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         intern_id: internId,
-        action: mode === 'email' ? 'send_reset_email' : 'set_password',
+        action: 'set_password',
         new_password: mode === 'manual' ? pwd : undefined,
       }),
     })
