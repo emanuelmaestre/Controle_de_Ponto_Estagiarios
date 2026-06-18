@@ -44,9 +44,31 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
     return map
   }
 
-  const [schedule, setSchedule]     = useState<Record<number, Slot[]>>(buildInitial)
-  const [totalHours, setTotalHours] = useState<number>(totalHoursRequired ?? 120)
-  const [saving, setSaving]         = useState(false)
+  const [schedule, setSchedule]       = useState<Record<number, Slot[]>>(buildInitial)
+  const [totalHours, setTotalHours]   = useState<number>(totalHoursRequired ?? 120)
+  const [saving, setSaving]           = useState(false)
+  const [dayConfirmed, setDayConfirmed] = useState<Record<number, 'saving' | 'done'>>({})
+
+  const saveDay = async (dayKey: number) => {
+    const slots = schedule[dayKey]
+    const invalid = slots.some(s => s.start && s.end && slotMinutes(s.start, s.end) === null)
+    if (invalid) { toast.error('Corrija os horários inválidos antes de confirmar.'); return }
+
+    setDayConfirmed(prev => ({ ...prev, [dayKey]: 'saving' }))
+    try {
+      await supabase.from('intern_schedules').delete().match({ intern_id: internId, day_of_week: dayKey })
+      const rows = slots
+        .filter(s => slotMinutes(s.start, s.end) !== null)
+        .map(s => ({ intern_id: internId, day_of_week: dayKey, expected_start: s.start + ':00', expected_end: s.end + ':00', is_active: true }))
+      if (rows.length > 0) await supabase.from('intern_schedules').insert(rows)
+      setDayConfirmed(prev => ({ ...prev, [dayKey]: 'done' }))
+      setTimeout(() => setDayConfirmed(prev => { const n = { ...prev }; delete n[dayKey]; return n }), 2500)
+      toast.success(`${DAYS.find(d => d.key === dayKey)?.full} salvo!`)
+    } catch {
+      toast.error('Erro ao salvar o dia.')
+      setDayConfirmed(prev => { const n = { ...prev }; delete n[dayKey]; return n })
+    }
+  }
 
   // ── Cálculo (fonte única: lib/schedule) ──
   const weeklyMin     = weeklyMinutes(schedule)               // soma real dos turnos da semana
@@ -334,6 +356,29 @@ export default function ScheduleManager({ internId, initialSchedules, totalHours
                           )
                         })}
                       </AnimatePresence>
+
+                      {/* Botão Confirmar dia */}
+                      <div className="flex justify-end pt-1">
+                        <motion.button
+                          onClick={() => saveDay(d.key)}
+                          disabled={dayConfirmed[d.key] === 'saving'}
+                          whileTap={{ scale: 0.96 }}
+                          className="flex items-center gap-2 px-5 py-2 rounded-lg text-[11px] font-bold tracking-wider transition-all"
+                          style={{
+                            background: dayConfirmed[d.key] === 'done' ? 'rgba(0,200,83,0.15)' : '#00c853',
+                            color: dayConfirmed[d.key] === 'done' ? '#3fe56c' : '#003912',
+                            border: dayConfirmed[d.key] === 'done' ? '1px solid rgba(0,200,83,0.4)' : 'none',
+                          }}
+                        >
+                          {dayConfirmed[d.key] === 'saving' ? (
+                            <><Loader2 size={12} className="animate-spin" /> Salvando...</>
+                          ) : dayConfirmed[d.key] === 'done' ? (
+                            <><CheckCircle2 size={13} /> Confirmado!</>
+                          ) : (
+                            <><CheckCircle2 size={13} /> Confirmar</>
+                          )}
+                        </motion.button>
+                      </div>
                     </div>
                   </motion.div>
                 )}
