@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { User, Tag, Mail, Camera, Check, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { User, Tag, Mail, Camera, Check, Loader2, AlertCircle, CheckCircle2, Lock, Eye, EyeOff } from 'lucide-react'
 import CourseSelect from '@/components/ui/CourseSelect'
 
 interface ProfileData {
@@ -35,6 +35,17 @@ export default function ProfileForm({ initial }: { initial: ProfileData }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+
+  // Alterar senha
+  const [pwdCurrent, setPwdCurrent]   = useState('')
+  const [pwdNew, setPwdNew]           = useState('')
+  const [pwdConfirm, setPwdConfirm]   = useState('')
+  const [showCurrent, setShowCurrent] = useState(false)
+  const [showNew, setShowNew]         = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [pwdSaving, setPwdSaving]     = useState(false)
+  const [pwdError, setPwdError]       = useState<string | null>(null)
+  const [pwdSuccess, setPwdSuccess]   = useState(false)
 
   const handlePhotoPick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -89,6 +100,29 @@ export default function ProfileForm({ initial }: { initial: ProfileData }) {
       setError(e instanceof Error ? e.message : 'Erro ao salvar')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const savePassword = async () => {
+    setPwdError(null)
+    if (pwdNew.length < 6) { setPwdError('A nova senha deve ter pelo menos 6 caracteres.'); return }
+    if (pwdNew !== pwdConfirm) { setPwdError('As senhas não coincidem.'); return }
+    setPwdSaving(true)
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ current_password: pwdCurrent, new_password: pwdNew }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Erro ao alterar senha.')
+      setPwdSuccess(true)
+      setPwdCurrent(''); setPwdNew(''); setPwdConfirm('')
+      setTimeout(() => setPwdSuccess(false), 3000)
+    } catch (e) {
+      setPwdError(e instanceof Error ? e.message : 'Erro ao alterar senha.')
+    } finally {
+      setPwdSaving(false)
     }
   }
 
@@ -165,6 +199,72 @@ export default function ProfileForm({ initial }: { initial: ProfileData }) {
           CURSO DE GRADUAÇÃO
         </label>
         <CourseSelect value={course} onChange={setCourse} />
+      </div>
+
+      {/* ── Alterar Senha ── */}
+      <div className="pt-2">
+        <div className="rounded-xl p-4 space-y-3" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(0,200,83,0.15)' }}>
+          <div className="flex items-center gap-2 mb-1">
+            <Lock size={14} style={{ color: '#3fe56c' }} />
+            <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: '#3fe56c' }}>Alterar Senha</span>
+          </div>
+
+          {/* Senha atual */}
+          {[
+            { label: 'SENHA ATUAL', value: pwdCurrent, setter: setPwdCurrent, show: showCurrent, toggle: () => setShowCurrent(v => !v) },
+            { label: 'NOVA SENHA', value: pwdNew, setter: setPwdNew, show: showNew, toggle: () => setShowNew(v => !v) },
+            { label: 'CONFIRMAR NOVA SENHA', value: pwdConfirm, setter: setPwdConfirm, show: showConfirm, toggle: () => setShowConfirm(v => !v) },
+          ].map(({ label, value, setter, show, toggle }) => (
+            <div key={label}>
+              <label className="block text-[10px] font-bold tracking-widest mb-1.5" style={{ color: 'rgba(63,229,108,0.7)' }}>
+                {label}
+              </label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: 'rgba(0,200,83,0.5)' }}>
+                  <Lock size={14} />
+                </span>
+                <input
+                  type={show ? 'text' : 'password'}
+                  value={value}
+                  onChange={e => setter(e.target.value)}
+                  className={inputCls}
+                  style={{ ...inputStyle, paddingRight: 40 }}
+                  placeholder="••••••"
+                />
+                <button
+                  type="button"
+                  onClick={toggle}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  style={{ color: 'rgba(0,200,83,0.4)' }}
+                >
+                  {show ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              </div>
+            </div>
+          ))}
+
+          <AnimatePresence>
+            {pwdError && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="text-xs flex items-center gap-1.5" style={{ color: '#ff5252' }}>
+                <AlertCircle size={12} /> {pwdError}
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          <motion.button
+            type="button"
+            onClick={savePassword}
+            disabled={pwdSaving || !pwdCurrent || !pwdNew || !pwdConfirm}
+            whileTap={{ scale: 0.97 }}
+            className="w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-40 transition-all"
+            style={{ background: pwdSuccess ? '#16a34a' : 'rgba(0,200,83,0.15)', border: '1px solid rgba(0,200,83,0.3)', color: '#3fe56c' }}
+          >
+            {pwdSaving ? <><Loader2 size={14} className="animate-spin" /> Alterando...</>
+              : pwdSuccess ? <><CheckCircle2 size={14} /> Senha alterada!</>
+              : <><Lock size={14} /> Alterar senha</>}
+          </motion.button>
+        </div>
       </div>
 
       {/* Erro / sucesso */}
