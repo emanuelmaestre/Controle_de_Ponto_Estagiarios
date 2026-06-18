@@ -116,7 +116,7 @@ export default function ClockButton({ openRecord, geoExempt = false }: Props) {
             router.refresh()
             setPhase('idle')
             didApprove.current = false
-          }, 2000)
+          }, 800)
         } else {
           const gs = data.geo_status as string
           setBlockedInfo({ distance: data.distance, radius: data.radius })
@@ -155,7 +155,7 @@ export default function ClockButton({ openRecord, geoExempt = false }: Props) {
           await sendRequest('unavailable')
         }
       },
-      { timeout: 12000, maximumAge: 30000, enableHighAccuracy: true },
+      { timeout: 6000, maximumAge: 60000, enableHighAccuracy: false },
     )
   }
 
