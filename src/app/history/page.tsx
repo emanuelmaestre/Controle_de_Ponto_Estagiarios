@@ -94,8 +94,7 @@ export default async function HistoryPage() {
               <div className="flex-1 grid grid-cols-3 gap-3">
                 {[
                   { label: 'Total', value: minutesToHours(monthMinutes), color: 'var(--text)' },
-                  { label: 'Aprovados', value: monthData?.approved_sessions ?? 0, color: 'var(--success)' },
-                  { label: 'Reprovados', value: monthData?.rejected_sessions ?? 0, color: 'var(--danger)' },
+                  { label: 'Sessões', value: monthData?.approved_sessions ?? 0, color: 'var(--success)' },
                 ].map(s => (
                   <div key={s.label}>
                     <p className="text-[9px] font-bold mb-0.5" style={{ color: 'var(--text-3)' }}>{s.label}</p>

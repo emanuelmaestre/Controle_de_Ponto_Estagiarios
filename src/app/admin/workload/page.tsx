@@ -352,11 +352,11 @@ export default async function WorkloadPage() {
                         </div>
                       </div>
 
-                      {/* Sessões Aprovadas */}
+                      {/* Sessões */}
                       <div className="flex-shrink-0 flex flex-col items-center gap-0.5 pl-5"
                         style={{ borderLeft: '1px solid var(--border)', minWidth: 96 }}>
                         <p className="text-[9px] font-bold tracking-widest text-center" style={{ color: 'var(--text-3)' }}>
-                          SESSÕES APROVADAS
+                          SESSÕES
                         </p>
                         <AnimatedNumber
                           value={r.approvedSessions}

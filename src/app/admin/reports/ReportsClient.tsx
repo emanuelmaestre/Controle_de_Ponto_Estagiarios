@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { minutesToHours } from '@/lib/utils'
 import ReportExport from './ReportExport'
-import { Clock, CheckCircle2, XCircle, Search, BarChart2, AlertCircle, Download, Printer, ChevronDown, CalendarDays } from 'lucide-react'
+import { Clock, CheckCircle2, Search, BarChart2, AlertCircle, Download, Printer, ChevronDown, CalendarDays } from 'lucide-react'
 import DatePicker from '@/components/ui/DatePicker'
 import AnimatedNumber from '@/components/ui/AnimatedNumber'
 import AnimatedBar from '@/components/ui/AnimatedBar'
@@ -391,8 +391,8 @@ export default function ReportsClient() {
                     const wsData = [
                       [`Relatório de Horas — ${data?.label}`],
                       [],
-                      ['Nome', 'Apelido', 'E-mail', 'Curso', 'Total Horas', 'Sessões', 'Aprovadas', 'Reprovadas'],
-                      ...exportData.map(r => [r.nome, r.apelido, r.email, r.curso, r.total_horas, r.sessoes, r.aprovados, r.reprovados]),
+                      ['Nome', 'Apelido', 'E-mail', 'Curso', 'Total Horas', 'Sessões'],
+                      ...exportData.map(r => [r.nome, r.apelido, r.email, r.curso, r.total_horas, r.sessoes]),
                     ]
                     const ws = XLSX.utils.aoa_to_sheet(wsData)
                     ws['!cols'] = [{ wch: 28 }, { wch: 16 }, { wch: 28 }, { wch: 20 }, { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 10 }]
@@ -460,8 +460,6 @@ export default function ReportsClient() {
                 {[
                   { label: 'Total de Horas',  numValue: null,          strValue: loading ? '—' : minutesToHours(totalMinutes), color: '#3fe56c',      icon: <Clock        size={100} />, barPct: Math.min(100, totalMinutes / 6) },
                   { label: 'Sessões',         numValue: totalSessions, strValue: null,                                          color: 'var(--text)',  icon: <BarChart2    size={100} />, barPct: Math.min(100, totalSessions * 12) },
-                  { label: 'Aprovados',       numValue: totalApproved, strValue: null,                                          color: '#00c853',      icon: <CheckCircle2 size={100} />, barPct: totalSessions > 0 ? Math.round(totalApproved / totalSessions * 100) : 0 },
-                  { label: 'Rejeitados',      numValue: totalRejected, strValue: null,                                          color: '#ff5252',      icon: <XCircle      size={100} />, barPct: totalSessions > 0 ? Math.round(totalRejected / totalSessions * 100) : 0 },
                 ].map((card, i) => (
                   <motion.div
                     key={card.label}
@@ -540,7 +538,7 @@ export default function ReportsClient() {
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr style={{ background: 'rgba(0,0,0,0.20)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
-                        {['Estagiário', 'Horas', 'Sessões', 'Aprovados', 'Rejeitados', 'Atividade'].map(h => (
+                        {['Estagiário', 'Horas', 'Sessões', 'Atividade'].map(h => (
                           <th key={h} className="px-6 py-4 text-[10px] font-semibold tracking-widest" style={{ color: 'var(--text-3)' }}>
                             {h.toUpperCase()}
                           </th>

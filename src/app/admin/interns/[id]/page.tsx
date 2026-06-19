@@ -122,9 +122,9 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
   }
 
   const statusLabel: Record<string, string> = {
-    approved: 'Sessão Aprovada',
-    pending:  'Aguardando Aprovação',
-    rejected: 'Sessão Reprovada',
+    approved: 'Sessão Concluída',
+    pending:  'Sessão em Aberto',
+    rejected: 'Sessão Concluída',
   }
 
   return (
@@ -280,7 +280,7 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
                     >
                       <div className="flex justify-between items-start mb-4">
                         <span className="text-[10px] font-bold tracking-wider" style={{ color: 'var(--text-3)' }}>
-                          SESSÕES APROVADAS
+                          SESSÕES
                         </span>
                         <CheckCircle2 size={18} style={{ color: '#48e1a6', fill: 'rgba(72,225,166,0.15)' }} />
                       </div>
