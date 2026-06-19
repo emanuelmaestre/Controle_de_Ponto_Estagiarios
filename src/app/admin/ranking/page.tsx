@@ -277,8 +277,8 @@ export default function RankingPage() {
 
         <div className="flex items-center gap-2">
           <Link href="/admin/ranking/rules"
-            className="flex items-center gap-1.5 rounded-lg transition-all hover:opacity-80"
-            style={{ padding: '6px 14px', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.12)' }}>
+            className="flex items-center gap-1.5 rounded-lg transition-all hover:opacity-90"
+            style={{ padding: '7px 16px', fontSize: 12, fontWeight: 800, color: '#3fe56c', border: '1px solid rgba(63,229,108,0.35)', background: 'rgba(63,229,108,0.08)', letterSpacing: '0.02em' }}>
             <Info size={13} /> Como pontuar
           </Link>
           {/* Period toggle */}
