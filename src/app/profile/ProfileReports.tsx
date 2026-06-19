@@ -2,7 +2,10 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Download, FileText, AlertCircle, CheckCircle2, ChevronDown, CalendarDays } from 'lucide-react'
+import {
+  Download, FileText, AlertCircle, CheckCircle2, ChevronDown, CalendarDays,
+  Calendar, Timer, Clock, ClipboardList, FolderOpen, Gauge, Trophy, Award,
+} from 'lucide-react'
 import { exportPDF } from '@/lib/pdfExport'
 
 const monthOptions = Array.from({ length: 12 }, (_, i) => {
@@ -21,21 +24,21 @@ function getCurrentMonth() {
 
 interface ReportDef {
   id: string
-  emoji: string
+  icon: React.ReactNode
   color: string
   title: string
   desc: string
 }
 
 const MY_REPORTS: ReportDef[] = [
-  { id: 'attendance',  emoji: '📅', color: '#3fe56c', title: 'Minha Frequência',    desc: 'Todos os seus registros de entrada e saída no período.' },
-  { id: 'hours',       emoji: '⏱️', color: '#22d3ee', title: 'Minhas Horas',        desc: 'Total de horas aprovadas e sessões registradas.' },
-  { id: 'punctuality', emoji: '⏰', color: '#f97316', title: 'Minha Pontualidade',  desc: 'Seu índice de pontualidade e atrasos no período.' },
-  { id: 'activities',  emoji: '📋', color: '#a78bfa', title: 'Minhas Atividades',   desc: 'Lista de todas as atividades que você documentou.' },
-  { id: 'sheet',       emoji: '🗂️', color: '#fbbf24', title: 'Minha Ficha',         desc: 'Resumo completo dos seus dados e progresso no estágio.' },
-  { id: 'workload',    emoji: '📊', color: '#48e1a6', title: 'Carga Horária',        desc: 'Quanto já cumpriu e quanto falta para encerrar o estágio.' },
-  { id: 'ranking',     emoji: '🏆', color: '#fbbf24', title: 'Meu Ranking',         desc: 'Sua posição no ranking de pontos deste mês.' },
-  { id: 'achievements',emoji: '🏅', color: '#a78bfa', title: 'Minhas Conquistas',   desc: 'Todas as suas conquistas desbloqueadas e pontuação total.' },
+  { id: 'attendance',  icon: <Calendar size={18} />,     color: '#3fe56c', title: 'Minha Frequência',    desc: 'Todos os seus registros de entrada e saída no período.' },
+  { id: 'hours',       icon: <Timer size={18} />,        color: '#22d3ee', title: 'Minhas Horas',        desc: 'Total de horas aprovadas e sessões registradas.' },
+  { id: 'punctuality', icon: <Clock size={18} />,        color: '#f97316', title: 'Minha Pontualidade',  desc: 'Seu índice de pontualidade e atrasos no período.' },
+  { id: 'activities',  icon: <ClipboardList size={18} />,color: '#a78bfa', title: 'Minhas Atividades',   desc: 'Lista de todas as atividades que você documentou.' },
+  { id: 'sheet',       icon: <FolderOpen size={18} />,   color: '#fbbf24', title: 'Minha Ficha',         desc: 'Resumo completo dos seus dados e progresso no estágio.' },
+  { id: 'workload',    icon: <Gauge size={18} />,        color: '#48e1a6', title: 'Carga Horária',        desc: 'Quanto já cumpriu e quanto falta para encerrar o estágio.' },
+  { id: 'ranking',     icon: <Trophy size={18} />,       color: '#fbbf24', title: 'Meu Ranking',         desc: 'Sua posição no ranking de pontos deste mês.' },
+  { id: 'achievements',icon: <Award size={18} />,        color: '#a78bfa', title: 'Minhas Conquistas',   desc: 'Todas as suas conquistas desbloqueadas e pontuação total.' },
 ]
 
 function MonthSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
@@ -257,19 +260,20 @@ function ReportCard({ report, index }: { report: ReportDef; index: number }) {
       style={{ background: 'rgba(15,35,24,0.8)', border: `1px solid ${report.color}22` }}
     >
       {/* Watermark */}
-      <div className="absolute -bottom-2 -right-2 text-5xl opacity-[0.05] pointer-events-none select-none">
-        {report.emoji}
+      <div className="absolute -bottom-3 -right-3 opacity-[0.06] pointer-events-none select-none"
+        style={{ color: report.color, transform: 'scale(3.5)', transformOrigin: 'bottom right' }}>
+        {report.icon}
       </div>
 
       {/* Header */}
       <div className="flex items-center gap-3">
         <motion.div
-          animate={{ scale: [1, 1.08, 1] }}
-          transition={{ duration: 4, repeat: Infinity, delay: index * 0.5 }}
-          className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-          style={{ background: `${report.color}18`, border: `1px solid ${report.color}35` }}
+          whileHover={{ scale: 1.1 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+          style={{ background: `${report.color}18`, border: `1px solid ${report.color}35`, color: report.color }}
         >
-          {report.emoji}
+          {report.icon}
         </motion.div>
         <div className="flex-1 min-w-0">
           <p className="text-[13px] font-black leading-tight" style={{ color: 'rgba(255,255,255,0.9)' }}>

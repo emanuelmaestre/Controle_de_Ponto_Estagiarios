@@ -5,6 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Download, FileText, Users, BarChart2, Trophy,
   CheckCircle2, AlertCircle, ChevronDown, CalendarDays,
+  Calendar, Clock, Timer, ClipboardList, FolderOpen,
+  Gauge, TrendingUp, BookOpen, GraduationCap, AlertTriangle,
+  Medal, Star, Crown, Activity,
 } from 'lucide-react'
 import { exportPDF } from '@/lib/pdfExport'
 
@@ -30,7 +33,7 @@ const monthOptions = Array.from({ length: 24 }, (_, i) => {
 interface ReportDef {
   id: string
   category: Category
-  emoji: string
+  icon: React.ReactNode
   color: string
   title: string
   desc: string
@@ -41,74 +44,74 @@ interface ReportDef {
 const REPORTS: ReportDef[] = [
   // Por Estagiário
   {
-    id: 'attendance', category: 'intern', emoji: '📅', color: '#3fe56c',
+    id: 'attendance', category: 'intern', icon: <Calendar size={18} />, color: '#3fe56c',
     title: 'Frequência Individual', desc: 'Todos os registros de entrada e saída do estagiário no período.',
     needsIntern: true, availablePeriods: ['monthly', 'weekly', 'daily', 'custom'],
   },
   {
-    id: 'hours', category: 'intern', emoji: '⏱️', color: '#22d3ee',
+    id: 'hours', category: 'intern', icon: <Timer size={18} />, color: '#22d3ee',
     title: 'Horas Trabalhadas', desc: 'Total de horas aprovadas, sessões e médias por dia.',
     needsIntern: true, availablePeriods: ['monthly', 'weekly', 'custom'],
   },
   {
-    id: 'punctuality', category: 'intern', emoji: '⏰', color: '#f97316',
+    id: 'punctuality', category: 'intern', icon: <Clock size={18} />, color: '#f97316',
     title: 'Pontualidade', desc: 'Índice de pontualidade, atrasos e registros no período.',
     needsIntern: true, availablePeriods: ['monthly', 'weekly', 'custom'],
   },
   {
-    id: 'activities', category: 'intern', emoji: '📋', color: '#a78bfa',
+    id: 'activities', category: 'intern', icon: <ClipboardList size={18} />, color: '#a78bfa',
     title: 'Atividades Realizadas', desc: 'Lista de todas as atividades documentadas pelo estagiário.',
     needsIntern: true, availablePeriods: ['monthly', 'weekly', 'custom'],
   },
   {
-    id: 'sheet', category: 'intern', emoji: '🗂️', color: '#fbbf24',
+    id: 'sheet', category: 'intern', icon: <FolderOpen size={18} />, color: '#fbbf24',
     title: 'Ficha Completa', desc: 'Dados cadastrais, histórico e resumo completo do estágio.',
     needsIntern: true, availablePeriods: ['monthly', 'custom'],
   },
   {
-    id: 'workload', category: 'intern', emoji: '📊', color: '#48e1a6',
+    id: 'workload', category: 'intern', icon: <Gauge size={18} />, color: '#48e1a6',
     title: 'Carga Horária Restante', desc: 'Horas cumpridas vs. total da carga horária do estágio.',
     needsIntern: true, availablePeriods: ['monthly', 'custom'],
   },
   // Geral
   {
-    id: 'summary', category: 'general', emoji: '📈', color: '#3fe56c',
+    id: 'summary', category: 'general', icon: <TrendingUp size={18} />, color: '#3fe56c',
     title: 'Resumo Mensal Geral', desc: 'Visão consolidada de todos os estagiários no período.',
     availablePeriods: ['monthly', 'weekly', 'custom'],
   },
   {
-    id: 'daily_log', category: 'general', emoji: '🗓️', color: '#22d3ee',
+    id: 'daily_log', category: 'general', icon: <BookOpen size={18} />, color: '#22d3ee',
     title: 'Diário de Ponto', desc: 'Relatório diário com entradas e saídas de todos.',
     availablePeriods: ['daily', 'weekly'],
   },
   {
-    id: 'by_course', category: 'general', emoji: '🎓', color: '#a78bfa',
+    id: 'by_course', category: 'general', icon: <GraduationCap size={18} />, color: '#a78bfa',
     title: 'Horas por Curso', desc: 'Comparativo de horas trabalhadas agrupado por curso.',
     availablePeriods: ['monthly', 'custom'],
   },
   {
-    id: 'ending_soon', category: 'general', emoji: '⚠️', color: '#fbbf24',
+    id: 'ending_soon', category: 'general', icon: <AlertTriangle size={18} />, color: '#fbbf24',
     title: 'Próximos do Encerramento', desc: 'Estagiários com carga horária próxima do limite.',
     availablePeriods: ['monthly'],
   },
   // Ranking
   {
-    id: 'ranking_full', category: 'ranking', emoji: '🏆', color: '#fbbf24',
+    id: 'ranking_full', category: 'ranking', icon: <Trophy size={18} />, color: '#fbbf24',
     title: 'Ranking Completo', desc: 'Classificação geral de todos os estagiários por pontos.',
     availablePeriods: ['monthly'],
   },
   {
-    id: 'ranking_punctuality', category: 'ranking', emoji: '⏰', color: '#3fe56c',
+    id: 'ranking_punctuality', category: 'ranking', icon: <Medal size={18} />, color: '#3fe56c',
     title: 'Ranking de Pontualidade', desc: 'Quem mais chegou no horário no período.',
     availablePeriods: ['monthly', 'custom'],
   },
   {
-    id: 'ranking_activities', category: 'ranking', emoji: '📋', color: '#22d3ee',
+    id: 'ranking_activities', category: 'ranking', icon: <Star size={18} />, color: '#22d3ee',
     title: 'Ranking de Atividades', desc: 'Quem mais documentou atividades no período.',
     availablePeriods: ['monthly', 'custom'],
   },
   {
-    id: 'hall_of_fame', category: 'ranking', emoji: '👑', color: '#a78bfa',
+    id: 'hall_of_fame', category: 'ranking', icon: <Crown size={18} />, color: '#a78bfa',
     title: 'Hall da Fama', desc: 'Os melhores de todos os tempos — conquistas e recordes.',
     availablePeriods: ['monthly'],
   },
@@ -313,19 +316,20 @@ function ReportCard({ report, index }: { report: ReportDef; index: number }) {
         style={{ background: report.color, opacity: 0 }} />
 
       {/* Ghost watermark */}
-      <div className="absolute -bottom-4 -right-4 text-7xl opacity-[0.04] pointer-events-none select-none group-hover:opacity-[0.07] transition-opacity">
-        {report.emoji}
+      <div className="absolute -bottom-3 -right-3 opacity-[0.05] pointer-events-none select-none group-hover:opacity-[0.10] transition-opacity"
+        style={{ color: report.color, transform: 'scale(3)', transformOrigin: 'bottom right' }}>
+        {report.icon}
       </div>
 
       {/* Header */}
       <div className="flex items-start gap-3">
         <motion.div
-          animate={{ rotate: [0, 5, -5, 0] }}
-          transition={{ duration: 6, repeat: Infinity, delay: index * 0.4 }}
-          className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
-          style={{ background: `${report.color}18`, border: `1px solid ${report.color}35` }}
+          whileHover={{ scale: 1.1 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+          style={{ background: `${report.color}18`, border: `1px solid ${report.color}35`, color: report.color }}
         >
-          {report.emoji}
+          {report.icon}
         </motion.div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-black leading-tight" style={{ color: 'rgba(255,255,255,0.92)' }}>
