@@ -272,6 +272,9 @@ export default function ProfileAchievements({ points, level, streakDays, achieve
                       <p className="text-[9px] mt-0.5 leading-tight" style={{ color: 'rgba(255,255,255,0.15)' }}>
                         {ach.desc}
                       </p>
+                      <p className="text-[9px] mt-1.5 leading-tight" style={{ color: 'rgba(63,229,108,0.3)' }}>
+                        ✅ {ach.how}
+                      </p>
                     </motion.div>
                   )
                 })}

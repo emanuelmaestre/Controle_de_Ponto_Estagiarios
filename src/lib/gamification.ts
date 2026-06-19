@@ -1,13 +1,13 @@
 // Shared gamification constants and helpers
 
 export const SCORING_RULES = [
-  { id: 'presence',  emoji: '📅', label: 'Presença diária',      points: '+10 pts', detail: 'Qualquer dia com sessão concluída' },
-  { id: 'punctual',  emoji: '⏰', label: 'Pontualidade',          points: '+5 pts',  detail: 'Entrada até 15 min após o horário previsto' },
-  { id: 'photo',     emoji: '📸', label: 'Foto de perfil',        points: '+30 pts', detail: 'Bônus único por ter foto cadastrada no perfil' },
-  { id: 'activity',  emoji: '📝', label: 'Atividade documentada',  points: '+5 pts',  detail: 'Descrever ao menos 1 atividade realizada na saída (mín. 10 caracteres)' },
-  { id: 'streak_3',  emoji: '🔥', label: 'Sequência de 3 dias',   points: '×1.2',    detail: 'Multiplicador aplicado sobre os pontos do dia' },
-  { id: 'streak_7',  emoji: '⚡', label: 'Sequência de 7 dias',   points: '×1.5',    detail: 'Multiplicador aplicado sobre os pontos do dia' },
-  { id: 'streak_30', emoji: '💎', label: 'Sequência de 30 dias',  points: '×2.0',    detail: 'Multiplicador aplicado sobre os pontos do dia' },
+  { id: 'presence',  emoji: '📅', label: 'Presença diária',       points: '+10 pts', detail: 'Compareça e registre entrada e saída no mesmo dia' },
+  { id: 'punctual',  emoji: '⏰', label: 'Pontualidade',           points: '+5 pts',  detail: 'Registre a entrada em até 15 min após o horário previsto' },
+  { id: 'photo',     emoji: '📸', label: 'Foto de perfil',         points: '+30 pts', detail: 'Cadastre sua foto em Meu Perfil — bônus único e permanente' },
+  { id: 'activity',  emoji: '📝', label: 'Atividade documentada',  points: '+5 pts',  detail: 'Na saída, descreva ao menos 1 atividade realizada (mín. 10 letras)' },
+  { id: 'streak_3',  emoji: '🔥', label: 'Sequência de 3 dias',   points: '×1.2',    detail: 'Compareça 3 dias seguidos — multiplica os pontos do dia' },
+  { id: 'streak_7',  emoji: '⚡', label: 'Sequência de 7 dias',   points: '×1.5',    detail: 'Compareça 7 dias seguidos — multiplica os pontos do dia' },
+  { id: 'streak_30', emoji: '💎', label: 'Sequência de 30 dias',  points: '×2.0',    detail: 'Compareça 30 dias seguidos — dobra os pontos do dia' },
 ] as const
 
 export const LEVELS = [
@@ -36,18 +36,73 @@ export function getProgressToNextLevel(points: number, level: number): number {
   return Math.min(100, Math.round((done / range) * 100))
 }
 
-export const ACHIEVEMENTS: Record<string, { label: string; emoji: string; desc: string }> = {
-  has_photo:     { label: 'Identidade Completa', emoji: '📸', desc: 'Foto de perfil cadastrada' },
-  first_day:     { label: 'Primeiro Dia',     emoji: '🌱', desc: 'Primeiro registro de ponto' },
-  streak_3:      { label: 'Trio Imparável',   emoji: '🔥', desc: '3 dias consecutivos' },
-  streak_7:      { label: 'Semana Perfeita',  emoji: '⚡', desc: '7 dias consecutivos' },
-  streak_30:     { label: 'Mês Inquebrável',  emoji: '💎', desc: '30 dias consecutivos' },
-  punctual_10:   { label: 'Sempre Pontual',   emoji: '⏰', desc: '10 entradas no horário' },
-  reporter_5:    { label: 'Repórter',         emoji: '📝', desc: '5 sessões com atividade documentada' },
-  reporter_20:   { label: 'Cronista',         emoji: '📋', desc: '20 sessões com atividade documentada' },
-  month_80:      { label: 'Quase Lá',         emoji: '🚀', desc: '80% da carga horária mensal' },
-  month_complete:{ label: 'Meta Cumprida',    emoji: '🏆', desc: '100% da carga horária mensal' },
-  top_month:     { label: 'Destaque do Mês',  emoji: '👑', desc: '1º lugar no ranking mensal' },
+export const ACHIEVEMENTS: Record<string, { label: string; emoji: string; desc: string; how: string }> = {
+  has_photo: {
+    label: 'Identidade Completa',
+    emoji: '📸',
+    desc:  'Foto de perfil cadastrada',
+    how:   'Vá em Meu Perfil e adicione uma foto sua',
+  },
+  first_day: {
+    label: 'Primeiro Dia',
+    emoji: '🌱',
+    desc:  'Primeiro registro de ponto concluído',
+    how:   'Registre entrada e saída pela primeira vez',
+  },
+  streak_3: {
+    label: 'Trio Imparável',
+    emoji: '🔥',
+    desc:  '3 dias consecutivos presentes',
+    how:   'Compareça e registre ponto por 3 dias seguidos',
+  },
+  streak_7: {
+    label: 'Semana Perfeita',
+    emoji: '⚡',
+    desc:  '7 dias consecutivos presentes',
+    how:   'Compareça e registre ponto por 7 dias seguidos sem faltar',
+  },
+  streak_30: {
+    label: 'Mês Inquebrável',
+    emoji: '💎',
+    desc:  '30 dias consecutivos presentes',
+    how:   'Compareça e registre ponto por 30 dias seguidos sem faltar',
+  },
+  punctual_10: {
+    label: 'Sempre Pontual',
+    emoji: '⏰',
+    desc:  '10 entradas registradas no horário',
+    how:   'Registre a entrada em até 15 min do horário previsto por 10 vezes',
+  },
+  reporter_5: {
+    label: 'Repórter',
+    emoji: '📝',
+    desc:  '5 saídas com atividade documentada',
+    how:   'Na tela de saída, descreva o que fez (mín. 10 letras) em 5 dias diferentes',
+  },
+  reporter_20: {
+    label: 'Cronista',
+    emoji: '📋',
+    desc:  '20 saídas com atividade documentada',
+    how:   'Na tela de saída, descreva o que fez (mín. 10 letras) em 20 dias diferentes',
+  },
+  month_80: {
+    label: 'Quase Lá',
+    emoji: '🚀',
+    desc:  '80% da carga horária mensal atingida',
+    how:   'Cumpra ao menos 80% das horas do mês registrando entrada e saída',
+  },
+  month_complete: {
+    label: 'Meta Cumprida',
+    emoji: '🏆',
+    desc:  '100% da carga horária mensal atingida',
+    how:   'Cumpra 100% das horas do mês registrando entrada e saída todos os dias',
+  },
+  top_month: {
+    label: 'Destaque do Mês',
+    emoji: '👑',
+    desc:  '1º lugar no ranking do mês',
+    how:   'Seja o estagiário com mais pontos no mês — presença, pontualidade e atividades',
+  },
 }
 
 export function getStreakMultiplier(streak: number): number {
