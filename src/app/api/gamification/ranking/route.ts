@@ -36,25 +36,31 @@ export async function GET(request: NextRequest) {
     rangeEnd   = new Date(year, month, 1).toISOString()
   }
 
-  // Profiles with gamification (fallback gracefully if columns don't exist yet)
-  const { data: profiles } = await service
+  // Profiles — use authenticated client (admin has RLS access to all profiles)
+  const { data: profiles, error: profilesError } = await supabase
     .from('profiles')
-    .select('id, full_name, photo_url, points, level, streak_days')
+    .select('*')
     .eq('role', 'intern')
     .eq('is_active', true)
 
-  if (!profiles?.length) return NextResponse.json({ ranking: [], period, month, year })
+  console.log('[ranking] profiles:', profiles?.length, 'error:', profilesError?.message)
+
+  if (profilesError || !profiles?.length) {
+    return NextResponse.json({ ranking: [], period, month, year, currentUserId: user.id, debug: profilesError?.message })
+  }
 
   // Minutes in period per intern (closed records)
-  const { data: closedRecords } = await service
+  const { data: closedRecords, error: closedErr } = await supabase
     .from('time_records')
     .select('intern_id, duration_minutes')
     .gte('clock_in', rangeStart)
     .lt('clock_in', rangeEnd)
     .not('clock_out', 'is', null)
 
+  console.log('[ranking] closedRecords:', closedRecords?.length, 'error:', closedErr?.message, 'range:', rangeStart, rangeEnd)
+
   // Open records (currently clocked in) — count elapsed minutes live
-  const { data: openRecords } = await service
+  const { data: openRecords } = await supabase
     .from('time_records')
     .select('intern_id, clock_in')
     .gte('clock_in', rangeStart)
@@ -75,11 +81,15 @@ export async function GET(request: NextRequest) {
   // Which interns are currently active (clocked in right now)
   const activeInternIds = new Set((openRecords ?? []).map(r => r.intern_id))
 
-  // Achievements per intern
-  const { data: achievementsData } = await service
-    .from('achievements')
-    .select('intern_id, type, unlocked_at')
-    .in('intern_id', profiles.map(p => p.id))
+  // Achievements per intern (table may not exist yet if migration hasn't run)
+  let achievementsData: { intern_id: string; type: string; unlocked_at: string }[] | null = null
+  try {
+    const { data } = await supabase
+      .from('achievements')
+      .select('intern_id, type, unlocked_at')
+      .in('intern_id', profiles.map((p: any) => p.id))
+    achievementsData = data
+  } catch { /* table doesn't exist yet */ }
 
   const achievementsByIntern = new Map<string, { type: string; unlocked_at: string }[]>()
   for (const a of achievementsData ?? []) {
