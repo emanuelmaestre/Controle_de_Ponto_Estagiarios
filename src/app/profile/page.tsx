@@ -5,12 +5,20 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { ensureProfile } from '@/lib/ensureProfile'
 import MobileOnlyGuard from '@/components/MobileOnlyGuard'
 import ProfileForm from './ProfileForm'
+import ProfileAchievements from './ProfileAchievements'
 import { getLevelInfo } from '@/lib/gamification'
 
-export default async function ProfilePage() {
+interface Props {
+  searchParams: Promise<{ tab?: string }>
+}
+
+export default async function ProfilePage({ searchParams }: Props) {
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+
+  const params = await searchParams
+  const activeTab = params.tab === 'conquistas' ? 'conquistas' : 'dados'
 
   let { data: profile } = await supabase
     .from('profiles')
@@ -38,13 +46,22 @@ export default async function ProfilePage() {
     photo_url: profile?.photo_url ?? null,
   }
 
-  const lvl = getLevelInfo((profile as any)?.level ?? 1)
-  const pts  = (profile as any)?.points ?? 0
+  const lvl    = getLevelInfo((profile as any)?.level ?? 1)
+  const pts    = (profile as any)?.points ?? 0
   const streak = (profile as any)?.streak_days ?? 0
+
+  const { data: achievementsData } = await supabase
+    .from('achievements')
+    .select('type, unlocked_at')
+    .eq('intern_id', user.id)
+    .order('unlocked_at', { ascending: false })
+
+  const userAchievements = achievementsData ?? []
 
   return (
     <MobileOnlyGuard>
       <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
+
         {/* Header */}
         <header className="flex-shrink-0" style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
           <div className="max-w-lg mx-auto px-5 py-4 flex items-center gap-3">
@@ -67,12 +84,46 @@ export default async function ProfilePage() {
               <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>⭐{pts}</span>
             </div>
           </div>
+
+          {/* Tabs */}
+          <div className="max-w-lg mx-auto flex px-5" style={{ borderTop: '1px solid rgba(0,200,83,0.08)' }}>
+            {[
+              { key: 'dados',      label: 'Dados',      icon: '👤' },
+              { key: 'conquistas', label: 'Conquistas', icon: '🏆' },
+            ].map(t => (
+              <Link
+                key={t.key}
+                href={`/profile?tab=${t.key}`}
+                className="flex items-center gap-1.5 text-xs font-black py-3 pr-5 transition-colors"
+                style={activeTab === t.key
+                  ? { color: '#3fe56c', borderBottom: '2px solid #3fe56c', marginBottom: -1 }
+                  : { color: 'rgba(255,255,255,0.3)' }
+                }
+              >
+                {t.icon} {t.label}
+                {t.key === 'conquistas' && userAchievements.length > 0 && (
+                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
+                    style={{ background: '#3fe56c', color: '#003912' }}>
+                    {userAchievements.length}
+                  </span>
+                )}
+              </Link>
+            ))}
+          </div>
         </header>
 
         {/* Conteúdo */}
         <main className="flex-1 min-h-0 overflow-y-auto">
-          <div className="max-w-lg mx-auto px-5 py-6">
-            <ProfileForm initial={initialData} />
+          <div className="max-w-lg mx-auto px-5 py-5">
+            {activeTab === 'dados' && <ProfileForm initial={initialData} />}
+            {activeTab === 'conquistas' && (
+              <ProfileAchievements
+                points={pts}
+                level={(profile as any)?.level ?? 1}
+                streakDays={streak}
+                achievements={userAchievements}
+              />
+            )}
           </div>
         </main>
 
