@@ -2,39 +2,59 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { createSupabaseServiceClient } from '@/infra/supabase/server'
 
+function getWeekRange() {
+  const now = new Date()
+  const day = now.getDay() // 0=Sun
+  const monday = new Date(now)
+  monday.setDate(now.getDate() - ((day + 6) % 7))
+  monday.setHours(0, 0, 0, 0)
+  const sunday = new Date(monday)
+  sunday.setDate(monday.getDate() + 7)
+  return { start: monday.toISOString(), end: sunday.toISOString() }
+}
+
 export async function GET(request: NextRequest) {
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const service = createSupabaseServiceClient()
-
   const { searchParams } = request.nextUrl
-  const month = parseInt(searchParams.get('month') || String(new Date().getMonth() + 1))
-  const year  = parseInt(searchParams.get('year')  || String(new Date().getFullYear()))
+  const period = searchParams.get('period') ?? 'monthly' // 'monthly' | 'weekly'
+  const month  = parseInt(searchParams.get('month') || String(new Date().getMonth() + 1))
+  const year   = parseInt(searchParams.get('year')  || String(new Date().getFullYear()))
 
-  const monthStart = `${year}-${String(month).padStart(2, '0')}-01`
-  const monthEnd   = new Date(year, month, 1).toISOString().slice(0, 10)
+  let rangeStart: string
+  let rangeEnd: string
 
-  // Interns with gamification columns
+  if (period === 'weekly') {
+    const w = getWeekRange()
+    rangeStart = w.start
+    rangeEnd   = w.end
+  } else {
+    rangeStart = `${year}-${String(month).padStart(2, '0')}-01T00:00:00Z`
+    rangeEnd   = new Date(year, month, 1).toISOString()
+  }
+
+  // Profiles with gamification (fallback gracefully if columns don't exist yet)
   const { data: profiles } = await service
     .from('profiles')
     .select('id, full_name, photo_url, points, level, streak_days')
     .eq('role', 'intern')
     .eq('is_active', true)
 
-  if (!profiles?.length) return NextResponse.json({ ranking: [] })
+  if (!profiles?.length) return NextResponse.json({ ranking: [], period, month, year })
 
-  // Monthly minutes per intern
-  const { data: monthlyData } = await service
+  // Minutes in period per intern
+  const { data: records } = await service
     .from('time_records')
     .select('intern_id, duration_minutes')
-    .gte('clock_in', `${monthStart}T00:00:00Z`)
-    .lt('clock_in', `${monthEnd}T00:00:00Z`)
+    .gte('clock_in', rangeStart)
+    .lt('clock_in', rangeEnd)
     .not('clock_out', 'is', null)
 
   const minutesByIntern = new Map<string, number>()
-  for (const r of monthlyData ?? []) {
+  for (const r of records ?? []) {
     minutesByIntern.set(r.intern_id, (minutesByIntern.get(r.intern_id) ?? 0) + (r.duration_minutes ?? 0))
   }
 
@@ -51,23 +71,22 @@ export async function GET(request: NextRequest) {
     achievementsByIntern.set(a.intern_id, list)
   }
 
-  // Build ranking sorted by monthly minutes, then total points as tiebreaker
   const ranking = profiles
     .map(p => ({
-      internId:     p.id,
-      internName:   p.full_name,
-      photoUrl:     p.photo_url,
-      points:       p.points ?? 0,
-      level:        p.level ?? 1,
-      streakDays:   p.streak_days ?? 0,
-      monthMinutes: minutesByIntern.get(p.id) ?? 0,
-      achievements: achievementsByIntern.get(p.id) ?? [],
-      position:     0,
+      internId:      p.id,
+      internName:    p.full_name,
+      photoUrl:      p.photo_url,
+      points:        (p as any).points ?? 0,
+      level:         (p as any).level ?? 1,
+      streakDays:    (p as any).streak_days ?? 0,
+      periodMinutes: minutesByIntern.get(p.id) ?? 0,
+      achievements:  achievementsByIntern.get(p.id) ?? [],
+      position:      0,
     }))
-    .filter(r => r.monthMinutes > 0 || r.points > 0)
-    .sort((a, b) => b.monthMinutes - a.monthMinutes || b.points - a.points)
+    .filter(r => r.periodMinutes > 0 || r.points > 0)
+    .sort((a, b) => b.periodMinutes - a.periodMinutes || b.points - a.points)
 
   ranking.forEach((r, i) => { r.position = i + 1 })
 
-  return NextResponse.json({ ranking, month, year, currentUserId: user.id })
+  return NextResponse.json({ ranking, period, month, year, currentUserId: user.id })
 }
