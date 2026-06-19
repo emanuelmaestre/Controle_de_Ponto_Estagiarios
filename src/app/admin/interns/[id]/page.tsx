@@ -11,7 +11,8 @@ import {
   History, CheckCircle2, BarChart2, Settings2, Calendar, Trophy,
 } from 'lucide-react'
 import { FadeIn } from '@/components/ui/MotionWrappers'
-import { getLevelInfo, getNextLevel, getProgressToNextLevel, ACHIEVEMENTS, LEVELS } from '@/lib/gamification'
+import { getLevelInfo, getLevelTitle, getNextLevel, getProgressToNextLevel, ACHIEVEMENTS, LEVELS } from '@/lib/gamification'
+import { detectGender } from '@/lib/detectGender'
 
 export const dynamic = 'force-dynamic'
 
@@ -123,6 +124,8 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
   ]
 
   const lvlInfo  = getLevelInfo(intern.level ?? 1)
+  const gender   = detectGender(intern.full_name ?? '')
+  const lvlTitle = getLevelTitle(lvlInfo.level, gender)
   const nextLvl  = getNextLevel(intern.level ?? 1)
   const lvlPct   = getProgressToNextLevel(intern.points ?? 0, intern.level ?? 1)
 
@@ -206,7 +209,7 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
                         color: lvlInfo.color,
                         border: `1px solid ${lvlInfo.color}35`,
                       }}>
-                      {lvlInfo.icon} {lvlInfo.title}
+                      {lvlInfo.icon} {lvlTitle}
                     </span>
                     <span className="text-xs font-bold" style={{ color: 'var(--text-3)' }}>
                       ⭐ {intern.points ?? 0} pts
@@ -496,7 +499,7 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
                       <div className="text-5xl leading-none">{lvlInfo.icon}</div>
                       <span className="text-xs font-black tracking-widest px-3 py-1 rounded-full"
                         style={{ background: `${lvlInfo.color}18`, color: lvlInfo.color, border: `1px solid ${lvlInfo.color}30` }}>
-                        NÍV. {intern.level ?? 1} · {lvlInfo.title.toUpperCase()}
+                        NÍV. {intern.level ?? 1} · {lvlTitle.toUpperCase()}
                       </span>
                     </div>
                     {/* XP e streak */}
@@ -547,7 +550,7 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
                           }}>
                           <span className="text-2xl">{lvl.icon}</span>
                           <div>
-                            <p className="text-[11px] font-black" style={{ color: reached ? lvl.color : 'var(--text-3)' }}>{lvl.title}</p>
+                            <p className="text-[11px] font-black" style={{ color: reached ? lvl.color : 'var(--text-3)' }}>{getLevelTitle(lvl.level, gender)}</p>
                             <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
                               {lvl.minPoints === 0 ? 'início' : `${lvl.minPoints} pts`}
                             </p>

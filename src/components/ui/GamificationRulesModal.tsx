@@ -105,7 +105,9 @@ export function GamificationRulesModal({ open, onClose }: { open: boolean; onClo
                     style={{ background: `${lvl.color}0e`, border: `1px solid ${lvl.color}28` }}>
                     <span className="text-base leading-none">{lvl.icon}</span>
                     <div className="min-w-0">
-                      <p className="text-[11px] font-black truncate" style={{ color: lvl.color }}>{lvl.title}</p>
+                      <p className="text-[11px] font-black truncate" style={{ color: lvl.color }}>
+                        {lvl.titleM === lvl.titleF ? lvl.titleM : `${lvl.titleM} / ${lvl.titleF}`}
+                      </p>
                       <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>
                         {lvl.minPoints === 0 ? 'início' : `a partir de ${lvl.minPoints} pts`}
                       </p>

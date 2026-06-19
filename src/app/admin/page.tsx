@@ -6,7 +6,8 @@ import type { TodayStatus } from '@/types/database'
 import { FadeIn, StaggerContainer, StaggerItem, HoverLift } from '@/components/ui/MotionWrappers'
 import AnimatedNumber from '@/components/ui/AnimatedNumber'
 import { Users, Activity, AlertTriangle, Clock, Search, UserPlus } from 'lucide-react'
-import { getLevelInfo } from '@/lib/gamification'
+import { getLevelInfo, getLevelTitle } from '@/lib/gamification'
+import { detectGender } from '@/lib/detectGender'
 
 export const dynamic = 'force-dynamic'
 
@@ -233,7 +234,9 @@ export default async function AdminPage() {
               const cfg = statusCfg[intern.today_status] ?? statusCfg.ausente
               const initials = intern.full_name.split(' ').slice(0, 2).map((w: string) => w[0]).join('')
               const ac = avatarColors[idx % avatarColors.length]
-              const lvl = getLevelInfo((intern as any).level ?? 1)
+              const lvl    = getLevelInfo((intern as any).level ?? 1)
+              const gender = detectGender(intern.full_name ?? '')
+              const title  = getLevelTitle(lvl.level, gender)
               return (
                 <StaggerItem key={intern.id}>
                   <HoverLift className="h-full">
@@ -288,7 +291,7 @@ export default async function AdminPage() {
                     <div className="flex items-center justify-between mb-3">
                       <span className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full"
                         style={{ background: `${lvl.color}18`, color: lvl.color, border: `1px solid ${lvl.color}30` }}>
-                        {lvl.icon} {lvl.title}
+                        {lvl.icon} {title}
                       </span>
                       <span className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>
                         ⭐ {(intern as any).points ?? 0} pts

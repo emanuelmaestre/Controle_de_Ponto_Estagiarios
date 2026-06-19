@@ -1,7 +1,8 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { ACHIEVEMENTS, LEVELS, getLevelInfo, getNextLevel, getProgressToNextLevel } from '@/lib/gamification'
+import { ACHIEVEMENTS, LEVELS, getLevelInfo, getLevelTitle, getNextLevel, getProgressToNextLevel } from '@/lib/gamification'
+import { detectGender } from '@/lib/detectGender'
 import { useState } from 'react'
 import { ChevronDown, ChevronUp, Lock, Star } from 'lucide-react'
 
@@ -15,11 +16,13 @@ interface Props {
   level:        number
   streakDays:   number
   achievements: UserAchievement[]
+  fullName?:    string
 }
 
 const ALL_ACHIEVEMENT_KEYS = Object.keys(ACHIEVEMENTS)
 
-export default function ProfileAchievements({ points, level, streakDays, achievements }: Props) {
+export default function ProfileAchievements({ points, level, streakDays, achievements, fullName = '' }: Props) {
+  const gender = detectGender(fullName)
   const [showLocked, setShowLocked] = useState(false)
 
   const lvl     = getLevelInfo(level)
@@ -66,7 +69,7 @@ export default function ProfileAchievements({ points, level, streakDays, achieve
             <p className="text-[10px] font-black tracking-widest mb-0.5" style={{ color: `${lvl.color}99` }}>
               NÍVEL {level}
             </p>
-            <p className="text-xl font-black leading-tight" style={{ color: lvl.color }}>{lvl.title}</p>
+            <p className="text-xl font-black leading-tight" style={{ color: lvl.color }}>{getLevelTitle(level, gender)}</p>
             <div className="flex items-center gap-2 mt-0.5">
               <Star size={11} style={{ color: '#3fe56c' }} />
               <span className="text-xs font-bold" style={{ color: 'rgba(255,255,255,0.6)' }}>{points} pts</span>
@@ -159,7 +162,7 @@ export default function ProfileAchievements({ points, level, streakDays, achieve
                 </motion.div>
                 <p className="text-[8px] font-black text-center leading-tight"
                   style={{ color: reached ? lvlItem.color : 'rgba(255,255,255,0.2)' }}>
-                  {lvlItem.title}
+                  {getLevelTitle(lvlItem.level, gender)}
                 </p>
                 {/* connector line */}
                 {i < LEVELS.length - 1 && (

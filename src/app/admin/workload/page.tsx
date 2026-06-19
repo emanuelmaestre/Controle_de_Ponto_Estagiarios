@@ -10,7 +10,8 @@ import {
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import AnimatedNumber from '@/components/ui/AnimatedNumber'
 import AnimatedBar from '@/components/ui/AnimatedBar'
-import { getLevelInfo } from '@/lib/gamification'
+import { getLevelInfo, getLevelTitle } from '@/lib/gamification'
+import { detectGender } from '@/lib/detectGender'
 
 export const dynamic = 'force-dynamic'
 
@@ -263,7 +264,9 @@ export default async function WorkloadPage() {
               const st   = STATUS_META[r.status]
               const ac   = AVATAR_COLORS[i % AVATAR_COLORS.length]
               const initials = r.full_name.split(' ').slice(0, 2).map(w => w[0]).join('')
-              const lvl  = getLevelInfo(r.level ?? 1)
+              const lvl    = getLevelInfo(r.level ?? 1)
+              const gender = detectGender(r.full_name ?? '')
+              const title  = getLevelTitle(lvl.level, gender)
               const hoursLabel = minutesToHours(r.monthMinutes)
               const totalH    = r.total_hours_required ?? 120
               const pctDisplay = r.pct > 100 ? '100%+' : `${r.pct}%`
@@ -301,7 +304,7 @@ export default async function WorkloadPage() {
                             </span>
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black"
                               style={{ background: `${lvl.color}18`, border: `1px solid ${lvl.color}30`, color: lvl.color }}>
-                              {lvl.icon} {lvl.title}
+                              {lvl.icon} {title}
                             </span>
                           </div>
                         </div>
@@ -350,7 +353,7 @@ export default async function WorkloadPage() {
                           </span>
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black"
                             style={{ background: `${lvl.color}18`, border: `1px solid ${lvl.color}30`, color: lvl.color }}>
-                            {lvl.icon} {lvl.title}
+                            {lvl.icon} {title}
                           </span>
                           <span className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>
                             ⭐ {r.points ?? 0}

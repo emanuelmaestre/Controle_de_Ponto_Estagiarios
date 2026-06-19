@@ -3,7 +3,8 @@
 import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion'
 import { Trophy, Star, Flame, Crown, Calendar, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
-import { getLevelInfo, getProgressToNextLevel, ACHIEVEMENTS, minutesToDisplay } from '@/lib/gamification'
+import { getLevelInfo, getLevelTitle, getProgressToNextLevel, ACHIEVEMENTS, minutesToDisplay } from '@/lib/gamification'
+import { detectGender } from '@/lib/detectGender'
 import AchievementBurst from '@/components/ui/AchievementBurst'
 import Link from 'next/link'
 import { Info } from 'lucide-react'
@@ -130,7 +131,8 @@ function Podium({ top3 }: { top3: RankingEntry[] }) {
       {PODIUM_SLOTS.map(slot => {
         const entry = top3[slot.idx]
         if (!entry) return null
-        const lvl = getLevelInfo(entry.level)
+        const lvl   = getLevelInfo(entry.level)
+        const title = getLevelTitle(entry.level, detectGender(entry.internName))
         return (
           <motion.div key={entry.internId}
             initial={{ opacity: 0, y: 32 }}
@@ -173,7 +175,7 @@ function Podium({ top3 }: { top3: RankingEntry[] }) {
               style={{ color: slot.color }}>
               {entry.internName.split(' ')[0]}
             </p>
-            <p className="text-[9px] mb-2" style={{ color: lvl.color }}>{lvl.icon} {lvl.title}</p>
+            <p className="text-[9px] mb-2" style={{ color: lvl.color }}>{lvl.icon} {title}</p>
 
             {/* Bar */}
             <motion.div
@@ -420,8 +422,9 @@ export default function RankingPage() {
                 {/* ── Full list ── */}
                 <div className="space-y-2">
                   {ranking.map((entry, i) => {
-                    const lvl  = getLevelInfo(entry.level)
-                    const prog = getProgressToNextLevel(entry.points, entry.level)
+                    const lvl   = getLevelInfo(entry.level)
+                    const title = getLevelTitle(entry.level, detectGender(entry.internName))
+                    const prog  = getProgressToNextLevel(entry.points, entry.level)
                     const posColor = i === 0 ? '#fbbf24' : i === 1 ? '#94a3b8' : i === 2 ? '#f97316' : 'var(--text-3)'
                     return (
                       <motion.div key={entry.internId}
@@ -466,7 +469,7 @@ export default function RankingPage() {
                             </p>
                             <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
                               style={{ background: `${lvl.color}18`, color: lvl.color, border: `1px solid ${lvl.color}30` }}>
-                              {lvl.icon} {lvl.title}
+                              {lvl.icon} {title}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">

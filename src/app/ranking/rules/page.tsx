@@ -140,7 +140,9 @@ export default function RankingRulesPage() {
                 style={{ background: `${lvl.color}0d`, border: `1px solid ${lvl.color}25` }}>
                 <span className="text-xl">{lvl.icon}</span>
                 <div>
-                  <p className="text-[11px] font-black" style={{ color: lvl.color }}>{lvl.title}</p>
+                  <p className="text-[11px] font-black" style={{ color: lvl.color }}>
+                    {lvl.titleM === lvl.titleF ? lvl.titleM : `${lvl.titleM} / ${lvl.titleF}`}
+                  </p>
                   <p className="text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
                     {lvl.minPoints === 0 ? 'começo' : `a partir de ${lvl.minPoints} pts`}
                   </p>

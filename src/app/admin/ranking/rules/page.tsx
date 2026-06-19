@@ -145,7 +145,9 @@ function RulesContent() {
                 style={{ background: `${lvl.color}0e`, border: `1px solid ${lvl.color}28` }}>
                 <span className="text-2xl">{lvl.icon}</span>
                 <div>
-                  <p className="text-sm font-black" style={{ color: lvl.color }}>{lvl.title}</p>
+                  <p className="text-sm font-black" style={{ color: lvl.color }}>
+                    {lvl.titleM === lvl.titleF ? lvl.titleM : `${lvl.titleM} / ${lvl.titleF}`}
+                  </p>
                   <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
                     {lvl.minPoints === 0 ? 'início' : `a partir de ${lvl.minPoints} pts`}
                   </p>

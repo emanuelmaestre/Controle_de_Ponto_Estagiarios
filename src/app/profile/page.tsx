@@ -6,7 +6,8 @@ import { ensureProfile } from '@/lib/ensureProfile'
 import MobileOnlyGuard from '@/components/MobileOnlyGuard'
 import ProfileForm from './ProfileForm'
 import ProfileAchievements from './ProfileAchievements'
-import { getLevelInfo } from '@/lib/gamification'
+import { getLevelInfo, getLevelTitle } from '@/lib/gamification'
+import { detectGender } from '@/lib/detectGender'
 
 interface Props {
   searchParams: Promise<{ tab?: string }>
@@ -47,6 +48,8 @@ export default async function ProfilePage({ searchParams }: Props) {
   }
 
   const lvl    = getLevelInfo((profile as any)?.level ?? 1)
+  const gender = detectGender(profile?.full_name ?? '')
+  const title  = getLevelTitle(lvl.level, gender)
   const pts    = (profile as any)?.points ?? 0
   const streak = (profile as any)?.streak_days ?? 0
 
@@ -79,7 +82,7 @@ export default async function ProfilePage({ searchParams }: Props) {
               )}
               <span className="flex items-center gap-1 text-[11px] font-black px-2.5 py-1 rounded-full"
                 style={{ background: `${lvl.color}18`, border: `1px solid ${lvl.color}35`, color: lvl.color }}>
-                {lvl.icon} {lvl.title}
+                {lvl.icon} {title}
               </span>
               <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>⭐{pts}</span>
             </div>
@@ -122,6 +125,7 @@ export default async function ProfilePage({ searchParams }: Props) {
                 level={(profile as any)?.level ?? 1}
                 streakDays={streak}
                 achievements={userAchievements}
+                fullName={profile?.full_name ?? ''}
               />
             )}
           </div>

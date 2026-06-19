@@ -4,7 +4,8 @@ import { useEffect, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Home, ClipboardList, Trophy, LogOut, Star, Flame, Crown, User, CalendarDays, Calendar } from 'lucide-react'
-import { getLevelInfo, getProgressToNextLevel, ACHIEVEMENTS, minutesToDisplay } from '@/lib/gamification'
+import { getLevelInfo, getLevelTitle, getProgressToNextLevel, ACHIEVEMENTS, minutesToDisplay } from '@/lib/gamification'
+import { detectGender } from '@/lib/detectGender'
 import AchievementBurst from '@/components/ui/AchievementBurst'
 import { Info } from 'lucide-react'
 
@@ -245,9 +246,10 @@ export default function InternRankingContent() {
               {/* ── Full list ── */}
               <div className="space-y-1.5 pb-4">
                 {ranking.map((entry, i) => {
-                  const lvl  = getLevelInfo(entry.level)
-                  const prog = getProgressToNextLevel(entry.points, entry.level)
-                  const isMe = entry.internId === currentUserId
+                  const lvl   = getLevelInfo(entry.level)
+                  const title = getLevelTitle(entry.level, detectGender(entry.internName))
+                  const prog  = getProgressToNextLevel(entry.points, entry.level)
+                  const isMe  = entry.internId === currentUserId
                   return (
                     <motion.div key={entry.internId}
                       initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
@@ -285,7 +287,7 @@ export default function InternRankingContent() {
                           </p>
                           <span className="text-[8px] font-bold px-1 py-0.5 rounded flex-shrink-0"
                             style={{ background: `${lvl.color}18`, color: lvl.color }}>
-                            {lvl.icon} {lvl.title}
+                            {lvl.icon} {title}
                           </span>
                           {entry.isActive && (
                             <span className="text-[8px] font-bold flex-shrink-0" style={{ color: '#00c853' }}>

@@ -12,20 +12,33 @@ export const SCORING_RULES = [
 ] as const
 
 export const LEVELS = [
-  { level: 1, title: 'Novato',       icon: '🌱', minPoints: 0,    color: '#94a3b8' },
-  { level: 2, title: 'Aprendiz',     icon: '📚', minPoints: 200,  color: '#60a5fa' },
-  { level: 3, title: 'Colaborador',  icon: '⚙️', minPoints: 500,  color: '#34d399' },
-  { level: 4, title: 'Dedicado',     icon: '💪', minPoints: 1000, color: '#a78bfa' },
-  { level: 5, title: 'Especialista', icon: '🔬', minPoints: 2000, color: '#fbbf24' },
-  { level: 6, title: 'Elite',        icon: '👑', minPoints: 4000, color: '#f97316' },
+  { level: 1, titleM: 'Novato',       titleF: 'Novata',        icon: '🌱', minPoints: 0,    color: '#94a3b8' },
+  { level: 2, titleM: 'Aprendiz',     titleF: 'Aprendiz',      icon: '📚', minPoints: 200,  color: '#60a5fa' },
+  { level: 3, titleM: 'Colaborador',  titleF: 'Colaboradora',  icon: '⚙️', minPoints: 500,  color: '#34d399' },
+  { level: 4, titleM: 'Dedicado',     titleF: 'Dedicada',      icon: '💪', minPoints: 1000, color: '#a78bfa' },
+  { level: 5, titleM: 'Especialista', titleF: 'Especialista',  icon: '🔬', minPoints: 2000, color: '#fbbf24' },
+  { level: 6, titleM: 'Elite',        titleF: 'Elite',         icon: '👑', minPoints: 4000, color: '#f97316' },
 ] as const
 
-export function getLevelInfo(level: number) {
-  return LEVELS.find(l => l.level === level) ?? LEVELS[0]
+export type LevelEntry = typeof LEVELS[number]
+
+/** Retorna o objeto do nível. Use getLevelTitle() para obter o título com gênero. */
+export function getLevelInfo(level: number): LevelEntry & { title: string } {
+  const lvl = LEVELS.find(l => l.level === level) ?? LEVELS[0]
+  return { ...lvl, title: lvl.titleM }
 }
 
-export function getNextLevel(level: number) {
-  return LEVELS.find(l => l.level === level + 1) ?? null
+/** Retorna o título do nível no gênero correto. gender = 'F' | 'M' | null */
+export function getLevelTitle(level: number, gender: 'F' | 'M' | null): string {
+  const lvl = LEVELS.find(l => l.level === level) ?? LEVELS[0]
+  return gender === 'F' ? lvl.titleF : lvl.titleM
+}
+
+
+export function getNextLevel(level: number): (LevelEntry & { title: string }) | null {
+  const lvl = LEVELS.find(l => l.level === level + 1) ?? null
+  if (!lvl) return null
+  return { ...lvl, title: lvl.titleM }
 }
 
 export function getProgressToNextLevel(points: number, level: number): number {

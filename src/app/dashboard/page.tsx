@@ -13,7 +13,8 @@ import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/
 import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell, AlertTriangle, User, Flame, Star } from 'lucide-react'
 import LiveClock from '@/components/ui/LiveClock'
 import type { RecordStatus } from '@/types/database'
-import { getLevelInfo, getNextLevel, getProgressToNextLevel, ACHIEVEMENTS } from '@/lib/gamification'
+import { getLevelInfo, getLevelTitle, getNextLevel, getProgressToNextLevel, ACHIEVEMENTS } from '@/lib/gamification'
+import { detectGender } from '@/lib/detectGender'
 
 export const dynamic = 'force-dynamic'
 
@@ -157,6 +158,8 @@ export default async function DashboardPage() {
   const userLevel      = (profile as any)?.level ?? 1
   const userStreak     = (profile as any)?.streak_days ?? 0
   const lvlInfo        = getLevelInfo(userLevel)
+  const userGender     = detectGender(profile?.full_name ?? '')
+  const lvlTitle       = getLevelTitle(userLevel, userGender)
   const nextLvl        = getNextLevel(userLevel)
   const lvlProgress    = getProgressToNextLevel(userPoints, userLevel)
   const userAchievements = achievementsData ?? []
@@ -340,7 +343,7 @@ export default async function DashboardPage() {
                 <div className="flex items-center gap-2">
                   <span className="text-base">{lvlInfo.icon}</span>
                   <span className="text-xs font-black tracking-wider" style={{ color: lvlInfo.color }}>
-                    {lvlInfo.title.toUpperCase()}
+                    {lvlTitle.toUpperCase()}
                   </span>
                   <span className="text-[10px] font-bold px-1.5 py-0.5 rounded"
                     style={{ background: `${lvlInfo.color}18`, color: lvlInfo.color }}>
