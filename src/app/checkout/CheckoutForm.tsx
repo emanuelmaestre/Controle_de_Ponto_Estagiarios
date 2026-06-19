@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, X, Check, ClipboardList, Loader2, AlertTriangle, LogOut } from 'lucide-react'
+import { Plus, X, Check, ClipboardList, Loader2, AlertTriangle, LogOut, Pencil } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { FavoriteActivity } from '@/types/database'
 
@@ -23,6 +23,8 @@ export default function CheckoutForm({ recordId, clockIn, favorites }: Props) {
   const [notes, setNotes] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [editingDesc, setEditingDesc] = useState<string | null>(null)
+  const [editValue, setEditValue] = useState('')
 
   const toggleFavorite = (desc: string) => {
     setSelected((prev) =>
@@ -30,11 +32,28 @@ export default function CheckoutForm({ recordId, clockIn, favorites }: Props) {
     )
   }
 
+  const toUpper = (v: string) => v.toUpperCase()
+
   const addNewActivity = () => {
-    const trimmed = newActivity.trim()
+    const trimmed = newActivity.trim().toUpperCase()
     if (!trimmed || trimmed.length < 3) return
     if (!selected.includes(trimmed)) setSelected((prev) => [...prev, trimmed])
     setNewActivity('')
+  }
+
+  const startEdit = (desc: string) => {
+    setEditingDesc(desc)
+    setEditValue(desc)
+  }
+
+  const confirmEdit = () => {
+    if (!editingDesc) return
+    const trimmed = editValue.trim().toUpperCase()
+    if (trimmed.length >= 3) {
+      setSelected(prev => prev.map(d => d === editingDesc ? trimmed : d))
+    }
+    setEditingDesc(null)
+    setEditValue('')
   }
 
   const handleSubmit = async () => {
@@ -164,9 +183,9 @@ export default function CheckoutForm({ recordId, clockIn, favorites }: Props) {
         <div className="flex gap-2">
           <input
             value={newActivity}
-            onChange={(e) => setNewActivity(e.target.value)}
+            onChange={(e) => setNewActivity(toUpper(e.target.value))}
             onKeyDown={(e) => e.key === 'Enter' && addNewActivity()}
-            placeholder="Descreva a atividade..."
+            placeholder="DESCREVA A ATIVIDADE..."
             maxLength={200}
             className="flex-1 px-3 py-2.5 rounded-xl text-sm outline-none transition-colors"
             style={{
@@ -227,21 +246,71 @@ export default function CheckoutForm({ recordId, clockIn, favorites }: Props) {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 10 }}
                     transition={{ duration: 0.2 }}
-                    className="flex items-start justify-between gap-2 text-sm"
+                    className="flex flex-col gap-1.5"
                   >
-                    <span className="flex items-start gap-2" style={{ color: 'var(--text)' }}>
-                      <Check size={15} className="mt-0.5 flex-shrink-0" style={{ color: 'var(--primary)' }} />
-                      {desc}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setSelected((prev) => prev.filter((d) => d !== desc))}
-                      className="flex-shrink-0 p-1 rounded-md transition-colors"
-                      style={{ color: 'var(--text-3)' }}
-                      aria-label={`Remover ${desc}`}
-                    >
-                      <X size={15} />
-                    </button>
+                    {editingDesc === desc ? (
+                      /* ── Modo edição ── */
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.97 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex gap-2"
+                      >
+                        <input
+                          autoFocus
+                          value={editValue}
+                          onChange={e => setEditValue(toUpper(e.target.value))}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') confirmEdit()
+                            if (e.key === 'Escape') { setEditingDesc(null); setEditValue('') }
+                          }}
+                          maxLength={200}
+                          className="flex-1 px-3 py-1.5 rounded-xl text-sm outline-none"
+                          style={{
+                            background: 'rgba(0,0,0,0.3)',
+                            border: '1px solid rgba(0,200,83,0.5)',
+                            color: 'var(--text)',
+                          }}
+                        />
+                        <button type="button" onClick={confirmEdit}
+                          className="px-3 py-1.5 rounded-xl text-xs font-bold"
+                          style={{ background: '#00c853', color: '#003912' }}>
+                          <Check size={14} />
+                        </button>
+                        <button type="button" onClick={() => { setEditingDesc(null); setEditValue('') }}
+                          className="px-2 py-1.5 rounded-xl text-xs"
+                          style={{ background: 'rgba(255,82,82,0.12)', color: '#ff5252', border: '1px solid rgba(255,82,82,0.25)' }}>
+                          <X size={14} />
+                        </button>
+                      </motion.div>
+                    ) : (
+                      /* ── Modo visualização ── */
+                      <div className="flex items-start justify-between gap-2 text-sm">
+                        <span className="flex items-start gap-2 font-medium uppercase" style={{ color: 'var(--text)' }}>
+                          <Check size={15} className="mt-0.5 flex-shrink-0" style={{ color: 'var(--primary)' }} />
+                          {desc}
+                        </span>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => startEdit(desc)}
+                            className="p-1 rounded-md transition-colors hover:bg-white/5"
+                            style={{ color: '#3fe56c' }}
+                            aria-label={`Editar ${desc}`}
+                          >
+                            <Pencil size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSelected((prev) => prev.filter((d) => d !== desc))}
+                            className="p-1 rounded-md transition-colors hover:bg-white/5"
+                            style={{ color: 'var(--text-3)' }}
+                            aria-label={`Remover ${desc}`}
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </motion.li>
                 ))}
               </AnimatePresence>
@@ -261,8 +330,8 @@ export default function CheckoutForm({ recordId, clockIn, favorites }: Props) {
         </label>
         <textarea
           value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Alguma observação sobre o turno..."
+          onChange={(e) => setNotes(toUpper(e.target.value))}
+          placeholder="ALGUMA OBSERVAÇÃO SOBRE O TURNO..."
           maxLength={500}
           rows={2}
           className="w-full px-3 py-2.5 rounded-xl text-sm outline-none resize-none transition-colors"
