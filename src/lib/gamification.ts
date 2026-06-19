@@ -3,7 +3,7 @@
 export const SCORING_RULES = [
   { id: 'presence',  emoji: '📅', label: 'Presença diária',       points: '+10 pts', detail: 'Compareça e registre entrada e saída no mesmo dia' },
   { id: 'punctual',  emoji: '⏰', label: 'Pontualidade',           points: '+5 pts',  detail: 'Registre a entrada em até 15 min após o horário previsto' },
-  { id: 'photo',     emoji: '📸', label: 'Foto de perfil',         points: '+30 pts', detail: 'Cadastre sua foto em Meu Perfil — bônus único e permanente' },
+  { id: 'photo',     emoji: '📸', label: 'Foto de perfil',         points: '+30 pts', detail: 'Cadastre uma foto sua (real, não desenho) em Meu Perfil — concedido apenas na primeira vez' },
   { id: 'activity',  emoji: '📝', label: 'Atividade documentada',  points: '+5 pts',  detail: 'Na saída, descreva ao menos 1 atividade realizada (mín. 10 letras)' },
   { id: 'streak_3',  emoji: '🔥', label: 'Sequência de 3 dias',   points: '×1.2',    detail: 'Compareça 3 dias seguidos — multiplica os pontos do dia' },
   { id: 'streak_7',  emoji: '⚡', label: 'Sequência de 7 dias',   points: '×1.5',    detail: 'Compareça 7 dias seguidos — multiplica os pontos do dia' },
@@ -40,8 +40,8 @@ export const ACHIEVEMENTS: Record<string, { label: string; emoji: string; desc: 
   has_photo: {
     label: 'Identidade Completa',
     emoji: '📸',
-    desc:  'Foto de perfil cadastrada',
-    how:   'Vá em Meu Perfil e adicione uma foto sua',
+    desc:  'Foto real de perfil cadastrada (apenas na primeira vez)',
+    how:   'Vá em Meu Perfil e adicione uma foto sua real — trocar a foto depois não concede pontos novamente e fotos de desenho/avatar não são válidas',
   },
   first_day: {
     label: 'Primeiro Dia',

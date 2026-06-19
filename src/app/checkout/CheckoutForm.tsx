@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, X, Check, ClipboardList, Loader2, AlertTriangle, LogOut, Pencil } from 'lucide-react'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import { correctPortuguese } from '@/lib/ptCorrector'
 import type { FavoriteActivity } from '@/types/database'
 
 interface Props {
@@ -35,7 +36,7 @@ export default function CheckoutForm({ recordId, clockIn, favorites }: Props) {
   const toUpper = (v: string) => v.toUpperCase()
 
   const addNewActivity = () => {
-    const trimmed = newActivity.trim().toUpperCase()
+    const trimmed = correctPortuguese(newActivity.trim().toUpperCase())
     if (!trimmed || trimmed.length < 3) return
     if (!selected.includes(trimmed)) setSelected((prev) => [...prev, trimmed])
     setNewActivity('')
@@ -48,7 +49,7 @@ export default function CheckoutForm({ recordId, clockIn, favorites }: Props) {
 
   const confirmEdit = () => {
     if (!editingDesc) return
-    const trimmed = editValue.trim().toUpperCase()
+    const trimmed = correctPortuguese(editValue.trim().toUpperCase())
     if (trimmed.length >= 3) {
       setSelected(prev => prev.map(d => d === editingDesc ? trimmed : d))
     }
