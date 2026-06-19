@@ -45,18 +45,35 @@ export async function GET(request: NextRequest) {
 
   if (!profiles?.length) return NextResponse.json({ ranking: [], period, month, year })
 
-  // Minutes in period per intern
-  const { data: records } = await service
+  // Minutes in period per intern (closed records)
+  const { data: closedRecords } = await service
     .from('time_records')
     .select('intern_id, duration_minutes')
     .gte('clock_in', rangeStart)
     .lt('clock_in', rangeEnd)
     .not('clock_out', 'is', null)
 
+  // Open records (currently clocked in) — count elapsed minutes live
+  const { data: openRecords } = await service
+    .from('time_records')
+    .select('intern_id, clock_in')
+    .gte('clock_in', rangeStart)
+    .lt('clock_in', rangeEnd)
+    .is('clock_out', null)
+
+  const now = Date.now()
   const minutesByIntern = new Map<string, number>()
-  for (const r of records ?? []) {
+
+  for (const r of closedRecords ?? []) {
     minutesByIntern.set(r.intern_id, (minutesByIntern.get(r.intern_id) ?? 0) + (r.duration_minutes ?? 0))
   }
+  for (const r of openRecords ?? []) {
+    const elapsed = Math.floor((now - new Date(r.clock_in).getTime()) / 60000)
+    minutesByIntern.set(r.intern_id, (minutesByIntern.get(r.intern_id) ?? 0) + elapsed)
+  }
+
+  // Which interns are currently active (clocked in right now)
+  const activeInternIds = new Set((openRecords ?? []).map(r => r.intern_id))
 
   // Achievements per intern
   const { data: achievementsData } = await service
@@ -81,12 +98,12 @@ export async function GET(request: NextRequest) {
       streakDays:    (p as any).streak_days ?? 0,
       periodMinutes: minutesByIntern.get(p.id) ?? 0,
       achievements:  achievementsByIntern.get(p.id) ?? [],
+      isActive:      activeInternIds.has(p.id),
       position:      0,
     }))
-    .filter(r => r.periodMinutes > 0 || r.points > 0)
-    .sort((a, b) => b.periodMinutes - a.periodMinutes || b.points - a.points)
+    .sort((a, b) => b.periodMinutes - a.periodMinutes || b.points - a.points || a.internName.localeCompare(b.internName))
 
   ranking.forEach((r, i) => { r.position = i + 1 })
 
-  return NextResponse.json({ ranking, period, month, year, currentUserId: user.id })
+  return NextResponse.json({ ranking, period, month, year, currentUserId: user.id, updatedAt: new Date().toISOString() })
 }

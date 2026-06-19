@@ -14,6 +14,7 @@ interface RankingEntry {
   streakDays:    number
   periodMinutes: number
   achievements:  { type: string; unlocked_at: string }[]
+  isActive:      boolean
   position:      number
 }
 
@@ -210,20 +211,38 @@ const MONTHS = [
   'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro',
 ]
 
-export default function RankingPage() {
-  const [ranking, setRanking] = useState<RankingEntry[]>([])
-  const [loading, setLoading] = useState(true)
-  const [period, setPeriod]   = useState<Period>('monthly')
-  const [month, setMonth]     = useState(new Date().getMonth() + 1)
-  const [year]                = useState(new Date().getFullYear())
-  const prevPeriod            = useRef(period)
+const REFRESH_INTERVAL = 30_000 // 30s
 
-  useEffect(() => {
-    setLoading(true)
+export default function RankingPage() {
+  const [ranking, setRanking]     = useState<RankingEntry[]>([])
+  const [loading, setLoading]     = useState(true)
+  const [period, setPeriod]       = useState<Period>('monthly')
+  const [month, setMonth]         = useState(new Date().getMonth() + 1)
+  const [year]                    = useState(new Date().getFullYear())
+  const [updatedAt, setUpdatedAt] = useState<Date | null>(null)
+  const [pulse, setPulse]         = useState(false)
+  const prevPeriod                = useRef(period)
+
+  const fetchRanking = (showLoader = false) => {
+    if (showLoader) setLoading(true)
     fetch(`/api/gamification/ranking?period=${period}&month=${month}&year=${year}`)
       .then(r => r.json())
-      .then(d => { setRanking(d.ranking ?? []); setLoading(false) })
+      .then(d => {
+        setRanking(d.ranking ?? [])
+        setUpdatedAt(new Date())
+        setPulse(true)
+        setTimeout(() => setPulse(false), 800)
+        setLoading(false)
+      })
       .catch(() => setLoading(false))
+  }
+
+  useEffect(() => { fetchRanking(true) }, [period, month, year])
+
+  // Auto-refresh every 30s
+  useEffect(() => {
+    const id = setInterval(() => fetchRanking(false), REFRESH_INTERVAL)
+    return () => clearInterval(id)
   }, [period, month, year])
 
   const top3 = ranking.slice(0, 3)
@@ -238,6 +257,20 @@ export default function RankingPage() {
         <div className="flex items-center gap-3">
           <Trophy size={20} style={{ color: '#fbbf24' }} />
           <h2 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>Ranking</h2>
+          {/* Live indicator */}
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-full"
+            style={{ background: 'rgba(0,200,83,0.08)', border: '1px solid rgba(0,200,83,0.2)' }}>
+            <motion.div className="w-1.5 h-1.5 rounded-full"
+              style={{ background: '#00c853' }}
+              animate={{ opacity: [1, 0.3, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }} />
+            <span className="text-[10px] font-bold tracking-wider" style={{ color: '#3fe56c' }}>AO VIVO</span>
+          </div>
+          {updatedAt && (
+            <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+              atualizado {updatedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -363,11 +396,13 @@ export default function RankingPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.045, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                         className="flex items-center gap-3 px-4 py-3 rounded-xl group transition-all"
+                        whileHover={{ scale: 1.005 }}
                         style={{
                           background: 'var(--surface-card, #0f2318)',
-                          border: '1px solid rgba(0,200,83,0.10)',
+                          border: entry.isActive
+                            ? '1px solid rgba(0,200,83,0.35)'
+                            : '1px solid rgba(0,200,83,0.10)',
                         }}
-                        whileHover={{ scale: 1.005, borderColor: 'rgba(0,200,83,0.22)' }}
                       >
                         {/* Position medal */}
                         <div className="w-7 flex-shrink-0 flex items-center justify-center">
@@ -380,7 +415,15 @@ export default function RankingPage() {
                           )}
                         </div>
 
-                        <Avatar name={entry.internName} photo={entry.photoUrl} size={38} />
+                        <div className="relative flex-shrink-0">
+                          <Avatar name={entry.internName} photo={entry.photoUrl} size={38} />
+                          {entry.isActive && (
+                            <motion.div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full"
+                              style={{ background: '#00c853', border: '2px solid var(--surface-card, #0f2318)' }}
+                              animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
+                              transition={{ duration: 1.5, repeat: Infinity }} />
+                          )}
+                        </div>
 
                         {/* Name + level + bar */}
                         <div className="flex-1 min-w-0">
