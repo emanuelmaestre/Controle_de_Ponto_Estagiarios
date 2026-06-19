@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Home, ClipboardList, Trophy, LogOut, Star, Flame, Crown, User, CalendarDays, Calendar } from 'lucide-react'
 import { getLevelInfo, getProgressToNextLevel, ACHIEVEMENTS, minutesToDisplay } from '@/lib/gamification'
+import AchievementBurst from '@/components/ui/AchievementBurst'
 import { Info } from 'lucide-react'
 
 interface RankingEntry {
@@ -322,12 +323,7 @@ export default function InternRankingContent() {
                             {minutesToDisplay(entry.periodMinutes)}
                           </p>
                         </div>
-                        {entry.achievements.slice(0, 2).map(a => (
-                          <span key={a.type} className="text-sm leading-none"
-                            title={ACHIEVEMENTS[a.type]?.label}>
-                            {ACHIEVEMENTS[a.type]?.emoji ?? '🏅'}
-                          </span>
-                        ))}
+                        <AchievementBurst achievements={entry.achievements} visibleCount={2} size="sm" />
                       </div>
                     </motion.div>
                   )

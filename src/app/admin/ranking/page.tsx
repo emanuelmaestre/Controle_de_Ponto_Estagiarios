@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion'
 import { Trophy, Star, Flame, Crown, Calendar, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getLevelInfo, getProgressToNextLevel, ACHIEVEMENTS, minutesToDisplay } from '@/lib/gamification'
+import AchievementBurst from '@/components/ui/AchievementBurst'
 import Link from 'next/link'
 import { Info } from 'lucide-react'
 
@@ -511,20 +512,7 @@ export default function RankingPage() {
 
                           {/* Badges */}
                           {entry.achievements.length > 0 && (
-                            <div className="flex gap-0.5">
-                              {entry.achievements.slice(0, 3).map(a => (
-                                <span key={a.type} className="text-sm leading-none"
-                                  title={ACHIEVEMENTS[a.type]?.label ?? a.type}>
-                                  {ACHIEVEMENTS[a.type]?.emoji ?? '🏅'}
-                                </span>
-                              ))}
-                              {entry.achievements.length > 3 && (
-                                <span className="text-[9px] font-bold self-end leading-none"
-                                  style={{ color: 'var(--text-3)' }}>
-                                  +{entry.achievements.length - 3}
-                                </span>
-                              )}
-                            </div>
+                            <AchievementBurst achievements={entry.achievements} visibleCount={3} size="md" />
                           )}
                         </div>
                       </motion.div>
