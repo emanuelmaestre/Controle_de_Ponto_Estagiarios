@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Home, ClipboardList, Trophy, LogOut, Star, Flame, Crown, User, CalendarDays, Calendar } from 'lucide-react'
 import { getLevelInfo, getProgressToNextLevel, ACHIEVEMENTS, minutesToDisplay } from '@/lib/gamification'
-import { GamificationRulesButton } from '@/components/ui/GamificationRulesModal'
+import { Info } from 'lucide-react'
 
 interface RankingEntry {
   internId:      string
@@ -101,7 +101,11 @@ export default function InternRankingContent() {
           </div>
 
           <div className="flex items-center gap-2">
-            <GamificationRulesButton compact />
+            <Link href="/ranking/rules"
+              className="flex items-center gap-1 rounded-lg transition-all hover:opacity-80"
+              style={{ padding: '4px 10px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <Info size={11} /> Regras
+            </Link>
             {myPos && (
               <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}
                 className="flex items-center gap-1 px-2.5 py-1 rounded-full"

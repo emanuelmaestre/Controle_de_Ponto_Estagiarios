@@ -4,7 +4,8 @@ import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion'
 import { Trophy, Star, Flame, Crown, Calendar, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getLevelInfo, getProgressToNextLevel, ACHIEVEMENTS, minutesToDisplay } from '@/lib/gamification'
-import { GamificationRulesButton, GamificationRulesModal } from '@/components/ui/GamificationRulesModal'
+import Link from 'next/link'
+import { Info } from 'lucide-react'
 
 interface RankingEntry {
   internId:      string
@@ -275,7 +276,11 @@ export default function RankingPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <GamificationRulesButton />
+          <Link href="/admin/ranking/rules"
+            className="flex items-center gap-1.5 rounded-lg transition-all hover:opacity-80"
+            style={{ padding: '6px 14px', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.12)' }}>
+            <Info size={13} /> Como pontuar
+          </Link>
           {/* Period toggle */}
           <div className="flex rounded-lg overflow-hidden"
             style={{ border: '1px solid rgba(0,200,83,0.2)' }}>

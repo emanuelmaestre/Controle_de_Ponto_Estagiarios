@@ -8,13 +8,14 @@ import ScheduleManager from './ScheduleManager'
 import type { Profile, MonthlyHours, InternSchedule } from '@/types/database'
 import {
   ArrowLeft, GraduationCap, Mail,
-  History, CheckCircle2, BarChart2, Settings2, Calendar,
+  History, CheckCircle2, BarChart2, Settings2, Calendar, Trophy,
 } from 'lucide-react'
 import { FadeIn } from '@/components/ui/MotionWrappers'
+import { getLevelInfo, getNextLevel, getProgressToNextLevel, ACHIEVEMENTS, LEVELS } from '@/lib/gamification'
 
 export const dynamic = 'force-dynamic'
 
-type Tab = 'visao-geral' | 'horario' | 'cadastro'
+type Tab = 'visao-geral' | 'horario' | 'conquistas' | 'cadastro'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -71,7 +72,7 @@ function BigRing({ pct, color, size = 192 }: { pct: number; color: string; size?
 export default async function InternDetailPage({ params, searchParams }: Props) {
   const { id }        = await params
   const { tab: tabP } = await searchParams
-  const activeTab = (['visao-geral','horario','cadastro'].includes(tabP ?? '') ? tabP : 'visao-geral') as Tab
+  const activeTab = (['visao-geral','horario','conquistas','cadastro'].includes(tabP ?? '') ? tabP : 'visao-geral') as Tab
 
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -89,6 +90,11 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
 
   const { data: schedulesRaw } = await supabase.from('intern_schedules').select('*').eq('intern_id', id)
   const schedules = (schedulesRaw ?? []) as InternSchedule[]
+
+  type Achievement = { type: string; unlocked_at: string }
+  const { data: achievementsRaw } = await supabase
+    .from('achievements').select('type, unlocked_at').eq('intern_id', id)
+  const achievements = (achievementsRaw ?? []) as Achievement[]
 
   /* Recent records for activity feed */
   type RecentRecord = { id: string; clock_in: string; clock_out: string | null; status: string; duration_minutes: number | null }
@@ -110,10 +116,15 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
   const statusColor = pct >= 100 ? '#00c853' : pct >= 75 ? '#95d69a' : pct >= 40 ? '#3fe56c' : '#ffbf00'
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'visao-geral', label: 'Visão Geral', icon: <BarChart2 size={14} /> },
-    { key: 'horario',     label: 'Horário',     icon: <Calendar size={14} /> },
-    { key: 'cadastro',    label: 'Cadastro',    icon: <Settings2 size={14} /> },
+    { key: 'visao-geral',  label: 'Visão Geral',  icon: <BarChart2 size={14} /> },
+    { key: 'horario',      label: 'Horário',       icon: <Calendar size={14} /> },
+    { key: 'conquistas',   label: 'Conquistas',    icon: <Trophy size={14} /> },
+    { key: 'cadastro',     label: 'Cadastro',      icon: <Settings2 size={14} /> },
   ]
+
+  const lvlInfo  = getLevelInfo(intern.level ?? 1)
+  const nextLvl  = getNextLevel(intern.level ?? 1)
+  const lvlPct   = getProgressToNextLevel(intern.points ?? 0, intern.level ?? 1)
 
   const statusIcon: Record<string, string> = {
     approved: '#00c853',
@@ -449,6 +460,132 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
           {activeTab === 'horario' && (
             <FadeIn delay={0.08}>
               <ScheduleManager internId={intern.id} initialSchedules={schedules} totalHoursRequired={intern.total_hours_required} />
+            </FadeIn>
+          )}
+
+          {/* ════ ABA: CONQUISTAS ════ */}
+          {activeTab === 'conquistas' && (
+            <FadeIn delay={0.08}>
+              <div className="space-y-6">
+
+                {/* Nível atual + XP */}
+                <div className="rounded-xl p-6"
+                  style={{ background: 'var(--surface-card, #0f2318)', border: `1px solid ${lvlInfo.color}30` }}>
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                    {/* Badge nível */}
+                    <div className="flex flex-col items-center gap-2 flex-shrink-0">
+                      <div className="text-5xl leading-none">{lvlInfo.icon}</div>
+                      <span className="text-xs font-black tracking-widest px-3 py-1 rounded-full"
+                        style={{ background: `${lvlInfo.color}18`, color: lvlInfo.color, border: `1px solid ${lvlInfo.color}30` }}>
+                        NÍV. {intern.level ?? 1} · {lvlInfo.title.toUpperCase()}
+                      </span>
+                    </div>
+                    {/* XP e streak */}
+                    <div className="flex-1 min-w-0 w-full">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-bold" style={{ color: 'var(--text)' }}>
+                          ⭐ {intern.points ?? 0} pts totais
+                        </span>
+                        {nextLvl && (
+                          <span className="text-xs" style={{ color: 'var(--text-3)' }}>
+                            Faltam {nextLvl.minPoints - (intern.points ?? 0)} pts para {nextLvl.icon} {nextLvl.title}
+                          </span>
+                        )}
+                      </div>
+                      {/* Barra XP */}
+                      <div className="h-2.5 rounded-full overflow-hidden mb-4" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                        <div className="h-full rounded-full transition-all duration-1000"
+                          style={{ width: `${lvlPct}%`, background: lvlInfo.color, boxShadow: `0 0 8px ${lvlInfo.color}80` }} />
+                      </div>
+                      {/* Streak */}
+                      <div className="flex items-center gap-3">
+                        <span className="flex items-center gap-1.5 text-sm font-bold" style={{ color: '#f97316' }}>
+                          🔥 {intern.streak_days ?? 0} dias seguidos
+                        </span>
+                        <span className="text-xs" style={{ color: 'var(--text-3)' }}>
+                          · último acesso: {intern.last_activity_date
+                            ? new Date(intern.last_activity_date).toLocaleDateString('pt-BR')
+                            : 'nunca'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Todos os níveis */}
+                <div className="rounded-xl p-6"
+                  style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}>
+                  <p className="text-[10px] font-black tracking-widest mb-4" style={{ color: 'var(--text-3)' }}>JORNADA DE NÍVEIS</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {LEVELS.map(lvl => {
+                      const reached = (intern.level ?? 1) >= lvl.level
+                      return (
+                        <div key={lvl.level} className="flex items-center gap-3 rounded-xl px-4 py-3 transition-all"
+                          style={{
+                            background: reached ? `${lvl.color}0e` : 'rgba(255,255,255,0.02)',
+                            border: `1px solid ${reached ? lvl.color + '30' : 'rgba(255,255,255,0.06)'}`,
+                            opacity: reached ? 1 : 0.45,
+                          }}>
+                          <span className="text-2xl">{lvl.icon}</span>
+                          <div>
+                            <p className="text-[11px] font-black" style={{ color: reached ? lvl.color : 'var(--text-3)' }}>{lvl.title}</p>
+                            <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                              {lvl.minPoints === 0 ? 'início' : `${lvl.minPoints} pts`}
+                            </p>
+                          </div>
+                          {(intern.level ?? 1) === lvl.level && (
+                            <span className="ml-auto text-[9px] font-black px-1.5 py-0.5 rounded"
+                              style={{ background: `${lvl.color}20`, color: lvl.color }}>ATUAL</span>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Conquistas */}
+                <div className="rounded-xl p-6"
+                  style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}>
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-[10px] font-black tracking-widest" style={{ color: 'var(--text-3)' }}>CONQUISTAS</p>
+                    <span className="text-xs font-bold" style={{ color: '#3fe56c' }}>
+                      {achievements.length}/{Object.keys(ACHIEVEMENTS).length} desbloqueadas
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {Object.entries(ACHIEVEMENTS).map(([key, ach]) => {
+                      const unlocked = achievements.find(a => a.type === key)
+                      return (
+                        <div key={key} className="flex items-center gap-3 rounded-xl px-4 py-3 transition-all"
+                          style={{
+                            background: unlocked ? 'rgba(63,229,108,0.05)' : 'rgba(255,255,255,0.02)',
+                            border: `1px solid ${unlocked ? 'rgba(63,229,108,0.2)' : 'rgba(255,255,255,0.06)'}`,
+                            opacity: unlocked ? 1 : 0.4,
+                            filter: unlocked ? 'none' : 'grayscale(1)',
+                          }}>
+                          <span className="text-2xl flex-shrink-0">{ach.emoji}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[12px] font-bold truncate" style={{ color: unlocked ? 'var(--text)' : 'var(--text-3)' }}>
+                              {ach.label}
+                            </p>
+                            <p className="text-[10px] leading-snug" style={{ color: 'rgba(255,255,255,0.3)' }}>{ach.desc}</p>
+                            {unlocked && (
+                              <p className="text-[9px] mt-0.5" style={{ color: '#3fe56c' }}>
+                                Desbloqueada em {new Date(unlocked.unlocked_at).toLocaleDateString('pt-BR')}
+                              </p>
+                            )}
+                          </div>
+                          {unlocked
+                            ? <CheckCircle2 size={14} style={{ color: '#3fe56c', flexShrink: 0 }} />
+                            : <div className="w-3.5 h-3.5 rounded-full flex-shrink-0" style={{ border: '1.5px solid rgba(255,255,255,0.15)' }} />
+                          }
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+              </div>
             </FadeIn>
           )}
 
