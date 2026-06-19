@@ -254,75 +254,95 @@ export default function RankingPage() {
     <div className="flex flex-col flex-1 min-h-0" style={{ background: 'var(--bg)' }}>
 
       {/* ── Header ── */}
-      <header className="flex items-center justify-between px-4 sm:px-6 h-14 sm:h-16 flex-shrink-0"
+      <header className="flex-shrink-0 px-4 sm:px-6 py-3 sm:py-0 sm:h-16"
         style={{ borderBottom: '1px solid rgba(0,200,83,0.15)', background: 'var(--bg)' }}>
-        <div className="flex items-center gap-3">
-          <Trophy size={20} style={{ color: '#fbbf24' }} />
-          <h2 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>Ranking</h2>
-          {/* Live indicator */}
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-full"
-            style={{ background: 'rgba(0,200,83,0.08)', border: '1px solid rgba(0,200,83,0.2)' }}>
-            <motion.div className="w-1.5 h-1.5 rounded-full"
-              style={{ background: '#00c853' }}
-              animate={{ opacity: [1, 0.3, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }} />
-            <span className="text-[10px] font-bold tracking-wider" style={{ color: '#3fe56c' }}>AO VIVO</span>
+
+        {/* Row 1: title + live */}
+        <div className="flex items-center justify-between sm:hidden py-1">
+          <div className="flex items-center gap-2">
+            <Trophy size={17} style={{ color: '#fbbf24' }} />
+            <h2 className="text-base font-semibold" style={{ color: 'var(--text)' }}>Ranking</h2>
+            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full"
+              style={{ background: 'rgba(0,200,83,0.08)', border: '1px solid rgba(0,200,83,0.2)' }}>
+              <motion.div className="w-1.5 h-1.5 rounded-full" style={{ background: '#00c853' }}
+                animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }} />
+              <span className="text-[9px] font-bold" style={{ color: '#3fe56c' }}>AO VIVO</span>
+            </div>
           </div>
-          {updatedAt && (
-            <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>
-              atualizado {updatedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-            </span>
-          )}
+          <Link href="/admin/ranking/rules"
+            className="flex items-center gap-1 rounded-lg transition-all hover:opacity-90"
+            style={{ padding: '5px 10px', fontSize: 11, fontWeight: 800, color: '#3fe56c', border: '1px solid rgba(63,229,108,0.35)', background: 'rgba(63,229,108,0.08)' }}>
+            <Info size={12} /> Pontuar
+          </Link>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Link href="/admin/ranking/rules"
-            className="flex items-center gap-1.5 rounded-lg transition-all hover:opacity-90"
-            style={{ padding: '7px 16px', fontSize: 12, fontWeight: 800, color: '#3fe56c', border: '1px solid rgba(63,229,108,0.35)', background: 'rgba(63,229,108,0.08)', letterSpacing: '0.02em' }}>
-            <Info size={13} /> Como pontuar
-          </Link>
-          {/* Period toggle */}
-          <div className="flex rounded-lg overflow-hidden"
+        {/* Row 2 mobile: controls */}
+        <div className="flex items-center gap-2 py-2 sm:hidden">
+          <div className="flex rounded-lg overflow-hidden flex-1"
             style={{ border: '1px solid rgba(0,200,83,0.2)' }}>
             {(['weekly', 'monthly'] as Period[]).map(p => (
               <button key={p} onClick={() => setPeriod(p)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold transition-all"
-                style={{
-                  background: period === p ? 'rgba(0,200,83,0.15)' : 'transparent',
-                  color: period === p ? '#3fe56c' : 'var(--text-3)',
-                }}>
-                {p === 'weekly'
-                  ? <><CalendarDays size={13} /> Semanal</>
-                  : <><Calendar size={13} /> Mensal</>
-                }
+                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-bold transition-all"
+                style={{ background: period === p ? 'rgba(0,200,83,0.15)' : 'transparent', color: period === p ? '#3fe56c' : 'var(--text-3)' }}>
+                {p === 'weekly' ? <><CalendarDays size={12} /> Semanal</> : <><Calendar size={12} /> Mensal</>}
               </button>
             ))}
           </div>
-
-          {/* Month picker — only when monthly */}
           <AnimatePresence>
             {period === 'monthly' && (
-              <motion.div
-                initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }}
-                exit={{ opacity: 0, width: 0 }}
-                className="flex items-center gap-1 overflow-hidden"
-              >
-                <button onClick={() => setMonth(m => m === 1 ? 12 : m - 1)}
-                  className="p-1.5 rounded-lg hover:bg-white/5 transition-colors"
-                  style={{ color: 'var(--text-3)' }}>
-                  <ChevronLeft size={14} />
-                </button>
-                <span className="text-[11px] font-bold whitespace-nowrap" style={{ color: 'var(--text)' }}>
-                  {MONTHS[month - 1]}
-                </span>
-                <button onClick={() => setMonth(m => m === 12 ? 1 : m + 1)}
-                  className="p-1.5 rounded-lg hover:bg-white/5 transition-colors"
-                  style={{ color: 'var(--text-3)' }}>
-                  <ChevronRight size={14} />
-                </button>
+              <motion.div initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }}
+                exit={{ opacity: 0, width: 0 }} className="flex items-center gap-1 overflow-hidden">
+                <button onClick={() => setMonth(m => m === 1 ? 12 : m - 1)} className="p-1.5 rounded-lg" style={{ color: 'var(--text-3)' }}><ChevronLeft size={14} /></button>
+                <span className="text-[11px] font-bold whitespace-nowrap" style={{ color: 'var(--text)' }}>{MONTHS[month - 1]}</span>
+                <button onClick={() => setMonth(m => m === 12 ? 1 : m + 1)} className="p-1.5 rounded-lg" style={{ color: 'var(--text-3)' }}><ChevronRight size={14} /></button>
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
+
+        {/* Desktop: single row */}
+        <div className="hidden sm:flex items-center justify-between h-full">
+          <div className="flex items-center gap-3">
+            <Trophy size={20} style={{ color: '#fbbf24' }} />
+            <h2 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>Ranking</h2>
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-full"
+              style={{ background: 'rgba(0,200,83,0.08)', border: '1px solid rgba(0,200,83,0.2)' }}>
+              <motion.div className="w-1.5 h-1.5 rounded-full" style={{ background: '#00c853' }}
+                animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }} />
+              <span className="text-[10px] font-bold tracking-wider" style={{ color: '#3fe56c' }}>AO VIVO</span>
+            </div>
+            {updatedAt && (
+              <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+                atualizado {updatedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Link href="/admin/ranking/rules"
+              className="flex items-center gap-1.5 rounded-lg transition-all hover:opacity-90"
+              style={{ padding: '7px 16px', fontSize: 12, fontWeight: 800, color: '#3fe56c', border: '1px solid rgba(63,229,108,0.35)', background: 'rgba(63,229,108,0.08)', letterSpacing: '0.02em' }}>
+              <Info size={13} /> Como pontuar
+            </Link>
+            <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid rgba(0,200,83,0.2)' }}>
+              {(['weekly', 'monthly'] as Period[]).map(p => (
+                <button key={p} onClick={() => setPeriod(p)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold transition-all"
+                  style={{ background: period === p ? 'rgba(0,200,83,0.15)' : 'transparent', color: period === p ? '#3fe56c' : 'var(--text-3)' }}>
+                  {p === 'weekly' ? <><CalendarDays size={13} /> Semanal</> : <><Calendar size={13} /> Mensal</>}
+                </button>
+              ))}
+            </div>
+            <AnimatePresence>
+              {period === 'monthly' && (
+                <motion.div initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }} className="flex items-center gap-1 overflow-hidden">
+                  <button onClick={() => setMonth(m => m === 1 ? 12 : m - 1)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: 'var(--text-3)' }}><ChevronLeft size={14} /></button>
+                  <span className="text-[11px] font-bold whitespace-nowrap" style={{ color: 'var(--text)' }}>{MONTHS[month - 1]}</span>
+                  <button onClick={() => setMonth(m => m === 12 ? 1 : m + 1)} className="p-1.5 rounded-lg hover:bg-white/5" style={{ color: 'var(--text-3)' }}><ChevronRight size={14} /></button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </header>
 

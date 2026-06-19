@@ -91,7 +91,7 @@ export default async function HistoryPage() {
                   <p className="text-base font-black" style={{ color: pctColor }}>{pct}%</p>
                 </div>
               </ProgressRing>
-              <div className="flex-1 grid grid-cols-3 gap-3">
+              <div className="flex-1 grid grid-cols-2 gap-3">
                 {[
                   { label: 'Total', value: minutesToHours(monthMinutes), color: 'var(--text)' },
                   { label: 'Sessões', value: monthData?.approved_sessions ?? 0, color: 'var(--success)' },

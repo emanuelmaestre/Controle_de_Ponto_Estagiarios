@@ -328,8 +328,8 @@ export default async function WorkloadPage() {
                         )}
                       </div>
 
-                      {/* Nome + Badge — largura relativa, sem px fixo */}
-                      <div className="flex-shrink-0 w-[22%] min-w-0">
+                      {/* Nome + Badge */}
+                      <div className="flex-shrink-0 w-[30%] lg:w-[22%] min-w-0">
                         <p className="font-bold text-base preserve-case leading-tight mb-1.5 line-clamp-2"
                           style={{ color: 'var(--text)' }}>
                           {r.full_name}
@@ -353,8 +353,8 @@ export default async function WorkloadPage() {
                       </div>
 
                       {/* Sessões */}
-                      <div className="flex-shrink-0 flex flex-col items-center gap-0.5 pl-5"
-                        style={{ borderLeft: '1px solid var(--border)', minWidth: 96 }}>
+                      <div className="flex-shrink-0 flex flex-col items-center gap-0.5 pl-4 lg:pl-5"
+                        style={{ borderLeft: '1px solid var(--border)', minWidth: 72 }}>
                         <p className="text-[9px] font-bold tracking-widest text-center" style={{ color: 'var(--text-3)' }}>
                           SESSÕES
                         </p>

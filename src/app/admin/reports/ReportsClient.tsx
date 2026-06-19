@@ -535,11 +535,11 @@ export default function ReportsClient() {
 
               {data.interns.length > 0 ? (
                 <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
-                  <table className="w-full text-left border-collapse">
+                  <table className="w-full text-left border-collapse" style={{ minWidth: 480 }}>
                     <thead>
                       <tr style={{ background: 'rgba(0,0,0,0.20)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
                         {['Estagiário', 'Horas', 'Sessões', 'Atividade'].map(h => (
-                          <th key={h} className="px-6 py-4 text-[10px] font-semibold tracking-widest" style={{ color: 'var(--text-3)' }}>
+                          <th key={h} className="px-3 sm:px-6 py-3 sm:py-4 text-[10px] font-semibold tracking-widest" style={{ color: 'var(--text-3)' }}>
                             {h.toUpperCase()}
                           </th>
                         ))}
@@ -562,46 +562,28 @@ export default function ReportsClient() {
                             onMouseEnter={e => (e.currentTarget.style.background = 'rgba(63,229,108,0.04)')}
                             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                           >
-                            <td className="px-6 py-5">
-                              <div className="flex items-center gap-4">
+                            <td className="px-3 sm:px-6 py-3 sm:py-5">
+                              <div className="flex items-center gap-2 sm:gap-4">
                                 <InternAvatar name={intern.full_name} color={color} />
                                 <div>
                                   <p className="text-sm font-bold transition-colors group-hover:text-green-400" style={{ color: 'var(--text)' }}>
                                     {intern.full_name}
                                   </p>
-                                  <p className="text-[11px]" style={{ color: 'var(--text-3)' }}>
+                                  <p className="text-[11px] hidden sm:block" style={{ color: 'var(--text-3)' }}>
                                     {handle}{intern.course ? ` • ${intern.course}` : ''}
                                   </p>
                                 </div>
                               </div>
                             </td>
-                            <td className="px-6 py-5">
+                            <td className="px-3 sm:px-6 py-3 sm:py-5 whitespace-nowrap">
                               <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>
                                 {intern.total_minutes > 0 ? minutesToHours(intern.total_minutes) : '—'}
                               </p>
                             </td>
-                            <td className="px-6 py-5 text-sm font-medium" style={{ color: 'var(--text-2)' }}>
+                            <td className="px-3 sm:px-6 py-3 sm:py-5 text-sm font-medium" style={{ color: 'var(--text-2)' }}>
                               {intern.total_sessions || '—'}
                             </td>
-                            <td className="px-6 py-5">
-                              {intern.approved_sessions > 0
-                                ? <span className="px-3 py-1 rounded-full text-[11px] font-bold"
-                                    style={{ background: 'rgba(0,200,83,0.10)', border: '1px solid rgba(0,200,83,0.30)', color: '#00c853' }}>
-                                    {intern.approved_sessions}
-                                  </span>
-                                : <span style={{ color: 'var(--text-3)' }}>—</span>
-                              }
-                            </td>
-                            <td className="px-6 py-5">
-                              {intern.rejected_sessions > 0
-                                ? <span className="px-3 py-1 rounded-full text-[11px] font-bold"
-                                    style={{ background: 'rgba(255,82,82,0.10)', border: '1px solid rgba(255,82,82,0.30)', color: '#ff5252' }}>
-                                    {intern.rejected_sessions}
-                                  </span>
-                                : <span style={{ color: 'var(--text-3)' }}>—</span>
-                              }
-                            </td>
-                            <td className="px-6 py-5 text-right">
+                            <td className="px-3 sm:px-6 py-3 sm:py-5 text-right">
                               <ActivityBars
                                 approved={intern.approved_sessions}
                                 total={intern.total_sessions}

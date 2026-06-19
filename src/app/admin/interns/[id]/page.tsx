@@ -235,10 +235,10 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
 
           {/* ── Underline Tabs ── */}
           <FadeIn delay={0.06}>
-            <div className="flex gap-8 mb-6" style={{ borderBottom: '1px solid rgba(0,200,83,0.15)' }}>
+            <div className="flex gap-4 sm:gap-8 mb-6 overflow-x-auto no-scrollbar" style={{ borderBottom: '1px solid rgba(0,200,83,0.15)' }}>
               {tabs.map(t => (
                 <Link key={t.key} href={`/admin/interns/${id}?tab=${t.key}`}
-                  className="flex items-center gap-2 text-sm font-semibold transition-colors pb-4 inline-block"
+                  className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold transition-colors pb-3 sm:pb-4 whitespace-nowrap flex-shrink-0"
                   style={activeTab === t.key
                     ? { color: '#3fe56c', borderBottom: '2px solid #3fe56c', marginBottom: -1 }
                     : { color: 'var(--text-3)' }
