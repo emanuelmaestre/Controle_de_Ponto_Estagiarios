@@ -10,6 +10,7 @@ import {
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import AnimatedNumber from '@/components/ui/AnimatedNumber'
 import AnimatedBar from '@/components/ui/AnimatedBar'
+import { getLevelInfo } from '@/lib/gamification'
 
 export const dynamic = 'force-dynamic'
 
@@ -87,11 +88,11 @@ export default async function WorkloadPage() {
   /* fetch */
   const { data: internsRaw } = await supabase
     .from('profiles')
-    .select('id, full_name, photo_url, course, total_hours_required')
+    .select('id, full_name, photo_url, course, total_hours_required, points, level')
     .eq('role', 'intern')
     .eq('is_active', true)
     .order('full_name')
-  const interns = (internsRaw ?? []) as Pick<Profile, 'id' | 'full_name' | 'photo_url' | 'course' | 'total_hours_required'>[]
+  const interns = (internsRaw ?? []) as (Pick<Profile, 'id' | 'full_name' | 'photo_url' | 'course' | 'total_hours_required'> & { points?: number; level?: number })[]
 
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
   const { data: allHoursRaw } = await supabase
@@ -116,6 +117,7 @@ export default async function WorkloadPage() {
     course: string | null; total_hours_required: number | null
     monthMinutes: number; approvedSessions: number; pct: number
     status: StatusKey; weeklyHours: number
+    points?: number; level?: number
   }
 
   const rows: InternRow[] = interns.map((i, _idx) => {
@@ -261,6 +263,7 @@ export default async function WorkloadPage() {
               const st   = STATUS_META[r.status]
               const ac   = AVATAR_COLORS[i % AVATAR_COLORS.length]
               const initials = r.full_name.split(' ').slice(0, 2).map(w => w[0]).join('')
+              const lvl  = getLevelInfo(r.level ?? 1)
               const hoursLabel = minutesToHours(r.monthMinutes)
               const totalH    = r.total_hours_required ?? 120
               const pctDisplay = r.pct > 100 ? '100%+' : `${r.pct}%`
@@ -291,10 +294,16 @@ export default async function WorkloadPage() {
                           <p className="font-bold text-sm preserve-case leading-tight truncate" style={{ color: 'var(--text)' }}>
                             {r.full_name}
                           </p>
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold mt-1"
-                            style={{ background: st.bg, border: `1px solid ${st.border}`, color: st.color }}>
-                            {st.icon}{st.label}
-                          </span>
+                          <div className="flex items-center gap-1.5 flex-wrap mt-1">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold"
+                              style={{ background: st.bg, border: `1px solid ${st.border}`, color: st.color }}>
+                              {st.icon}{st.label}
+                            </span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black"
+                              style={{ background: `${lvl.color}18`, border: `1px solid ${lvl.color}30`, color: lvl.color }}>
+                              {lvl.icon} {lvl.title}
+                            </span>
+                          </div>
                         </div>
                         <Eye size={16} className="flex-shrink-0 opacity-30 group-hover:opacity-80 transition-opacity" style={{ color: st.color }} />
                       </div>
@@ -334,10 +343,19 @@ export default async function WorkloadPage() {
                           style={{ color: 'var(--text)' }}>
                           {r.full_name}
                         </p>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold"
-                          style={{ background: st.bg, border: `1px solid ${st.border}`, color: st.color }}>
-                          {st.icon}{st.label}
-                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold"
+                            style={{ background: st.bg, border: `1px solid ${st.border}`, color: st.color }}>
+                            {st.icon}{st.label}
+                          </span>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black"
+                            style={{ background: `${lvl.color}18`, border: `1px solid ${lvl.color}30`, color: lvl.color }}>
+                            {lvl.icon} {lvl.title}
+                          </span>
+                          <span className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>
+                            ⭐ {r.points ?? 0}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Barra + Horas */}
