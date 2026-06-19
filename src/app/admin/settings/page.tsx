@@ -8,6 +8,7 @@ import IntegrationsTab from './IntegrationsTab'
 import NormalizeNamesButton from './NormalizeNamesButton'
 import FixStartDatesButton from './FixStartDatesButton'
 import SyncProfilesButton from './SyncProfilesButton'
+import RecalcGamificationButton from './RecalcGamificationButton'
 import { FadeIn } from '@/components/ui/MotionWrappers'
 
 export const dynamic = 'force-dynamic'
@@ -114,6 +115,7 @@ export default async function SettingsPage({ searchParams }: Props) {
                     <NormalizeNamesButton />
                     <FixStartDatesButton />
                     <SyncProfilesButton />
+                    <RecalcGamificationButton />
                   </div>
                 </div>
               </div>

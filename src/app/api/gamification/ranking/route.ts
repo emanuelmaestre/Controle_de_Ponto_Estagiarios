@@ -36,31 +36,28 @@ export async function GET(request: NextRequest) {
     rangeEnd   = new Date(year, month, 1).toISOString()
   }
 
-  // Profiles — use authenticated client (admin has RLS access to all profiles)
-  const { data: profiles, error: profilesError } = await supabase
+  // Use service role client for all data queries — bypasses RLS which restricts
+  // time_records to intern_id = auth.uid() (admin would get 0 records otherwise)
+  const { data: profiles, error: profilesError } = await service
     .from('profiles')
     .select('*')
     .eq('role', 'intern')
     .eq('is_active', true)
 
-  console.log('[ranking] profiles:', profiles?.length, 'error:', profilesError?.message)
-
   if (profilesError || !profiles?.length) {
-    return NextResponse.json({ ranking: [], period, month, year, currentUserId: user.id, debug: profilesError?.message })
+    return NextResponse.json({ ranking: [], period, month, year, currentUserId: user.id })
   }
 
   // Minutes in period per intern (closed records)
-  const { data: closedRecords, error: closedErr } = await supabase
+  const { data: closedRecords } = await service
     .from('time_records')
     .select('intern_id, duration_minutes')
     .gte('clock_in', rangeStart)
     .lt('clock_in', rangeEnd)
     .not('clock_out', 'is', null)
 
-  console.log('[ranking] closedRecords:', closedRecords?.length, 'error:', closedErr?.message, 'range:', rangeStart, rangeEnd)
-
   // Open records (currently clocked in) — count elapsed minutes live
-  const { data: openRecords } = await supabase
+  const { data: openRecords } = await service
     .from('time_records')
     .select('intern_id, clock_in')
     .gte('clock_in', rangeStart)
@@ -84,7 +81,7 @@ export async function GET(request: NextRequest) {
   // Achievements per intern (table may not exist yet if migration hasn't run)
   let achievementsData: { intern_id: string; type: string; unlocked_at: string }[] | null = null
   try {
-    const { data } = await supabase
+    const { data } = await service
       .from('achievements')
       .select('intern_id, type, unlocked_at')
       .in('intern_id', profiles.map((p: any) => p.id))

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { minutesToHours } from '@/lib/utils'
 import ReportExport from './ReportExport'
-import { Clock, CheckCircle2, XCircle, Search, BarChart2, AlertCircle, Download, Mail, Printer, ChevronDown, CalendarDays } from 'lucide-react'
+import { Clock, CheckCircle2, XCircle, Search, BarChart2, AlertCircle, Download, Printer, ChevronDown, CalendarDays } from 'lucide-react'
 import DatePicker from '@/components/ui/DatePicker'
 import AnimatedNumber from '@/components/ui/AnimatedNumber'
 import AnimatedBar from '@/components/ui/AnimatedBar'
@@ -421,17 +421,6 @@ export default function ReportsClient() {
                   }}
                 >
                   <Printer size={16} /> PDF
-                </button>
-                <button
-                  disabled={!data || data.interns.length === 0}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all disabled:opacity-40 hover:opacity-80"
-                  style={{
-                    background: 'rgba(72,225,166,0.08)',
-                    border: '1px solid #48e1a6',
-                    color: '#48e1a6',
-                  }}
-                >
-                  <Mail size={16} /> E-mail
                 </button>
               </div>
 
