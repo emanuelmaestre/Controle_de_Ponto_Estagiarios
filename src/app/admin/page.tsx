@@ -6,6 +6,7 @@ import type { TodayStatus } from '@/types/database'
 import { FadeIn, StaggerContainer, StaggerItem, HoverLift } from '@/components/ui/MotionWrappers'
 import AnimatedNumber from '@/components/ui/AnimatedNumber'
 import { Users, Activity, AlertTriangle, Clock, Search, UserPlus } from 'lucide-react'
+import { AdminNotificationBellMobile } from '@/components/AdminNotificationBell'
 import { getLevelInfo, getLevelTitle } from '@/lib/gamification'
 import { detectGender } from '@/lib/detectGender'
 
@@ -73,6 +74,8 @@ export default async function AdminPage() {
               />
             </div>
           </div>
+          {/* Bell de notificações no topo */}
+          <AdminNotificationBellMobile />
         </header>
       </FadeIn>
 
