@@ -1,5 +1,14 @@
 // Shared gamification constants and helpers
 
+export const SCORING_RULES = [
+  { id: 'presence',  emoji: '📅', label: 'Presença diária',      points: '+10 pts', detail: 'Qualquer dia com sessão concluída' },
+  { id: 'punctual',  emoji: '⏰', label: 'Pontualidade',          points: '+5 pts',  detail: 'Entrada até 15 min após o horário previsto' },
+  { id: 'photo',     emoji: '📸', label: 'Foto de perfil',        points: '+30 pts', detail: 'Bônus único por ter foto cadastrada no perfil' },
+  { id: 'streak_3',  emoji: '🔥', label: 'Sequência de 3 dias',   points: '×1.2',    detail: 'Multiplicador aplicado sobre os pontos do dia' },
+  { id: 'streak_7',  emoji: '⚡', label: 'Sequência de 7 dias',   points: '×1.5',    detail: 'Multiplicador aplicado sobre os pontos do dia' },
+  { id: 'streak_30', emoji: '💎', label: 'Sequência de 30 dias',  points: '×2.0',    detail: 'Multiplicador aplicado sobre os pontos do dia' },
+] as const
+
 export const LEVELS = [
   { level: 1, title: 'Novato',       icon: '🌱', minPoints: 0,    color: '#94a3b8' },
   { level: 2, title: 'Aprendiz',     icon: '📚', minPoints: 200,  color: '#60a5fa' },
@@ -27,6 +36,7 @@ export function getProgressToNextLevel(points: number, level: number): number {
 }
 
 export const ACHIEVEMENTS: Record<string, { label: string; emoji: string; desc: string }> = {
+  has_photo:     { label: 'Identidade Completa', emoji: '📸', desc: 'Foto de perfil cadastrada' },
   first_day:     { label: 'Primeiro Dia',     emoji: '🌱', desc: 'Primeiro registro de ponto' },
   streak_3:      { label: 'Trio Imparável',   emoji: '🔥', desc: '3 dias consecutivos' },
   streak_7:      { label: 'Semana Perfeita',  emoji: '⚡', desc: '7 dias consecutivos' },

@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Profile } from '@/types/database'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import { UserPlus, Users } from 'lucide-react'
+import { getLevelInfo } from '@/lib/gamification'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,11 +24,11 @@ export default async function InternsPage() {
 
   const { data: internsRaw } = await supabase
     .from('profiles')
-    .select('id, full_name, email, course, internship_start, internship_end, is_active, role, photo_url')
+    .select('id, full_name, email, course, internship_start, internship_end, is_active, role, photo_url, points, level')
     .eq('role', 'intern')
     .order('full_name')
   const interns = internsRaw as Pick<Profile,
-    'id' | 'full_name' | 'email' | 'course' | 'internship_start' | 'internship_end' | 'is_active' | 'role' | 'photo_url'
+    'id' | 'full_name' | 'email' | 'course' | 'internship_start' | 'internship_end' | 'is_active' | 'role' | 'photo_url' | 'points' | 'level'
   >[] | null
 
   const active   = interns?.filter(i => i.is_active) ?? []
@@ -164,12 +165,13 @@ function InternCard({
   colorIdx,
   isActive,
 }: {
-  intern: Pick<Profile, 'id' | 'full_name' | 'email' | 'course' | 'internship_start' | 'photo_url' | 'is_active'>
+  intern: Pick<Profile, 'id' | 'full_name' | 'email' | 'course' | 'internship_start' | 'photo_url' | 'is_active' | 'points' | 'level'>
   colorIdx: number
   isActive: boolean
 }) {
   const initials = intern.full_name.split(' ').slice(0, 2).map(w => w[0]).join('')
-  const ac = AVATAR_COLORS[colorIdx % AVATAR_COLORS.length]
+  const ac  = AVATAR_COLORS[colorIdx % AVATAR_COLORS.length]
+  const lvl = getLevelInfo(intern.level ?? 1)
 
   return (
     <Link
@@ -195,7 +197,7 @@ function InternCard({
               {initials}
             </div>
           )}
-          {/* Nome + curso: altura fixa para alinhar todos os cards */}
+          {/* Nome + curso */}
           <div className="min-w-0" style={{ minHeight: '2.75rem' }}>
             <h5
               className="text-base font-bold preserve-case leading-tight line-clamp-2"
@@ -222,11 +224,22 @@ function InternCard({
         </span>
       </div>
 
-      {/* Divider + email empurrado para baixo com flex-1 */}
+      {/* Nível */}
+      <div className="flex items-center gap-2 mb-3">
+        <span
+          className="flex items-center gap-1 text-[11px] font-black px-2 py-0.5 rounded-full"
+          style={{ background: `${lvl.color}18`, border: `1px solid ${lvl.color}30`, color: lvl.color }}
+        >
+          {lvl.icon} {lvl.title}
+        </span>
+        <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          {intern.points ?? 0} pts
+        </span>
+      </div>
+
+      {/* Divider + email */}
       <div className="flex-1" />
       <div className="w-full mb-4" style={{ height: 1, background: 'rgba(0,200,83,0.15)' }} />
-
-      {/* Email */}
       <p className="text-xs preserve-case truncate" style={{ color: 'var(--text-3)' }}>
         {intern.email}
       </p>

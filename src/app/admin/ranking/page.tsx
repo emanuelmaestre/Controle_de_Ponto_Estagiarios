@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion'
 import { Trophy, Star, Flame, Crown, Calendar, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getLevelInfo, getProgressToNextLevel, ACHIEVEMENTS, minutesToDisplay } from '@/lib/gamification'
+import { GamificationRulesButton, GamificationRulesModal } from '@/components/ui/GamificationRulesModal'
 
 interface RankingEntry {
   internId:      string
@@ -274,6 +275,7 @@ export default function RankingPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <GamificationRulesButton />
           {/* Period toggle */}
           <div className="flex rounded-lg overflow-hidden"
             style={{ border: '1px solid rgba(0,200,83,0.2)' }}>

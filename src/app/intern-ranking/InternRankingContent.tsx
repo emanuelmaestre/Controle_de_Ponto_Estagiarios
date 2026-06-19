@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Home, ClipboardList, Trophy, LogOut, Star, Flame, Crown, User, CalendarDays, Calendar } from 'lucide-react'
 import { getLevelInfo, getProgressToNextLevel, ACHIEVEMENTS, minutesToDisplay } from '@/lib/gamification'
+import { GamificationRulesButton } from '@/components/ui/GamificationRulesModal'
 
 interface RankingEntry {
   internId:      string
@@ -99,17 +100,19 @@ export default function InternRankingContent() {
             </div>
           </div>
 
-          {/* My position badge */}
-          {myPos && (
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-full"
-              style={{ background: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.3)' }}>
-              <Trophy size={11} style={{ color: '#fbbf24' }} />
-              <span className="text-[11px] font-black" style={{ color: '#fbbf24' }}>
-                {myPos}º lugar
-              </span>
-            </motion.div>
-          )}
+          <div className="flex items-center gap-2">
+            <GamificationRulesButton compact />
+            {myPos && (
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-full"
+                style={{ background: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.3)' }}>
+                <Trophy size={11} style={{ color: '#fbbf24' }} />
+                <span className="text-[11px] font-black" style={{ color: '#fbbf24' }}>
+                  {myPos}º lugar
+                </span>
+              </motion.div>
+            )}
+          </div>
         </div>
 
         {/* Period toggle */}

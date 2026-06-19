@@ -30,12 +30,21 @@ BEGIN
   WHERE role = 'intern';
 
   FOR intern_rec IN
-    SELECT id FROM profiles WHERE role = 'intern' AND is_active = TRUE
+    SELECT id, photo_url FROM profiles WHERE role = 'intern' AND is_active = TRUE
   LOOP
     prev_day         := NULL;
     v_streak         := 0;
     v_running_points := 0;
     v_total_interns  := v_total_interns + 1;
+
+    -- Bônus único por ter foto de perfil (+30 pts)
+    IF intern_rec.photo_url IS NOT NULL AND intern_rec.photo_url <> '' THEN
+      v_running_points := v_running_points + 30;
+      INSERT INTO points_history (intern_id, points, reason, multiplier)
+      VALUES (intern_rec.id, 30, 'Foto de perfil', 1.0);
+      INSERT INTO achievements (intern_id, type) VALUES (intern_rec.id, 'has_photo')
+      ON CONFLICT (intern_id, type) DO NOTHING;
+    END IF;
 
     -- Processa cada dia em que o estagiário teve sessão concluída (ordem cronológica)
     FOR day_rec IN
