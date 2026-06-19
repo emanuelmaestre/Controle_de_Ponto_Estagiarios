@@ -170,7 +170,7 @@ function Podium({ top3 }: { top3: RankingEntry[] }) {
               style={{ color: slot.color }}>
               {entry.internName.split(' ')[0]}
             </p>
-            <p className="text-[9px] mb-2" style={{ color: lvl.color }}>{lvl.title}</p>
+            <p className="text-[9px] mb-2" style={{ color: lvl.color }}>{lvl.icon} {lvl.title}</p>
 
             {/* Bar */}
             <motion.div
@@ -433,7 +433,7 @@ export default function RankingPage() {
                             </p>
                             <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
                               style={{ background: `${lvl.color}18`, color: lvl.color, border: `1px solid ${lvl.color}30` }}>
-                              {lvl.title}
+                              {lvl.icon} {lvl.title}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">

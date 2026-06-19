@@ -338,7 +338,7 @@ export default async function DashboardPage() {
             >
               <div className="flex items-center justify-between mb-2.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-base">{lvlInfo.level === 6 ? '👑' : '⭐'}</span>
+                  <span className="text-base">{lvlInfo.icon}</span>
                   <span className="text-xs font-black tracking-wider" style={{ color: lvlInfo.color }}>
                     {lvlInfo.title.toUpperCase()}
                   </span>

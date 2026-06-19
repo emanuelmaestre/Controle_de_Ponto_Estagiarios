@@ -1,12 +1,12 @@
 // Shared gamification constants and helpers
 
 export const LEVELS = [
-  { level: 1, title: 'Novato',      minPoints: 0,    color: '#94a3b8' },
-  { level: 2, title: 'Aprendiz',    minPoints: 200,  color: '#60a5fa' },
-  { level: 3, title: 'Colaborador', minPoints: 500,  color: '#34d399' },
-  { level: 4, title: 'Dedicado',    minPoints: 1000, color: '#a78bfa' },
-  { level: 5, title: 'Especialista',minPoints: 2000, color: '#fbbf24' },
-  { level: 6, title: 'Elite',       minPoints: 4000, color: '#f97316' },
+  { level: 1, title: 'Novato',       icon: '🌱', minPoints: 0,    color: '#94a3b8' },
+  { level: 2, title: 'Aprendiz',     icon: '📚', minPoints: 200,  color: '#60a5fa' },
+  { level: 3, title: 'Colaborador',  icon: '⚙️', minPoints: 500,  color: '#34d399' },
+  { level: 4, title: 'Dedicado',     icon: '💪', minPoints: 1000, color: '#a78bfa' },
+  { level: 5, title: 'Especialista', icon: '🔬', minPoints: 2000, color: '#fbbf24' },
+  { level: 6, title: 'Elite',        icon: '👑', minPoints: 4000, color: '#f97316' },
 ] as const
 
 export function getLevelInfo(level: number) {

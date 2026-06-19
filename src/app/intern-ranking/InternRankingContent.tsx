@@ -271,7 +271,7 @@ export default function InternRankingContent() {
                           </p>
                           <span className="text-[8px] font-bold px-1 py-0.5 rounded flex-shrink-0"
                             style={{ background: `${lvl.color}18`, color: lvl.color }}>
-                            {lvl.title}
+                            {lvl.icon} {lvl.title}
                           </span>
                           {entry.isActive && (
                             <span className="text-[8px] font-bold flex-shrink-0" style={{ color: '#00c853' }}>
