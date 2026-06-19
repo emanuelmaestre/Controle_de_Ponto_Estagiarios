@@ -188,16 +188,35 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
               <div className="flex-1 text-center md:text-left">
                 <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
                   <h2 className="text-3xl font-bold" style={{ color: 'var(--text)' }}>{intern.full_name}</h2>
-                  <span
-                    className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-bold self-center md:self-auto"
-                    style={{
-                      background: intern.is_active ? 'rgba(0,200,83,0.10)' : 'rgba(134,149,131,0.10)',
-                      color: intern.is_active ? '#00c853' : 'var(--text-3)',
-                      border: `1px solid ${intern.is_active ? 'rgba(0,200,83,0.30)' : 'rgba(134,149,131,0.30)'}`,
-                    }}
-                  >
-                    {intern.is_active ? 'ATIVO' : 'INATIVO'}
-                  </span>
+                  <div className="flex items-center gap-2 self-center md:self-auto flex-wrap">
+                    <span
+                      className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-bold"
+                      style={{
+                        background: intern.is_active ? 'rgba(0,200,83,0.10)' : 'rgba(134,149,131,0.10)',
+                        color: intern.is_active ? '#00c853' : 'var(--text-3)',
+                        border: `1px solid ${intern.is_active ? 'rgba(0,200,83,0.30)' : 'rgba(134,149,131,0.30)'}`,
+                      }}
+                    >
+                      {intern.is_active ? 'ATIVO' : 'INATIVO'}
+                    </span>
+                    {/* Level badge — igual ao card da lista de cadastros */}
+                    <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-black"
+                      style={{
+                        background: `${lvlInfo.color}18`,
+                        color: lvlInfo.color,
+                        border: `1px solid ${lvlInfo.color}35`,
+                      }}>
+                      {lvlInfo.icon} {lvlInfo.title}
+                    </span>
+                    <span className="text-xs font-bold" style={{ color: 'var(--text-3)' }}>
+                      ⭐ {intern.points ?? 0} pts
+                    </span>
+                    {(intern.streak_days ?? 0) > 0 && (
+                      <span className="text-xs font-bold" style={{ color: '#f97316' }}>
+                        🔥 {intern.streak_days}d
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
