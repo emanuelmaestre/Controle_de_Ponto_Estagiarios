@@ -14,7 +14,7 @@ export const SCORING_RULES = [
 export const LEVELS = [
   { level: 1, titleM: 'Novato',       titleF: 'Novata',        icon: '🌱', minPoints: 0,    color: '#94a3b8' },
   { level: 2, titleM: 'Aprendiz',     titleF: 'Aprendiz',      icon: '📚', minPoints: 200,  color: '#60a5fa' },
-  { level: 3, titleM: 'Colaborador',  titleF: 'Colaboradora',  icon: '⚙️', minPoints: 500,  color: '#34d399' },
+  { level: 3, titleM: 'Colaborador',  titleF: 'Colaboradora',  icon: '🤝', minPoints: 500,  color: '#34d399' },
   { level: 4, titleM: 'Dedicado',     titleF: 'Dedicada',      icon: '💪', minPoints: 1000, color: '#a78bfa' },
   { level: 5, titleM: 'Especialista', titleF: 'Especialista',  icon: '🔬', minPoints: 2000, color: '#fbbf24' },
   { level: 6, titleM: 'Elite',        titleF: 'Elite',         icon: '👑', minPoints: 4000, color: '#f97316' },

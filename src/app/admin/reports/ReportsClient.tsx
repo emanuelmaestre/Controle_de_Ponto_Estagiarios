@@ -1,644 +1,524 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { minutesToHours } from '@/lib/utils'
-import ReportExport from './ReportExport'
-import { Clock, CheckCircle2, Search, BarChart2, AlertCircle, Download, Printer, ChevronDown, CalendarDays } from 'lucide-react'
-import DatePicker from '@/components/ui/DatePicker'
-import AnimatedNumber from '@/components/ui/AnimatedNumber'
-import AnimatedBar from '@/components/ui/AnimatedBar'
-import { HoverLift } from '@/components/ui/MotionWrappers'
+import {
+  Download, FileText, Users, BarChart2, Trophy,
+  CheckCircle2, AlertCircle, ChevronDown, CalendarDays,
+} from 'lucide-react'
+import { exportPDF } from '@/lib/pdfExport'
 
-/* ── Custom animated month dropdown ── */
-function MonthDropdown({
-  value,
-  options,
-  onChange,
-}: {
-  value: string
-  options: { value: string; label: string }[]
-  onChange: (v: string) => void
-}) {
+// ── Types ──────────────────────────────────────────────────────────────────────
+type Category = 'intern' | 'general' | 'ranking'
+type PeriodType = 'monthly' | 'weekly' | 'daily' | 'custom'
+
+function getCurrentMonth() {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+}
+
+const monthOptions = Array.from({ length: 24 }, (_, i) => {
+  const d = new Date()
+  d.setDate(1)
+  d.setMonth(d.getMonth() - i)
+  const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+  const label = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+  return { value: val, label }
+})
+
+// ── Report definitions ─────────────────────────────────────────────────────────
+interface ReportDef {
+  id: string
+  category: Category
+  emoji: string
+  color: string
+  title: string
+  desc: string
+  needsIntern?: boolean
+  availablePeriods: PeriodType[]
+}
+
+const REPORTS: ReportDef[] = [
+  // Por Estagiário
+  {
+    id: 'attendance', category: 'intern', emoji: '📅', color: '#3fe56c',
+    title: 'Frequência Individual', desc: 'Todos os registros de entrada e saída do estagiário no período.',
+    needsIntern: true, availablePeriods: ['monthly', 'weekly', 'daily', 'custom'],
+  },
+  {
+    id: 'hours', category: 'intern', emoji: '⏱️', color: '#22d3ee',
+    title: 'Horas Trabalhadas', desc: 'Total de horas aprovadas, sessões e médias por dia.',
+    needsIntern: true, availablePeriods: ['monthly', 'weekly', 'custom'],
+  },
+  {
+    id: 'punctuality', category: 'intern', emoji: '⏰', color: '#f97316',
+    title: 'Pontualidade', desc: 'Índice de pontualidade, atrasos e registros no período.',
+    needsIntern: true, availablePeriods: ['monthly', 'weekly', 'custom'],
+  },
+  {
+    id: 'activities', category: 'intern', emoji: '📋', color: '#a78bfa',
+    title: 'Atividades Realizadas', desc: 'Lista de todas as atividades documentadas pelo estagiário.',
+    needsIntern: true, availablePeriods: ['monthly', 'weekly', 'custom'],
+  },
+  {
+    id: 'sheet', category: 'intern', emoji: '🗂️', color: '#fbbf24',
+    title: 'Ficha Completa', desc: 'Dados cadastrais, histórico e resumo completo do estágio.',
+    needsIntern: true, availablePeriods: ['monthly', 'custom'],
+  },
+  {
+    id: 'workload', category: 'intern', emoji: '📊', color: '#48e1a6',
+    title: 'Carga Horária Restante', desc: 'Horas cumpridas vs. total da carga horária do estágio.',
+    needsIntern: true, availablePeriods: ['monthly', 'custom'],
+  },
+  // Geral
+  {
+    id: 'summary', category: 'general', emoji: '📈', color: '#3fe56c',
+    title: 'Resumo Mensal Geral', desc: 'Visão consolidada de todos os estagiários no período.',
+    availablePeriods: ['monthly', 'weekly', 'custom'],
+  },
+  {
+    id: 'daily_log', category: 'general', emoji: '🗓️', color: '#22d3ee',
+    title: 'Diário de Ponto', desc: 'Relatório diário com entradas e saídas de todos.',
+    availablePeriods: ['daily', 'weekly'],
+  },
+  {
+    id: 'by_course', category: 'general', emoji: '🎓', color: '#a78bfa',
+    title: 'Horas por Curso', desc: 'Comparativo de horas trabalhadas agrupado por curso.',
+    availablePeriods: ['monthly', 'custom'],
+  },
+  {
+    id: 'ending_soon', category: 'general', emoji: '⚠️', color: '#fbbf24',
+    title: 'Próximos do Encerramento', desc: 'Estagiários com carga horária próxima do limite.',
+    availablePeriods: ['monthly'],
+  },
+  // Ranking
+  {
+    id: 'ranking_full', category: 'ranking', emoji: '🏆', color: '#fbbf24',
+    title: 'Ranking Completo', desc: 'Classificação geral de todos os estagiários por pontos.',
+    availablePeriods: ['monthly'],
+  },
+  {
+    id: 'ranking_punctuality', category: 'ranking', emoji: '⏰', color: '#3fe56c',
+    title: 'Ranking de Pontualidade', desc: 'Quem mais chegou no horário no período.',
+    availablePeriods: ['monthly', 'custom'],
+  },
+  {
+    id: 'ranking_activities', category: 'ranking', emoji: '📋', color: '#22d3ee',
+    title: 'Ranking de Atividades', desc: 'Quem mais documentou atividades no período.',
+    availablePeriods: ['monthly', 'custom'],
+  },
+  {
+    id: 'hall_of_fame', category: 'ranking', emoji: '👑', color: '#a78bfa',
+    title: 'Hall da Fama', desc: 'Os melhores de todos os tempos — conquistas e recordes.',
+    availablePeriods: ['monthly'],
+  },
+]
+
+const CATEGORIES = [
+  { key: 'intern'   as Category, label: 'Por Estagiário', icon: <Users size={14} /> },
+  { key: 'general'  as Category, label: 'Geral',          icon: <BarChart2 size={14} /> },
+  { key: 'ranking'  as Category, label: 'Ranking',        icon: <Trophy size={14} /> },
+]
+
+// ── Intern selector ────────────────────────────────────────────────────────────
+interface InternOption { id: string; full_name: string }
+
+function InternSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [interns, setInterns] = useState<InternOption[]>([])
   const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-  const listRef = useRef<HTMLDivElement>(null)
-  const selected = options.find(o => o.value === value)
+  const [loaded, setLoaded] = useState(false)
 
-  // Close on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
+  const load = async () => {
+    if (loaded) { setOpen(o => !o); return }
+    const res = await fetch('/api/admin/report-data?type=monthly')
+    const json = await res.json()
+    setInterns(json.interns ?? [])
+    setLoaded(true)
+    setOpen(true)
+  }
 
-  // Scroll selected item into view when opening
-  useEffect(() => {
-    if (open && listRef.current) {
-      const activeEl = listRef.current.querySelector('[data-active="true"]') as HTMLElement
-      if (activeEl) {
-        setTimeout(() => activeEl.scrollIntoView({ block: 'center', behavior: 'smooth' }), 80)
-      }
-    }
-  }, [open])
+  const selected = interns.find(i => i.id === value)
 
   return (
-    <div ref={ref} className="relative" style={{ minWidth: 200 }}>
-      {/* Trigger */}
+    <div className="relative">
       <button
-        type="button"
-        onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all focus:outline-none"
+        type="button" onClick={load}
+        className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all w-full"
         style={{
-          background: open ? 'rgba(63,229,108,0.10)' : 'var(--surface-card, #0f2318)',
-          border: `1px solid ${open ? 'rgba(63,229,108,0.40)' : 'rgba(0,200,83,0.20)'}`,
-          color: 'var(--text)',
-          boxShadow: open ? '0 0 0 3px rgba(63,229,108,0.08)' : 'none',
+          background: value ? 'rgba(63,229,108,0.1)' : 'rgba(255,255,255,0.04)',
+          border: `1px solid ${value ? 'rgba(63,229,108,0.3)' : 'rgba(255,255,255,0.08)'}`,
+          color: value ? '#3fe56c' : 'rgba(255,255,255,0.4)',
         }}
       >
-        <div className="flex items-center gap-2">
-          <CalendarDays size={14} style={{ color: '#3fe56c', flexShrink: 0 }} />
-          <span className="capitalize font-semibold">{selected?.label ?? 'Selecionar'}</span>
-        </div>
-        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2, ease: 'easeInOut' }}>
-          <ChevronDown size={14} style={{ color: 'var(--text-3)' }} />
-        </motion.span>
+        <Users size={11} />
+        <span className="flex-1 text-left truncate">{selected?.full_name ?? 'Selecionar estagiário'}</span>
+        <ChevronDown size={11} />
       </button>
-
-      {/* Dropdown panel */}
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -6, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -6, scale: 0.97 }}
-            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute z-50 left-0 mt-1.5 w-full rounded-xl overflow-hidden"
-            style={{
-              background: 'var(--surface-card, #0f2318)',
-              border: '1px solid rgba(63,229,108,0.25)',
-              boxShadow: '0 16px 48px rgba(0,0,0,0.55)',
-            }}
-          >
-            <div
-              ref={listRef}
-              className="overflow-y-auto py-1"
-              style={{ maxHeight: 280, scrollbarWidth: 'thin', scrollbarColor: 'rgba(63,229,108,0.2) transparent' }}
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: -4, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.97 }}
+              transition={{ duration: 0.15 }}
+              className="absolute z-50 top-full mt-1 left-0 w-56 rounded-xl overflow-hidden"
+              style={{
+                background: '#0b1d12', border: '1px solid rgba(63,229,108,0.2)',
+                boxShadow: '0 16px 48px rgba(0,0,0,0.6)', maxHeight: 220, overflowY: 'auto',
+              }}
             >
-              {options.map((opt, i) => {
-                const isSelected = opt.value === value
-                return (
-                  <motion.button
-                    key={opt.value}
-                    data-active={isSelected}
-                    type="button"
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: Math.min(i * 0.018, 0.25), duration: 0.15 }}
-                    onClick={() => { onChange(opt.value); setOpen(false) }}
-                    className="w-full text-left px-4 py-2.5 text-sm flex items-center justify-between gap-2 transition-colors"
-                    style={{
-                      color: isSelected ? '#3fe56c' : 'var(--text-2)',
-                      background: isSelected ? 'rgba(63,229,108,0.10)' : 'transparent',
-                      fontWeight: isSelected ? 700 : 400,
-                      borderLeft: isSelected ? '2px solid #3fe56c' : '2px solid transparent',
-                    }}
-                    onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'rgba(63,229,108,0.05)' }}
-                    onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-                  >
-                    <span className="capitalize">{opt.label}</span>
-                    {isSelected && (
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 18 }}
-                      >
-                        <CheckCircle2 size={13} style={{ color: '#3fe56c', flexShrink: 0 }} />
-                      </motion.span>
-                    )}
-                  </motion.button>
-                )
-              })}
-            </div>
-          </motion.div>
+              {interns.map(intern => (
+                <button key={intern.id} type="button"
+                  onClick={() => { onChange(intern.id); setOpen(false) }}
+                  className="w-full text-left px-3 py-2.5 text-xs transition-colors"
+                  style={{
+                    color: intern.id === value ? '#3fe56c' : 'rgba(255,255,255,0.6)',
+                    background: intern.id === value ? 'rgba(63,229,108,0.08)' : 'transparent',
+                    fontWeight: intern.id === value ? 700 : 400,
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,229,108,0.05)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = intern.id === value ? 'rgba(63,229,108,0.08)' : 'transparent' }}
+                >
+                  {intern.full_name}
+                </button>
+              ))}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
   )
 }
 
-type PeriodType = 'daily' | 'weekly' | 'monthly' | 'custom'
+// ── Month select compact ───────────────────────────────────────────────────────
+function MonthSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const selected = monthOptions.find(o => o.value === value)
 
-interface InternRow {
-  id: string
-  full_name: string
-  email: string
-  course: string | null
-  nickname: string | null
-  total_minutes: number
-  total_sessions: number
-  approved_sessions: number
-  pending_sessions: number
-  rejected_sessions: number
-}
-
-interface ReportData {
-  interns: InternRow[]
-  startDate: string
-  endDate: string
-  label: string
-  type: PeriodType
-}
-
-function getTodayStr() { return new Date().toISOString().slice(0, 10) }
-function getCurrentMonth() {
-  const now = new Date()
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-}
-function getWeekStart(dateStr: string) {
-  const d = new Date(dateStr + 'T12:00:00Z')
-  const day = d.getUTCDay()
-  const diff = day === 0 ? -6 : 1 - day
-  d.setUTCDate(d.getUTCDate() + diff)
-  return d.toISOString().slice(0, 10)
-}
-
-/* ── Initials avatar ── */
-function InternAvatar({ name, color }: { name: string; color: string }) {
-  const initials = name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
   return (
-    <div
-      className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-      style={{ background: color + '30', color }}
-    >
-      {initials}
+    <div className="relative">
+      <button type="button" onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all w-full"
+        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)' }}
+      >
+        <CalendarDays size={11} style={{ color: '#3fe56c' }} />
+        <span className="flex-1 text-left capitalize">{selected?.label ?? 'Mês'}</span>
+        <ChevronDown size={11} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}
+              className="absolute z-50 top-full mt-1 left-0 w-48 rounded-xl overflow-hidden"
+              style={{
+                background: '#0b1d12', border: '1px solid rgba(63,229,108,0.2)',
+                boxShadow: '0 16px 48px rgba(0,0,0,0.6)', maxHeight: 220, overflowY: 'auto',
+              }}
+            >
+              {monthOptions.map(opt => (
+                <button key={opt.value} type="button"
+                  onClick={() => { onChange(opt.value); setOpen(false) }}
+                  className="w-full text-left px-3 py-2.5 text-xs capitalize transition-colors"
+                  style={{
+                    color: opt.value === value ? '#3fe56c' : 'rgba(255,255,255,0.6)',
+                    background: opt.value === value ? 'rgba(63,229,108,0.08)' : 'transparent',
+                    fontWeight: opt.value === value ? 700 : 400,
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,229,108,0.05)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = opt.value === value ? 'rgba(63,229,108,0.08)' : 'transparent' }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
 
-/* ── Activity bar mini-chart (animated) ── */
-function ActivityBars({ approved, total }: { approved: number; total: number }) {
-  const bars = [0.4, 0.6, 1, 0.5, 0.8]
-  const pct = total > 0 ? approved / total : 0
+// ── Report Card ────────────────────────────────────────────────────────────────
+function ReportCard({ report, index }: { report: ReportDef; index: number }) {
+  const [month, setMonth] = useState(getCurrentMonth())
+  const [internId, setInternId] = useState('')
+  const [loadingExcel, setLoadingExcel] = useState(false)
+  const [loadingPdf, setLoadingPdf] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  const buildUrl = () => {
+    const p = new URLSearchParams({ report: report.id, month })
+    if (report.needsIntern && internId) p.set('internId', internId)
+    return `/api/admin/reports-catalog?${p}`
+  }
+
+  const fetchData = async () => {
+    const res = await fetch(buildUrl())
+    if (!res.ok) throw new Error('Erro ao carregar dados')
+    return res.json()
+  }
+
+  const handleExcel = async () => {
+    if (report.needsIntern && !internId) { setError('Selecione um estagiário'); return }
+    setLoadingExcel(true); setError('')
+    try {
+      const data = await fetchData()
+      const XLSX = await import('xlsx')
+      const wb = XLSX.utils.book_new()
+      const ws = XLSX.utils.json_to_sheet(data.rows ?? [])
+      XLSX.utils.book_append_sheet(wb, ws, 'Dados')
+      const period = monthOptions.find(o => o.value === month)?.label ?? month
+      XLSX.writeFile(wb, `${report.title.toLowerCase().replace(/\s+/g, '-')}-${period}.xlsx`)
+      setSuccess('Excel gerado!'); setTimeout(() => setSuccess(''), 2500)
+    } catch { setError('Erro ao gerar Excel') }
+    finally { setLoadingExcel(false) }
+  }
+
+  const handlePdf = async () => {
+    if (report.needsIntern && !internId) { setError('Selecione um estagiário'); return }
+    setLoadingPdf(true); setError('')
+    try {
+      const data = await fetchData()
+      const period = monthOptions.find(o => o.value === month)?.label ?? month
+      await exportPDF({
+        title: report.title, subtitle: data.internName ?? undefined,
+        period, columns: data.columns ?? [], rows: data.rows ?? [],
+      })
+      setSuccess('PDF gerado!'); setTimeout(() => setSuccess(''), 2500)
+    } catch { setError('Erro ao gerar PDF') }
+    finally { setLoadingPdf(false) }
+  }
+
+  const isLoading = loadingExcel || loadingPdf
+
   return (
-    <div className="flex items-end gap-0.5 justify-end">
-      {bars.map((h, i) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: index * 0.05, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ y: -3, transition: { duration: 0.2 } }}
+      className="rounded-2xl p-5 flex flex-col gap-4 relative overflow-hidden group cursor-default"
+      style={{ background: 'rgba(15,35,24,0.85)', border: `1px solid ${report.color}22` }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 32px ${report.color}18` }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}
+    >
+      {/* Glow bg */}
+      <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{ background: report.color, opacity: 0 }} />
+
+      {/* Ghost watermark */}
+      <div className="absolute -bottom-4 -right-4 text-7xl opacity-[0.04] pointer-events-none select-none group-hover:opacity-[0.07] transition-opacity">
+        {report.emoji}
+      </div>
+
+      {/* Header */}
+      <div className="flex items-start gap-3">
         <motion.div
-          key={i}
-          className="w-1.5 rounded-full"
-          initial={{ scaleY: 0, originY: 1 }}
-          animate={{ scaleY: 1 }}
-          transition={{ delay: 0.1 + i * 0.06, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          style={{
-            height: `${h * 32}px`,
-            background: pct > 0.7 ? '#3fe56c' : pct > 0.3 ? '#fbbf24' : '#ff5252',
-            opacity: pct > 0.7 ? (0.4 + i * 0.15) : pct > 0.3 ? (0.3 + i * 0.12) : (0.3 + i * 0.1),
-            transformOrigin: 'bottom',
-          }}
-        />
+          animate={{ rotate: [0, 5, -5, 0] }}
+          transition={{ duration: 6, repeat: Infinity, delay: index * 0.4 }}
+          className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+          style={{ background: `${report.color}18`, border: `1px solid ${report.color}35` }}
+        >
+          {report.emoji}
+        </motion.div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-black leading-tight" style={{ color: 'rgba(255,255,255,0.92)' }}>
+            {report.title}
+          </p>
+          <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            {report.desc}
+          </p>
+        </div>
+      </div>
+
+      {/* Selectors */}
+      <div className="space-y-2">
+        {report.needsIntern && <InternSelect value={internId} onChange={setInternId} />}
+        <MonthSelect value={month} onChange={setMonth} />
+      </div>
+
+      {/* Feedback */}
+      <AnimatePresence>
+        {error && (
+          <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+            className="text-[10px] font-bold flex items-center gap-1" style={{ color: '#ff5252' }}>
+            <AlertCircle size={10} /> {error}
+          </motion.p>
+        )}
+        {success && (
+          <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+            className="text-[10px] font-bold flex items-center gap-1" style={{ color: '#3fe56c' }}>
+            <CheckCircle2 size={10} /> {success}
+          </motion.p>
+        )}
+      </AnimatePresence>
+
+      {/* Buttons */}
+      <div className="flex gap-2 mt-auto">
+        <button onClick={handleExcel} disabled={isLoading}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-black transition-all disabled:opacity-40 hover:brightness-110"
+          style={{ background: 'rgba(149,214,154,0.08)', border: '1px solid rgba(149,214,154,0.35)', color: '#95d69a' }}
+        >
+          {loadingExcel
+            ? <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            : <Download size={12} />}
+          Excel
+        </button>
+        <button onClick={handlePdf} disabled={isLoading}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-black transition-all disabled:opacity-40 hover:brightness-110"
+          style={{ background: 'rgba(255,82,82,0.08)', border: '1px solid rgba(255,82,82,0.35)', color: '#ff8a80' }}
+        >
+          {loadingPdf
+            ? <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            : <FileText size={12} />}
+          PDF
+        </button>
+      </div>
+    </motion.div>
+  )
+}
+
+// ── Stats strip ────────────────────────────────────────────────────────────────
+function StatsStrip() {
+  const stats = [
+    { icon: <FileText size={15} />, label: 'Tipos de relatório', value: String(REPORTS.length),                                          color: '#3fe56c' },
+    { icon: <Users size={15} />,    label: 'Por estagiário',     value: String(REPORTS.filter(r => r.category === 'intern').length),     color: '#22d3ee' },
+    { icon: <BarChart2 size={15} />,label: 'Gerais',             value: String(REPORTS.filter(r => r.category === 'general').length),    color: '#a78bfa' },
+    { icon: <Trophy size={15} />,   label: 'Ranking',            value: String(REPORTS.filter(r => r.category === 'ranking').length),    color: '#fbbf24' },
+  ]
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {stats.map((s, i) => (
+        <motion.div key={s.label}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: i * 0.07, type: 'spring', stiffness: 280, damping: 22 }}
+          className="flex items-center gap-3 rounded-xl px-4 py-3"
+          style={{ background: 'rgba(15,35,24,0.7)', border: `1px solid ${s.color}18` }}
+        >
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+            style={{ background: `${s.color}15`, color: s.color }}>
+            {s.icon}
+          </div>
+          <div>
+            <p className="text-lg font-black leading-none" style={{ color: s.color }}>{s.value}</p>
+            <p className="text-[9px] mt-0.5 font-bold" style={{ color: 'rgba(255,255,255,0.3)' }}>{s.label}</p>
+          </div>
+        </motion.div>
       ))}
     </div>
   )
 }
 
-const AVATAR_COLORS = ['#3fe56c', '#48e1a6', '#95d69a', '#00c853', '#22d3ee', '#a78bfa', '#f97316', '#fbbf24']
-
+// ── Main ──────────────────────────────────────────────────────────────────────
 export default function ReportsClient() {
-  const [periodType, setPeriodType] = useState<PeriodType>('monthly')
-  const [dailyDate, setDailyDate]   = useState(getTodayStr())
-  const [weeklyDate, setWeeklyDate] = useState(getTodayStr())
-  const [month, setMonth]           = useState(getCurrentMonth())
-  const [customStart, setCustomStart] = useState(getTodayStr())
-  const [customEnd, setCustomEnd]     = useState(getTodayStr())
+  const [activeCategory, setActiveCategory] = useState<Category>('intern')
 
-  const [data, setData]       = useState<ReportData | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState<string | null>(null)
-  const [applied, setApplied] = useState(false)
-  const [showExportMenu, setShowExportMenu] = useState(false)
+  const filtered = REPORTS.filter(r => r.category === activeCategory)
 
-  const monthOptions = Array.from({ length: 24 }, (_, i) => {
-    const d = new Date()
-    d.setDate(1)
-    d.setMonth(d.getMonth() - i)
-    const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-    const label = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
-    return { value: val, label }
-  })
-
-  const buildUrl = useCallback(() => {
-    const params = new URLSearchParams({ type: periodType })
-    if (periodType === 'daily')   params.set('date', dailyDate)
-    if (periodType === 'weekly')  params.set('date', weeklyDate)
-    if (periodType === 'monthly') params.set('month', month)
-    if (periodType === 'custom')  { params.set('start', customStart); params.set('end', customEnd) }
-    return `/api/admin/report-data?${params}`
-  }, [periodType, dailyDate, weeklyDate, month, customStart, customEnd])
-
-  const fetchData = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await fetch(buildUrl())
-      if (!res.ok) throw new Error('Erro ao carregar dados')
-      const json: ReportData = await res.json()
-      setData(json)
-      setApplied(true)
-    } catch {
-      setError('Não foi possível carregar o relatório. Tente novamente.')
-    } finally {
-      setLoading(false)
-    }
-  }, [buildUrl])
-
-  useEffect(() => { fetchData() }, []) // eslint-disable-line
-
-  const totalMinutes  = data?.interns.reduce((a, i) => a + i.total_minutes, 0) ?? 0
-  const totalApproved = data?.interns.reduce((a, i) => a + i.approved_sessions, 0) ?? 0
-  const totalSessions = data?.interns.reduce((a, i) => a + i.total_sessions, 0) ?? 0
-  const totalRejected = data?.interns.reduce((a, i) => a + i.rejected_sessions, 0) ?? 0
-
-  const exportData = data?.interns.map(i => ({
-    nome: i.full_name,
-    apelido: i.nickname ?? '',
-    email: i.email,
-    curso: i.course ?? '',
-    total_horas: minutesToHours(i.total_minutes),
-    sessoes: i.total_sessions,
-    aprovados: i.approved_sessions,
-    reprovados: i.rejected_sessions,
-  })) ?? []
-
-  const weekStart = getWeekStart(weeklyDate)
-  const weekEnd = (() => {
-    const d = new Date(weekStart + 'T12:00:00Z')
-    d.setUTCDate(d.getUTCDate() + 6)
-    return d.toISOString().slice(0, 10)
-  })()
-
-  const periodLabels: Record<PeriodType, string> = {
-    daily: 'Diário', weekly: 'Semanal', monthly: 'Mensal', custom: 'Personalizado',
+  const categoryMeta = {
+    intern:  { emoji: '👤', title: 'Relatórios Individuais',  desc: 'Selecione o estagiário e o período para gerar o relatório individual.' },
+    general: { emoji: '📊', title: 'Relatórios Gerais',       desc: 'Visão consolidada de todos os estagiários. Selecione o período desejado.' },
+    ranking: { emoji: '🏆', title: 'Relatórios de Ranking',   desc: 'Classificações e conquistas. Aberto para estagiários e administradores.' },
   }
 
   return (
     <div className="flex flex-col flex-1 min-h-0" style={{ background: 'var(--bg)' }}>
-      <style>{`@media print { .no-print { display: none !important; } body { background: white !important; } }`}</style>
 
-      {/* ── TopAppBar ── */}
+      {/* ── Header ── */}
       <header
-        className="no-print flex items-center justify-between px-4 sm:px-6 h-14 sm:h-16 flex-shrink-0"
+        className="flex items-center gap-4 px-4 sm:px-6 h-14 sm:h-16 flex-shrink-0"
         style={{ background: 'var(--bg)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}
       >
-        <div className="flex items-center gap-4">
-          <h2 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>Relatórios</h2>
-          <div className="hidden md:block h-5 w-px" style={{ background: 'rgba(0,200,83,0.20)' }} />
-          <div
-            className="hidden md:flex items-center rounded-full px-4 py-1.5"
-            style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
-          >
-            <Search size={15} style={{ color: 'var(--text-3)', marginRight: 8 }} />
-            <input
-              readOnly
-              placeholder="Pesquisar estagiários ou projetos..."
-              className="bg-transparent border-none outline-none text-sm w-52"
-              style={{ color: 'var(--text-3)' }}
-            />
-          </div>
+        <motion.div
+          animate={{ rotate: [0, 8, -8, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+          className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
+          style={{ background: 'rgba(0,200,83,0.12)', border: '1px solid rgba(0,200,83,0.25)' }}
+        >
+          📊
+        </motion.div>
+        <div>
+          <h2 className="text-xl font-black" style={{ color: 'var(--text)' }}>Relatórios</h2>
+          <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>
+            {REPORTS.length} relatórios · Excel e PDF com identidade visual
+          </p>
         </div>
       </header>
 
-      {/* ── Main content ── */}
+      {/* ── Content ── */}
       <main className="flex-1 min-h-0 overflow-y-auto">
-        <div className="p-4 sm:p-6 space-y-6 sm:space-y-8" style={{ maxWidth: 1400, margin: '0 auto' }}>
+        <div className="p-4 sm:p-6 space-y-6" style={{ maxWidth: 1200, margin: '0 auto' }}>
 
-          {/* ── Filters & export row ── */}
-          <section className="no-print flex flex-col gap-4">
-            <div className="space-y-3">
-              <p className="text-[10px] font-bold tracking-widest" style={{ color: 'var(--text-3)' }}>
-                PERÍODO DO RELATÓRIO
-              </p>
+          <StatsStrip />
 
-              {/* Period type tabs - contained group */}
-              <div
-                className="flex p-1 rounded-lg overflow-x-auto"
-                style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)', scrollbarWidth: 'none' }}
-              >
-                {(['daily', 'weekly', 'monthly', 'custom'] as PeriodType[]).map(t => (
-                  <button
-                    key={t}
-                    onClick={() => setPeriodType(t)}
-                    className="px-3 sm:px-5 py-2 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap flex-shrink-0"
-                    style={periodType === t
-                      ? { background: 'rgba(0,200,83,0.20)', color: '#84c48a', fontWeight: 700 }
-                      : { color: 'var(--text-3)' }
-                    }
-                  >
-                    {periodLabels[t]}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-end gap-3">
-              {/* Period-specific picker */}
-              <div className="flex flex-col gap-1.5">
-                {periodType !== 'custom' && (
-                  <label className="text-[11px]" style={{ color: 'var(--text-3)' }}>Seleção</label>
-                )}
-
-                {periodType === 'daily' && (
-                  <DatePicker value={dailyDate} onChange={v => setDailyDate(v || getTodayStr())} placeholder="Selecionar data" />
-                )}
-                {periodType === 'weekly' && (
-                  <div>
-                    <DatePicker value={weeklyDate} onChange={v => setWeeklyDate(v || getTodayStr())} placeholder="Qualquer dia da semana" />
-                    {weeklyDate && (
-                      <p className="text-xs mt-1 font-medium" style={{ color: 'var(--primary)' }}>
-                        {new Date(weekStart + 'T12:00:00Z').toLocaleDateString('pt-BR')} — {new Date(weekEnd + 'T12:00:00Z').toLocaleDateString('pt-BR')}
-                      </p>
-                    )}
-                  </div>
-                )}
-                {periodType === 'monthly' && (
-                  <MonthDropdown
-                    value={month}
-                    options={monthOptions}
-                    onChange={setMonth}
-                  />
-                )}
-                {periodType === 'custom' && (
-                  <div className="flex gap-2">
-                    <div>
-                      <label className="text-[11px] mb-1 block" style={{ color: 'var(--text-3)' }}>Data inicial</label>
-                      <DatePicker value={customStart} onChange={v => setCustomStart(v || getTodayStr())} placeholder="Início" />
-                    </div>
-                    <div>
-                      <label className="text-[11px] mb-1 block" style={{ color: 'var(--text-3)' }}>Data final</label>
-                      <DatePicker value={customEnd} onChange={v => setCustomEnd(v || getTodayStr())} min={customStart} placeholder="Fim" />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Export buttons — outline style matching reference */}
-              <div className="flex items-center gap-2 mt-auto py-2 -my-2 px-1 -mx-1 flex-wrap" style={{ scrollbarWidth: 'none' }}>
+          {/* ── Category tabs ── */}
+          <div
+            className="flex p-1 rounded-xl overflow-x-auto"
+            style={{ background: 'rgba(15,35,24,0.7)', border: '1px solid rgba(0,200,83,0.12)', scrollbarWidth: 'none' }}
+          >
+            {CATEGORIES.map(cat => {
+              const isActive = activeCategory === cat.key
+              return (
                 <button
-                  onClick={async () => {
-                    if (!exportData.length) return
-                    const XLSX = await import('xlsx')
-                    const wsData = [
-                      [`Relatório de Horas — ${data?.label}`],
-                      [],
-                      ['Nome', 'Apelido', 'E-mail', 'Curso', 'Total Horas', 'Sessões'],
-                      ...exportData.map(r => [r.nome, r.apelido, r.email, r.curso, r.total_horas, r.sessoes]),
-                    ]
-                    const ws = XLSX.utils.aoa_to_sheet(wsData)
-                    ws['!cols'] = [{ wch: 28 }, { wch: 16 }, { wch: 28 }, { wch: 20 }, { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 10 }]
-                    const wb = XLSX.utils.book_new()
-                    XLSX.utils.book_append_sheet(wb, ws, 'Relatório')
-                    XLSX.writeFile(wb, `relatorio-${(data?.label ?? 'dados').replace(/\//g, '-')}.xlsx`)
-                  }}
-                  disabled={!data || data.interns.length === 0}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all disabled:opacity-40 hover:opacity-80"
-                  style={{
-                    background: 'rgba(149,214,154,0.08)',
-                    border: '1px solid #95d69a',
-                    color: '#95d69a',
-                  }}
+                  key={cat.key}
+                  onClick={() => setActiveCategory(cat.key)}
+                  className="relative flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-lg text-xs sm:text-sm font-black whitespace-nowrap flex-shrink-0 transition-colors"
+                  style={isActive ? { color: '#3fe56c' } : { color: 'rgba(255,255,255,0.35)' }}
                 >
-                  <Download size={16} /> Excel
-                </button>
-                <button
-                  onClick={() => window.print()}
-                  disabled={!data}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm transition-all disabled:opacity-40 hover:opacity-80"
-                  style={{
-                    background: 'rgba(255,82,82,0.08)',
-                    border: '1px solid #ff5252',
-                    color: '#ff5252',
-                  }}
-                >
-                  <Printer size={16} /> PDF
-                </button>
-              </div>
-
-              {/* Apply button */}
-              <button
-                onClick={fetchData}
-                disabled={loading}
-                className="mt-auto px-6 py-2.5 rounded-lg text-sm font-bold disabled:opacity-60 flex items-center gap-2"
-                style={{ background: '#3fe56c', color: '#003912' }}
-              >
-                {loading
-                  ? <><span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin inline-block" /> Carregando...</>
-                  : <><Search size={14} /> Aplicar</>
-                }
-              </button>
-            </div>
-          </section>
-
-          {/* Error */}
-          {error && (
-            <div className="text-sm rounded-xl px-4 py-3 flex items-center gap-2"
-              style={{ background: 'rgba(255,82,82,0.08)', border: '1px solid rgba(255,82,82,0.25)', color: '#ff5252' }}>
-              <AlertCircle size={14} /> {error}
-              <button onClick={fetchData} className="ml-auto underline hover:opacity-70">Tentar novamente</button>
-            </div>
-          )}
-
-          {/* ── Summary metric cards with ghost icons ── */}
-          <AnimatePresence>
-            {(data || loading) && (
-              <motion.section
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-              >
-                {[
-                  { label: 'Total de Horas',  numValue: null,          strValue: loading ? '—' : minutesToHours(totalMinutes), color: '#3fe56c',      icon: <Clock        size={100} />, barPct: Math.min(100, totalMinutes / 6) },
-                  { label: 'Sessões',         numValue: totalSessions, strValue: null,                                          color: 'var(--text)',  icon: <BarChart2    size={100} />, barPct: Math.min(100, totalSessions * 12) },
-                ].map((card, i) => (
-                  <motion.div
-                    key={card.label}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                  >
-                  <HoverLift>
-                    <div
-                      className="rounded-xl p-6 relative overflow-hidden group transition-all duration-300 h-full"
+                  {isActive && (
+                    <motion.div layoutId="tab-bg"
+                      className="absolute inset-0 rounded-lg"
+                      style={{ background: 'rgba(63,229,108,0.12)' }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-2">
+                    {cat.icon} {cat.label}
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full font-black"
                       style={{
-                        background: '#0f2318',
-                        border: '1px solid rgba(0,200,83,0.18)',
-                      }}
-                    >
-                      {/* Ghost watermark icon */}
-                      <div className="absolute -right-4 -bottom-4 opacity-[0.05] pointer-events-none transition-opacity group-hover:opacity-[0.09]"
-                        style={{ color: card.color }}>
-                        {card.icon}
-                      </div>
-                      <p className="text-[10px] font-bold tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                        {card.label.toUpperCase()}
-                      </p>
-                      <div className="flex items-baseline gap-2">
-                        {loading ? (
-                          <span className="text-4xl font-bold" style={{ color: card.color }}>—</span>
-                        ) : card.strValue !== null ? (
-                          <span className="text-4xl font-bold tabular-nums" style={{ color: card.color }}>{card.strValue}</span>
-                        ) : (
-                          <AnimatedNumber
-                            value={card.numValue ?? 0}
-                            className="text-4xl font-bold leading-none tabular-nums"
-                            style={{ color: card.numValue === 0 ? 'rgba(255,255,255,0.7)' : card.color }}
-                          />
-                        )}
-                      </div>
-                      <div className="mt-4">
-                        <AnimatedBar pct={loading ? 0 : card.barPct} color={card.color} height={4} />
-                      </div>
-                    </div>
-                  </HoverLift>
-                  </motion.div>
-                ))}
-              </motion.section>
-            )}
-          </AnimatePresence>
+                        background: isActive ? 'rgba(63,229,108,0.2)' : 'rgba(255,255,255,0.05)',
+                        color: isActive ? '#3fe56c' : 'rgba(255,255,255,0.2)',
+                      }}>
+                      {REPORTS.filter(r => r.category === cat.key).length}
+                    </span>
+                  </span>
+                </button>
+              )
+            })}
+          </div>
 
-          {/* ── Data table ── */}
-          {data && !loading && (
-            <motion.section
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="rounded-xl overflow-hidden"
-              style={{ background: 'rgba(15,35,24,0.7)', border: '1px solid rgba(0,200,83,0.15)' }}
+          {/* ── Cards ── */}
+          <AnimatePresence mode="wait">
+            <motion.div key={activeCategory}
+              initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }}
+              className="space-y-4"
             >
-              {/* Table header */}
-              <div
-                className="p-6 flex items-center justify-between"
-                style={{ borderBottom: '1px solid rgba(0,200,83,0.12)', background: 'rgba(0,0,0,0.15)' }}
-              >
-                <h3 className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
-                  Matriz de Desempenho de Estagiários
-                </h3>
-                <div className="flex gap-2">
-                  <button className="p-2 rounded-lg transition-colors hover:opacity-70">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--text-3)' }}>
-                      <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="9" y2="18"/>
-                    </svg>
-                  </button>
+              {/* Category intro */}
+              <div className="rounded-2xl px-5 py-4 flex items-center gap-4"
+                style={{ background: 'rgba(0,200,83,0.04)', border: '1px solid rgba(0,200,83,0.12)' }}>
+                <span className="text-3xl flex-shrink-0">{categoryMeta[activeCategory].emoji}</span>
+                <div>
+                  <p className="text-sm font-black" style={{ color: '#3fe56c' }}>{categoryMeta[activeCategory].title}</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>{categoryMeta[activeCategory].desc}</p>
                 </div>
               </div>
 
-              {data.interns.length > 0 ? (
-                <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
-                  <table className="w-full text-left border-collapse" style={{ minWidth: 480 }}>
-                    <thead>
-                      <tr style={{ background: 'rgba(0,0,0,0.20)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
-                        {['Estagiário', 'Horas', 'Sessões', 'Atividade'].map(h => (
-                          <th key={h} className="px-3 sm:px-6 py-3 sm:py-4 text-[10px] font-semibold tracking-widest" style={{ color: 'var(--text-3)' }}>
-                            {h.toUpperCase()}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody style={{ borderTop: 'none' }}>
-                      {data.interns.map((intern, i) => {
-                        const color = AVATAR_COLORS[i % AVATAR_COLORS.length]
-                        const handle = intern.nickname
-                          ? `@${intern.nickname.toLowerCase().replace(/\s+/g, '_')}`
-                          : `@${intern.full_name.toLowerCase().split(' ')[0]}`
-                        return (
-                          <motion.tr
-                            key={intern.id}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: i * 0.04 }}
-                            className="group transition-colors"
-                            style={{ borderBottom: '1px solid rgba(0,200,83,0.07)' }}
-                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(63,229,108,0.04)')}
-                            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                          >
-                            <td className="px-3 sm:px-6 py-3 sm:py-5">
-                              <div className="flex items-center gap-2 sm:gap-4">
-                                <InternAvatar name={intern.full_name} color={color} />
-                                <div>
-                                  <p className="text-sm font-bold transition-colors group-hover:text-green-400" style={{ color: 'var(--text)' }}>
-                                    {intern.full_name}
-                                  </p>
-                                  <p className="text-[11px] hidden sm:block" style={{ color: 'var(--text-3)' }}>
-                                    {handle}{intern.course ? ` • ${intern.course}` : ''}
-                                  </p>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-3 sm:px-6 py-3 sm:py-5 whitespace-nowrap">
-                              <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>
-                                {intern.total_minutes > 0 ? minutesToHours(intern.total_minutes) : '—'}
-                              </p>
-                            </td>
-                            <td className="px-3 sm:px-6 py-3 sm:py-5 text-sm font-medium" style={{ color: 'var(--text-2)' }}>
-                              {intern.total_sessions || '—'}
-                            </td>
-                            <td className="px-3 sm:px-6 py-3 sm:py-5 text-right">
-                              <ActivityBars
-                                approved={intern.approved_sessions}
-                                total={intern.total_sessions}
-                              />
-                            </td>
-                          </motion.tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-
-                  {/* Pagination footer */}
-                  <div
-                    className="px-6 py-4 flex items-center justify-between"
-                    style={{ borderTop: '1px solid rgba(0,200,83,0.10)', background: 'rgba(0,0,0,0.10)' }}
-                  >
-                    <span className="text-xs" style={{ color: 'var(--text-3)' }}>
-                      Mostrando 1–{data.interns.length} de {data.interns.length} estagiários
-                    </span>
-                    <div className="flex gap-2">
-                      <button
-                        disabled
-                        className="px-4 py-1.5 rounded-lg text-xs font-medium disabled:opacity-40"
-                        style={{ border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-3)' }}
-                      >
-                        Anterior
-                      </button>
-                      <button
-                        disabled
-                        className="px-4 py-1.5 rounded-lg text-xs font-medium disabled:opacity-40"
-                        style={{ border: '1px solid rgba(0,200,83,0.15)', color: 'var(--text-3)' }}
-                      >
-                        Próximo
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="py-20 text-center">
-                  <BarChart2 size={48} className="mx-auto mb-4" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
-                  <p className="font-semibold text-base mb-1" style={{ color: 'var(--text)' }}>Nenhum dado encontrado</p>
-                  <p className="text-sm" style={{ color: 'var(--text-3)' }}>Não há registros para o período selecionado.</p>
-                </div>
-              )}
-            </motion.section>
-          )}
-
-          {/* Initial state */}
-          {!data && !loading && !error && (
-            <div className="py-20 text-center">
-              <Search size={48} className="mx-auto mb-4" style={{ color: 'var(--text-3)', opacity: 0.35 }} />
-              <p className="font-semibold text-base mb-1" style={{ color: 'var(--text)' }}>Selecione um período</p>
-              <p className="text-sm" style={{ color: 'var(--text-3)' }}>Configure o filtro acima e clique em Aplicar.</p>
-            </div>
-          )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filtered.map((report, i) => (
+                  <ReportCard key={report.id} report={report} index={i} />
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
 
         </div>
       </main>

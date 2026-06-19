@@ -6,6 +6,7 @@ import { ensureProfile } from '@/lib/ensureProfile'
 import MobileOnlyGuard from '@/components/MobileOnlyGuard'
 import ProfileForm from './ProfileForm'
 import ProfileAchievements from './ProfileAchievements'
+import ProfileReports from './ProfileReports'
 import { getLevelInfo, getLevelTitle } from '@/lib/gamification'
 import { detectGender } from '@/lib/detectGender'
 
@@ -19,7 +20,7 @@ export default async function ProfilePage({ searchParams }: Props) {
   if (!user) redirect('/login')
 
   const params = await searchParams
-  const activeTab = params.tab === 'conquistas' ? 'conquistas' : 'dados'
+  const activeTab = params.tab === 'conquistas' ? 'conquistas' : params.tab === 'relatorios' ? 'relatorios' : 'dados'
 
   let { data: profile } = await supabase
     .from('profiles')
@@ -91,8 +92,9 @@ export default async function ProfilePage({ searchParams }: Props) {
           {/* Tabs */}
           <div className="max-w-lg mx-auto flex px-5" style={{ borderTop: '1px solid rgba(0,200,83,0.08)' }}>
             {[
-              { key: 'dados',      label: 'Dados',      icon: '👤' },
-              { key: 'conquistas', label: 'Conquistas', icon: '🏆' },
+              { key: 'dados',       label: 'Dados',       icon: '👤' },
+              { key: 'conquistas',  label: 'Conquistas',  icon: '🏆' },
+              { key: 'relatorios',  label: 'Relatórios',  icon: '📄' },
             ].map(t => (
               <Link
                 key={t.key}
@@ -119,6 +121,7 @@ export default async function ProfilePage({ searchParams }: Props) {
         <main className="flex-1 min-h-0 overflow-y-auto">
           <div className="max-w-lg mx-auto px-5 py-5">
             {activeTab === 'dados' && <ProfileForm initial={initialData} />}
+            {activeTab === 'relatorios' && <ProfileReports />}
             {activeTab === 'conquistas' && (
               <ProfileAchievements
                 points={pts}

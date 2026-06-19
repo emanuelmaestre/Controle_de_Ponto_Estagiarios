@@ -9,6 +9,7 @@ import {
   LayoutDashboard, TrendingUp, BarChart2, Settings,
   LogOut, Users, ChevronDown, X, Trophy,
 } from 'lucide-react'
+import AdminNotificationBell, { AdminNotificationBellMobile } from './AdminNotificationBell'
 
 interface Props {
   fullName: string
@@ -276,6 +277,8 @@ export default function AdminSidebar({ fullName, initials }: Props) {
               </p>
             </div>
           </div>
+          {/* Bell no mobile */}
+          <AdminNotificationBellMobile />
         </div>
       )}
 
@@ -315,6 +318,11 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                 : <NavLink  key={item.href}  item={item} />
             )}
           </nav>
+
+          {/* ── Pendências ── */}
+          <div className="px-3 pb-1">
+            <AdminNotificationBell />
+          </div>
 
           {/* ── Divisória ── */}
           <div className="mx-4 my-3" style={{ height: 1, background: 'rgba(0,200,83,0.10)' }} />

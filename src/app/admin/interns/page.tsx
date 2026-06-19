@@ -4,7 +4,8 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import type { Profile } from '@/types/database'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import { UserPlus, Users } from 'lucide-react'
-import { getLevelInfo } from '@/lib/gamification'
+import { getLevelInfo, getLevelTitle } from '@/lib/gamification'
+import { detectGender } from '@/lib/detectGender'
 
 export const dynamic = 'force-dynamic'
 
@@ -170,8 +171,10 @@ function InternCard({
   isActive: boolean
 }) {
   const initials = intern.full_name.split(' ').slice(0, 2).map(w => w[0]).join('')
-  const ac  = AVATAR_COLORS[colorIdx % AVATAR_COLORS.length]
-  const lvl = getLevelInfo(intern.level ?? 1)
+  const ac     = AVATAR_COLORS[colorIdx % AVATAR_COLORS.length]
+  const lvl    = getLevelInfo(intern.level ?? 1)
+  const gender = detectGender(intern.full_name ?? '')
+  const title  = getLevelTitle(lvl.level, gender)
 
   return (
     <Link
@@ -230,7 +233,7 @@ function InternCard({
           className="flex items-center gap-1 text-[11px] font-black px-2 py-0.5 rounded-full"
           style={{ background: `${lvl.color}18`, border: `1px solid ${lvl.color}30`, color: lvl.color }}
         >
-          {lvl.icon} {lvl.title}
+          {lvl.icon} {title}
         </span>
         <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
           {intern.points ?? 0} pts
