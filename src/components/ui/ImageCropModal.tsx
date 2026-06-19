@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ZoomIn, ZoomOut, RotateCw, Check, Camera } from 'lucide-react'
+import { X, ZoomIn, ZoomOut, RotateCw, Check, Camera, RotateCcw } from 'lucide-react'
 
 interface CropArea { x: number; y: number; width: number; height: number }
 
@@ -121,6 +121,17 @@ export default function ImageCropModal({ src, onConfirm, onCancel }: Props) {
 
           {/* Controls */}
           <div className="px-5 py-4 space-y-4" style={{ borderTop: '1px solid rgba(0,200,83,0.1)' }}>
+            {/* Reset */}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => { setZoom(1); setRotation(0); setCrop({ x: 0, y: 0 }) }}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium transition-opacity hover:opacity-70"
+                style={{ color: 'var(--text-3, #4a7a5a)', border: '1px solid rgba(0,200,83,0.12)' }}
+              >
+                <RotateCcw size={10} /> Redefinir
+              </button>
+            </div>
             {/* Zoom */}
             <div className="flex items-center gap-3">
               <ZoomOut size={14} style={{ color: 'var(--text-3, #4a7a5a)', flexShrink: 0 }} />
