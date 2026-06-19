@@ -3,8 +3,9 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { User, Tag, Mail, Camera, Check, Loader2, AlertCircle, CheckCircle2, Lock, Eye, EyeOff } from 'lucide-react'
+import { User, Tag, Mail, Camera, Check, Loader2, AlertCircle, CheckCircle2, Lock, Eye, EyeOff, ShieldAlert } from 'lucide-react'
 import CourseSelect from '@/components/ui/CourseSelect'
+import { isFullNameComplete } from '@/lib/gamification'
 
 interface ProfileData {
   full_name: string
@@ -71,10 +72,13 @@ export default function ProfileForm({ initial }: { initial: ProfileData }) {
     reader.readAsDataURL(file)
   }
 
+  const nameOk = fullName.trim().length === 0 || isFullNameComplete(fullName)
+  const hasAbbreviation = fullName.trim().length > 0 && !nameOk
+
   const save = async () => {
     setError(null)
-    if (fullName.trim().split(' ').filter(Boolean).length < 2) {
-      return setError('Informe o nome completo (nome e sobrenome).')
+    if (!isFullNameComplete(fullName)) {
+      return setError('Informe o nome completo sem abreviações. Ex: "Emanuel Maestre dos Santos" — não use letras isoladas como "M" no lugar do sobrenome.')
     }
     setSaving(true)
     try {
@@ -162,9 +166,45 @@ export default function ProfileForm({ initial }: { initial: ProfileData }) {
           NOME COMPLETO
         </label>
         <div className="relative">
-          <span className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: 'rgba(0,200,83,0.5)' }}><User size={15} /></span>
-          <input value={fullName} onChange={e => setFullName(e.target.value)} className={inputCls} style={inputStyle} placeholder="Ex: Maria Silva" />
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: hasAbbreviation ? '#f97316' : 'rgba(0,200,83,0.5)' }}>
+            <User size={15} />
+          </span>
+          <input
+            value={fullName}
+            onChange={e => setFullName(e.target.value)}
+            className={inputCls}
+            style={{
+              ...inputStyle,
+              borderColor: hasAbbreviation ? 'rgba(249,115,22,0.6)' : 'rgba(0,200,83,0.18)',
+            }}
+            placeholder="Ex: Maria Aparecida Silva"
+          />
+          {fullName.trim().length > 0 && (
+            <span className="absolute right-3 top-1/2 -translate-y-1/2">
+              {nameOk
+                ? <CheckCircle2 size={15} style={{ color: '#3fe56c' }} />
+                : <ShieldAlert size={15} style={{ color: '#f97316' }} />
+              }
+            </span>
+          )}
         </div>
+        <AnimatePresence>
+          {hasAbbreviation && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="mt-2 px-3 py-2 rounded-xl flex items-start gap-2"
+              style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.25)' }}
+            >
+              <ShieldAlert size={13} className="flex-shrink-0 mt-0.5" style={{ color: '#f97316' }} />
+              <p className="text-[10px] leading-relaxed" style={{ color: 'rgba(249,115,22,0.9)' }}>
+                Nome parece incompleto ou abreviado. Escreva todos os seus sobrenomes por extenso — ex: <strong>Emanuel Maestre dos Santos</strong>. Nomes abreviados não geram pontos de perfil.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Apelido */}

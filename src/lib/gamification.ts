@@ -5,6 +5,7 @@ export const SCORING_RULES = [
   { id: 'punctual',  emoji: '⏰', label: 'Pontualidade',           points: '+5 pts',  detail: 'Registre a entrada em até 15 min após o horário previsto' },
   { id: 'photo',     emoji: '📸', label: 'Foto de perfil',         points: '+30 pts', detail: 'Cadastre uma foto sua (real, não desenho) em Meu Perfil — concedido apenas na primeira vez' },
   { id: 'activity',  emoji: '📝', label: 'Atividade documentada',  points: '+5 pts',  detail: 'Na saída, descreva ao menos 1 atividade realizada (mín. 10 letras)' },
+  { id: 'fullname',  emoji: '🪪', label: 'Nome completo válido',  points: '+20 pts', detail: 'Cadastre seu nome completo sem abreviações (ex: "Emanuel M" não vale — coloque "Emanuel Maestre")' },
   { id: 'streak_3',  emoji: '🔥', label: 'Sequência de 3 dias',   points: '×1.2',    detail: 'Compareça 3 dias seguidos — multiplica os pontos do dia' },
   { id: 'streak_7',  emoji: '⚡', label: 'Sequência de 7 dias',   points: '×1.5',    detail: 'Compareça 7 dias seguidos — multiplica os pontos do dia' },
   { id: 'streak_30', emoji: '💎', label: 'Sequência de 30 dias',  points: '×2.0',    detail: 'Compareça 30 dias seguidos — dobra os pontos do dia' },
@@ -37,6 +38,12 @@ export function getProgressToNextLevel(points: number, level: number): number {
 }
 
 export const ACHIEVEMENTS: Record<string, { label: string; emoji: string; desc: string; how: string }> = {
+  full_name: {
+    label: 'Nome Verdadeiro',
+    emoji: '🪪',
+    desc:  'Nome completo cadastrado sem abreviações',
+    how:   'Preencha seu nome completo em Meu Perfil sem abreviar — "Emanuel M dos Santos" não vale, escreva "Emanuel Maestre dos Santos"',
+  },
   has_photo: {
     label: 'Identidade Completa',
     emoji: '📸',
@@ -103,6 +110,19 @@ export const ACHIEVEMENTS: Record<string, { label: string; emoji: string; desc: 
     desc:  '1º lugar no ranking do mês',
     how:   'Seja o estagiário com mais pontos no mês — presença, pontualidade e atividades',
   },
+}
+
+/**
+ * Retorna true se o nome completo parece válido:
+ * - ao menos 2 palavras significativas (excluindo preposições)
+ * - nenhuma palavra significativa é abreviada (letra única)
+ */
+export function isFullNameComplete(name: string): boolean {
+  const PREPOSITIONS = new Set(['de', 'da', 'do', 'dos', 'das', 'e', 'di', 'del', 'van', 'von'])
+  const words = name.trim().toLowerCase().split(/\s+/).filter(Boolean)
+  const significant = words.filter(w => !PREPOSITIONS.has(w))
+  if (significant.length < 2) return false
+  return significant.every(w => w.length > 1)
 }
 
 export function getStreakMultiplier(streak: number): number {
