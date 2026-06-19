@@ -108,7 +108,9 @@ export async function GET(request: NextRequest) {
       isActive:      activeInternIds.has(p.id),
       position:      0,
     }))
-    .sort((a, b) => b.periodMinutes - a.periodMinutes || b.points - a.points || a.internName.localeCompare(b.internName))
+    // Ranking = pontos totais (refletem presença + pontualidade + streak)
+    // Desempate: horas no período → nome
+    .sort((a, b) => b.points - a.points || b.periodMinutes - a.periodMinutes || a.internName.localeCompare(b.internName))
 
   ranking.forEach((r, i) => { r.position = i + 1 })
 

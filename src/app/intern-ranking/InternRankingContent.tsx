@@ -208,8 +208,8 @@ export default function InternRankingContent() {
                               transition={{ duration: 2.5, repeat: Infinity, delay: slot.idx * 0.6, ease: 'easeInOut' }}
                               style={{ background: `linear-gradient(90deg, transparent, ${slot.color}, transparent)` }} />
                             <p className="font-black text-base relative z-10" style={{ color: slot.color }}>{slot.pos}º</p>
-                            <p className="text-[8px] font-bold relative z-10" style={{ color: slot.color, opacity: 0.7 }}>
-                              {minutesToDisplay(entry.periodMinutes)}
+                            <p className="text-[8px] font-bold relative z-10" style={{ color: slot.color, opacity: 0.9 }}>
+                              ⭐{entry.points}
                             </p>
                           </motion.div>
                         </motion.div>
@@ -217,20 +217,26 @@ export default function InternRankingContent() {
                     })}
                   </div>
 
-                  {/* Stats strip */}
+                  {/* Stats strip — mesma ordem visual do pódio: 2º | 1º | 3º */}
                   <div className="grid grid-cols-3 mt-1" style={{ borderTop: '1px solid rgba(0,200,83,0.1)' }}>
-                    {top3.map((e, i) => (
-                      <div key={e.internId} className="flex flex-col items-center py-2 gap-0.5"
-                        style={{ borderRight: i < 2 ? '1px solid rgba(0,200,83,0.08)' : 'none' }}>
-                        <span className="text-xs font-black" style={{ color: ['#fbbf24','#94a3b8','#f97316'][i] }}>
-                          {minutesToDisplay(e.periodMinutes)}
-                        </span>
-                        <div className="flex items-center gap-0.5">
-                          <Star size={9} style={{ color: '#3fe56c' }} />
-                          <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{e.points}</span>
+                    {PODIUM_SLOTS.map((slot, ci) => {
+                      const e = top3[slot.idx]
+                      if (!e) return <div key={ci} />
+                      return (
+                        <div key={e.internId} className="flex flex-col items-center py-2 gap-0.5"
+                          style={{ borderRight: ci < 2 ? '1px solid rgba(0,200,83,0.08)' : 'none' }}>
+                          <div className="flex items-center gap-1">
+                            <Star size={10} style={{ color: '#3fe56c' }} />
+                            <span className="text-xs font-black" style={{ color: slot.color }}>
+                              {e.points} pts
+                            </span>
+                          </div>
+                          <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                            {minutesToDisplay(e.periodMinutes)}
+                          </span>
                         </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </div>
               )}
@@ -306,13 +312,15 @@ export default function InternRankingContent() {
                           </div>
                         )}
                         <div className="text-right">
-                          <p className="text-[11px] font-black tabular-nums" style={{ color: 'white' }}>
+                          <div className="flex items-center gap-0.5 justify-end">
+                            <Star size={10} style={{ color: '#3fe56c' }} />
+                            <p className="text-[11px] font-black tabular-nums" style={{ color: 'white' }}>
+                              {entry.points} pts
+                            </p>
+                          </div>
+                          <p className="text-[9px] tabular-nums" style={{ color: 'rgba(255,255,255,0.3)' }}>
                             {minutesToDisplay(entry.periodMinutes)}
                           </p>
-                          <div className="flex items-center gap-0.5 justify-end">
-                            <Star size={9} style={{ color: '#3fe56c' }} />
-                            <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{entry.points}</span>
-                          </div>
                         </div>
                         {entry.achievements.slice(0, 2).map(a => (
                           <span key={a.type} className="text-sm leading-none"

@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { ensureProfile } from '@/lib/ensureProfile'
 import MobileOnlyGuard from '@/components/MobileOnlyGuard'
 import ProfileForm from './ProfileForm'
+import { getLevelInfo } from '@/lib/gamification'
 
 export default async function ProfilePage() {
   const supabase = await createSupabaseServerClient()
@@ -13,7 +14,7 @@ export default async function ProfilePage() {
 
   let { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, nickname, email, course, photo_url, role')
+    .select('full_name, nickname, email, course, photo_url, role, points, level, streak_days')
     .eq('id', user.id)
     .maybeSingle()
 
@@ -21,7 +22,7 @@ export default async function ProfilePage() {
     await ensureProfile(user.id, user.email ?? null)
     const { data: reloaded } = await supabase
       .from('profiles')
-      .select('full_name, nickname, email, course, photo_url, role')
+      .select('full_name, nickname, email, course, photo_url, role, points, level, streak_days')
       .eq('id', user.id)
       .maybeSingle()
     profile = reloaded
@@ -37,6 +38,10 @@ export default async function ProfilePage() {
     photo_url: profile?.photo_url ?? null,
   }
 
+  const lvl = getLevelInfo((profile as any)?.level ?? 1)
+  const pts  = (profile as any)?.points ?? 0
+  const streak = (profile as any)?.streak_days ?? 0
+
   return (
     <MobileOnlyGuard>
       <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
@@ -46,9 +51,20 @@ export default async function ProfilePage() {
             <Link href="/dashboard" className="flex-shrink-0" style={{ color: 'rgba(255,255,255,0.6)' }}>
               <ArrowLeft size={20} />
             </Link>
-            <div>
+            <div className="flex-1 min-w-0">
               <h1 className="text-base font-black" style={{ color: 'white' }}>MEU PERFIL</h1>
               <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.4)' }}>Edite seus dados e foto</p>
+            </div>
+            {/* Level badge */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {streak > 0 && (
+                <span className="text-xs font-bold" style={{ color: '#f97316' }}>🔥 {streak}d</span>
+              )}
+              <span className="flex items-center gap-1 text-[11px] font-black px-2.5 py-1 rounded-full"
+                style={{ background: `${lvl.color}18`, border: `1px solid ${lvl.color}35`, color: lvl.color }}>
+                {lvl.icon} {lvl.title}
+              </span>
+              <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>⭐{pts}</span>
             </div>
           </div>
         </header>

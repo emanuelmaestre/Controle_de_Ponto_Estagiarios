@@ -393,20 +393,25 @@ export default function RankingPage() {
                     <Podium top3={top3} />
                     {/* Base line */}
                     <div style={{ height: 1, background: 'rgba(0,200,83,0.12)', marginTop: -1 }} />
-                    {/* Stats below podium */}
+                    {/* Stats below podium — ordem visual: 2º | 1º | 3º */}
                     <div className="grid grid-cols-3 divide-x" style={{ borderColor: 'rgba(0,200,83,0.1)' }}>
-                      {top3.map((e, i) => (
-                        <div key={e.internId} className="flex flex-col items-center py-3 gap-1">
-                          <span className="text-lg font-black" style={{ color: ['#fbbf24','#94a3b8','#f97316'][i] }}>
-                            <AnimCount value={e.periodMinutes} />
-                            <span className="text-[10px] font-medium ml-0.5">min</span>
-                          </span>
-                          <div className="flex items-center gap-1">
-                            <Star size={10} style={{ color: '#3fe56c' }} />
-                            <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>{e.points} pts</span>
+                      {PODIUM_SLOTS.map((slot, ci) => {
+                        const e = top3[slot.idx]
+                        if (!e) return <div key={ci} />
+                        return (
+                          <div key={e.internId} className="flex flex-col items-center py-3 gap-1">
+                            <div className="flex items-center gap-1">
+                              <Star size={11} style={{ color: '#3fe56c' }} />
+                              <span className="text-base font-black" style={{ color: slot.color }}>
+                                {e.points} pts
+                              </span>
+                            </div>
+                            <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+                              {minutesToDisplay(e.periodMinutes)}
+                            </span>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </div>
                 )}
@@ -491,21 +496,16 @@ export default function RankingPage() {
                             </motion.div>
                           )}
 
-                          {/* Points */}
-                          <div className="flex items-center gap-1">
-                            <Star size={12} style={{ color: '#3fe56c' }} />
-                            <span className="text-xs font-bold tabular-nums" style={{ color: 'var(--text-2)' }}>
-                              {entry.points}
-                            </span>
-                          </div>
-
-                          {/* Hours */}
+                          {/* Points — destaque principal */}
                           <div className="text-right">
-                            <p className="text-xs font-black tabular-nums" style={{ color: 'var(--text)' }}>
+                            <div className="flex items-center gap-0.5 justify-end">
+                              <Star size={11} style={{ color: '#3fe56c' }} />
+                              <p className="text-xs font-black tabular-nums" style={{ color: 'var(--text)' }}>
+                                {entry.points} pts
+                              </p>
+                            </div>
+                            <p className="text-[9px] tabular-nums" style={{ color: 'var(--text-3)' }}>
                               {minutesToDisplay(entry.periodMinutes)}
-                            </p>
-                            <p className="text-[9px]" style={{ color: 'var(--text-3)' }}>
-                              {period === 'weekly' ? 'semana' : 'mês'}
                             </p>
                           </div>
 
