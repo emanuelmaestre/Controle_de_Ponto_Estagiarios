@@ -10,9 +10,10 @@ import SelfieGate from '@/components/SelfieGate'
 import StatusBadge from '@/components/StatusBadge'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/MotionWrappers'
-import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell, AlertTriangle, User } from 'lucide-react'
+import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell, AlertTriangle, User, Flame, Star } from 'lucide-react'
 import LiveClock from '@/components/ui/LiveClock'
 import type { RecordStatus } from '@/types/database'
+import { getLevelInfo, getNextLevel, getProgressToNextLevel, ACHIEVEMENTS } from '@/lib/gamification'
 
 export const dynamic = 'force-dynamic'
 
@@ -72,13 +73,14 @@ export default async function DashboardPage() {
 
   let { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, total_hours_required, role, photo_url')
+    .select('full_name, total_hours_required, role, photo_url, points, level, streak_days')
     .eq('id', user.id)
     .maybeSingle()
 
   // Garante perfil (cria/migra de forma segura e síncrona se necessário)
   if (!profile) {
-    profile = await ensureProfile(user.id, user.email ?? null)
+    const fallback = await ensureProfile(user.id, user.email ?? null)
+    profile = fallback ? { ...fallback, points: 0, level: 1, streak_days: 0, last_activity_date: null } as unknown as typeof profile : null
   }
 
   // Administradores não registram ponto — redirecionar para o painel admin
@@ -143,6 +145,21 @@ export default async function DashboardPage() {
     }
     return null
   })()
+
+  // Gamification data
+  const { data: achievementsData } = await supabase
+    .from('achievements')
+    .select('type, unlocked_at')
+    .eq('intern_id', user.id)
+    .order('unlocked_at', { ascending: false })
+
+  const userPoints     = (profile as any)?.points ?? 0
+  const userLevel      = (profile as any)?.level ?? 1
+  const userStreak     = (profile as any)?.streak_days ?? 0
+  const lvlInfo        = getLevelInfo(userLevel)
+  const nextLvl        = getNextLevel(userLevel)
+  const lvlProgress    = getProgressToNextLevel(userPoints, userLevel)
+  const userAchievements = achievementsData ?? []
 
   const todayMinutes = todayRecords?.reduce((acc, r) => acc + (r.duration_minutes ?? 0), 0) ?? 0
   const monthMinutes = monthData?.total_minutes ?? 0
@@ -311,6 +328,70 @@ export default async function DashboardPage() {
             </FadeIn>
           ))}
         </div>
+
+        {/* ── Gamification card ───────────────────────── */}
+        <FadeIn delay={0.13}>
+          <Link href="/intern-ranking">
+            <div
+              className="rounded-2xl px-4 py-3.5"
+              style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+            >
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">{lvlInfo.level === 6 ? '👑' : '⭐'}</span>
+                  <span className="text-xs font-black tracking-wider" style={{ color: lvlInfo.color }}>
+                    {lvlInfo.title.toUpperCase()}
+                  </span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+                    style={{ background: `${lvlInfo.color}18`, color: lvlInfo.color }}>
+                    Nv. {userLevel}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  {userStreak > 0 && (
+                    <div className="flex items-center gap-1">
+                      <Flame size={13} style={{ color: userStreak >= 7 ? '#f97316' : '#fbbf24' }} />
+                      <span className="text-xs font-black" style={{ color: userStreak >= 7 ? '#f97316' : '#fbbf24' }}>
+                        {userStreak}d
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1">
+                    <Star size={13} style={{ color: '#3fe56c' }} />
+                    <span className="text-xs font-black" style={{ color: '#3fe56c' }}>{userPoints}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* XP bar */}
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
+                <div className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${lvlProgress}%`, background: lvlInfo.color }} />
+              </div>
+              {nextLvl && (
+                <p className="text-[9px] mt-1 font-medium" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                  {lvlProgress}% para {nextLvl.title} · {nextLvl.minPoints - userPoints} pts restantes
+                </p>
+              )}
+
+              {/* Achievements */}
+              {userAchievements.length > 0 && (
+                <div className="flex items-center gap-1.5 mt-2.5">
+                  {userAchievements.slice(0, 5).map(a => (
+                    <span key={a.type} className="text-sm" title={ACHIEVEMENTS[a.type]?.label}>
+                      {ACHIEVEMENTS[a.type]?.emoji ?? '🏅'}
+                    </span>
+                  ))}
+                  {userAchievements.length > 5 && (
+                    <span className="text-[9px] font-bold" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                      +{userAchievements.length - 5}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </Link>
+        </FadeIn>
 
         {/* ── Horario de hoje ─────────────────────────── */}
         {todaySchedule && (

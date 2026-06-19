@@ -1,16 +1,65 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { Home, ClipboardList, Trophy, LogOut, Star, Zap, Lock, User } from 'lucide-react'
+import { Home, ClipboardList, Trophy, LogOut, Star, Flame, Crown, User } from 'lucide-react'
+import { getLevelInfo, getProgressToNextLevel, ACHIEVEMENTS, minutesToDisplay } from '@/lib/gamification'
 
-const PODIUM = [
-  { pos: 2, label: '2º', height: 72,  color: '#94a3b8', glow: 'rgba(148,163,184,0.15)' },
-  { pos: 1, label: '1º', height: 108, color: '#fbbf24', glow: 'rgba(251,191,36,0.20)'  },
-  { pos: 3, label: '3º', height: 52,  color: '#f97316', glow: 'rgba(249,115,22,0.15)'  },
+interface RankingEntry {
+  internId:     string
+  internName:   string
+  photoUrl:     string | null
+  points:       number
+  level:        number
+  streakDays:   number
+  monthMinutes: number
+  achievements: { type: string; unlocked_at: string }[]
+  position:     number
+}
+
+const PODIUM_ORDER = [1, 0, 2]
+const PODIUM_META = [
+  { pos: 2, height: 64,  color: '#94a3b8', glow: 'rgba(148,163,184,0.2)' },
+  { pos: 1, height: 100, color: '#fbbf24', glow: 'rgba(251,191,36,0.25)' },
+  { pos: 3, height: 48,  color: '#f97316', glow: 'rgba(249,115,22,0.2)'  },
 ]
 
+function Avatar({ name, photo, size = 36, border }: { name: string; photo: string | null; size?: number; border?: string }) {
+  if (photo) return (
+    <img src={photo} alt={name} width={size} height={size}
+      className="rounded-full object-cover flex-shrink-0"
+      style={{ width: size, height: size, border: border ?? '2px solid rgba(0,200,83,0.3)' }} />
+  )
+  return (
+    <div className="rounded-full flex items-center justify-center flex-shrink-0 font-black"
+      style={{ width: size, height: size, fontSize: size * 0.38,
+        background: 'rgba(0,200,83,0.15)', border: border ?? '2px solid rgba(0,200,83,0.3)', color: '#3fe56c' }}>
+      {name.charAt(0).toUpperCase()}
+    </div>
+  )
+}
+
 export default function InternRankingContent() {
+  const [ranking, setRanking]         = useState<RankingEntry[]>([])
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [loading, setLoading]         = useState(true)
+  const [month]                       = useState(new Date().getMonth() + 1)
+  const [year]                        = useState(new Date().getFullYear())
+
+  useEffect(() => {
+    fetch(`/api/gamification/ranking?month=${month}&year=${year}`)
+      .then(r => r.json())
+      .then(d => {
+        setRanking(d.ranking ?? [])
+        setCurrentUserId(d.currentUserId ?? null)
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [month, year])
+
+  const podium = ranking.slice(0, 3)
+
   return (
     <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
 
@@ -19,98 +68,158 @@ export default function InternRankingContent() {
         style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
         <Trophy size={18} style={{ color: '#fbbf24' }} />
         <h1 className="text-base font-black" style={{ color: 'white' }}>Ranking</h1>
-        <span className="ml-1 px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider"
-          style={{ background: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.25)', color: '#fbbf24' }}>
-          EM BREVE
+        <span className="ml-1 text-[9px] font-bold px-2 py-0.5 rounded-full"
+          style={{ background: 'rgba(0,200,83,0.1)', border: '1px solid rgba(0,200,83,0.2)', color: '#3fe56c' }}>
+          {new Date().toLocaleString('pt-BR', { month: 'long' }).toUpperCase()}
         </span>
       </header>
 
       {/* Content */}
-      <main className="flex-1 min-h-0 overflow-y-auto flex flex-col items-center justify-center px-5 py-8">
-        <div className="w-full max-w-sm text-center">
+      <main className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
 
-          {/* Podium */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex items-end justify-center gap-2 mb-10"
-          >
-            {PODIUM.map((p, i) => (
-              <motion.div key={p.pos}
-                initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.1 }}
-                className="flex flex-col items-center gap-2"
-              >
-                <motion.div
-                  animate={{ y: [0, -4, 0] }}
-                  transition={{ duration: 2.5 + i * 0.4, repeat: Infinity, ease: 'easeInOut' }}
-                  className="w-9 h-9 rounded-full flex items-center justify-center"
-                  style={{ background: p.glow, border: `2px solid ${p.color}`, color: p.color }}
-                >
-                  {p.pos === 1 ? <Trophy size={14} /> : <Star size={12} />}
-                </motion.div>
-                <motion.div
-                  initial={{ scaleY: 0 }} animate={{ scaleY: 1 }}
-                  transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
-                  className="w-16 rounded-t-xl flex items-center justify-center font-black"
-                  style={{
-                    height: p.height,
-                    background: `linear-gradient(180deg, ${p.glow} 0%, transparent 100%)`,
-                    border: `1px solid ${p.color}`,
-                    borderBottom: 'none',
-                    color: p.color,
-                    transformOrigin: 'bottom',
-                    fontSize: '1rem',
-                  }}
-                >
-                  {p.label}
-                </motion.div>
-              </motion.div>
-            ))}
-          </motion.div>
+        {loading ? (
+          <div className="flex items-center justify-center h-48">
+            <div className="w-7 h-7 rounded-full border-2 animate-spin"
+              style={{ borderColor: '#3fe56c', borderTopColor: 'transparent' }} />
+          </div>
+        ) : ranking.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-48 gap-3">
+            <Trophy size={36} className="opacity-20" style={{ color: '#fbbf24' }} />
+            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>Nenhum registro este mês ainda.</p>
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
 
-          {/* Lock */}
-          <motion.div
-            initial={{ scale: 0 }} animate={{ scale: 1 }}
-            transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
-            className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5"
-            style={{ background: 'rgba(0,200,83,0.08)', border: '1px solid rgba(0,200,83,0.20)' }}
-          >
-            <Lock size={24} style={{ color: '#3fe56c' }} />
-          </motion.div>
-
-          <motion.h2 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-            className="text-xl font-black mb-2" style={{ color: 'white' }}>
-            Em construção
-          </motion.h2>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-            className="text-sm leading-relaxed mb-8" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            Em breve você poderá ver seu desempenho comparado aos outros estagiários do laboratório.
-          </motion.p>
-
-          {/* Features preview */}
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
-            className="space-y-3">
-            {[
-              { icon: <Trophy size={15} />, label: 'Top do mês', desc: 'Quem mais horas cumpriu' },
-              { icon: <Star size={15} />,   label: 'Pontuação',  desc: 'Presença e aprovações' },
-              { icon: <Zap size={15} />,    label: 'Conquistas', desc: 'Badges por metas' },
-            ].map((f, i) => (
-              <motion.div key={f.label}
-                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.75 + i * 0.07 }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-left"
-                style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.10)' }}
-              >
-                <span style={{ color: '#fbbf24' }}>{f.icon}</span>
-                <div>
-                  <p className="text-sm font-bold" style={{ color: 'white' }}>{f.label}</p>
-                  <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{f.desc}</p>
+              {/* ── Podium ── */}
+              {podium.length >= 2 && (
+                <div className="flex items-end justify-center gap-3 mb-6 pt-2">
+                  {PODIUM_ORDER.map(idx => {
+                    const entry = podium[idx]
+                    const meta  = PODIUM_META[PODIUM_ORDER.indexOf(idx)]
+                    if (!entry) return null
+                    const lvl   = getLevelInfo(entry.level)
+                    const isMe  = entry.internId === currentUserId
+                    return (
+                      <motion.div key={entry.internId}
+                        initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.08 }}
+                        className="flex flex-col items-center gap-1.5"
+                      >
+                        {meta.pos === 1 && (
+                          <motion.div animate={{ rotate: [-4, 4, -4] }} transition={{ duration: 2, repeat: Infinity }}>
+                            <Crown size={14} style={{ color: '#fbbf24' }} />
+                          </motion.div>
+                        )}
+                        <motion.div
+                          animate={{ y: [0, -4, 0] }}
+                          transition={{ duration: 2.5 + idx * 0.4, repeat: Infinity, ease: 'easeInOut' }}
+                        >
+                          <Avatar name={entry.internName} photo={entry.photoUrl}
+                            size={meta.pos === 1 ? 46 : 36}
+                            border={`2px solid ${isMe ? '#00c853' : meta.color}`} />
+                        </motion.div>
+                        <p className="text-[9px] font-bold max-w-[60px] text-center truncate"
+                          style={{ color: isMe ? '#3fe56c' : meta.color }}>
+                          {entry.internName.split(' ')[0]}
+                        </p>
+                        <motion.div
+                          initial={{ scaleY: 0 }} animate={{ scaleY: 1 }}
+                          transition={{ delay: 0.25 + idx * 0.1, duration: 0.5 }}
+                          className="w-16 rounded-t-xl flex flex-col items-center justify-end pb-1.5"
+                          style={{
+                            height: meta.height,
+                            background: `linear-gradient(180deg, ${meta.glow} 0%, transparent 100%)`,
+                            border: `1px solid ${meta.color}`,
+                            borderBottom: 'none',
+                            transformOrigin: 'bottom',
+                          }}
+                        >
+                          <p className="font-black text-base" style={{ color: meta.color }}>{meta.pos}º</p>
+                          <p className="text-[8px] font-bold" style={{ color: meta.color, opacity: 0.7 }}>
+                            {minutesToDisplay(entry.monthMinutes)}
+                          </p>
+                        </motion.div>
+                      </motion.div>
+                    )
+                  })}
                 </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
+              )}
+
+              {/* ── List ── */}
+              <div className="space-y-2 pb-4">
+                {ranking.map((entry, i) => {
+                  const lvl   = getLevelInfo(entry.level)
+                  const prog  = getProgressToNextLevel(entry.points, entry.level)
+                  const isMe  = entry.internId === currentUserId
+                  return (
+                    <motion.div key={entry.internId}
+                      initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.04 }}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
+                      style={{
+                        background: isMe ? 'rgba(0,200,83,0.08)' : 'var(--surface-card, #0f2318)',
+                        border: `1px solid ${isMe ? 'rgba(0,200,83,0.35)' : 'rgba(0,200,83,0.10)'}`,
+                      }}
+                    >
+                      {/* Position */}
+                      <span className="text-xs font-black w-5 text-center flex-shrink-0"
+                        style={{ color: i === 0 ? '#fbbf24' : i === 1 ? '#94a3b8' : i === 2 ? '#f97316' : 'rgba(255,255,255,0.3)' }}>
+                        {entry.position}
+                      </span>
+
+                      <Avatar name={entry.internName} photo={entry.photoUrl} size={34} />
+
+                      {/* Name + bar */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-xs font-bold truncate" style={{ color: isMe ? '#3fe56c' : 'white' }}>
+                            {isMe ? 'Você' : entry.internName.split(' ')[0]}
+                          </p>
+                          <span className="text-[8px] font-bold px-1 py-0.5 rounded flex-shrink-0"
+                            style={{ background: `${lvl.color}18`, color: lvl.color }}>
+                            {lvl.title}
+                          </span>
+                        </div>
+                        <div className="mt-1 h-0.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
+                          <motion.div className="h-full rounded-full"
+                            initial={{ width: 0 }} animate={{ width: `${prog}%` }}
+                            transition={{ delay: 0.2 + i * 0.03, duration: 0.5 }}
+                            style={{ background: lvl.color }} />
+                        </div>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {entry.streakDays > 0 && (
+                          <div className="flex items-center gap-0.5">
+                            <Flame size={10} style={{ color: entry.streakDays >= 7 ? '#f97316' : '#fbbf24' }} />
+                            <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                              {entry.streakDays}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-0.5">
+                          <Star size={10} style={{ color: '#3fe56c' }} />
+                          <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                            {entry.points}
+                          </span>
+                        </div>
+                        {entry.achievements.slice(0, 2).map(a => (
+                          <span key={a.type} className="text-sm"
+                            title={ACHIEVEMENTS[a.type]?.label}>
+                            {ACHIEVEMENTS[a.type]?.emoji ?? '🏅'}
+                          </span>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )
+                })}
+              </div>
+
+            </motion.div>
+          </AnimatePresence>
+        )}
       </main>
 
       {/* Bottom nav */}

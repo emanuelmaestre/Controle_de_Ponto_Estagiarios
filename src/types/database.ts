@@ -30,6 +30,10 @@ export type Database = {
           is_active: boolean
           created_at: string
           total_hours_required: number | null
+          points: number
+          level: number
+          streak_days: number
+          last_activity_date: string | null
         }
         Insert: {
           id: string
@@ -45,6 +49,10 @@ export type Database = {
           is_active?: boolean
           created_at?: string
           total_hours_required?: number | null
+          points?: number
+          level?: number
+          streak_days?: number
+          last_activity_date?: string | null
         }
         Update: {
           full_name?: string
@@ -58,6 +66,10 @@ export type Database = {
           role?: 'intern' | 'manager'
           is_active?: boolean
           total_hours_required?: number | null
+          points?: number
+          level?: number
+          streak_days?: number
+          last_activity_date?: string | null
         }
         Relationships: []
       }
@@ -317,6 +329,48 @@ export type Database = {
           geo_lat?: number | null
           geo_lng?: number | null
           geo_radius_meters?: number | null
+        }
+        Relationships: []
+      }
+      achievements: {
+        Row: {
+          id: string
+          intern_id: string
+          type: string
+          unlocked_at: string
+        }
+        Insert: {
+          id?: string
+          intern_id: string
+          type: string
+          unlocked_at?: string
+        }
+        Update: {
+          unlocked_at?: string
+        }
+        Relationships: []
+      }
+      points_history: {
+        Row: {
+          id: string
+          intern_id: string
+          points: number
+          reason: string
+          multiplier: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          intern_id: string
+          points: number
+          reason: string
+          multiplier?: number
+          created_at?: string
+        }
+        Update: {
+          points?: number
+          reason?: string
+          multiplier?: number
         }
         Relationships: []
       }
