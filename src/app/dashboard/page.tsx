@@ -508,10 +508,6 @@ export default async function DashboardPage() {
             <Trophy size={18} />
             <span className="text-[10px] font-bold">Ranking</span>
           </Link>
-          <Link href="/updates" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
-            <Bell size={18} />
-            <span className="text-[10px] font-bold">Novidades</span>
-          </Link>
           <Link href="/profile" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
             <User size={18} />
             <span className="text-[10px] font-bold">Perfil</span>
