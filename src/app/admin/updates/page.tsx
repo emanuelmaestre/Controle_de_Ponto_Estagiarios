@@ -277,119 +277,89 @@ function AddUpdateModal({ onClose, onAdded }: { onClose: () => void; onAdded: ()
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.95 }}
+        initial={{ opacity: 0, y: 32, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 20, scale: 0.95 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-        className="w-full max-w-lg rounded-3xl p-6 flex flex-col gap-4 overflow-y-auto"
-        style={{ background: '#0a1a10', border: '1px solid rgba(63,229,108,0.25)', boxShadow: '0 40px 80px rgba(0,0,0,0.6)', maxHeight: '90vh' }}>
+        exit={{ opacity: 0, y: 16, scale: 0.96 }}
+        transition={{ type: 'spring', stiffness: 280, damping: 26 }}
+        className="w-full max-w-md rounded-2xl overflow-y-auto"
+        style={{ background: '#0a1a10', border: '1px solid rgba(63,229,108,0.2)', boxShadow: '0 32px 64px rgba(0,0,0,0.6)', maxHeight: '90vh' }}>
 
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-wider mb-0.5" style={{ color: 'rgba(63,229,108,0.6)' }}>
-              PUBLICAR NOVIDADE
-            </p>
-            <h3 className="text-lg font-black" style={{ color: 'var(--text)' }}>Nova atualização</h3>
+        {/* Header compacto */}
+        <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'rgba(63,229,108,0.1)' }}>
+          <div className="flex items-center gap-2">
+            <Sparkles size={14} style={{ color: '#3fe56c' }} />
+            <span className="text-sm font-black" style={{ color: 'var(--text)' }}>Publicar novidade</span>
           </div>
-          <motion.button onClick={onClose} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-            className="p-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.06)' }}>
-            <X size={16} style={{ color: 'rgba(255,255,255,0.5)' }} />
+          <motion.button onClick={onClose} whileTap={{ scale: 0.9 }}
+            className="p-1.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.06)' }}>
+            <X size={14} style={{ color: 'rgba(255,255,255,0.4)' }} />
           </motion.button>
         </div>
 
-        {/* Tipo */}
-        <div>
-          <label className="text-[10px] font-black uppercase tracking-wider mb-2 block" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Tipo de atualização
-          </label>
-          <div className="grid grid-cols-2 gap-2">
+        <div className="px-5 py-4 flex flex-col gap-3">
+          {/* Tipo — chips em linha */}
+          <div className="flex gap-2 flex-wrap">
             {(Object.keys(UPDATE_TYPE) as UpdateType[]).map(t => {
               const cfg = UPDATE_TYPE[t]
               return (
-                <motion.button key={t} onClick={() => setType(t)}
-                  whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold"
+                <button key={t} onClick={() => setType(t)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all"
                   style={type === t
-                    ? { background: cfg.bg, border: `1px solid ${cfg.color}`, color: cfg.color, boxShadow: `0 0 12px ${cfg.color}20` }
-                    : { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)' }}>
+                    ? { background: cfg.bg, border: `1px solid ${cfg.color}`, color: cfg.color }
+                    : { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.35)' }}>
                   {cfg.icon} {cfg.label}
-                </motion.button>
+                </button>
               )
             })}
           </div>
-        </div>
 
-        {/* Módulo / Local exato */}
-        <div>
-          <label className="text-[10px] font-black uppercase tracking-wider mb-1 block" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Local da atualização <span style={{ color: 'rgba(255,255,255,0.2)', fontWeight: 400 }}>— onde exatamente foi feito</span>
-          </label>
-          {/* Chips: pré-preenchem o campo; admin pode editar para ser mais específico */}
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            {MODULES.map(m => (
-              <button key={m} onClick={() => setModule(module_ === m ? '' : m)}
-                className="text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all"
-                style={module_.startsWith(m)
-                  ? { background: 'rgba(63,229,108,0.15)', color: '#3fe56c', border: '1px solid rgba(63,229,108,0.4)' }
-                  : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                {m}
-              </button>
-            ))}
+          {/* Módulo */}
+          <div>
+            <div className="flex flex-wrap gap-1 mb-1.5">
+              {MODULES.map(m => (
+                <button key={m} onClick={() => setModule(module_.startsWith(m) ? '' : m)}
+                  className="text-[10px] font-bold px-2 py-0.5 rounded-md transition-all"
+                  style={module_.startsWith(m)
+                    ? { background: 'rgba(63,229,108,0.15)', color: '#3fe56c', border: '1px solid rgba(63,229,108,0.35)' }
+                    : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                  {m}
+                </button>
+              ))}
+            </div>
+            <input value={module_} onChange={e => setModule(e.target.value)}
+              placeholder="Local exato → Ex: Relatórios → Dropdown de Mês"
+              className="w-full px-3 py-2 rounded-xl text-xs outline-none"
+              style={inputStyle} />
           </div>
-          <input value={module_} onChange={e => setModule(e.target.value)}
-            placeholder="Ex: Relatórios → Dropdown de Mês  |  Cadastros → Formulário de Aluno"
-            className="w-full px-4 py-2.5 rounded-xl text-sm outline-none"
-            style={{ ...inputStyle, fontSize: 12 }} />
-          <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.2)' }}>
-            Clique no chip para base, depois edite para detalhar: "Relatórios → Filtro de Estagiário"
-          </p>
-        </div>
 
-        {/* Título */}
-        <div>
-          <label className="text-[10px] font-black uppercase tracking-wider mb-2 block" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Título
-          </label>
+          {/* Título */}
           <input value={title} onChange={e => setTitle(e.target.value)}
-            placeholder="Ex: Dropdowns não cortam mais nos relatórios"
-            className="w-full px-4 py-3 rounded-xl text-sm outline-none"
+            placeholder="Título da atualização"
+            className="w-full px-3 py-2.5 rounded-xl text-sm outline-none font-bold"
             style={inputStyle} />
-        </div>
 
-        {/* Descrição resumida */}
-        <div>
-          <label className="text-[10px] font-black uppercase tracking-wider mb-2 block" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Descrição curta
-          </label>
+          {/* Descrição */}
           <textarea value={description} onChange={e => setDesc(e.target.value)} rows={2}
             placeholder="Resumo em 1-2 frases do que foi feito..."
-            className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none"
+            className="w-full px-3 py-2.5 rounded-xl text-xs outline-none resize-none"
             style={inputStyle} />
+
+          {/* Detalhes */}
+          <textarea value={details} onChange={e => setDetails(e.target.value)} rows={4}
+            placeholder={`Uma linha por item — cada linha vira um bullet\nEx: Dropdown usa position:fixed\nEx: Botão PDF corrigido no hover`}
+            className="w-full px-3 py-2.5 rounded-xl text-xs outline-none resize-none font-mono"
+            style={{ ...inputStyle, lineHeight: 1.7 }} />
+
+          {error && <p className="text-xs" style={{ color: '#ff5252' }}>{error}</p>}
+
+          <motion.button onClick={submit} disabled={loading}
+            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+            className="w-full py-2.5 rounded-xl text-sm font-black flex items-center justify-center gap-2 disabled:opacity-50"
+            style={{ background: 'linear-gradient(135deg,#3fe56c,#22d3ee)', color: '#000' }}>
+            <Sparkles size={13} />
+            {loading ? 'Publicando...' : 'Publicar'}
+          </motion.button>
         </div>
-
-        {/* Detalhes (bullets) */}
-        <div>
-          <label className="text-[10px] font-black uppercase tracking-wider mb-1 block" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Detalhes do que mudou <span style={{ color: 'rgba(255,255,255,0.2)', fontWeight: 400, textTransform: 'none' }}>(uma linha por item)</span>
-          </label>
-          <p className="text-[10px] mb-2" style={{ color: 'rgba(255,255,255,0.2)' }}>
-            Cada linha vira um bullet ponto. Ex: "Dropdown agora usa position fixed"
-          </p>
-          <textarea value={details} onChange={e => setDetails(e.target.value)} rows={5}
-            placeholder={`Dropdown de mês usa position:fixed — não corta mais\nBotão PDF mantém a cor vermelha no hover\nSeletores de estagiário com scroll suave`}
-            className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none font-mono"
-            style={{ ...inputStyle, fontSize: 11, lineHeight: 1.7 }} />
-        </div>
-
-        {error && <p className="text-xs px-1" style={{ color: '#ff5252' }}>{error}</p>}
-
-        <motion.button onClick={submit} disabled={loading}
-          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-          className="w-full py-3 rounded-xl text-sm font-black flex items-center justify-center gap-2 disabled:opacity-50"
-          style={{ background: 'linear-gradient(135deg,#3fe56c,#22d3ee)', color: '#000' }}>
-          <Sparkles size={14} />
-          {loading ? 'Publicando...' : 'Publicar atualização'}
-        </motion.button>
       </motion.div>
     </motion.div>
   )
