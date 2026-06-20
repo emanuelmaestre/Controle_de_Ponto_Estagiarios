@@ -732,6 +732,7 @@ export default function AdminUpdatesPage() {
                 </div>
               )}
             </AnimatePresence>
+            </>
           )}
 
         </div>
