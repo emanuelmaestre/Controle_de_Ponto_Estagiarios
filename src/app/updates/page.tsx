@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { redirect } from 'next/navigation'
 import {
   Sparkles, MessageSquare, Send, Star, Wrench, Megaphone,
-  Lightbulb, Bug, Heart, HelpCircle, CheckCircle2, Clock,
+  Lightbulb, Bug, Heart, HelpCircle, CheckCircle2, Clock, ChevronDown,
 } from 'lucide-react'
 
 type UpdateType       = 'feature' | 'fix' | 'improvement' | 'announcement'
@@ -13,7 +13,8 @@ type FeedbackCategory = 'suggestion' | 'bug' | 'praise' | 'other'
 type FeedbackStatus   = 'new' | 'read' | 'implemented' | 'archived'
 
 interface SystemUpdate {
-  id: string; title: string; description: string; type: UpdateType; created_at: string
+  id: string; title: string; description: string; type: UpdateType
+  module: string | null; details: string | null; created_at: string
 }
 interface MyFeedback {
   id: string; category: FeedbackCategory; message: string
@@ -53,6 +54,7 @@ export default function InternUpdatesPage() {
   const [updates, setUpdates]     = useState<SystemUpdate[]>([])
   const [myFeedbacks, setMyFb]    = useState<MyFeedback[]>([])
   const [loading, setLoading]     = useState(true)
+  const [expanded, setExpanded]   = useState<Record<string, boolean>>({})
 
   // Form state
   const [category, setCategory]   = useState<FeedbackCategory>('suggestion')
@@ -141,29 +143,58 @@ export default function InternUpdatesPage() {
             ) : (
               <div className="space-y-3">
                 {updates.map((u, i) => {
-                  const cfg = UPDATE_TYPE[u.type]
+                  const cfg     = UPDATE_TYPE[u.type]
+                  const bullets = u.details ? u.details.split('\n').filter(Boolean) : []
+                  const isExp   = expanded[u.id]
                   return (
                     <motion.div key={u.id}
                       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
                       className="rounded-2xl overflow-hidden"
                       style={{ background: cfg.bg, border: `1px solid ${cfg.color}25` }}>
-                      {/* Faixa superior colorida com badge + data */}
-                      <div className="flex items-center gap-2 px-4 pt-3 pb-2">
+                      {/* Badge + módulo + data */}
+                      <div className="flex items-center gap-2 px-4 pt-3 pb-2 flex-wrap">
                         <span className="flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full"
                           style={{ background: `${cfg.color}22`, color: cfg.color }}>
                           {cfg.icon} {cfg.label}
                         </span>
-                        <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.28)' }}>
+                        {u.module && (
+                          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full"
+                            style={{ background: 'rgba(255,255,255,0.06)', color: cfg.color, border: `1px solid ${cfg.color}20` }}>
+                            {u.module}
+                          </span>
+                        )}
+                        <span className="text-[10px] ml-auto" style={{ color: 'rgba(255,255,255,0.28)' }}>
                           {timeAgo(u.created_at)}
                         </span>
                       </div>
-                      {/* Linha divisória */}
                       <div className="mx-4" style={{ height: 1, background: `${cfg.color}15` }} />
-                      {/* Conteúdo */}
-                      <div className="px-4 pt-2.5 pb-4">
+                      <div className="px-4 pt-2.5 pb-3">
                         <p className="text-sm font-black mb-1 leading-snug" style={{ color: 'rgba(255,255,255,0.92)' }}>{u.title}</p>
                         <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{u.description}</p>
+                        {bullets.length > 0 && (
+                          <>
+                            <button onClick={() => setExpanded(p => ({ ...p, [u.id]: !p[u.id] }))}
+                              className="flex items-center gap-1 mt-2 text-[10px] font-black"
+                              style={{ color: cfg.color }}>
+                              <ChevronDown size={11} style={{ transform: isExp ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                              {isExp ? 'Ocultar detalhes' : `Ver o que mudou (${bullets.length} itens)`}
+                            </button>
+                            <AnimatePresence>
+                              {isExp && (
+                                <motion.ul initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}
+                                  className="mt-2 space-y-1 overflow-hidden pl-1">
+                                  {bullets.map((b, bi) => (
+                                    <li key={bi} className="flex items-start gap-2 text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                                      <span style={{ color: cfg.color, marginTop: 2 }}>•</span>{b}
+                                    </li>
+                                  ))}
+                                </motion.ul>
+                              )}
+                            </AnimatePresence>
+                          </>
+                        )}
                       </div>
                     </motion.div>
                   )
