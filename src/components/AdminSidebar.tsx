@@ -295,8 +295,8 @@ export default function AdminSidebar({ fullName, initials }: Props) {
           }}
         >
           {/* ── Logo ── */}
-          <div className="px-6 pt-6 pb-5 flex-shrink-0 flex flex-col items-center">
-            <div className="relative w-28 h-28">
+          <div className="px-5 pt-5 pb-3 flex-shrink-0">
+            <div className="relative w-full" style={{ aspectRatio: '280/80' }}>
               <Image src="/logo.svg" alt="Chronos" fill className="object-contain" />
             </div>
           </div>
