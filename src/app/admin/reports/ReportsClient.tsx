@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Download, FileText, Users, BarChart2, Trophy,
-  CheckCircle2, AlertCircle, ChevronDown, CalendarDays,
+  CheckCircle2, AlertCircle, ChevronDown, ChevronUp, CalendarDays,
   Calendar, Clock, Timer, ClipboardList, FolderOpen,
   Gauge, TrendingUp, BookOpen, GraduationCap, AlertTriangle,
   Medal, Star, Crown, Activity,
@@ -161,7 +161,11 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
     setOpen(true)
   }
 
-  const selected = interns.find(i => i.id === value)
+  const selected  = interns.find(i => i.id === value)
+  const listRef2  = useRef<HTMLDivElement>(null)
+  const scroll2   = (dir: 'up' | 'down') => {
+    listRef2.current?.scrollBy({ top: dir === 'down' ? 80 : -80, behavior: 'smooth' })
+  }
 
   const dropdown = (
     <AnimatePresence>
@@ -173,23 +177,42 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="rounded-xl overflow-hidden"
-            style={{ ...pos, ...DROPDOWN_STYLE }}>
-            {interns.map(intern => (
-              <button key={intern.id} type="button"
-                onClick={() => { onChange(intern.id); setOpen(false) }}
-                className="w-full text-left px-3 py-2.5 text-xs transition-colors"
-                style={{
-                  color: intern.id === value ? '#3fe56c' : 'rgba(255,255,255,0.6)',
-                  background: intern.id === value ? 'rgba(63,229,108,0.08)' : 'transparent',
-                  fontWeight: intern.id === value ? 700 : 400,
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,229,108,0.05)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = intern.id === value ? 'rgba(63,229,108,0.08)' : 'transparent' }}
-              >
-                {intern.full_name}
-              </button>
-            ))}
+            className="rounded-xl overflow-hidden flex flex-col"
+            style={{ ...pos, ...DROPDOWN_STYLE, maxHeight: 260 }}>
+            {/* Seta cima */}
+            <button type="button" onClick={() => scroll2('up')}
+              className="flex items-center justify-center py-1.5 flex-shrink-0 transition-colors"
+              style={{ background: '#0b1d12', borderBottom: '1px solid rgba(63,229,108,0.1)', color: 'rgba(255,255,255,0.4)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#3fe56c')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+              <ChevronUp size={13} />
+            </button>
+            {/* Lista */}
+            <div ref={listRef2} className="overflow-y-auto flex-1" style={{ scrollbarWidth: 'none' }}>
+              {interns.map(intern => (
+                <button key={intern.id} type="button"
+                  onClick={() => { onChange(intern.id); setOpen(false) }}
+                  className="w-full text-left px-3 py-2.5 text-xs transition-colors"
+                  style={{
+                    color: intern.id === value ? '#3fe56c' : 'rgba(255,255,255,0.6)',
+                    background: intern.id === value ? 'rgba(63,229,108,0.08)' : 'transparent',
+                    fontWeight: intern.id === value ? 700 : 400,
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,229,108,0.05)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = intern.id === value ? 'rgba(63,229,108,0.08)' : 'transparent' }}
+                >
+                  {intern.full_name}
+                </button>
+              ))}
+            </div>
+            {/* Seta baixo */}
+            <button type="button" onClick={() => scroll2('down')}
+              className="flex items-center justify-center py-1.5 flex-shrink-0 transition-colors"
+              style={{ background: '#0b1d12', borderTop: '1px solid rgba(63,229,108,0.1)', color: 'rgba(255,255,255,0.4)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#3fe56c')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+              <ChevronDown size={13} />
+            </button>
           </motion.div>
         </>
       )}
@@ -227,6 +250,11 @@ function MonthSelect({ value, onChange }: { value: string; onChange: (v: string)
     setOpen(true)
   }
 
+  const listRef = useRef<HTMLDivElement>(null)
+  const scroll  = (dir: 'up' | 'down') => {
+    listRef.current?.scrollBy({ top: dir === 'down' ? 80 : -80, behavior: 'smooth' })
+  }
+
   const dropdown = (
     <AnimatePresence>
       {open && (
@@ -235,23 +263,42 @@ function MonthSelect({ value, onChange }: { value: string; onChange: (v: string)
           <motion.div
             initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}
-            className="rounded-xl overflow-hidden"
-            style={{ ...pos, ...DROPDOWN_STYLE }}>
-            {monthOptions.map(opt => (
-              <button key={opt.value} type="button"
-                onClick={() => { onChange(opt.value); setOpen(false) }}
-                className="w-full text-left px-3 py-2.5 text-xs capitalize transition-colors"
-                style={{
-                  color: opt.value === value ? '#3fe56c' : 'rgba(255,255,255,0.6)',
-                  background: opt.value === value ? 'rgba(63,229,108,0.08)' : 'transparent',
-                  fontWeight: opt.value === value ? 700 : 400,
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,229,108,0.05)' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = opt.value === value ? 'rgba(63,229,108,0.08)' : 'transparent' }}
-              >
-                {opt.label}
-              </button>
-            ))}
+            className="rounded-xl overflow-hidden flex flex-col"
+            style={{ ...pos, ...DROPDOWN_STYLE, maxHeight: 260 }}>
+            {/* Seta cima */}
+            <button type="button" onClick={() => scroll('up')}
+              className="flex items-center justify-center py-1.5 flex-shrink-0 transition-colors"
+              style={{ background: '#0b1d12', borderBottom: '1px solid rgba(63,229,108,0.1)', color: 'rgba(255,255,255,0.4)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#3fe56c')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+              <ChevronUp size={13} />
+            </button>
+            {/* Lista */}
+            <div ref={listRef} className="overflow-y-auto flex-1" style={{ scrollbarWidth: 'none' }}>
+              {monthOptions.map(opt => (
+                <button key={opt.value} type="button"
+                  onClick={() => { onChange(opt.value); setOpen(false) }}
+                  className="w-full text-left px-3 py-2.5 text-xs capitalize transition-colors"
+                  style={{
+                    color: opt.value === value ? '#3fe56c' : 'rgba(255,255,255,0.6)',
+                    background: opt.value === value ? 'rgba(63,229,108,0.08)' : 'transparent',
+                    fontWeight: opt.value === value ? 700 : 400,
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,229,108,0.05)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = opt.value === value ? 'rgba(63,229,108,0.08)' : 'transparent' }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+            {/* Seta baixo */}
+            <button type="button" onClick={() => scroll('down')}
+              className="flex items-center justify-center py-1.5 flex-shrink-0 transition-colors"
+              style={{ background: '#0b1d12', borderTop: '1px solid rgba(63,229,108,0.1)', color: 'rgba(255,255,255,0.4)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#3fe56c')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+              <ChevronDown size={13} />
+            </button>
           </motion.div>
         </>
       )}
@@ -414,38 +461,6 @@ function ReportCard({ report, index }: { report: ReportDef; index: number }) {
   )
 }
 
-// ── Stats strip ────────────────────────────────────────────────────────────────
-function StatsStrip() {
-  const stats = [
-    { icon: <FileText size={15} />, label: 'Tipos de relatório', value: String(REPORTS.length),                                          color: '#3fe56c' },
-    { icon: <Users size={15} />,    label: 'Por estagiário',     value: String(REPORTS.filter(r => r.category === 'intern').length),     color: '#22d3ee' },
-    { icon: <BarChart2 size={15} />,label: 'Gerais',             value: String(REPORTS.filter(r => r.category === 'general').length),    color: '#a78bfa' },
-    { icon: <Trophy size={15} />,   label: 'Ranking',            value: String(REPORTS.filter(r => r.category === 'ranking').length),    color: '#fbbf24' },
-  ]
-
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      {stats.map((s, i) => (
-        <motion.div key={s.label}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: i * 0.07, type: 'spring', stiffness: 280, damping: 22 }}
-          className="flex items-center gap-3 rounded-xl px-4 py-3"
-          style={{ background: 'rgba(15,35,24,0.7)', border: `1px solid ${s.color}18` }}
-        >
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ background: `${s.color}15`, color: s.color }}>
-            {s.icon}
-          </div>
-          <div>
-            <p className="text-lg font-black leading-none" style={{ color: s.color }}>{s.value}</p>
-            <p className="text-[9px] mt-0.5 font-bold" style={{ color: 'rgba(255,255,255,0.3)' }}>{s.label}</p>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-  )
-}
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function ReportsClient() {
@@ -482,8 +497,6 @@ export default function ReportsClient() {
       {/* ── Content ── */}
       <main className="flex-1 min-h-0 overflow-y-auto">
         <div className="p-4 sm:p-6 space-y-6" style={{ maxWidth: 1200, margin: '0 auto' }}>
-
-          <StatsStrip />
 
           {/* ── Category tabs ── */}
           <div

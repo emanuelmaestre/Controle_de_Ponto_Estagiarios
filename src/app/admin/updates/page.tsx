@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence, useAnimation } from 'framer-motion'
 import {
-  Sparkles, MessageSquare, Plus, Trash2, RefreshCw, CheckCircle2,
+  Sparkles, MessageSquare, Trash2, RefreshCw, CheckCircle2,
   Wrench, Megaphone, Star, Bug, Lightbulb, Heart, HelpCircle,
-  ChevronDown, Send, X, Zap, TrendingUp, Shield,
+  ChevronDown, Send, TrendingUp,
 } from 'lucide-react'
 
 type UpdateType       = 'feature' | 'fix' | 'improvement' | 'announcement'
@@ -111,12 +111,6 @@ const AV_COLORS = ['#3fe56c','#22d3ee','#a78bfa','#f97316','#fbbf24']
 function avatarColor(name: string) { return AV_COLORS[name.charCodeAt(0) % AV_COLORS.length] }
 
 // ── Módulos disponíveis ────────────────────────────────────────────────────────
-const MODULES = [
-  'Painel', 'Cadastros', 'Carga de Trabalho', 'Relatórios',
-  'Ranking', 'Atualizações', 'Configurações', 'Registro de Ponto',
-  'Perfil do Aluno', 'Gamificação', 'Notificações', 'Geral',
-]
-
 // ── Update Card ────────────────────────────────────────────────────────────────
 function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; onDelete: () => void }) {
   const cfg = UPDATE_TYPE[u.type]
@@ -242,129 +236,6 @@ function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; on
 }
 
 // ── Add Update Modal ────────────────────────────────────────────────────────────
-function AddUpdateModal({ onClose, onAdded }: { onClose: () => void; onAdded: () => void }) {
-  const [title, setTitle]      = useState('')
-  const [description, setDesc] = useState('')
-  const [details, setDetails]  = useState('')
-  const [module_, setModule]   = useState('')
-  const [type, setType]        = useState<UpdateType>('feature')
-  const [loading, setLoading]  = useState(false)
-  const [error, setError]      = useState('')
-
-  const submit = async () => {
-    if (!title.trim() || !description.trim()) { setError('Preencha título e descrição'); return }
-    setLoading(true); setError('')
-    const res = await fetch('/api/admin/system-updates', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title: title.trim(), description: description.trim(), type,
-        module: module_.trim() || null,
-        details: details.trim() || null,
-      }),
-    })
-    setLoading(false)
-    if (res.ok) { onAdded(); onClose() }
-    else { const j = await res.json(); setError(j.error ?? 'Erro ao salvar') }
-  }
-
-  const inputStyle = { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text)' }
-
-  return (
-    <motion.div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}
-      onClick={e => e.target === e.currentTarget && onClose()}
-    >
-      <motion.div
-        initial={{ opacity: 0, y: 32, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 16, scale: 0.96 }}
-        transition={{ type: 'spring', stiffness: 280, damping: 26 }}
-        className="w-full max-w-md rounded-2xl overflow-y-auto"
-        style={{ background: '#0a1a10', border: '1px solid rgba(63,229,108,0.2)', boxShadow: '0 32px 64px rgba(0,0,0,0.6)', maxHeight: '90vh' }}>
-
-        {/* Header compacto */}
-        <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'rgba(63,229,108,0.1)' }}>
-          <div className="flex items-center gap-2">
-            <Sparkles size={14} style={{ color: '#3fe56c' }} />
-            <span className="text-sm font-black" style={{ color: 'var(--text)' }}>Publicar novidade</span>
-          </div>
-          <motion.button onClick={onClose} whileTap={{ scale: 0.9 }}
-            className="p-1.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.06)' }}>
-            <X size={14} style={{ color: 'rgba(255,255,255,0.4)' }} />
-          </motion.button>
-        </div>
-
-        <div className="px-5 py-4 flex flex-col gap-3">
-          {/* Tipo — chips em linha */}
-          <div className="flex gap-2 flex-wrap">
-            {(Object.keys(UPDATE_TYPE) as UpdateType[]).map(t => {
-              const cfg = UPDATE_TYPE[t]
-              return (
-                <button key={t} onClick={() => setType(t)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all"
-                  style={type === t
-                    ? { background: cfg.bg, border: `1px solid ${cfg.color}`, color: cfg.color }
-                    : { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.35)' }}>
-                  {cfg.icon} {cfg.label}
-                </button>
-              )
-            })}
-          </div>
-
-          {/* Módulo */}
-          <div>
-            <div className="flex flex-wrap gap-1 mb-1.5">
-              {MODULES.map(m => (
-                <button key={m} onClick={() => setModule(module_.startsWith(m) ? '' : m)}
-                  className="text-[10px] font-bold px-2 py-0.5 rounded-md transition-all"
-                  style={module_.startsWith(m)
-                    ? { background: 'rgba(63,229,108,0.15)', color: '#3fe56c', border: '1px solid rgba(63,229,108,0.35)' }
-                    : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                  {m}
-                </button>
-              ))}
-            </div>
-            <input value={module_} onChange={e => setModule(e.target.value)}
-              placeholder="Local exato → Ex: Relatórios → Dropdown de Mês"
-              className="w-full px-3 py-2 rounded-xl text-xs outline-none"
-              style={inputStyle} />
-          </div>
-
-          {/* Título */}
-          <input value={title} onChange={e => setTitle(e.target.value)}
-            placeholder="Título da atualização"
-            className="w-full px-3 py-2.5 rounded-xl text-sm outline-none font-bold"
-            style={inputStyle} />
-
-          {/* Descrição */}
-          <textarea value={description} onChange={e => setDesc(e.target.value)} rows={2}
-            placeholder="Resumo em 1-2 frases do que foi feito..."
-            className="w-full px-3 py-2.5 rounded-xl text-xs outline-none resize-none"
-            style={inputStyle} />
-
-          {/* Detalhes */}
-          <textarea value={details} onChange={e => setDetails(e.target.value)} rows={4}
-            placeholder={`Uma linha por item — cada linha vira um bullet\nEx: Dropdown usa position:fixed\nEx: Botão PDF corrigido no hover`}
-            className="w-full px-3 py-2.5 rounded-xl text-xs outline-none resize-none font-mono"
-            style={{ ...inputStyle, lineHeight: 1.7 }} />
-
-          {error && <p className="text-xs" style={{ color: '#ff5252' }}>{error}</p>}
-
-          <motion.button onClick={submit} disabled={loading}
-            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-            className="w-full py-2.5 rounded-xl text-sm font-black flex items-center justify-center gap-2 disabled:opacity-50"
-            style={{ background: 'linear-gradient(135deg,#3fe56c,#22d3ee)', color: '#000' }}>
-            <Sparkles size={13} />
-            {loading ? 'Publicando...' : 'Publicar'}
-          </motion.button>
-        </div>
-      </motion.div>
-    </motion.div>
-  )
-}
-
 // ── Feedback Card ───────────────────────────────────────────────────────────────
 function FeedbackCard({ fb, onUpdate }: { fb: Feedback; onUpdate: () => void }) {
   const [open, setOpen]     = useState(false)
@@ -493,7 +364,6 @@ export default function AdminUpdatesPage() {
   const [updates, setUpdates]     = useState<SystemUpdate[]>([])
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
   const [loading, setLoading]     = useState(true)
-  const [showModal, setShowModal] = useState(false)
 
   const loadUpdates  = useCallback(async () => {
     const r = await fetch('/api/admin/system-updates'); const j = await r.json()
@@ -548,14 +418,6 @@ export default function AdminUpdatesPage() {
               style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)' }}>
               <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
             </motion.button>
-            {tab === 'updates' && (
-              <motion.button onClick={() => setShowModal(true)}
-                whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black"
-                style={{ background: 'linear-gradient(135deg,#3fe56c,#22d3ee)', color: '#000', boxShadow: '0 4px 16px rgba(63,229,108,0.3)' }}>
-                <Plus size={13} /> Publicar
-              </motion.button>
-            )}
           </div>
         </div>
 
@@ -606,7 +468,7 @@ export default function AdminUpdatesPage() {
                   </motion.div>
                   <div className="text-center">
                     <p className="text-base font-black mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Nenhuma novidade publicada</p>
-                    <p className="text-sm" style={{ color: 'rgba(255,255,255,0.2)' }}>Clique em "Publicar" para adicionar a primeira</p>
+                    <p className="text-sm" style={{ color: 'rgba(255,255,255,0.2)' }}>As novidades são publicadas pelo desenvolvedor do sistema</p>
                   </div>
                 </motion.div>
               ) : (
@@ -661,9 +523,6 @@ export default function AdminUpdatesPage() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {showModal && <AddUpdateModal onClose={() => setShowModal(false)} onAdded={loadUpdates} />}
-      </AnimatePresence>
     </div>
   )
 }
