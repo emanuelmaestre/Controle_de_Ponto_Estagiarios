@@ -646,10 +646,10 @@ export default function AdminUpdatesPage() {
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
 
-          {!loading && <StatsBar updates={updates} feedbacks={feedbacks} />}
-
           {/* ── Novidades ── */}
           {tab === 'updates' && (
+            <>
+            {!loading && <StatsBar updates={updates} feedbacks={feedbacks} />}
             <AnimatePresence mode="popLayout">
               {loading ? (
                 <div className="space-y-3">
@@ -681,6 +681,7 @@ export default function AdminUpdatesPage() {
                 </div>
               )}
             </AnimatePresence>
+            </>
           )}
 
           {/* ── Feedbacks ── */}
