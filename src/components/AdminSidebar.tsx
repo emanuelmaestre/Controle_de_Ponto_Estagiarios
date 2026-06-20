@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, TrendingUp, BarChart2, Settings,
-  LogOut, Users, ChevronDown, X, Trophy, Bell, Sparkles,
+  LogOut, Users, ChevronDown, X, Trophy, Bell, Sparkles, Shield,
 } from 'lucide-react'
 
 interface Props {
@@ -335,16 +335,17 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                   variants={{ rest: { background: 'transparent' }, hover: { background: 'rgba(0,200,83,0.08)' } }}
                 >
                   <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0"
-                    style={{ background: avatarColor(fullName), color: 'white' }}
+                    className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 relative"
+                    style={{ background: 'linear-gradient(135deg,#f97316,#fbbf24)', boxShadow: '0 0 10px rgba(249,115,22,0.45)' }}
                   >
-                    {initials}
+                    <Shield size={16} style={{ color: '#fff' }} />
+                    <span className="absolute -top-0.5 -right-0.5 text-[9px] leading-none">👑</span>
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-bold leading-none truncate" style={{ color: 'white' }}>
                       {fullName.split(' ')[0]}
                     </p>
-                    <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>ADMIN</p>
+                    <p className="text-[10px] mt-0.5 font-black" style={{ color: '#f97316' }}>ADMINISTRADOR</p>
                   </div>
                   <motion.span
                     variants={{ rest: { opacity: 0, x: -4 }, hover: { opacity: 1, x: 0 } }}
