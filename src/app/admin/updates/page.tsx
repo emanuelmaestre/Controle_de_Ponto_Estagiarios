@@ -353,7 +353,7 @@ function FeedbackCard({ fb, onUpdate }: { fb: Feedback; onUpdate: () => void }) 
     setStarring(true)
     await fetch('/api/admin/feedback/highlight', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: fb.id, intern_id: fb.profiles?.intern_id }),
+      body: JSON.stringify({ id: fb.id }),
     })
     setStarring(false); onUpdate()
   }
