@@ -40,11 +40,11 @@ export async function POST(req: Request) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
-  // +100 pts por enviar feedback
+  // +10 pts por enviar feedback
   await service
     .from('profiles')
-    .update({ points: (profile.points ?? 0) + 100 })
+    .update({ points: (profile.points ?? 0) + 10 })
     .eq('id', user.id)
 
-  return NextResponse.json({ feedback: data, points_awarded: 100 })
+  return NextResponse.json({ feedback: data, points_awarded: 10 })
 }
