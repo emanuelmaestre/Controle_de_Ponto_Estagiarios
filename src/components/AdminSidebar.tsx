@@ -326,21 +326,35 @@ export default function AdminSidebar({ fullName, initials }: Props) {
               className="rounded-lg overflow-hidden"
               style={{ background: 'rgba(0,200,83,0.06)', border: '1px solid rgba(0,200,83,0.10)' }}
             >
-              {/* linha do usuário */}
-              <div className="flex items-center gap-3 px-3 py-2.5">
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0"
-                  style={{ background: avatarColor(fullName), color: 'white' }}
+              {/* linha do usuário — clicável para o perfil */}
+              <Link href="/profile">
+                <motion.div
+                  className="flex items-center gap-3 px-3 py-2.5 cursor-pointer"
+                  whileHover="hover" initial="rest" animate="rest"
+                  style={{ transition: 'background 0.15s' }}
+                  variants={{ rest: { background: 'transparent' }, hover: { background: 'rgba(0,200,83,0.08)' } }}
                 >
-                  {initials}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold leading-none truncate" style={{ color: 'white' }}>
-                    {fullName.split(' ')[0]}
-                  </p>
-                  <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>ADMIN</p>
-                </div>
-              </div>
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0"
+                    style={{ background: avatarColor(fullName), color: 'white' }}
+                  >
+                    {initials}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold leading-none truncate" style={{ color: 'white' }}>
+                      {fullName.split(' ')[0]}
+                    </p>
+                    <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>ADMIN</p>
+                  </div>
+                  <motion.span
+                    variants={{ rest: { opacity: 0, x: -4 }, hover: { opacity: 1, x: 0 } }}
+                    className="text-[9px] font-bold flex-shrink-0"
+                    style={{ color: '#3fe56c' }}
+                  >
+                    Ver perfil
+                  </motion.span>
+                </motion.div>
+              </Link>
 
             </div>
           </div>
