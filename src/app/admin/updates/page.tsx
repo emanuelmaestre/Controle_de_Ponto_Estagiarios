@@ -145,12 +145,6 @@ function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; on
 
       {/* Main row */}
       <div className="relative flex items-start gap-4 p-5">
-        {/* Illustration */}
-        <motion.div animate={{ rotate: hovered ? [0,-5,5,0] : 0 }} transition={{ duration: 0.4 }}
-          className="flex-shrink-0 hidden sm:block">
-          {cfg.illustration}
-        </motion.div>
-
         {/* Content */}
         <div className="flex-1 min-w-0">
           {/* Badges row */}
@@ -216,7 +210,7 @@ function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; on
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden">
-            <div className="px-5 pb-5 ml-0 sm:ml-[80px]">
+            <div className="px-5 pb-5">
               <div className="rounded-xl p-4"
                 style={{ background: 'rgba(0,0,0,0.2)', border: `1px solid ${cfg.color}20` }}>
                 <p className="text-[10px] font-black uppercase tracking-wider mb-3"
