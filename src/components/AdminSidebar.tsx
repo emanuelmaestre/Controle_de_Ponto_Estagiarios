@@ -351,6 +351,11 @@ export default function AdminSidebar({ fullName, initials }: Props) {
               </Link>
 
             </div>
+
+            {/* ── Sino de pendências ── */}
+            <div className="mt-1 px-1">
+              <AdminNotificationBell />
+            </div>
           </div>
 
           {/* ── Sair ── */}
