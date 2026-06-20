@@ -36,7 +36,7 @@ export async function GET() {
   // ── 1. Buscar todos os estagiários ativos ───────────────────────────────
   const { data: interns } = await db
     .from('profiles')
-    .select('id, full_name, course, photo_url, workload_hours, points, streak_days')
+    .select('id, full_name, course, photo_url, total_hours_required, points, streak_days')
     .eq('role', 'intern')
     .eq('is_active', true)
     .order('full_name')
@@ -141,7 +141,7 @@ export async function GET() {
     }
 
     // 6d. Sem carga horária (CRÍTICO — impede cálculo de horas)
-    if (!intern.workload_hours || intern.workload_hours <= 0) {
+    if (!intern.total_hours_required || intern.total_hours_required <= 0) {
       notifications.push({
         id: `${id}_workload`,
         internId: id,
@@ -187,9 +187,9 @@ export async function GET() {
     }
 
     // 6g. Inativo há mais de 14 dias (informativo)
-    const hasWorkload = intern.workload_hours && intern.workload_hours > 0
+    const hasWorkload = intern.total_hours_required && intern.total_hours_required > 0
     const minutesWorked = hoursWorkedMap.get(id) ?? 0
-    const workloadMinutes = (intern.workload_hours ?? 0) * 60
+    const workloadMinutes = (intern.total_hours_required ?? 0) * 60
     const pctDone = workloadMinutes > 0 ? minutesWorked / workloadMinutes : 0
 
     if (!recentInterns.has(id) && pctDone < 0.95 && hasWorkload) {
