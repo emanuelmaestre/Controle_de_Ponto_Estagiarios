@@ -8,35 +8,39 @@ import type { AdminNotification, NotificationType } from '@/app/api/admin/notifi
 
 // ── Type config ───────────────────────────────────────────────────────────────
 const TYPE_CONFIG: Record<NotificationType, {
-  label: string; color: string; bg: string; border: string; icon: React.ReactNode
+  label: string; color: string; bg: string; border: string; icon: React.ReactNode; glow: string
 }> = {
   critical: {
     label: 'CRÍTICO',
     color: '#ff5252',
     bg:    'rgba(255,82,82,0.08)',
     border:'rgba(255,82,82,0.25)',
-    icon:  <AlertTriangle size={11} />,
+    glow:  'rgba(255,82,82,0.15)',
+    icon:  <AlertTriangle size={14} />,
   },
   admin: {
     label: 'ADMIN',
     color: '#f97316',
     bg:    'rgba(249,115,22,0.08)',
     border:'rgba(249,115,22,0.25)',
-    icon:  <Shield size={11} />,
+    glow:  'rgba(249,115,22,0.12)',
+    icon:  <Shield size={14} />,
   },
   intern: {
     label: 'ALUNO',
     color: '#22d3ee',
     bg:    'rgba(34,211,238,0.08)',
     border:'rgba(34,211,238,0.25)',
-    icon:  <User size={11} />,
+    glow:  'rgba(34,211,238,0.12)',
+    icon:  <User size={14} />,
   },
   info: {
     label: 'INFO',
     color: '#94a3b8',
     bg:    'rgba(148,163,184,0.06)',
     border:'rgba(148,163,184,0.20)',
-    icon:  <Info size={11} />,
+    glow:  'rgba(148,163,184,0.08)',
+    icon:  <Info size={14} />,
   },
 }
 
@@ -54,8 +58,13 @@ function InternAvatar({ initials, name }: { initials: string; name: string }) {
   const color = COLORS[name.charCodeAt(0) % COLORS.length]
   return (
     <div
-      className="w-8 h-8 rounded-full flex items-center justify-center font-black text-[10px] flex-shrink-0"
-      style={{ background: `${color}22`, border: `1.5px solid ${color}55`, color }}
+      className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-base flex-shrink-0"
+      style={{
+        background: `${color}18`,
+        border: `2px solid ${color}50`,
+        color,
+        boxShadow: `0 0 16px ${color}20`,
+      }}
     >
       {initials}
     </div>
@@ -67,48 +76,62 @@ function NotificationCard({ n, index, onClose }: { n: AdminNotification; index: 
   const cfg = TYPE_CONFIG[n.type]
   return (
     <motion.div
-      initial={{ opacity: 0, x: 12 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 12, height: 0, marginBottom: 0 }}
-      transition={{ delay: index * 0.04, duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8, height: 0, marginBottom: 0 }}
+      transition={{ delay: index * 0.05, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      className="group"
     >
       <Link href={n.href} onClick={onClose}>
         <motion.div
-          className="flex items-start gap-3 rounded-xl p-3 cursor-pointer relative overflow-hidden"
+          className="flex items-center gap-4 rounded-2xl p-4 cursor-pointer relative overflow-hidden"
           style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}
-          whileHover={{ x: 3, transition: { duration: 0.15 } }}
+          whileHover={{ scale: 1.01, x: 4, transition: { duration: 0.18 } }}
+          whileTap={{ scale: 0.99 }}
         >
-          {/* Left border accent */}
-          <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-xl" style={{ background: cfg.color }} />
+          {/* Left accent bar */}
+          <motion.div
+            className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl"
+            style={{ background: cfg.color }}
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: 1 }}
+            transition={{ delay: index * 0.05 + 0.1, duration: 0.3 }}
+          />
+          {/* Glow shimmer on hover */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none rounded-2xl"
+            initial={{ opacity: 0 }}
+            whileHover={{ opacity: 1 }}
+            style={{ background: `radial-gradient(ellipse at left, ${cfg.glow} 0%, transparent 70%)` }}
+          />
 
-          <div className="ml-1 flex-shrink-0 mt-0.5">
+          <div className="ml-1 flex-shrink-0">
             <InternAvatar initials={n.internInitials} name={n.internName} />
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-              <span className="flex items-center gap-0.5 text-[8px] font-black px-1.5 py-0.5 rounded-full"
-                style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color }}>
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <span className="flex items-center gap-1 text-xs font-black px-2.5 py-1 rounded-full"
+                style={{ background: `${cfg.color}20`, border: `1px solid ${cfg.border}`, color: cfg.color }}>
                 {cfg.icon} {cfg.label}
               </span>
-              <span className="text-[10px] font-bold truncate" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <span className="text-sm font-semibold truncate" style={{ color: 'rgba(255,255,255,0.55)' }}>
                 {n.internName}
               </span>
             </div>
-            <p className="text-[11px] font-black leading-tight" style={{ color: 'rgba(255,255,255,0.88)' }}>
+            <p className="text-base font-black leading-snug" style={{ color: 'rgba(255,255,255,0.92)' }}>
               {n.title}
             </p>
-            <p className="text-[10px] mt-0.5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <p className="text-sm mt-1 leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>
               {n.description}
             </p>
           </div>
 
           <motion.div
-            className="flex-shrink-0 self-center opacity-0 group-hover:opacity-100 transition-opacity"
+            className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
             style={{ color: cfg.color }}
           >
-            <ArrowRight size={13} />
+            <ArrowRight size={18} />
           </motion.div>
         </motion.div>
       </Link>
@@ -120,28 +143,56 @@ function NotificationCard({ n, index, onClose }: { n: AdminNotification; index: 
 function EmptyState() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.92 }}
+      initial={{ opacity: 0, scale: 0.88 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.1, type: 'spring', stiffness: 280, damping: 22 }}
-      className="flex flex-col items-center justify-center py-10 gap-3 relative"
+      transition={{ delay: 0.15, type: 'spring', stiffness: 240, damping: 20 }}
+      className="flex flex-col items-center justify-center h-full gap-6 py-20"
     >
-      <motion.div
-        animate={{ y: [0, -5, 0] }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-        className="relative"
-      >
-        <div className="w-16 h-16 rounded-2xl flex items-center justify-center"
-          style={{ background: 'rgba(63,229,108,0.1)', border: '1px solid rgba(63,229,108,0.2)', color: '#3fe56c' }}>
-          <CheckCircle2 size={28} />
-        </div>
-        <div className="absolute inset-0 rounded-2xl blur-xl pointer-events-none"
-          style={{ background: 'rgba(63,229,108,0.12)' }} />
-      </motion.div>
+      <div className="relative">
+        <motion.div
+          animate={{ y: [0, -8, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          className="relative"
+        >
+          <motion.div
+            className="absolute inset-0 rounded-full"
+            animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ background: 'radial-gradient(circle, rgba(63,229,108,0.25) 0%, transparent 70%)' }}
+          />
+          <div
+            className="w-28 h-28 rounded-3xl flex items-center justify-center relative"
+            style={{
+              background: 'linear-gradient(135deg, rgba(63,229,108,0.15) 0%, rgba(63,229,108,0.05) 100%)',
+              border: '2px solid rgba(63,229,108,0.3)',
+              boxShadow: '0 0 40px rgba(63,229,108,0.15), inset 0 1px 0 rgba(255,255,255,0.05)',
+            }}
+          >
+            <CheckCircle2 size={48} style={{ color: '#3fe56c' }} />
+          </div>
+        </motion.div>
+        {[...Array(3)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 rounded-full"
+            style={{
+              background: '#3fe56c',
+              top: `${20 + i * 25}%`,
+              left: i % 2 === 0 ? '-20px' : 'calc(100% + 12px)',
+            }}
+            animate={{ y: [0, -6, 0], opacity: [0.3, 0.7, 0.3], scale: [0.8, 1.2, 0.8] }}
+            transition={{ duration: 2 + i * 0.4, repeat: Infinity, delay: i * 0.3 }}
+          />
+        ))}
+      </div>
 
-      <div className="text-center">
-        <p className="text-sm font-black" style={{ color: '#3fe56c' }}>Tudo em ordem!</p>
-        <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
-          Nenhuma pendência identificada.
+      <div className="text-center space-y-2">
+        <p className="text-2xl font-black" style={{ color: '#3fe56c' }}>Tudo em ordem!</p>
+        <p className="text-base" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          Nenhuma pendência identificada no momento.
+        </p>
+        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.22)' }}>
+          O sistema atualiza automaticamente a cada 60s
         </p>
       </div>
     </motion.div>
@@ -151,13 +202,20 @@ function EmptyState() {
 // ── Loading skeleton ──────────────────────────────────────────────────────────
 function Skeleton() {
   return (
-    <div className="space-y-2">
-      {[...Array(3)].map((_, i) => (
-        <motion.div key={i} className="h-16 rounded-xl"
-          style={{ background: 'rgba(255,255,255,0.04)' }}
-          animate={{ opacity: [0.4, 0.7, 0.4] }}
-          transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.2 }}
-        />
+    <div className="space-y-3">
+      {[...Array(4)].map((_, i) => (
+        <motion.div key={i} className="h-24 rounded-2xl flex items-center gap-4 px-4"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+          animate={{ opacity: [0.3, 0.6, 0.3] }}
+          transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.15 }}
+        >
+          <div className="w-12 h-12 rounded-2xl flex-shrink-0" style={{ background: 'rgba(255,255,255,0.06)' }} />
+          <div className="flex-1 space-y-2">
+            <div className="h-3 rounded-full w-1/3" style={{ background: 'rgba(255,255,255,0.06)' }} />
+            <div className="h-4 rounded-full w-2/3" style={{ background: 'rgba(255,255,255,0.08)' }} />
+            <div className="h-3 rounded-full w-full" style={{ background: 'rgba(255,255,255,0.05)' }} />
+          </div>
+        </motion.div>
       ))}
     </div>
   )
@@ -174,7 +232,7 @@ function PanelContent({
   onClose: () => void
   onRefresh: () => void
 }) {
-  const total      = notifications.length
+  const total       = notifications.length
   const hasCritical = notifications.some(n => n.type === 'critical')
 
   const countByType = {
@@ -189,70 +247,105 @@ function PanelContent({
 
   return (
     <>
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 flex-shrink-0"
-        style={{ borderBottom: '1px solid rgba(0,200,83,0.12)', background: 'rgba(0,0,0,0.2)' }}>
-        <div className="flex items-center gap-2">
+      {/* ── Header ── */}
+      <div
+        className="flex items-center justify-between px-6 py-4 flex-shrink-0"
+        style={{
+          borderBottom: '1px solid rgba(0,200,83,0.15)',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.15))',
+        }}
+      >
+        <div className="flex items-center gap-3">
           <motion.div
-            animate={{ rotate: [0, -8, 8, -4, 4, 0] }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            animate={{ rotate: [0, -10, 10, -6, 6, 0] }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Bell size={14} style={{ color: '#3fe56c' }} />
+            <Bell size={22} style={{ color: '#3fe56c' }} />
           </motion.div>
-          <p className="text-sm font-black" style={{ color: '#3fe56c' }}>Pendências</p>
+          <div>
+            <p className="text-xl font-black" style={{ color: '#3fe56c' }}>Pendências</p>
+            {total > 0 && (
+              <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                {total} {total === 1 ? 'item pendente' : 'itens pendentes'}
+              </p>
+            )}
+          </div>
           {total > 0 && (
-            <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
+            <motion.span
+              initial={{ scale: 0 }} animate={{ scale: 1 }}
+              className="text-sm font-black px-3 py-1 rounded-full"
               style={{
-                background: hasCritical ? 'rgba(255,82,82,0.15)' : 'rgba(249,115,22,0.15)',
+                background: hasCritical ? 'rgba(255,82,82,0.18)' : 'rgba(249,115,22,0.18)',
                 color:      hasCritical ? '#ff5252' : '#f97316',
+                border: `1px solid ${hasCritical ? 'rgba(255,82,82,0.3)' : 'rgba(249,115,22,0.3)'}`,
               }}>
-              {total} {total === 1 ? 'item' : 'itens'}
-            </span>
+              {hasCritical ? '⚠ Atenção' : '● Ativo'}
+            </motion.span>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={onRefresh}
-            className="text-[10px] font-bold px-2 py-1 rounded-lg transition-opacity hover:opacity-70"
-            style={{ color: 'rgba(255,255,255,0.3)', border: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="flex items-center gap-3">
+          <motion.button
+            onClick={onRefresh}
+            className="text-sm font-bold px-4 py-2 rounded-xl"
+            style={{ color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)' }}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.97 }}
+          >
             Atualizar
-          </button>
-          <button onClick={onClose} className="hover:opacity-70 transition-opacity"
-            style={{ color: 'rgba(255,255,255,0.35)' }}>
-            <X size={15} />
-          </button>
+          </motion.button>
+          <motion.button
+            onClick={onClose}
+            className="w-10 h-10 rounded-xl flex items-center justify-center"
+            style={{ color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)' }}
+            whileHover={{ scale: 1.08, background: 'rgba(255,82,82,0.12)', color: 'rgba(255,255,255,0.9)' }}
+            whileTap={{ scale: 0.94 }}
+          >
+            <X size={18} />
+          </motion.button>
         </div>
       </div>
 
-      {/* Filter tabs */}
+      {/* ── Filter tabs ── */}
       {total > 0 && (
-        <div className="flex gap-1 px-3 py-2 flex-shrink-0 overflow-x-auto"
-          style={{ borderBottom: '1px solid rgba(0,200,83,0.08)', scrollbarWidth: 'none' }}>
-          <button onClick={() => setFilter('all')}
-            className="flex-shrink-0 text-[9px] font-black px-2 py-1 rounded-lg transition-all"
+        <div
+          className="flex gap-2 px-6 py-3 flex-shrink-0 overflow-x-auto"
+          style={{ borderBottom: '1px solid rgba(0,200,83,0.08)', scrollbarWidth: 'none' }}
+        >
+          <motion.button
+            onClick={() => setFilter('all')}
+            className="flex-shrink-0 text-sm font-black px-4 py-2 rounded-xl"
             style={filter === 'all'
-              ? { background: 'rgba(63,229,108,0.15)', color: '#3fe56c', border: '1px solid rgba(63,229,108,0.3)' }
-              : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', border: '1px solid transparent' }}>
+              ? { background: 'rgba(63,229,108,0.15)', color: '#3fe56c', border: '1px solid rgba(63,229,108,0.35)' }
+              : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.45)', border: '1px solid transparent' }}
+            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+          >
             Todos ({countByType.all})
-          </button>
+          </motion.button>
           {TYPE_ORDER.map(t => {
             if (countByType[t] === 0) return null
             const cfg = TYPE_CONFIG[t]
             return (
-              <button key={t} onClick={() => setFilter(t)}
-                className="flex-shrink-0 text-[9px] font-black px-2 py-1 rounded-lg transition-all"
+              <motion.button
+                key={t}
+                onClick={() => setFilter(t)}
+                className="flex-shrink-0 text-sm font-black px-4 py-2 rounded-xl flex items-center gap-1.5"
                 style={filter === t
                   ? { background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }
-                  : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', border: '1px solid transparent' }}>
-                {TYPE_LABELS[t]} ({countByType[t]})
-              </button>
+                  : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.45)', border: '1px solid transparent' }}
+                whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+              >
+                {cfg.icon} {TYPE_LABELS[t]} ({countByType[t]})
+              </motion.button>
             )
           })}
         </div>
       )}
 
-      {/* List */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2"
-        style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(63,229,108,0.2) transparent' }}>
+      {/* ── List ── */}
+      <div
+        className="flex-1 overflow-y-auto px-6 py-4 space-y-3"
+        style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(63,229,108,0.2) transparent' }}
+      >
         {loading ? <Skeleton /> : filtered.length === 0 ? <EmptyState /> : (
           <AnimatePresence mode="popLayout">
             {filtered.map((n, i) => (
@@ -262,12 +355,12 @@ function PanelContent({
         )}
       </div>
 
-      {/* Footer */}
+      {/* ── Footer ── */}
       {!loading && total > 0 && (
-        <div className="px-4 py-2.5 flex-shrink-0"
-          style={{ borderTop: '1px solid rgba(0,200,83,0.08)', background: 'rgba(0,0,0,0.1)' }}>
-          <p className="text-[9px] text-center" style={{ color: 'rgba(255,255,255,0.2)' }}>
-            Clique em uma pendência para resolver diretamente · Atualizado a cada 60s
+        <div className="px-6 py-3 flex-shrink-0"
+          style={{ borderTop: '1px solid rgba(0,200,83,0.08)', background: 'rgba(0,0,0,0.15)' }}>
+          <p className="text-sm text-center" style={{ color: 'rgba(255,255,255,0.22)' }}>
+            Toque em uma pendência para resolver diretamente · Atualizado a cada 60s
           </p>
         </div>
       )}
