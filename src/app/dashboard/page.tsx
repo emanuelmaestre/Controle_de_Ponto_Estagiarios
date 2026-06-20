@@ -10,7 +10,7 @@ import SelfieGate from '@/components/SelfieGate'
 import StatusBadge from '@/components/StatusBadge'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/MotionWrappers'
-import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell, AlertTriangle, User, Flame, Star } from 'lucide-react'
+import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell, AlertTriangle, User, Flame, Star, Bell } from 'lucide-react'
 import LiveClock from '@/components/ui/LiveClock'
 import type { RecordStatus } from '@/types/database'
 import { getLevelInfo, getLevelTitle, getNextLevel, getProgressToNextLevel, ACHIEVEMENTS } from '@/lib/gamification'
@@ -507,6 +507,10 @@ export default async function DashboardPage() {
           <Link href="/intern-ranking" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
             <Trophy size={18} />
             <span className="text-[10px] font-bold">Ranking</span>
+          </Link>
+          <Link href="/updates" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
+            <Bell size={18} />
+            <span className="text-[10px] font-bold">Novidades</span>
           </Link>
           <Link href="/profile" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
             <User size={18} />
