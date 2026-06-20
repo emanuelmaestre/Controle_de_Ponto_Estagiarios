@@ -135,77 +135,43 @@ function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; on
       transition={{ delay: index * 0.06, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      className="group relative rounded-2xl overflow-hidden"
-      style={{ background: cfg.bg, border: `1px solid ${hovered ? cfg.color + '60' : cfg.border}`, transition: 'border-color 0.2s' }}
+      className="rounded-2xl overflow-hidden"
+      style={{ background: cfg.bg, border: `1px solid ${hovered ? cfg.color + '50' : cfg.border}`, transition: 'border-color 0.2s' }}
     >
-      {/* Left accent */}
-      <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl"
-        style={{ background: `linear-gradient(to bottom, ${cfg.color}, transparent)` }} />
-
-      {/* ── Cabeçalho: ONDE foi feito ── */}
-      {u.module && (
-        <div className="relative flex items-center justify-between px-5 pt-4 pb-2">
-          <div className="flex items-center gap-2">
-            {/* Ícone do tipo */}
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-              style={{ background: `${cfg.color}18`, color: cfg.color }}>
-              {cfg.icon}
-            </div>
-            {/* Caminho do módulo — destaque principal */}
-            <div>
-              <p className="text-[9px] font-black uppercase tracking-widest mb-0.5"
-                style={{ color: 'rgba(255,255,255,0.25)' }}>Local da atualização</p>
-              <p className="text-sm font-black" style={{ color: cfg.color }}>
-                {u.module}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-              style={{ background: `${cfg.color}15`, color: cfg.color, border: `1px solid ${cfg.color}30` }}>
-              {cfg.label}
-            </span>
-            <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.22)' }}>
-              {timeAgo(u.created_at)}
-            </span>
-            <motion.button onClick={onDelete}
-              initial={{ opacity: 0 }} animate={{ opacity: hovered ? 1 : 0 }}
-              className="p-1.5 rounded-lg" style={{ background: 'rgba(255,82,82,0.1)', color: '#ff5252' }}
-              whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Trash2 size={11} />
-            </motion.button>
-          </div>
-        </div>
-      )}
+      {/* ── Topo: tipo + local + data + lixeira ── */}
+      <div className="flex items-center gap-2 px-4 pt-3 pb-2.5 flex-wrap">
+        {/* Badge do tipo */}
+        <span className="flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full flex-shrink-0"
+          style={{ background: `${cfg.color}20`, color: cfg.color, border: `1px solid ${cfg.color}35` }}>
+          {cfg.icon} {cfg.label}
+        </span>
+        {/* Local da atualização */}
+        {u.module && (
+          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full flex-shrink-0"
+            style={{ background: 'rgba(255,255,255,0.06)', color: cfg.color, border: `1px solid ${cfg.color}20` }}>
+            {u.module}
+          </span>
+        )}
+        {/* Espaçador */}
+        <span className="flex-1" />
+        {/* Data */}
+        <span className="text-[10px] flex-shrink-0" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          {timeAgo(u.created_at)}
+        </span>
+        {/* Lixeira */}
+        <motion.button onClick={onDelete}
+          initial={{ opacity: 0 }} animate={{ opacity: hovered ? 1 : 0 }}
+          className="p-1.5 rounded-lg flex-shrink-0" style={{ background: 'rgba(255,82,82,0.1)', color: '#ff5252' }}
+          whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          <Trash2 size={11} />
+        </motion.button>
+      </div>
 
       {/* Divisor */}
-      {u.module && (
-        <div className="mx-5 mb-3" style={{ height: 1, background: `${cfg.color}15` }} />
-      )}
+      <div className="mx-4" style={{ height: 1, background: `${cfg.color}12` }} />
 
       {/* ── Corpo ── */}
-      <div className="relative px-5 pb-5">
-        {/* Cabeçalho sem módulo */}
-        {!u.module && (
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full"
-                style={{ background: `${cfg.color}20`, color: cfg.color, border: `1px solid ${cfg.color}40` }}>
-                {cfg.icon} {cfg.label}
-              </span>
-              <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.28)' }}>
-                {timeAgo(u.created_at)}
-              </span>
-            </div>
-            <motion.button onClick={onDelete}
-              initial={{ opacity: 0 }} animate={{ opacity: hovered ? 1 : 0 }}
-              className="p-1.5 rounded-lg" style={{ background: 'rgba(255,82,82,0.1)', color: '#ff5252' }}
-              whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Trash2 size={11} />
-            </motion.button>
-          </div>
-        )}
-
+      <div className="px-4 pt-3 pb-4">
         {/* Título */}
         <motion.p className="text-[15px] font-black mb-1.5 leading-snug"
           animate={{ color: hovered ? cfg.color : 'rgba(255,255,255,0.92)' }}
