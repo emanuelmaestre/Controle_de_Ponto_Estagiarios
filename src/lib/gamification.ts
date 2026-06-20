@@ -1,23 +1,37 @@
 // Shared gamification constants and helpers
 
 export const SCORING_RULES = [
-  { id: 'presence',  emoji: '📅', label: 'Presença diária',       points: '+10 pts', detail: 'Compareça e registre entrada e saída no mesmo dia' },
-  { id: 'punctual',  emoji: '⏰', label: 'Pontualidade',           points: '+5 pts',  detail: 'Registre a entrada em até 15 min após o horário previsto' },
-  { id: 'photo',     emoji: '📸', label: 'Foto de perfil',         points: '+30 pts', detail: 'Cadastre uma foto sua (real, não desenho) em Meu Perfil — concedido apenas na primeira vez' },
-  { id: 'activity',  emoji: '📝', label: 'Atividade documentada',  points: '+5 pts',  detail: 'Na saída, descreva ao menos 1 atividade realizada (mín. 10 letras)' },
-  { id: 'fullname',  emoji: '🪪', label: 'Nome completo válido',  points: '+20 pts', detail: 'Cadastre seu nome completo sem abreviações (ex: "Emanuel M" não vale — coloque "Emanuel Maestre")' },
-  { id: 'streak_3',  emoji: '🔥', label: 'Sequência de 3 dias',   points: '×1.2',    detail: 'Compareça 3 dias seguidos — multiplica os pontos do dia' },
-  { id: 'streak_7',  emoji: '⚡', label: 'Sequência de 7 dias',   points: '×1.5',    detail: 'Compareça 7 dias seguidos — multiplica os pontos do dia' },
-  { id: 'streak_30', emoji: '💎', label: 'Sequência de 30 dias',  points: '×2.0',    detail: 'Compareça 30 dias seguidos — dobra os pontos do dia' },
+  // ── Presença ──
+  { id: 'presence',         emoji: '📅', label: 'Presença diária',           points: '+10 pts', detail: 'Compareça e registre entrada e saída no mesmo dia' },
+  { id: 'punctual',         emoji: '⏰', label: 'Pontualidade',               points: '+5 pts',  detail: 'Registre a entrada em até 15 min após o horário previsto' },
+  { id: 'activity',         emoji: '📝', label: 'Atividade documentada',      points: '+5 pts',  detail: 'Na saída, descreva ao menos 1 atividade realizada (mín. 10 letras)' },
+  { id: 'session_complete', emoji: '✅', label: 'Sessão completa',             points: '+3 pts',  detail: 'Cumpra todas as horas agendadas do dia (tolerância de 10 min)' },
+  // ── Cadastro ──
+  { id: 'photo',            emoji: '📸', label: 'Foto de perfil',             points: '+30 pts', detail: 'Cadastre uma foto sua (real, não desenho) em Meu Perfil — concedido apenas na primeira vez' },
+  { id: 'fullname',         emoji: '🪪', label: 'Nome completo válido',       points: '+20 pts', detail: 'Cadastre seu nome completo sem abreviações (ex: "Emanuel M" não vale — coloque "Emanuel Maestre")' },
+  // ── Streak ──
+  { id: 'streak_3',         emoji: '🔥', label: 'Sequência de 3 dias',       points: '×1.2',    detail: 'Compareça 3 dias seguidos — multiplica todos os pontos do dia' },
+  { id: 'streak_7',         emoji: '⚡', label: 'Sequência de 7 dias',       points: '×1.5',    detail: 'Compareça 7 dias seguidos — multiplica todos os pontos do dia' },
+  { id: 'streak_30',        emoji: '💎', label: 'Sequência de 30 dias',      points: '×2.0',    detail: 'Compareça 30 dias seguidos — dobra todos os pontos do dia' },
+  // ── Carga horária ──
+  { id: 'workload_25',      emoji: '⏳', label: '25% da carga cumprida',     points: '+50 pts', detail: 'Atinja 25% do total de horas do seu estágio' },
+  { id: 'workload_50',      emoji: '⌛', label: '50% da carga cumprida',     points: '+100 pts', detail: 'Atinja a metade do total de horas do seu estágio' },
+  { id: 'workload_75',      emoji: '🎯', label: '75% da carga cumprida',     points: '+150 pts', detail: 'Atinja 75% do total de horas do seu estágio' },
+  { id: 'workload_100',     emoji: '🏁', label: 'Carga horária concluída',   points: '+250 pts', detail: 'Conclua 100% das horas exigidas pelo seu estágio' },
+  // ── Consistência mensal ──
+  { id: 'month_60',         emoji: '📈', label: '60% do mês cumprido',       points: '+20 pts', detail: 'Cumpra ao menos 60% das horas esperadas no mês' },
+  { id: 'month_80',         emoji: '🚀', label: '80% do mês cumprido',       points: '+40 pts', detail: 'Cumpra ao menos 80% das horas esperadas no mês' },
+  { id: 'month_complete',   emoji: '🏆', label: 'Mês 100% cumprido',         points: '+60 pts', detail: 'Cumpra 100% das horas esperadas em um mês' },
+  { id: 'month_110',        emoji: '🌟', label: 'Dedicação extra no mês',    points: '+80 pts', detail: 'Cumpra mais de 110% das horas esperadas em um mês' },
 ] as const
 
 export const LEVELS = [
   { level: 1, titleM: 'Novato',       titleF: 'Novata',        icon: '🌱', minPoints: 0,    color: '#94a3b8' },
-  { level: 2, titleM: 'Aprendiz',     titleF: 'Aprendiz',      icon: '📚', minPoints: 200,  color: '#60a5fa' },
-  { level: 3, titleM: 'Colaborador',  titleF: 'Colaboradora',  icon: '🤝', minPoints: 500,  color: '#34d399' },
-  { level: 4, titleM: 'Dedicado',     titleF: 'Dedicada',      icon: '💪', minPoints: 1000, color: '#a78bfa' },
-  { level: 5, titleM: 'Especialista', titleF: 'Especialista',  icon: '🔬', minPoints: 2000, color: '#fbbf24' },
-  { level: 6, titleM: 'Elite',        titleF: 'Elite',         icon: '👑', minPoints: 4000, color: '#f97316' },
+  { level: 2, titleM: 'Aprendiz',     titleF: 'Aprendiz',      icon: '📚', minPoints: 250,  color: '#60a5fa' },
+  { level: 3, titleM: 'Colaborador',  titleF: 'Colaboradora',  icon: '🤝', minPoints: 600,  color: '#34d399' },
+  { level: 4, titleM: 'Dedicado',     titleF: 'Dedicada',      icon: '💪', minPoints: 1200, color: '#a78bfa' },
+  { level: 5, titleM: 'Especialista', titleF: 'Especialista',  icon: '🔬', minPoints: 2500, color: '#fbbf24' },
+  { level: 6, titleM: 'Elite',        titleF: 'Elite',         icon: '👑', minPoints: 5000, color: '#f97316' },
 ] as const
 
 export type LevelEntry = typeof LEVELS[number]
@@ -51,77 +65,113 @@ export function getProgressToNextLevel(points: number, level: number): number {
 }
 
 export const ACHIEVEMENTS: Record<string, { label: string; emoji: string; desc: string; how: string }> = {
+
+  // ── Cadastro ─────────────────────────────────────────────────────────────────
   full_name: {
     label: 'Nome Verdadeiro',
     emoji: '🪪',
     desc:  'Nome completo cadastrado sem abreviações',
-    how:   'Preencha seu nome completo em Meu Perfil sem abreviar — "Emanuel M dos Santos" não vale, escreva "Emanuel Maestre dos Santos"',
+    how:   'Em Meu Perfil, preencha o nome completo sem abreviar — "Emanuel M." não vale, escreva "Emanuel Maestre dos Santos"',
   },
   has_photo: {
     label: 'Identidade Completa',
     emoji: '📸',
-    desc:  'Foto real de perfil cadastrada (apenas na primeira vez)',
-    how:   'Vá em Meu Perfil e adicione uma foto sua real — trocar a foto depois não concede pontos novamente e fotos de desenho/avatar não são válidas',
+    desc:  'Foto real de perfil adicionada',
+    how:   'Em Meu Perfil, adicione uma foto sua real — fotos de desenho ou avatar não são válidas e a pontuação é concedida apenas na primeira vez',
   },
+
+  // ── Presença ─────────────────────────────────────────────────────────────────
   first_day: {
     label: 'Primeiro Dia',
     emoji: '🌱',
-    desc:  'Primeiro registro de ponto concluído',
-    how:   'Registre entrada e saída pela primeira vez',
+    desc:  'Primeiro registro de ponto completo',
+    how:   'Registre entrada e saída pela primeira vez — bem-vindo ao sistema!',
   },
+  punctual_10: {
+    label: 'Sempre Pontual',
+    emoji: '⏰',
+    desc:  '10 entradas registradas dentro do horário',
+    how:   'Registre a entrada em até 15 min após o horário previsto por 10 dias diferentes',
+  },
+  reporter_5: {
+    label: 'Repórter',
+    emoji: '📝',
+    desc:  '5 dias com atividade documentada na saída',
+    how:   'Na tela de saída, descreva o que fez (mín. 10 caracteres) em 5 dias diferentes',
+  },
+  reporter_20: {
+    label: 'Cronista',
+    emoji: '📋',
+    desc:  '20 dias com atividade documentada na saída',
+    how:   'Na tela de saída, descreva o que fez (mín. 10 caracteres) em 20 dias diferentes',
+  },
+
+  // ── Streak ───────────────────────────────────────────────────────────────────
   streak_3: {
     label: 'Trio Imparável',
     emoji: '🔥',
     desc:  '3 dias consecutivos presentes',
-    how:   'Compareça e registre ponto por 3 dias seguidos',
+    how:   'Compareça e registre ponto por 3 dias seguidos — ativa multiplicador ×1.2',
   },
   streak_7: {
     label: 'Semana Perfeita',
     emoji: '⚡',
     desc:  '7 dias consecutivos presentes',
-    how:   'Compareça e registre ponto por 7 dias seguidos sem faltar',
+    how:   'Compareça e registre ponto por 7 dias seguidos sem faltar — ativa multiplicador ×1.5',
   },
   streak_30: {
     label: 'Mês Inquebrável',
     emoji: '💎',
     desc:  '30 dias consecutivos presentes',
-    how:   'Compareça e registre ponto por 30 dias seguidos sem faltar',
+    how:   'Compareça e registre ponto por 30 dias seguidos sem faltar — dobra todos os pontos do dia (×2.0)',
   },
-  punctual_10: {
-    label: 'Sempre Pontual',
-    emoji: '⏰',
-    desc:  '10 entradas registradas no horário',
-    how:   'Registre a entrada em até 15 min do horário previsto por 10 vezes',
+
+  // ── Carga horária — Marcos totais ────────────────────────────────────────────
+  workload_25: {
+    label: 'Quarto do Caminho',
+    emoji: '⏳',
+    desc:  '25% da carga horária total cumprida',
+    how:   'Acumule horas até atingir 25% do total exigido pelo seu estágio — bônus único de +50 pts',
   },
-  reporter_5: {
-    label: 'Repórter',
-    emoji: '📝',
-    desc:  '5 saídas com atividade documentada',
-    how:   'Na tela de saída, descreva o que fez (mín. 10 letras) em 5 dias diferentes',
+  workload_50: {
+    label: 'Meio Caminho',
+    emoji: '⌛',
+    desc:  '50% da carga horária total cumprida',
+    how:   'Acumule horas até atingir a metade do total exigido pelo seu estágio — bônus único de +100 pts',
   },
-  reporter_20: {
-    label: 'Cronista',
-    emoji: '📋',
-    desc:  '20 saídas com atividade documentada',
-    how:   'Na tela de saída, descreva o que fez (mín. 10 letras) em 20 dias diferentes',
+  workload_75: {
+    label: 'Reta Final',
+    emoji: '🎯',
+    desc:  '75% da carga horária total cumprida',
+    how:   'Acumule horas até atingir 75% do total exigido pelo seu estágio — bônus único de +150 pts',
   },
+  workload_100: {
+    label: 'Missão Cumprida',
+    emoji: '🏁',
+    desc:  'Carga horária total do estágio concluída',
+    how:   'Conclua 100% das horas exigidas pelo seu estágio — bônus único de +250 pts',
+  },
+
+  // ── Carga horária — Consistência mensal ──────────────────────────────────────
   month_80: {
-    label: 'Quase Lá',
+    label: 'Mês Dedicado',
     emoji: '🚀',
-    desc:  '80% da carga horária mensal atingida',
-    how:   'Cumpra ao menos 80% das horas do mês registrando entrada e saída',
+    desc:  'Cumprida 80% das horas esperadas no mês',
+    how:   'Registre horas suficientes para atingir 80% da meta mensal de carga horária — concedido por mês',
   },
   month_complete: {
-    label: 'Meta Cumprida',
+    label: 'Mês Completo',
     emoji: '🏆',
-    desc:  '100% da carga horária mensal atingida',
-    how:   'Cumpra 100% das horas do mês registrando entrada e saída todos os dias',
+    desc:  '100% das horas esperadas no mês cumpridas',
+    how:   'Registre horas suficientes para bater 100% da meta mensal de carga horária — concedido por mês',
   },
+
+  // ── Ranking ──────────────────────────────────────────────────────────────────
   top_month: {
     label: 'Destaque do Mês',
     emoji: '👑',
-    desc:  '1º lugar no ranking do mês',
-    how:   'Seja o estagiário com mais pontos no mês — presença, pontualidade e atividades',
+    desc:  '1º lugar no ranking mensal',
+    how:   'Termine o mês com mais pontos que todos os outros estagiários — presença, pontualidade, atividades e carga horária contam',
   },
 }
 
