@@ -9,7 +9,7 @@ import {
   LayoutDashboard, TrendingUp, BarChart2, Settings,
   LogOut, Users, ChevronDown, X, Trophy, Bell, Sparkles, Shield,
 } from 'lucide-react'
-import AdminNotificationBell from '@/components/AdminNotificationBell'
+import AdminNotificationBell, { AdminNotificationBellMobile } from '@/components/AdminNotificationBell'
 
 interface Props {
   fullName: string
@@ -351,16 +351,11 @@ export default function AdminSidebar({ fullName, initials }: Props) {
               </Link>
 
             </div>
-
-            {/* ── Sino de pendências ── */}
-            <div className="mt-1 px-1">
-              <AdminNotificationBell />
-            </div>
           </div>
 
-          {/* ── Sair ── */}
-          <div className="px-4 pb-6 flex-shrink-0">
-            <form action="/api/auth/signout" method="POST">
+          {/* ── Sair + Sino ── */}
+          <div className="px-4 pb-6 flex-shrink-0 flex items-center gap-2">
+            <form action="/api/auth/signout" method="POST" className="flex-1">
               <button
                 type="submit"
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200 hover:opacity-80"
@@ -370,6 +365,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                 Sair
               </button>
             </form>
+            <AdminNotificationBellMobile />
           </div>
         </aside>
       )}
