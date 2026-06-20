@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Download, FileText, Users, BarChart2, Trophy,
@@ -123,36 +123,40 @@ const CATEGORIES = [
   { key: 'ranking'  as Category, label: 'Ranking',        icon: <Trophy size={14} /> },
 ]
 
-// ── Hook: posição fixed calculada pelo botão ──────────────────────────────────
-function useDropdownPos(open: boolean, btnRef: React.RefObject<HTMLButtonElement | null>, width: number) {
-  const [pos, setPos] = useState<React.CSSProperties>({})
-  useEffect(() => {
-    if (!open || !btnRef.current) return
-    const r = btnRef.current.getBoundingClientRect()
-    const spaceBelow = window.innerHeight - r.bottom
-    const top = spaceBelow >= 228 ? r.bottom + 4 : r.top - Math.min(228, spaceBelow < 60 ? 228 : spaceBelow) - 4
-    const left = Math.min(r.left, window.innerWidth - width - 8)
-    setPos({ position: 'fixed', top: Math.max(8, top), left: Math.max(8, left), width, zIndex: 9999 })
-  }, [open, btnRef, width])
-  return pos
+// ── Calcula posição fixed a partir do elemento ─────────────────────────────────
+function calcPos(el: HTMLElement, width: number): React.CSSProperties {
+  const r          = el.getBoundingClientRect()
+  const maxH       = 228
+  const spaceBelow = window.innerHeight - r.bottom
+  const top        = spaceBelow >= maxH ? r.bottom + 4 : r.top - maxH - 4
+  const left       = Math.min(r.left, window.innerWidth - width - 8)
+  return { position: 'fixed', top: Math.max(8, top), left: Math.max(8, left), width, zIndex: 9999 }
+}
+
+const DROPDOWN_STYLE = {
+  background: '#0b1d12', border: '1px solid rgba(63,229,108,0.2)',
+  boxShadow: '0 16px 48px rgba(0,0,0,0.8)', maxHeight: 228, overflowY: 'auto' as const,
 }
 
 // ── Intern selector ────────────────────────────────────────────────────────────
 interface InternOption { id: string; full_name: string }
 
 function InternSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const [interns, setInterns] = useState<InternOption[]>([])
-  const [open, setOpen]   = useState(false)
-  const [loaded, setLoaded] = useState(false)
-  const btnRef = useRef<HTMLButtonElement>(null)
-  const pos    = useDropdownPos(open, btnRef, 224)
+  const [interns, setInterns]   = useState<InternOption[]>([])
+  const [open, setOpen]         = useState(false)
+  const [loaded, setLoaded]     = useState(false)
+  const [pos, setPos]           = useState<React.CSSProperties>({})
+  const btnRef                  = useRef<HTMLButtonElement>(null)
 
-  const load = async () => {
-    if (loaded) { setOpen(o => !o); return }
-    const res  = await fetch('/api/admin/report-data?type=monthly')
-    const json = await res.json()
-    setInterns(json.interns ?? [])
-    setLoaded(true)
+  const toggle = async () => {
+    if (open) { setOpen(false); return }
+    if (btnRef.current) setPos(calcPos(btnRef.current, 224))
+    if (!loaded) {
+      const res  = await fetch('/api/admin/report-data?type=monthly')
+      const json = await res.json()
+      setInterns(json.interns ?? [])
+      setLoaded(true)
+    }
     setOpen(true)
   }
 
@@ -160,14 +164,13 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
 
   return (
     <div>
-      <button ref={btnRef} type="button" onClick={load}
+      <button ref={btnRef} type="button" onClick={toggle}
         className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all w-full"
         style={{
           background: value ? 'rgba(63,229,108,0.1)' : 'rgba(255,255,255,0.04)',
           border: `1px solid ${value ? 'rgba(63,229,108,0.3)' : 'rgba(255,255,255,0.08)'}`,
           color: value ? '#3fe56c' : 'rgba(255,255,255,0.4)',
-        }}
-      >
+        }}>
         <Users size={11} />
         <span className="flex-1 text-left truncate">{selected?.full_name ?? 'Selecionar estagiário'}</span>
         <ChevronDown size={11} />
@@ -182,12 +185,7 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
               exit={{ opacity: 0, y: -4, scale: 0.97 }}
               transition={{ duration: 0.15 }}
               className="rounded-xl overflow-hidden"
-              style={{
-                ...pos,
-                background: '#0b1d12', border: '1px solid rgba(63,229,108,0.2)',
-                boxShadow: '0 16px 48px rgba(0,0,0,0.7)', maxHeight: 220, overflowY: 'auto',
-              }}
-            >
+              style={{ ...pos, ...DROPDOWN_STYLE }}>
               {interns.map(intern => (
                 <button key={intern.id} type="button"
                   onClick={() => { onChange(intern.id); setOpen(false) }}
@@ -214,16 +212,21 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
 // ── Month select compact ───────────────────────────────────────────────────────
 function MonthSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false)
-  const btnRef = useRef<HTMLButtonElement>(null)
-  const pos    = useDropdownPos(open, btnRef, 192)
-  const selected = monthOptions.find(o => o.value === value)
+  const [pos, setPos]   = useState<React.CSSProperties>({})
+  const btnRef          = useRef<HTMLButtonElement>(null)
+  const selected        = monthOptions.find(o => o.value === value)
+
+  const toggle = () => {
+    if (open) { setOpen(false); return }
+    if (btnRef.current) setPos(calcPos(btnRef.current, 200))
+    setOpen(true)
+  }
 
   return (
     <div>
-      <button ref={btnRef} type="button" onClick={() => setOpen(o => !o)}
+      <button ref={btnRef} type="button" onClick={toggle}
         className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all w-full"
-        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)' }}
-      >
+        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)' }}>
         <CalendarDays size={11} style={{ color: '#3fe56c' }} />
         <span className="flex-1 text-left capitalize">{selected?.label ?? 'Mês'}</span>
         <ChevronDown size={11} />
@@ -236,12 +239,7 @@ function MonthSelect({ value, onChange }: { value: string; onChange: (v: string)
               initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}
               className="rounded-xl overflow-hidden"
-              style={{
-                ...pos,
-                background: '#0b1d12', border: '1px solid rgba(63,229,108,0.2)',
-                boxShadow: '0 16px 48px rgba(0,0,0,0.7)', maxHeight: 220, overflowY: 'auto',
-              }}
-            >
+              style={{ ...pos, ...DROPDOWN_STYLE }}>
               {monthOptions.map(opt => (
                 <button key={opt.value} type="button"
                   onClick={() => { onChange(opt.value); setOpen(false) }}
