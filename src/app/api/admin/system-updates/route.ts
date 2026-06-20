@@ -26,6 +26,7 @@ export async function POST(req: Request) {
   const db = createSupabaseServiceClient()
   const { data, error } = await db.from('system_updates').insert({
     title: body.title, description: body.description, type: body.type ?? 'feature',
+    module: body.module ?? null, details: body.details ?? null,
   }).select().single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })

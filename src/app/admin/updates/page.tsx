@@ -13,7 +13,8 @@ type FeedbackCategory = 'suggestion' | 'bug' | 'praise' | 'other'
 type FeedbackStatus   = 'new' | 'read' | 'implemented' | 'archived'
 
 interface SystemUpdate {
-  id: string; title: string; description: string; type: UpdateType; created_at: string
+  id: string; title: string; description: string; type: UpdateType
+  module: string | null; details: string | null; created_at: string
 }
 interface Feedback {
   id: string; category: FeedbackCategory; message: string; status: FeedbackStatus
@@ -109,10 +110,23 @@ function avatarInitials(name: string) {
 const AV_COLORS = ['#3fe56c','#22d3ee','#a78bfa','#f97316','#fbbf24']
 function avatarColor(name: string) { return AV_COLORS[name.charCodeAt(0) % AV_COLORS.length] }
 
+// ── Módulos disponíveis ────────────────────────────────────────────────────────
+const MODULES = [
+  'Painel', 'Cadastros', 'Carga de Trabalho', 'Relatórios',
+  'Ranking', 'Atualizações', 'Configurações', 'Registro de Ponto',
+  'Perfil do Aluno', 'Gamificação', 'Notificações', 'Geral',
+]
+
 // ── Update Card ────────────────────────────────────────────────────────────────
 function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; onDelete: () => void }) {
   const cfg = UPDATE_TYPE[u.type]
-  const [hovered, setHovered] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+  const [hovered, setHovered]   = useState(false)
+
+  // Converte "details" (texto com linhas) em array de bullets
+  const bullets = u.details
+    ? u.details.split('\n').map(l => l.replace(/^[-•*]\s*/, '').trim()).filter(Boolean)
+    : []
 
   return (
     <motion.div
@@ -123,46 +137,41 @@ function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; on
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
       className="group relative rounded-2xl overflow-hidden"
-      style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}
+      style={{ background: cfg.bg, border: `1px solid ${hovered ? cfg.color + '50' : cfg.border}`, transition: 'border-color 0.2s' }}
     >
-      {/* Gradient overlay on hover */}
-      <motion.div className="absolute inset-0 pointer-events-none"
-        animate={{ opacity: hovered ? 1 : 0 }}
-        transition={{ duration: 0.2 }}
-        style={{ background: cfg.gradient }} />
-
-      {/* Left accent bar */}
+      {/* Left accent */}
       <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl"
         style={{ background: `linear-gradient(to bottom, ${cfg.color}, transparent)` }} />
 
+      {/* Main row */}
       <div className="relative flex items-start gap-4 p-5">
         {/* Illustration */}
-        <motion.div
-          animate={{ rotate: hovered ? [0, -5, 5, 0] : 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex-shrink-0 hidden sm:block"
-        >
+        <motion.div animate={{ rotate: hovered ? [0,-5,5,0] : 0 }} transition={{ duration: 0.4 }}
+          className="flex-shrink-0 hidden sm:block">
           {cfg.illustration}
         </motion.div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Badge + date */}
-          <div className="flex items-center gap-2 mb-2">
-            <motion.span
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full"
+          {/* Badges row */}
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <span className="flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full"
               style={{ background: `${cfg.color}20`, color: cfg.color, border: `1px solid ${cfg.color}40` }}>
               {cfg.icon} {cfg.label}
-            </motion.span>
+            </span>
+            {u.module && (
+              <span className="text-[10px] font-bold px-2.5 py-1 rounded-full"
+                style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                📍 {u.module}
+              </span>
+            )}
             <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.28)' }}>
               {timeAgo(u.created_at)}
             </span>
           </div>
 
           {/* Title */}
-          <motion.p
-            className="text-base font-black mb-1 leading-snug"
+          <motion.p className="text-base font-black mb-1.5 leading-snug"
             animate={{ color: hovered ? cfg.color : 'rgba(255,255,255,0.92)' }}
             transition={{ duration: 0.2 }}>
             {u.title}
@@ -172,11 +181,22 @@ function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; on
           <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.48)' }}>
             {u.description}
           </p>
+
+          {/* Expandir detalhes */}
+          {bullets.length > 0 && (
+            <button onClick={() => setExpanded(o => !o)}
+              className="flex items-center gap-1.5 mt-2.5 text-[11px] font-black transition-colors"
+              style={{ color: cfg.color }}>
+              <motion.span animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                <ChevronDown size={13} />
+              </motion.span>
+              {expanded ? 'Ocultar detalhes' : `Ver ${bullets.length} detalhe${bullets.length > 1 ? 's' : ''}`}
+            </button>
+          )}
         </div>
 
         {/* Delete */}
-        <motion.button
-          onClick={onDelete}
+        <motion.button onClick={onDelete}
           initial={{ opacity: 0, scale: 0.7 }}
           animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.7 }}
           transition={{ duration: 0.15 }}
@@ -187,9 +207,42 @@ function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; on
         </motion.button>
       </div>
 
-      {/* Bottom shimmer line */}
-      <motion.div
-        className="absolute bottom-0 left-0 h-[1px]"
+      {/* Detalhes expandidos */}
+      <AnimatePresence>
+        {expanded && bullets.length > 0 && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden">
+            <div className="px-5 pb-5 ml-0 sm:ml-[80px]">
+              <div className="rounded-xl p-4"
+                style={{ background: 'rgba(0,0,0,0.2)', border: `1px solid ${cfg.color}20` }}>
+                <p className="text-[10px] font-black uppercase tracking-wider mb-3"
+                  style={{ color: cfg.color }}>O que mudou</p>
+                <ul className="space-y-2">
+                  {bullets.map((b, i) => (
+                    <motion.li key={i}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.06 }}
+                      className="flex items-start gap-2.5 text-sm"
+                      style={{ color: 'rgba(255,255,255,0.65)' }}>
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0"
+                        style={{ background: cfg.color }} />
+                      {b}
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Bottom shimmer */}
+      <motion.div className="absolute bottom-0 left-0 h-[1px]"
         initial={{ width: '0%' }}
         animate={{ width: hovered ? '100%' : '0%' }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -202,6 +255,8 @@ function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; on
 function AddUpdateModal({ onClose, onAdded }: { onClose: () => void; onAdded: () => void }) {
   const [title, setTitle]      = useState('')
   const [description, setDesc] = useState('')
+  const [details, setDetails]  = useState('')
+  const [module_, setModule]   = useState('')
   const [type, setType]        = useState<UpdateType>('feature')
   const [loading, setLoading]  = useState(false)
   const [error, setError]      = useState('')
@@ -211,12 +266,18 @@ function AddUpdateModal({ onClose, onAdded }: { onClose: () => void; onAdded: ()
     setLoading(true); setError('')
     const res = await fetch('/api/admin/system-updates', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: title.trim(), description: description.trim(), type }),
+      body: JSON.stringify({
+        title: title.trim(), description: description.trim(), type,
+        module: module_.trim() || null,
+        details: details.trim() || null,
+      }),
     })
     setLoading(false)
     if (res.ok) { onAdded(); onClose() }
     else { const j = await res.json(); setError(j.error ?? 'Erro ao salvar') }
   }
+
+  const inputStyle = { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text)' }
 
   return (
     <motion.div
@@ -230,12 +291,14 @@ function AddUpdateModal({ onClose, onAdded }: { onClose: () => void; onAdded: ()
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.95 }}
         transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-        className="w-full max-w-md rounded-3xl p-6 flex flex-col gap-4"
-        style={{ background: '#0a1a10', border: '1px solid rgba(63,229,108,0.25)', boxShadow: '0 40px 80px rgba(0,0,0,0.6)' }}>
+        className="w-full max-w-lg rounded-3xl p-6 flex flex-col gap-4 overflow-y-auto"
+        style={{ background: '#0a1a10', border: '1px solid rgba(63,229,108,0.25)', boxShadow: '0 40px 80px rgba(0,0,0,0.6)', maxHeight: '90vh' }}>
 
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-bold mb-0.5" style={{ color: 'rgba(63,229,108,0.6)' }}>PUBLICAR NOVIDADE</p>
+            <p className="text-[10px] font-black uppercase tracking-wider mb-0.5" style={{ color: 'rgba(63,229,108,0.6)' }}>
+              PUBLICAR NOVIDADE
+            </p>
             <h3 className="text-lg font-black" style={{ color: 'var(--text)' }}>Nova atualização</h3>
           </div>
           <motion.button onClick={onClose} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
@@ -245,32 +308,80 @@ function AddUpdateModal({ onClose, onAdded }: { onClose: () => void; onAdded: ()
         </div>
 
         {/* Tipo */}
-        <div className="grid grid-cols-2 gap-2">
-          {(Object.keys(UPDATE_TYPE) as UpdateType[]).map(t => {
-            const cfg = UPDATE_TYPE[t]
-            const active = type === t
-            return (
-              <motion.button key={t} onClick={() => setType(t)}
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold transition-all"
-                style={active
-                  ? { background: cfg.bg, border: `1px solid ${cfg.color}`, color: cfg.color, boxShadow: `0 0 12px ${cfg.color}20` }
-                  : { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)' }}>
-                {cfg.icon} {cfg.label}
-              </motion.button>
-            )
-          })}
+        <div>
+          <label className="text-[10px] font-black uppercase tracking-wider mb-2 block" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            Tipo de atualização
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {(Object.keys(UPDATE_TYPE) as UpdateType[]).map(t => {
+              const cfg = UPDATE_TYPE[t]
+              return (
+                <motion.button key={t} onClick={() => setType(t)}
+                  whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold"
+                  style={type === t
+                    ? { background: cfg.bg, border: `1px solid ${cfg.color}`, color: cfg.color, boxShadow: `0 0 12px ${cfg.color}20` }
+                    : { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)' }}>
+                  {cfg.icon} {cfg.label}
+                </motion.button>
+              )
+            })}
+          </div>
         </div>
 
-        <input value={title} onChange={e => setTitle(e.target.value)}
-          placeholder="Título da novidade..."
-          className="w-full px-4 py-3 rounded-xl text-sm outline-none"
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text)' }} />
+        {/* Módulo */}
+        <div>
+          <label className="text-[10px] font-black uppercase tracking-wider mb-2 block" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            Módulo afetado (opcional)
+          </label>
+          <div className="flex flex-wrap gap-1.5">
+            {MODULES.map(m => (
+              <button key={m} onClick={() => setModule(module_ === m ? '' : m)}
+                className="text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all"
+                style={module_ === m
+                  ? { background: 'rgba(63,229,108,0.15)', color: '#3fe56c', border: '1px solid rgba(63,229,108,0.4)' }
+                  : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                {m}
+              </button>
+            ))}
+          </div>
+        </div>
 
-        <textarea value={description} onChange={e => setDesc(e.target.value)} rows={3}
-          placeholder="Descreva o que foi adicionado, corrigido ou melhorado..."
-          className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none"
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text)' }} />
+        {/* Título */}
+        <div>
+          <label className="text-[10px] font-black uppercase tracking-wider mb-2 block" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            Título
+          </label>
+          <input value={title} onChange={e => setTitle(e.target.value)}
+            placeholder="Ex: Dropdowns não cortam mais nos relatórios"
+            className="w-full px-4 py-3 rounded-xl text-sm outline-none"
+            style={inputStyle} />
+        </div>
+
+        {/* Descrição resumida */}
+        <div>
+          <label className="text-[10px] font-black uppercase tracking-wider mb-2 block" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            Descrição curta
+          </label>
+          <textarea value={description} onChange={e => setDesc(e.target.value)} rows={2}
+            placeholder="Resumo em 1-2 frases do que foi feito..."
+            className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none"
+            style={inputStyle} />
+        </div>
+
+        {/* Detalhes (bullets) */}
+        <div>
+          <label className="text-[10px] font-black uppercase tracking-wider mb-1 block" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            Detalhes do que mudou <span style={{ color: 'rgba(255,255,255,0.2)', fontWeight: 400, textTransform: 'none' }}>(uma linha por item)</span>
+          </label>
+          <p className="text-[10px] mb-2" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            Cada linha vira um bullet ponto. Ex: "Dropdown agora usa position fixed"
+          </p>
+          <textarea value={details} onChange={e => setDetails(e.target.value)} rows={5}
+            placeholder={`Dropdown de mês usa position:fixed — não corta mais\nBotão PDF mantém a cor vermelha no hover\nSeletores de estagiário com scroll suave`}
+            className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none font-mono"
+            style={{ ...inputStyle, fontSize: 11, lineHeight: 1.7 }} />
+        </div>
 
         {error && <p className="text-xs px-1" style={{ color: '#ff5252' }}>{error}</p>}
 
