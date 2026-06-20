@@ -516,7 +516,7 @@ export function AdminNotificationBellMobile() {
         )}
       </button>
 
-      {/* Bottom drawer */}
+      {/* Full-screen modal */}
       <AnimatePresence>
         {open && (
           <>
@@ -528,31 +528,29 @@ export function AdminNotificationBellMobile() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="fixed inset-0 z-[150]"
-              style={{ background: 'rgba(0,0,0,0.6)' }}
+              style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
               onClick={() => setOpen(false)}
             />
 
-            {/* Drawer */}
+            {/* Modal centralizado */}
             <motion.div
-              key="drawer"
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', stiffness: 340, damping: 34 }}
-              className="fixed bottom-0 left-0 right-0 z-[160] rounded-t-2xl flex flex-col overflow-hidden"
+              key="modal"
+              initial={{ opacity: 0, scale: 0.96, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 16 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              className="fixed z-[160] flex flex-col"
               style={{
-                maxHeight: '80dvh',
+                top: '50%', left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 'min(680px, calc(100vw - 32px))',
+                height: 'min(780px, calc(100dvh - 48px))',
                 background: '#0b1d12',
-                border: '1px solid rgba(0,200,83,0.2)',
-                borderBottom: 'none',
-                boxShadow: '0 -16px 48px rgba(0,0,0,0.6)',
+                border: '1px solid rgba(0,200,83,0.25)',
+                borderRadius: 20,
+                boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(63,229,108,0.08)',
               }}
             >
-              {/* Pull handle */}
-              <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-                <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }} />
-              </div>
-
               <PanelContent
                 loading={loading}
                 notifications={notifications}
