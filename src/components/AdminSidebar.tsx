@@ -295,10 +295,13 @@ export default function AdminSidebar({ fullName, initials }: Props) {
           }}
         >
           {/* ── Logo ── */}
-          <div className="px-6 pt-7 pb-6 flex-shrink-0 flex items-center justify-center">
-            <div className="relative w-10 h-10">
+          <div className="px-6 pt-7 pb-6 flex-shrink-0 flex flex-col items-center">
+            <div className="relative w-10 h-10 mb-2">
               <Image src="/logo.svg" alt="Chronos" fill className="object-contain" />
             </div>
+            <p className="text-[11px] font-medium tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              Console de Administração
+            </p>
           </div>
 
           {/* ── Navegação ── */}
@@ -308,7 +311,6 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                 ? <NavGroup key={item.label} item={item} />
                 : <NavLink  key={item.href}  item={item} />
             )}
-            <AdminNotificationBell />
           </nav>
 
           {/* ── Divisória ── */}
