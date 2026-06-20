@@ -8,6 +8,7 @@ import AnimatedNumber from '@/components/ui/AnimatedNumber'
 import { Users, Activity, AlertTriangle, Clock, Search, UserPlus } from 'lucide-react'
 import { getLevelInfo, getLevelTitle } from '@/lib/gamification'
 import { detectGender } from '@/lib/detectGender'
+import { AdminNotificationBellMobile } from '@/components/AdminNotificationBell'
 
 export const dynamic = 'force-dynamic'
 
@@ -73,6 +74,7 @@ export default async function AdminPage() {
               />
             </div>
           </div>
+          <AdminNotificationBellMobile />
         </header>
       </FadeIn>
 
