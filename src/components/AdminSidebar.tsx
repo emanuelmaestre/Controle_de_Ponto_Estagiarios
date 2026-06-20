@@ -296,10 +296,10 @@ export default function AdminSidebar({ fullName, initials }: Props) {
         >
           {/* ── Logo ── */}
           <div className="px-6 pt-6 pb-5 flex-shrink-0 flex flex-col items-center">
-            <div className="relative w-20 h-20 mb-2">
+            <div className="relative w-28 h-28 mb-1">
               <Image src="/logo.svg" alt="Chronos" fill className="object-contain" />
             </div>
-            <p className="text-[11px] font-medium tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <p className="text-[11px] font-medium tracking-wider leading-tight" style={{ color: 'rgba(255,255,255,0.35)' }}>
               Console de Administração
             </p>
           </div>
