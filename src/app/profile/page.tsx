@@ -39,7 +39,7 @@ export default async function ProfilePage({ searchParams }: Props) {
     profile = reloaded
   }
 
-  if (profile?.role === 'manager') redirect('/admin')
+  // managers can access their own profile
 
   const initialData = {
     full_name: profile?.full_name ?? '',
