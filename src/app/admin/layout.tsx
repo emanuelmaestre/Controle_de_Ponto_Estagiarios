@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* Content area — pb-16 on mobile to clear fixed bottom nav */}
       <div className="flex-1 min-w-0 flex flex-col pb-16 md:pb-0 min-h-0 relative" style={{ overflow: 'hidden' }}>
         {/* Sino de pendências — fixo no canto superior direito em todas as páginas */}
-        <div className="absolute top-4 right-4 z-40 md:top-5 md:right-6">
+        <div className="absolute top-4 right-4 z-50 md:top-5 md:right-6">
           <AdminNotificationBellMobile />
         </div>
         {children}

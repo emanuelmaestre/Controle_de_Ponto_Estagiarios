@@ -560,7 +560,7 @@ export default function AdminUpdatesPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pr-12 md:pr-14">
             <motion.button onClick={load} disabled={loading}
               whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
               className="p-2 rounded-xl disabled:opacity-40"
