@@ -19,9 +19,9 @@ export const SCORING_RULES = [
   { id: 'workload_75',      emoji: '🎯', label: '75% da carga cumprida',     points: '+150 pts', detail: 'Atinja 75% do total de horas do seu estágio' },
   { id: 'workload_100',     emoji: '🏁', label: 'Carga horária concluída',   points: '+250 pts', detail: 'Conclua 100% das horas exigidas pelo seu estágio' },
   // ── Feedback ──
-  { id: 'feedback_sent',        emoji: '💬', label: 'Feedback enviado',          points: '+10 pts', detail: 'Envie uma sugestão, elogio ou reporte um problema pelo painel' },
-  { id: 'feedback_implemented', emoji: '🛠️', label: 'Feedback implementado',     points: '+25 pts', detail: 'Seu feedback foi marcado como implementado pelo administrador' },
-  { id: 'feedback_highlight',   emoji: '⭐', label: 'Feedback destaque',         points: '+50 pts', detail: 'Seu feedback foi destacado pelo administrador como excelente' },
+  { id: 'feedback_sent',        emoji: '💬', label: 'Feedback enviado',          points: '+100 pts', detail: 'Envie uma sugestão, elogio ou reporte um problema pelo painel' },
+  { id: 'feedback_implemented', emoji: '🛠️', label: 'Feedback implementado',     points: '+100 pts', detail: 'Seu feedback foi marcado como implementado pelo administrador' },
+  { id: 'feedback_highlight',   emoji: '⭐', label: 'Feedback destaque',         points: '+100 pts', detail: 'Seu feedback foi destacado pelo administrador como excelente' },
   // ── Consistência mensal ──
   { id: 'month_60',         emoji: '📈', label: '60% do mês cumprido',       points: '+20 pts', detail: 'Cumpra ao menos 60% das horas esperadas no mês' },
   { id: 'month_80',         emoji: '🚀', label: '80% do mês cumprido',       points: '+40 pts', detail: 'Cumpra ao menos 80% das horas esperadas no mês' },

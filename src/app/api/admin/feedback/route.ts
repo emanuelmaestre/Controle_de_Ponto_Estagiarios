@@ -71,7 +71,7 @@ export async function PATCH(req: Request) {
   if (body.status === 'implemented' && existing?.status !== 'implemented' && existing?.intern_id) {
     const { data: internProfile } = await db.from('profiles').select('points, role').eq('id', existing.intern_id).single()
     if (internProfile?.role === 'intern') {
-      await db.from('profiles').update({ points: (internProfile.points ?? 0) + 25 }).eq('id', existing.intern_id)
+      await db.from('profiles').update({ points: (internProfile.points ?? 0) + 100 }).eq('id', existing.intern_id)
     }
   }
 

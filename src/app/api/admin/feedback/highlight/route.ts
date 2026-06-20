@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   if (!alreadyHighlighted) {
     const { data: internProfile } = await db.from('profiles').select('points, role').eq('id', fb.intern_id).single()
     if (internProfile?.role === 'intern') {
-      await db.from('profiles').update({ points: (internProfile.points ?? 0) + 50 }).eq('id', fb.intern_id)
+      await db.from('profiles').update({ points: (internProfile.points ?? 0) + 100 }).eq('id', fb.intern_id)
     }
   }
 
