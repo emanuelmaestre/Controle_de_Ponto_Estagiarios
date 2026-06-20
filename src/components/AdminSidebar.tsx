@@ -9,6 +9,7 @@ import {
   LayoutDashboard, TrendingUp, BarChart2, Settings,
   LogOut, Users, ChevronDown, X, Trophy, Bell, Sparkles, Shield,
 } from 'lucide-react'
+import AdminNotificationBell from '@/components/AdminNotificationBell'
 
 interface Props {
   fullName: string
@@ -299,9 +300,10 @@ export default function AdminSidebar({ fullName, initials }: Props) {
               <div className="relative w-7 h-7 flex-shrink-0">
                 <Image src="/logo.svg" alt="Chronos" fill className="object-contain" />
               </div>
-              <h1 className="text-xl font-bold" style={{ color: '#3fe56c' }}>
+              <h1 className="text-xl font-bold flex-1" style={{ color: '#3fe56c' }}>
                 Chronos <span style={{ color: '#C0392B' }}>Lab</span>
               </h1>
+              <AdminNotificationBell />
             </div>
             <p className="text-[11px] font-medium tracking-wider ml-9" style={{ color: 'rgba(255,255,255,0.35)' }}>
               Console de Administração
