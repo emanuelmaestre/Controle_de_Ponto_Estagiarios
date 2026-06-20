@@ -560,21 +560,13 @@ export default function AdminUpdatesPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 pr-12 md:pr-14">
+          <div className="flex items-center gap-2">
             <motion.button onClick={load} disabled={loading}
               whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
               className="p-2 rounded-xl disabled:opacity-40"
               style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)' }}>
               <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
             </motion.button>
-            {tab === 'updates' && (
-              <motion.button onClick={() => setShowModal(true)}
-                whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black"
-                style={{ background: 'linear-gradient(135deg,#3fe56c,#22d3ee)', color: '#000', boxShadow: '0 4px 16px rgba(63,229,108,0.3)' }}>
-                <Plus size={13} /> Publicar
-              </motion.button>
-            )}
             {tab === 'feedback' && (
               <motion.button onClick={() => setShowFbForm(o => !o)}
                 whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
