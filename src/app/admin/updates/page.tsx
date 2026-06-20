@@ -123,7 +123,6 @@ function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; on
   const [expanded, setExpanded] = useState(false)
   const [hovered, setHovered]   = useState(false)
 
-  // Converte "details" (texto com linhas) em array de bullets
   const bullets = u.details
     ? u.details.split('\n').map(l => l.replace(/^[-•*]\s*/, '').trim()).filter(Boolean)
     : []
@@ -137,68 +136,99 @@ function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; on
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
       className="group relative rounded-2xl overflow-hidden"
-      style={{ background: cfg.bg, border: `1px solid ${hovered ? cfg.color + '50' : cfg.border}`, transition: 'border-color 0.2s' }}
+      style={{ background: cfg.bg, border: `1px solid ${hovered ? cfg.color + '60' : cfg.border}`, transition: 'border-color 0.2s' }}
     >
       {/* Left accent */}
       <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl"
         style={{ background: `linear-gradient(to bottom, ${cfg.color}, transparent)` }} />
 
-      {/* Main row */}
-      <div className="relative flex items-start gap-4 p-5">
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          {/* Badges row */}
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <span className="flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full"
-              style={{ background: `${cfg.color}20`, color: cfg.color, border: `1px solid ${cfg.color}40` }}>
-              {cfg.icon} {cfg.label}
+      {/* ── Cabeçalho: ONDE foi feito ── */}
+      {u.module && (
+        <div className="relative flex items-center justify-between px-5 pt-4 pb-2">
+          <div className="flex items-center gap-2">
+            {/* Ícone do tipo */}
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ background: `${cfg.color}18`, color: cfg.color }}>
+              {cfg.icon}
+            </div>
+            {/* Caminho do módulo — destaque principal */}
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest mb-0.5"
+                style={{ color: 'rgba(255,255,255,0.25)' }}>Local da atualização</p>
+              <p className="text-sm font-black" style={{ color: cfg.color }}>
+                {u.module}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+              style={{ background: `${cfg.color}15`, color: cfg.color, border: `1px solid ${cfg.color}30` }}>
+              {cfg.label}
             </span>
-            {u.module && (
-              <span className="text-[10px] font-bold px-2.5 py-1 rounded-full"
-                style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                📍 {u.module}
-              </span>
-            )}
-            <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.28)' }}>
+            <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.22)' }}>
               {timeAgo(u.created_at)}
             </span>
+            <motion.button onClick={onDelete}
+              initial={{ opacity: 0 }} animate={{ opacity: hovered ? 1 : 0 }}
+              className="p-1.5 rounded-lg" style={{ background: 'rgba(255,82,82,0.1)', color: '#ff5252' }}
+              whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Trash2 size={11} />
+            </motion.button>
           </div>
-
-          {/* Title */}
-          <motion.p className="text-base font-black mb-1.5 leading-snug"
-            animate={{ color: hovered ? cfg.color : 'rgba(255,255,255,0.92)' }}
-            transition={{ duration: 0.2 }}>
-            {u.title}
-          </motion.p>
-
-          {/* Description */}
-          <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.48)' }}>
-            {u.description}
-          </p>
-
-          {/* Expandir detalhes */}
-          {bullets.length > 0 && (
-            <button onClick={() => setExpanded(o => !o)}
-              className="flex items-center gap-1.5 mt-2.5 text-[11px] font-black transition-colors"
-              style={{ color: cfg.color }}>
-              <motion.span animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                <ChevronDown size={13} />
-              </motion.span>
-              {expanded ? 'Ocultar detalhes' : `Ver ${bullets.length} detalhe${bullets.length > 1 ? 's' : ''}`}
-            </button>
-          )}
         </div>
+      )}
 
-        {/* Delete */}
-        <motion.button onClick={onDelete}
-          initial={{ opacity: 0, scale: 0.7 }}
-          animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.7 }}
-          transition={{ duration: 0.15 }}
-          className="flex-shrink-0 p-2 rounded-xl"
-          style={{ background: 'rgba(255,82,82,0.1)', color: '#ff5252' }}
-          whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          <Trash2 size={13} />
-        </motion.button>
+      {/* Divisor */}
+      {u.module && (
+        <div className="mx-5 mb-3" style={{ height: 1, background: `${cfg.color}15` }} />
+      )}
+
+      {/* ── Corpo ── */}
+      <div className="relative px-5 pb-5">
+        {/* Cabeçalho sem módulo */}
+        {!u.module && (
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full"
+                style={{ background: `${cfg.color}20`, color: cfg.color, border: `1px solid ${cfg.color}40` }}>
+                {cfg.icon} {cfg.label}
+              </span>
+              <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.28)' }}>
+                {timeAgo(u.created_at)}
+              </span>
+            </div>
+            <motion.button onClick={onDelete}
+              initial={{ opacity: 0 }} animate={{ opacity: hovered ? 1 : 0 }}
+              className="p-1.5 rounded-lg" style={{ background: 'rgba(255,82,82,0.1)', color: '#ff5252' }}
+              whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Trash2 size={11} />
+            </motion.button>
+          </div>
+        )}
+
+        {/* Título */}
+        <motion.p className="text-[15px] font-black mb-1.5 leading-snug"
+          animate={{ color: hovered ? cfg.color : 'rgba(255,255,255,0.92)' }}
+          transition={{ duration: 0.2 }}>
+          {u.title}
+        </motion.p>
+
+        {/* Descrição */}
+        <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          {u.description}
+        </p>
+
+        {/* Expandir detalhes */}
+        {bullets.length > 0 && (
+          <button onClick={() => setExpanded(o => !o)}
+            className="flex items-center gap-1.5 mt-3 text-[11px] font-black"
+            style={{ color: cfg.color }}>
+            <motion.span animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+              <ChevronDown size={13} />
+            </motion.span>
+            {expanded ? 'Ocultar detalhes' : `Ver o que mudou (${bullets.length} item${bullets.length > 1 ? 's' : ''})`}
+          </button>
+        )}
       </div>
 
       {/* Detalhes expandidos */}
@@ -323,22 +353,30 @@ function AddUpdateModal({ onClose, onAdded }: { onClose: () => void; onAdded: ()
           </div>
         </div>
 
-        {/* Módulo */}
+        {/* Módulo / Local exato */}
         <div>
-          <label className="text-[10px] font-black uppercase tracking-wider mb-2 block" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Módulo afetado (opcional)
+          <label className="text-[10px] font-black uppercase tracking-wider mb-1 block" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            Local da atualização <span style={{ color: 'rgba(255,255,255,0.2)', fontWeight: 400 }}>— onde exatamente foi feito</span>
           </label>
-          <div className="flex flex-wrap gap-1.5">
+          {/* Chips: pré-preenchem o campo; admin pode editar para ser mais específico */}
+          <div className="flex flex-wrap gap-1.5 mb-2">
             {MODULES.map(m => (
               <button key={m} onClick={() => setModule(module_ === m ? '' : m)}
                 className="text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all"
-                style={module_ === m
+                style={module_.startsWith(m)
                   ? { background: 'rgba(63,229,108,0.15)', color: '#3fe56c', border: '1px solid rgba(63,229,108,0.4)' }
                   : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.07)' }}>
                 {m}
               </button>
             ))}
           </div>
+          <input value={module_} onChange={e => setModule(e.target.value)}
+            placeholder="Ex: Relatórios → Dropdown de Mês  |  Cadastros → Formulário de Aluno"
+            className="w-full px-4 py-2.5 rounded-xl text-sm outline-none"
+            style={{ ...inputStyle, fontSize: 12 }} />
+          <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            Clique no chip para base, depois edite para detalhar: "Relatórios → Filtro de Estagiário"
+          </p>
         </div>
 
         {/* Título */}
