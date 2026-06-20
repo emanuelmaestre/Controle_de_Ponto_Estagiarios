@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Download, FileText, Users, BarChart2, Trophy,
@@ -142,11 +143,11 @@ const DROPDOWN_STYLE = {
 interface InternOption { id: string; full_name: string }
 
 function InternSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const [interns, setInterns]   = useState<InternOption[]>([])
-  const [open, setOpen]         = useState(false)
-  const [loaded, setLoaded]     = useState(false)
-  const [pos, setPos]           = useState<React.CSSProperties>({})
-  const btnRef                  = useRef<HTMLButtonElement>(null)
+  const [interns, setInterns] = useState<InternOption[]>([])
+  const [open, setOpen]       = useState(false)
+  const [loaded, setLoaded]   = useState(false)
+  const [pos, setPos]         = useState<React.CSSProperties>({})
+  const btnRef                = useRef<HTMLButtonElement>(null)
 
   const toggle = async () => {
     if (open) { setOpen(false); return }
@@ -162,6 +163,39 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
 
   const selected = interns.find(i => i.id === value)
 
+  const dropdown = (
+    <AnimatePresence>
+      {open && (
+        <>
+          <div className="fixed inset-0" style={{ zIndex: 9998 }} onClick={() => setOpen(false)} />
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.97 }}
+            transition={{ duration: 0.15 }}
+            className="rounded-xl overflow-hidden"
+            style={{ ...pos, ...DROPDOWN_STYLE }}>
+            {interns.map(intern => (
+              <button key={intern.id} type="button"
+                onClick={() => { onChange(intern.id); setOpen(false) }}
+                className="w-full text-left px-3 py-2.5 text-xs transition-colors"
+                style={{
+                  color: intern.id === value ? '#3fe56c' : 'rgba(255,255,255,0.6)',
+                  background: intern.id === value ? 'rgba(63,229,108,0.08)' : 'transparent',
+                  fontWeight: intern.id === value ? 700 : 400,
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,229,108,0.05)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = intern.id === value ? 'rgba(63,229,108,0.08)' : 'transparent' }}
+              >
+                {intern.full_name}
+              </button>
+            ))}
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  )
+
   return (
     <div>
       <button ref={btnRef} type="button" onClick={toggle}
@@ -175,36 +209,7 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
         <span className="flex-1 text-left truncate">{selected?.full_name ?? 'Selecionar estagiário'}</span>
         <ChevronDown size={11} />
       </button>
-      <AnimatePresence>
-        {open && (
-          <>
-            <div className="fixed inset-0" style={{ zIndex: 9998 }} onClick={() => setOpen(false)} />
-            <motion.div
-              initial={{ opacity: 0, y: -4, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -4, scale: 0.97 }}
-              transition={{ duration: 0.15 }}
-              className="rounded-xl overflow-hidden"
-              style={{ ...pos, ...DROPDOWN_STYLE }}>
-              {interns.map(intern => (
-                <button key={intern.id} type="button"
-                  onClick={() => { onChange(intern.id); setOpen(false) }}
-                  className="w-full text-left px-3 py-2.5 text-xs transition-colors"
-                  style={{
-                    color: intern.id === value ? '#3fe56c' : 'rgba(255,255,255,0.6)',
-                    background: intern.id === value ? 'rgba(63,229,108,0.08)' : 'transparent',
-                    fontWeight: intern.id === value ? 700 : 400,
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,229,108,0.05)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = intern.id === value ? 'rgba(63,229,108,0.08)' : 'transparent' }}
-                >
-                  {intern.full_name}
-                </button>
-              ))}
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {typeof document !== 'undefined' && createPortal(dropdown, document.body)}
     </div>
   )
 }
@@ -222,6 +227,37 @@ function MonthSelect({ value, onChange }: { value: string; onChange: (v: string)
     setOpen(true)
   }
 
+  const dropdown = (
+    <AnimatePresence>
+      {open && (
+        <>
+          <div className="fixed inset-0" style={{ zIndex: 9998 }} onClick={() => setOpen(false)} />
+          <motion.div
+            initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}
+            className="rounded-xl overflow-hidden"
+            style={{ ...pos, ...DROPDOWN_STYLE }}>
+            {monthOptions.map(opt => (
+              <button key={opt.value} type="button"
+                onClick={() => { onChange(opt.value); setOpen(false) }}
+                className="w-full text-left px-3 py-2.5 text-xs capitalize transition-colors"
+                style={{
+                  color: opt.value === value ? '#3fe56c' : 'rgba(255,255,255,0.6)',
+                  background: opt.value === value ? 'rgba(63,229,108,0.08)' : 'transparent',
+                  fontWeight: opt.value === value ? 700 : 400,
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,229,108,0.05)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = opt.value === value ? 'rgba(63,229,108,0.08)' : 'transparent' }}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  )
+
   return (
     <div>
       <button ref={btnRef} type="button" onClick={toggle}
@@ -231,34 +267,7 @@ function MonthSelect({ value, onChange }: { value: string; onChange: (v: string)
         <span className="flex-1 text-left capitalize">{selected?.label ?? 'Mês'}</span>
         <ChevronDown size={11} />
       </button>
-      <AnimatePresence>
-        {open && (
-          <>
-            <div className="fixed inset-0" style={{ zIndex: 9998 }} onClick={() => setOpen(false)} />
-            <motion.div
-              initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}
-              className="rounded-xl overflow-hidden"
-              style={{ ...pos, ...DROPDOWN_STYLE }}>
-              {monthOptions.map(opt => (
-                <button key={opt.value} type="button"
-                  onClick={() => { onChange(opt.value); setOpen(false) }}
-                  className="w-full text-left px-3 py-2.5 text-xs capitalize transition-colors"
-                  style={{
-                    color: opt.value === value ? '#3fe56c' : 'rgba(255,255,255,0.6)',
-                    background: opt.value === value ? 'rgba(63,229,108,0.08)' : 'transparent',
-                    fontWeight: opt.value === value ? 700 : 400,
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,229,108,0.05)' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = opt.value === value ? 'rgba(63,229,108,0.08)' : 'transparent' }}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {typeof document !== 'undefined' && createPortal(dropdown, document.body)}
     </div>
   )
 }
@@ -444,10 +453,10 @@ export default function ReportsClient() {
 
   const filtered = REPORTS.filter(r => r.category === activeCategory)
 
-  const categoryMeta = {
-    intern:  { emoji: '👤', title: 'Relatórios Individuais',  desc: 'Selecione o estagiário e o período para gerar o relatório individual.' },
-    general: { emoji: '📊', title: 'Relatórios Gerais',       desc: 'Visão consolidada de todos os estagiários. Selecione o período desejado.' },
-    ranking: { emoji: '🏆', title: 'Relatórios de Ranking',   desc: 'Classificações e conquistas. Aberto para estagiários e administradores.' },
+  const categoryMeta: Record<Category, { icon: React.ReactNode; color: string; title: string; desc: string }> = {
+    intern:  { icon: <Users size={20} />,    color: '#3fe56c', title: 'Relatórios Individuais', desc: 'Selecione o estagiário e o período para gerar o relatório individual.' },
+    general: { icon: <BarChart2 size={20} />, color: '#22d3ee', title: 'Relatórios Gerais',      desc: 'Visão consolidada de todos os estagiários. Selecione o período desejado.' },
+    ranking: { icon: <Trophy size={20} />,   color: '#fbbf24', title: 'Relatórios de Ranking',  desc: 'Classificações e conquistas. Aberto para estagiários e administradores.' },
   }
 
   return (
@@ -458,14 +467,10 @@ export default function ReportsClient() {
         className="flex items-center gap-4 px-4 sm:px-6 h-14 sm:h-16 flex-shrink-0"
         style={{ background: 'var(--bg)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}
       >
-        <motion.div
-          animate={{ rotate: [0, 8, -8, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
-          style={{ background: 'rgba(0,200,83,0.12)', border: '1px solid rgba(0,200,83,0.25)' }}
-        >
-          📊
-        </motion.div>
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+          style={{ background: 'rgba(0,200,83,0.12)', border: '1px solid rgba(0,200,83,0.25)', color: '#3fe56c' }}>
+          <BarChart2 size={18} />
+        </div>
         <div>
           <h2 className="text-xl font-black" style={{ color: 'var(--text)' }}>Relatórios</h2>
           <p className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>
@@ -525,10 +530,13 @@ export default function ReportsClient() {
             >
               {/* Category intro */}
               <div className="rounded-2xl px-5 py-4 flex items-center gap-4"
-                style={{ background: 'rgba(0,200,83,0.04)', border: '1px solid rgba(0,200,83,0.12)' }}>
-                <span className="text-3xl flex-shrink-0">{categoryMeta[activeCategory].emoji}</span>
+                style={{ background: `${categoryMeta[activeCategory].color}08`, border: `1px solid ${categoryMeta[activeCategory].color}18` }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: `${categoryMeta[activeCategory].color}15`, color: categoryMeta[activeCategory].color }}>
+                  {categoryMeta[activeCategory].icon}
+                </div>
                 <div>
-                  <p className="text-sm font-black" style={{ color: '#3fe56c' }}>{categoryMeta[activeCategory].title}</p>
+                  <p className="text-sm font-black" style={{ color: categoryMeta[activeCategory].color }}>{categoryMeta[activeCategory].title}</p>
                   <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>{categoryMeta[activeCategory].desc}</p>
                 </div>
               </div>
