@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -145,19 +145,16 @@ interface InternOption { id: string; full_name: string }
 function InternSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [interns, setInterns] = useState<InternOption[]>([])
   const [open, setOpen]       = useState(false)
-  const [loaded, setLoaded]   = useState(false)
   const [pos, setPos]         = useState<React.CSSProperties>({})
   const btnRef                = useRef<HTMLButtonElement>(null)
 
-  const toggle = async () => {
+  useEffect(() => {
+    fetch('/api/admin/interns').then(r => r.json()).then(j => setInterns(j.interns ?? []))
+  }, [])
+
+  const toggle = () => {
     if (open) { setOpen(false); return }
     if (btnRef.current) setPos(calcPos(btnRef.current, 224))
-    if (!loaded) {
-      const res  = await fetch('/api/admin/report-data?type=monthly')
-      const json = await res.json()
-      setInterns(json.interns ?? [])
-      setLoaded(true)
-    }
     setOpen(true)
   }
 
