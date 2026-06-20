@@ -146,20 +146,23 @@ export default function InternUpdatesPage() {
                     <motion.div key={u.id}
                       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className="relative p-4 rounded-2xl"
-                      style={{ background: cfg.bg, border: `1px solid ${cfg.color}22` }}>
-                      <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl" style={{ background: cfg.color }} />
-                      <div className="ml-2">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full"
-                            style={{ background: `${cfg.color}20`, color: cfg.color }}>
-                            {cfg.icon} {cfg.label}
-                          </span>
-                          <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.28)' }}>
-                            {timeAgo(u.created_at)}
-                          </span>
-                        </div>
-                        <p className="text-sm font-black mb-1" style={{ color: 'rgba(255,255,255,0.9)' }}>{u.title}</p>
+                      className="rounded-2xl overflow-hidden"
+                      style={{ background: cfg.bg, border: `1px solid ${cfg.color}25` }}>
+                      {/* Faixa superior colorida com badge + data */}
+                      <div className="flex items-center gap-2 px-4 pt-3 pb-2">
+                        <span className="flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full"
+                          style={{ background: `${cfg.color}22`, color: cfg.color }}>
+                          {cfg.icon} {cfg.label}
+                        </span>
+                        <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.28)' }}>
+                          {timeAgo(u.created_at)}
+                        </span>
+                      </div>
+                      {/* Linha divisória */}
+                      <div className="mx-4" style={{ height: 1, background: `${cfg.color}15` }} />
+                      {/* Conteúdo */}
+                      <div className="px-4 pt-2.5 pb-4">
+                        <p className="text-sm font-black mb-1 leading-snug" style={{ color: 'rgba(255,255,255,0.92)' }}>{u.title}</p>
                         <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{u.description}</p>
                       </div>
                     </motion.div>
