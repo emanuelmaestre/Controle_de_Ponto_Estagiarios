@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, TrendingUp, BarChart2, Settings,
-  LogOut, Users, ChevronDown, X, Trophy, Bell,
+  LogOut, Users, ChevronDown, X, Trophy, Bell, Sparkles,
 } from 'lucide-react'
 
 interface Props {
@@ -29,7 +29,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/admin/workload',     label: 'Carga de Trabalho',icon: TrendingUp },
   { href: '/admin/reports',      label: 'Relatórios',       icon: BarChart2 },
   { href: '/admin/ranking',      label: 'Ranking',          icon: Trophy },
-  { href: '/admin/updates',      label: 'Atualizações',     icon: Bell },
+  { href: '/admin/updates',      label: 'Atualizações',     icon: Sparkles },
   { href: '/admin/settings',     label: 'Configurações',    icon: Settings },
 ]
 
@@ -39,7 +39,7 @@ const MOBILE_NAV = [
   { href: '/admin/workload',     label: 'Carga',       icon: TrendingUp },
   { href: '/admin/reports',      label: 'Relatórios',  icon: BarChart2 },
   { href: '/admin/ranking',      label: 'Ranking',     icon: Trophy },
-  { href: '/admin/updates',      label: 'Avisos',      icon: Bell },
+  { href: '/admin/updates',      label: 'Novidades',   icon: Sparkles },
 ]
 
 const AVATAR_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#10b981','#f59e0b','#06b6d4']
