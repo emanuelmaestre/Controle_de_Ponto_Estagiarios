@@ -226,10 +226,16 @@ export default function InternUpdatesPage() {
                 ))}
               </div>
 
-              <textarea value={message} onChange={e => { setMessage(e.target.value); setFormError('') }}
-                rows={4} placeholder="Descreva sua sugestão, elogio ou problema encontrado..."
-                className="w-full px-3 py-2.5 rounded-xl text-sm outline-none resize-none mb-2"
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text)' }} />
+              <div className="relative mb-2">
+                <textarea value={message} onChange={e => { setMessage(e.target.value); setFormError('') }}
+                  rows={4} placeholder="Descreva sua sugestão, elogio ou problema encontrado..."
+                  className="w-full px-3 py-2.5 rounded-xl text-sm outline-none resize-none"
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text)' }} />
+                <span className="absolute bottom-2.5 right-3 text-[10px] pointer-events-none"
+                  style={{ color: message.length >= 10 ? 'rgba(63,229,108,0.7)' : 'rgba(255,255,255,0.25)' }}>
+                  {message.length < 10 ? `${message.length}/10 mín.` : `${message.length} ✓`}
+                </span>
+              </div>
 
               {formError && <p className="text-xs mb-2" style={{ color: '#ff5252' }}>{formError}</p>}
 

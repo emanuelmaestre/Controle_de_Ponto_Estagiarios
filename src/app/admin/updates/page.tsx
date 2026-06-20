@@ -342,10 +342,21 @@ function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; on
 // ── Add Update Modal ────────────────────────────────────────────────────────────
 // ── Feedback Card ───────────────────────────────────────────────────────────────
 function FeedbackCard({ fb, onUpdate }: { fb: Feedback; onUpdate: () => void }) {
-  const [open, setOpen]     = useState(false)
-  const [reply, setReply]   = useState(fb.admin_reply ?? '')
-  const [status, setStatus] = useState<FeedbackStatus>(fb.status)
-  const [saving, setSaving] = useState(false)
+  const [open, setOpen]         = useState(false)
+  const [reply, setReply]       = useState(fb.admin_reply ?? '')
+  const [status, setStatus]     = useState<FeedbackStatus>(fb.status)
+  const [saving, setSaving]     = useState(false)
+  const [starring, setStarring] = useState(false)
+
+  const highlight = async () => {
+    if (starring) return
+    setStarring(true)
+    await fetch('/api/admin/feedback/highlight', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: fb.id, intern_id: fb.profiles?.intern_id }),
+    })
+    setStarring(false); onUpdate()
+  }
   const cat   = FEEDBACK_CAT[fb.category]
   const sts   = FEEDBACK_STATUS[fb.status]
   const inits = avatarInitials(fb.profiles?.full_name ?? '?')
@@ -417,12 +428,20 @@ function FeedbackCard({ fb, onUpdate }: { fb: Feedback; onUpdate: () => void }) 
                 placeholder="Resposta para o aluno (opcional)..."
                 className="w-full px-3 py-2 rounded-xl text-xs outline-none resize-none"
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text)' }} />
-              <motion.button onClick={save} disabled={saving}
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-2 self-end px-4 py-2 rounded-xl text-xs font-black disabled:opacity-50"
-                style={{ background: '#3fe56c', color: '#000' }}>
-                <Send size={11} /> {saving ? 'Enviando...' : 'Responder aluno'}
-              </motion.button>
+              <div className="flex items-center gap-2 justify-end flex-wrap">
+                <motion.button onClick={highlight} disabled={starring}
+                  whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black disabled:opacity-40"
+                  style={{ background: 'rgba(251,191,36,0.12)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.3)' }}>
+                  <Star size={11} /> {starring ? 'Enviando...' : 'Destacar +50 pts'}
+                </motion.button>
+                <motion.button onClick={save} disabled={saving}
+                  whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black disabled:opacity-50"
+                  style={{ background: '#3fe56c', color: '#000' }}>
+                  <Send size={11} /> {saving ? 'Enviando...' : 'Responder aluno'}
+                </motion.button>
+              </div>
             </div>
           </motion.div>
         )}
@@ -463,12 +482,25 @@ function StatsBar({ updates, feedbacks }: { updates: SystemUpdate[]; feedbacks: 
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────────
+const CATEGORIES: { key: FeedbackCategory; label: string; icon: React.ReactNode; color: string }[] = [
+  { key: 'suggestion', label: 'Sugestão',        icon: <Sparkles size={12} />,    color: '#22d3ee' },
+  { key: 'bug',        label: 'Problema',         icon: <MessageSquare size={12} />, color: '#ff5252' },
+  { key: 'praise',     label: 'Elogio',           icon: <Star size={12} />,        color: '#3fe56c' },
+  { key: 'other',      label: 'Outro',            icon: <RefreshCw size={12} />,   color: '#94a3b8' },
+]
+
 export default function AdminUpdatesPage() {
   const [tab, setTab]             = useState<'updates' | 'feedback'>('updates')
   const [updates, setUpdates]     = useState<SystemUpdate[]>([])
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
   const [loading, setLoading]     = useState(true)
   const [showModal, setShowModal] = useState(false)
+  const [showFbForm, setShowFbForm] = useState(false)
+  const [fbCategory, setFbCategory] = useState<FeedbackCategory>('suggestion')
+  const [fbMessage, setFbMessage]   = useState('')
+  const [fbSending, setFbSending]   = useState(false)
+  const [fbError, setFbError]       = useState('')
+  const [fbSent, setFbSent]         = useState(false)
 
   const loadUpdates  = useCallback(async () => {
     const r = await fetch('/api/admin/system-updates'); const j = await r.json()
@@ -491,6 +523,18 @@ export default function AdminUpdatesPage() {
       method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }),
     })
     loadUpdates()
+  }
+
+  const submitAdminFeedback = async () => {
+    if (fbMessage.trim().length < 10) { setFbError('Mínimo 10 caracteres'); return }
+    setFbSending(true); setFbError('')
+    const res = await fetch('/api/admin/feedback', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ category: fbCategory, message: fbMessage.trim() }),
+    })
+    setFbSending(false)
+    if (res.ok) { setFbSent(true); setFbMessage(''); setShowFbForm(false); setTimeout(() => setFbSent(false), 3000); loadFeedbacks() }
+    else { const j = await res.json(); setFbError(j.error ?? 'Erro ao enviar') }
   }
 
   const newFeedbacks = feedbacks.filter(f => f.status === 'new').length
@@ -529,6 +573,14 @@ export default function AdminUpdatesPage() {
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black"
                 style={{ background: 'linear-gradient(135deg,#3fe56c,#22d3ee)', color: '#000', boxShadow: '0 4px 16px rgba(63,229,108,0.3)' }}>
                 <Plus size={13} /> Publicar
+              </motion.button>
+            )}
+            {tab === 'feedback' && (
+              <motion.button onClick={() => setShowFbForm(o => !o)}
+                whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black"
+                style={{ background: showFbForm ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg,#a78bfa,#22d3ee)', color: showFbForm ? 'rgba(255,255,255,0.6)' : '#000' }}>
+                {showFbForm ? <><X size={13} /> Fechar</> : <><Plus size={13} /> Meu feedback</>}
               </motion.button>
             )}
           </div>
@@ -597,6 +649,55 @@ export default function AdminUpdatesPage() {
 
           {/* ── Feedbacks ── */}
           {tab === 'feedback' && (
+            <>
+            {/* Formulário admin */}
+            <AnimatePresence>
+              {showFbForm && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }}
+                  className="overflow-hidden mb-4">
+                  <div className="p-4 rounded-2xl" style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.2)' }}>
+                    <p className="text-xs font-black mb-3" style={{ color: '#a78bfa' }}>Enviar meu feedback</p>
+                    <div className="flex gap-2 flex-wrap mb-3">
+                      {CATEGORIES.map(c => (
+                        <button key={c.key} onClick={() => setFbCategory(c.key)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all"
+                          style={fbCategory === c.key
+                            ? { background: `${c.color}18`, border: `1px solid ${c.color}50`, color: c.color }
+                            : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)' }}>
+                          {c.icon} {c.label}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="relative mb-2">
+                      <textarea value={fbMessage} onChange={e => { setFbMessage(e.target.value); setFbError('') }} rows={3}
+                        placeholder="Descreva sua sugestão, problema ou observação..."
+                        className="w-full px-3 py-2.5 rounded-xl text-sm outline-none resize-none"
+                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text)' }} />
+                      <span className="absolute bottom-3 right-3 text-[10px]"
+                        style={{ color: fbMessage.length >= 10 ? 'rgba(63,229,108,0.6)' : 'rgba(255,255,255,0.25)' }}>
+                        {fbMessage.length}/10 mín.
+                      </span>
+                    </div>
+                    {fbError && <p className="text-xs mb-2" style={{ color: '#ff5252' }}>{fbError}</p>}
+                    <AnimatePresence>
+                      {fbSent && (
+                        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                          className="text-xs mb-2 flex items-center gap-1" style={{ color: '#3fe56c' }}>
+                          <CheckCircle2 size={12} /> Feedback enviado!
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                    <motion.button onClick={submitAdminFeedback} disabled={fbSending || fbMessage.trim().length < 10}
+                      whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black disabled:opacity-40"
+                      style={{ background: '#a78bfa', color: '#000' }}>
+                      <Send size={11} /> {fbSending ? 'Enviando...' : 'Enviar feedback'}
+                    </motion.button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <AnimatePresence mode="popLayout">
               {loading ? (
                 <div className="space-y-3">
