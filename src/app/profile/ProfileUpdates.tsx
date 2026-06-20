@@ -233,6 +233,9 @@ export default function ProfileUpdates() {
               style={{ background: '#3fe56c', color: '#000' }}>
               <Send size={13} /> {sending ? 'Enviando...' : 'Enviar feedback'}
             </button>
+            <p className="text-center text-[10px] mt-1.5" style={{ color: 'rgba(255,255,255,0.2)' }}>
+              ✦ Enviar gera <span style={{ color: 'rgba(63,229,108,0.5)' }}>+10 pts</span> · Feedback implementado <span style={{ color: 'rgba(63,229,108,0.5)' }}>+25 pts</span>
+            </p>
           </motion.div>
 
           {myFeedbacks.length > 0 && (
