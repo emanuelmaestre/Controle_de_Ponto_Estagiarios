@@ -62,7 +62,7 @@ const FEMININE = new Set([
   'valentina','vanessa','veronica','verônica','victória','vitoria','vitória',
   'viviane','vivian',
   // Y
-  'yasmin','yasmim','yara',
+  'yasmin','yasmim','yara','yamile','yamila','yamilet','yamileth',
 
   // ── Espanhol / Hispânico ─────────────────────────────────────
   'jimena','belen','belén','luz','carmen','consuelo','dolores','esperanza',
