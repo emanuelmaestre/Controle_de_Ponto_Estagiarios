@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Download, FileText, Users, BarChart2, Trophy,
@@ -123,17 +123,33 @@ const CATEGORIES = [
   { key: 'ranking'  as Category, label: 'Ranking',        icon: <Trophy size={14} /> },
 ]
 
+// ── Hook: posição fixed calculada pelo botão ──────────────────────────────────
+function useDropdownPos(open: boolean, btnRef: React.RefObject<HTMLButtonElement | null>, width: number) {
+  const [pos, setPos] = useState<React.CSSProperties>({})
+  useEffect(() => {
+    if (!open || !btnRef.current) return
+    const r = btnRef.current.getBoundingClientRect()
+    const spaceBelow = window.innerHeight - r.bottom
+    const top = spaceBelow >= 228 ? r.bottom + 4 : r.top - Math.min(228, spaceBelow < 60 ? 228 : spaceBelow) - 4
+    const left = Math.min(r.left, window.innerWidth - width - 8)
+    setPos({ position: 'fixed', top: Math.max(8, top), left: Math.max(8, left), width, zIndex: 9999 })
+  }, [open, btnRef, width])
+  return pos
+}
+
 // ── Intern selector ────────────────────────────────────────────────────────────
 interface InternOption { id: string; full_name: string }
 
 function InternSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [interns, setInterns] = useState<InternOption[]>([])
-  const [open, setOpen] = useState(false)
+  const [open, setOpen]   = useState(false)
   const [loaded, setLoaded] = useState(false)
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const pos    = useDropdownPos(open, btnRef, 224)
 
   const load = async () => {
     if (loaded) { setOpen(o => !o); return }
-    const res = await fetch('/api/admin/report-data?type=monthly')
+    const res  = await fetch('/api/admin/report-data?type=monthly')
     const json = await res.json()
     setInterns(json.interns ?? [])
     setLoaded(true)
@@ -143,9 +159,8 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
   const selected = interns.find(i => i.id === value)
 
   return (
-    <div className="relative">
-      <button
-        type="button" onClick={load}
+    <div>
+      <button ref={btnRef} type="button" onClick={load}
         className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all w-full"
         style={{
           background: value ? 'rgba(63,229,108,0.1)' : 'rgba(255,255,255,0.04)',
@@ -160,16 +175,17 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
       <AnimatePresence>
         {open && (
           <>
-            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <div className="fixed inset-0" style={{ zIndex: 9998 }} onClick={() => setOpen(false)} />
             <motion.div
               initial={{ opacity: 0, y: -4, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: 0.97 }}
               transition={{ duration: 0.15 }}
-              className="absolute z-50 top-full mt-1 left-0 w-56 rounded-xl overflow-hidden"
+              className="rounded-xl overflow-hidden"
               style={{
+                ...pos,
                 background: '#0b1d12', border: '1px solid rgba(63,229,108,0.2)',
-                boxShadow: '0 16px 48px rgba(0,0,0,0.6)', maxHeight: 220, overflowY: 'auto',
+                boxShadow: '0 16px 48px rgba(0,0,0,0.7)', maxHeight: 220, overflowY: 'auto',
               }}
             >
               {interns.map(intern => (
@@ -198,11 +214,13 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
 // ── Month select compact ───────────────────────────────────────────────────────
 function MonthSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false)
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const pos    = useDropdownPos(open, btnRef, 192)
   const selected = monthOptions.find(o => o.value === value)
 
   return (
-    <div className="relative">
-      <button type="button" onClick={() => setOpen(o => !o)}
+    <div>
+      <button ref={btnRef} type="button" onClick={() => setOpen(o => !o)}
         className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all w-full"
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)' }}
       >
@@ -213,14 +231,15 @@ function MonthSelect({ value, onChange }: { value: string; onChange: (v: string)
       <AnimatePresence>
         {open && (
           <>
-            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <div className="fixed inset-0" style={{ zIndex: 9998 }} onClick={() => setOpen(false)} />
             <motion.div
               initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}
-              className="absolute z-50 top-full mt-1 left-0 w-48 rounded-xl overflow-hidden"
+              className="rounded-xl overflow-hidden"
               style={{
+                ...pos,
                 background: '#0b1d12', border: '1px solid rgba(63,229,108,0.2)',
-                boxShadow: '0 16px 48px rgba(0,0,0,0.6)', maxHeight: 220, overflowY: 'auto',
+                boxShadow: '0 16px 48px rgba(0,0,0,0.7)', maxHeight: 220, overflowY: 'auto',
               }}
             >
               {monthOptions.map(opt => (
