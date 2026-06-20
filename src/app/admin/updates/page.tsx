@@ -510,7 +510,7 @@ function FeedbackCard({ fb, onUpdate }: { fb: Feedback; onUpdate: () => void }) 
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
                 className="flex items-center gap-2 self-end px-4 py-2 rounded-xl text-xs font-black disabled:opacity-50"
                 style={{ background: '#3fe56c', color: '#000' }}>
-                <Send size={11} /> {saving ? 'Salvando...' : 'Salvar'}
+                <Send size={11} /> {saving ? 'Enviando...' : 'Responder aluno'}
               </motion.button>
             </div>
           </motion.div>
