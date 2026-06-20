@@ -421,32 +421,37 @@ export default function AdminNotificationBell() {
         )}
       </motion.button>
 
-      {/* Dropdown — posição calculada para não sair da tela */}
+      {/* Modal tela cheia */}
       <AnimatePresence>
         {open && (
-          <motion.div
-            ref={panelRef}
-            initial={{ opacity: 0, scale: 0.96, y: -8 }}
-            animate={{ opacity: 1, scale: 1,    y: 0 }}
-            exit={{   opacity: 0, scale: 0.96,  y: -8 }}
-            transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-            className="z-[200] rounded-2xl overflow-hidden flex flex-col"
-            style={{
-              ...panelStyle,
-              background: '#0b1d12',
-              border: '1px solid rgba(0,200,83,0.2)',
-              boxShadow: '0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,200,83,0.08)',
-            }}
-          >
-            <PanelContent
-              loading={loading}
-              notifications={notifications}
-              filter={filter}
-              setFilter={setFilter}
-              onClose={() => setOpen(false)}
-              onRefresh={fetchNotifications}
+          <>
+            <motion.div
+              key="overlay-desk"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[150]"
+              style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
+              onClick={() => setOpen(false)}
             />
-          </motion.div>
+            <motion.div
+              ref={panelRef}
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{   opacity: 0, y: 24 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              className="fixed z-[160] flex flex-col"
+              style={{ inset: 0, background: '#0b1d12' }}
+            >
+              <PanelContent
+                loading={loading}
+                notifications={notifications}
+                filter={filter}
+                setFilter={setFilter}
+                onClose={() => setOpen(false)}
+                onRefresh={fetchNotifications}
+              />
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
@@ -532,23 +537,18 @@ export function AdminNotificationBellMobile() {
               onClick={() => setOpen(false)}
             />
 
-            {/* Modal centralizado */}
+            {/* Modal tela cheia */}
             <motion.div
               key="modal"
-              initial={{ opacity: 0, scale: 0.96, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 24 }}
               transition={{ type: 'spring', stiffness: 320, damping: 28 }}
               className="fixed z-[160] flex flex-col"
               style={{
-                top: '50%', left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 'min(680px, calc(100vw - 32px))',
-                height: 'min(780px, calc(100dvh - 48px))',
+                inset: 0,
                 background: '#0b1d12',
-                border: '1px solid rgba(0,200,83,0.25)',
-                borderRadius: 20,
-                boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(63,229,108,0.08)',
+                borderRadius: 0,
               }}
             >
               <PanelContent
