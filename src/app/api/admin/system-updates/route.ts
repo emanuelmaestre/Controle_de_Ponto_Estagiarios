@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 const systemUpdateSchema = z.object({
   title: z.string().trim().min(3).max(120),
   description: z.string().trim().min(3).max(1000),
-  type: z.string().trim().max(40).optional(),
+  type: z.enum(['feature', 'fix', 'improvement', 'announcement']).optional(),
   module: z.string().trim().max(80).optional().nullable(),
   details: z.string().trim().max(4000).optional().nullable(),
 })
@@ -21,7 +21,7 @@ export async function GET() {
   const auth = await requireManager()
   if (!auth.ok) return auth.response
 
-  const db = createSupabaseServiceClient() as any
+  const db = createSupabaseServiceClient()
   const { data, error } = await db
     .from('system_updates')
     .select('*')
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Dados invalidos' }, { status: 400 })
   }
 
-  const db = createSupabaseServiceClient() as any
+  const db = createSupabaseServiceClient()
   const { data, error } = await db.from('system_updates').insert({
     title: parsed.data.title,
     description: parsed.data.description,
@@ -62,7 +62,7 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
   }
 
-  const db = createSupabaseServiceClient() as any
+  const db = createSupabaseServiceClient()
   const { error } = await db.from('system_updates').delete().eq('id', parsed.data.id)
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 

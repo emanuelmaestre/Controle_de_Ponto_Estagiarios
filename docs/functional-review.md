@@ -2,13 +2,13 @@
 
 Data: 20/06/2026
 
-## Decisao de escopo
+## Decisao de continuidade
 
-O produto segue como MVP simples de controle de ponto. Funcionalidades fora desse foco devem ser mantidas apenas quando ja sustentam fluxo ativo de tela ou quando houver decisao futura documentada.
+As funcionalidades existentes devem ser mantidas quando sustentam fluxo ativo de tela ou operacao real do sistema.
 
 ## Mantidas porque estao em uso
 
-- Autenticacao: login, logout, cadastro, esqueci senha, definir senha, PIN enquanto existir tela chamando o fluxo.
+- Autenticacao: login, logout, cadastro, esqueci senha, definir senha e PIN.
 - Ponto: entrada, saida, historico e registros.
 - Perfil: leitura, edicao, foto e alteracao de senha.
 - Admin: cadastro de estagiario, reset de senha, listagem de estagiarios, relatorios, envio de relatorio, notificacoes administrativas.
@@ -18,7 +18,7 @@ O produto segue como MVP simples de controle de ponto. Funcionalidades fora dess
 
 ## Descontinuadas no backend
 
-Estas rotas agora retornam `410 Gone` por nao terem referencia ativa ou por ficarem fora do escopo MVP:
+Estas rotas agora retornam `410 Gone` por nao terem referencia ativa ou por serem rotas pontuais de manutencao/debug:
 
 - `POST /api/admin/fix-roles`
 - `POST /api/admin/fix-test-profile`
@@ -31,6 +31,6 @@ Estas rotas agora retornam `410 Gone` por nao terem referencia ativa ou por fica
 ## Pendencias recomendadas
 
 - Remover chamadas/telas de manutencao somente em uma rodada autorizada de UI.
-- Remover `@ts-nocheck` de `src/app/api/intern/reports/route.ts` e `src/app/api/intern/feedback/route.ts`.
-- Atualizar `src/types/database.ts` para incluir tabelas `feedback` e `system_updates`, eliminando casts `as any` localizados.
+- Manter `src/types/database.ts` sincronizado com novas migrations via Supabase CLI.
+- Adicionar testes de contrato para `src/app/api/intern/reports/route.ts` e `src/app/api/intern/feedback/route.ts`.
 - Depois de aplicar a migration `023_report_summary_rpc.sql`, validar o relatorio mensal contra dados reais.

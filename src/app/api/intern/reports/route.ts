@@ -1,110 +1,140 @@
-﻿// @ts-nocheck
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
-import { minutesToHours } from '@/lib/utils'
+import { createLogger } from '@/lib/logger'
 
-export async function GET(request: Request) {
-  const authClient = await createSupabaseServerClient()
-  const { data: { user } } = await authClient.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'NÃ£o autorizado' }, { status: 401 })
+const logger = createLogger('api.intern.reports')
+const SP_OFFSET = 3 * 60 * 60 * 1000
 
-  const { searchParams } = new URL(request.url)
-  const reportType = searchParams.get('report') ?? 'attendance'
-  const month = searchParams.get('month')
-
-  const supabase = createSupabaseServiceClient()
-  const db = supabase as any
-  const SP = 3 * 60 * 60 * 1000
-
-  // PerÃ­odo
-  let startDate: string
-  let endDate: string
-  let label = ''
-
+function getMonthRange(month: string | null) {
   if (month) {
     const [year, mon] = month.split('-').map(Number)
-    startDate = new Date(Date.UTC(year, mon - 1, 1, 0, 0, 0) + SP).toISOString()
-    endDate   = new Date(Date.UTC(year, mon,     1, 0, 0, 0) + SP).toISOString()
-    label = new Date(Date.UTC(year, mon - 1, 15)).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
-  } else {
-    const now = new Date()
-    const year = now.getFullYear()
-    const mon = now.getMonth() + 1
-    startDate = new Date(Date.UTC(year, mon - 1, 1, 0, 0, 0) + SP).toISOString()
-    endDate   = new Date(Date.UTC(year, mon,     1, 0, 0, 0) + SP).toISOString()
-    label = now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+    return {
+      startDate: new Date(Date.UTC(year, mon - 1, 1, 0, 0, 0) + SP_OFFSET).toISOString(),
+      endDate: new Date(Date.UTC(year, mon, 1, 0, 0, 0) + SP_OFFSET).toISOString(),
+      label: new Date(Date.UTC(year, mon - 1, 15)).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }),
+    }
   }
 
-  // Perfil
-  const { data: profile } = await db
-    .from('profiles')
-    .select('id, full_name, email, course, nickname, points, level, streak_days, photo_url, created_at, workload_hours')
-    .eq('id', user.id)
-    .single()
+  const now = new Date()
+  const year = now.getFullYear()
+  const mon = now.getMonth() + 1
 
-  // Registros do perÃ­odo
-  const { data: records } = await db
-    .from('time_records')
-    .select('id, clock_in, clock_out, duration_minutes, status, activities, is_late')
-    .eq('intern_id', user.id)
-    .gte('clock_in', startDate)
-    .lt('clock_in', endDate)
-    .order('clock_in', { ascending: false })
+  return {
+    startDate: new Date(Date.UTC(year, mon - 1, 1, 0, 0, 0) + SP_OFFSET).toISOString(),
+    endDate: new Date(Date.UTC(year, mon, 1, 0, 0, 0) + SP_OFFSET).toISOString(),
+    label: now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }),
+  }
+}
 
-  // Todos os registros para carga horÃ¡ria
-  const { data: allRecords } = await db
-    .from('time_records')
-    .select('duration_minutes, status')
-    .eq('intern_id', user.id)
-    .eq('status', 'approved')
+export async function GET(request: Request) {
+  try {
+    const supabase = await createSupabaseServerClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Nao autorizado' }, { status: 401 })
 
-  const totalWorkedMinutes = allRecords?.reduce((a, r) => a + (r.duration_minutes ?? 0), 0) ?? 0
-  const workloadHours = (profile as any)?.workload_hours ?? 0
-  const workloadMinutes = workloadHours * 60
-  const remainingMinutes = Math.max(0, workloadMinutes - totalWorkedMinutes)
+    const { searchParams } = new URL(request.url)
+    const reportType = searchParams.get('report') ?? 'attendance'
+    const { startDate, endDate, label } = getMonthRange(searchParams.get('month'))
 
-  // Pontualidade
-  const approvedRecords = records?.filter(r => r.status === 'approved') ?? []
-  const lateCount = approvedRecords.filter(r => r.is_late).length
-  const onTimeCount = approvedRecords.filter(r => !r.is_late).length
-  const punctualityRate = approvedRecords.length > 0
-    ? Math.round((onTimeCount / approvedRecords.length) * 100)
-    : 100
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, full_name, email, course, nickname, points, level, streak_days, photo_url, created_at, total_hours_required')
+      .eq('id', user.id)
+      .single()
 
-  // Conquistas
-  const { data: achievements } = await db
-    .from('achievements')
-    .select('type, unlocked_at')
-    .eq('intern_id', user.id)
-    .order('unlocked_at', { ascending: false })
+    if (profileError) return NextResponse.json({ error: profileError.message }, { status: 500 })
 
-  // Ranking do mÃªs
-  const { data: allInternPoints } = await db
-    .from('profiles')
-    .select('id, points')
-    .eq('role', 'intern')
-    .eq('is_active', true)
-    .order('points', { ascending: false })
+    const { data: records, error: recordsError } = await supabase
+      .from('time_records')
+      .select('id, clock_in, clock_out, duration_minutes, status, is_late')
+      .eq('intern_id', user.id)
+      .gte('clock_in', startDate)
+      .lt('clock_in', endDate)
+      .order('clock_in', { ascending: false })
 
-  const rankingPosition = (allInternPoints ?? []).findIndex(p => p.id === user.id) + 1
-  const totalInterns = (allInternPoints ?? []).length
+    if (recordsError) return NextResponse.json({ error: recordsError.message }, { status: 500 })
 
-  return NextResponse.json({
-    profile,
-    period: { startDate, endDate, label },
-    records: records ?? [],
-    stats: {
-      totalMinutes: approvedRecords.reduce((a, r) => a + (r.duration_minutes ?? 0), 0),
-      totalSessions: records?.length ?? 0,
-      approvedSessions: approvedRecords.length,
-      lateCount,
-      onTimeCount,
-      punctualityRate,
-      totalWorkedMinutes,
-      remainingMinutes,
-      workloadMinutes,
-    },
-    achievements: achievements ?? [],
-    ranking: { position: rankingPosition, total: totalInterns },
-  })
+    const recordIds = (records ?? []).map(record => record.id)
+    const activitiesByRecord = new Map<string, string[]>()
+
+    if (recordIds.length > 0) {
+      const { data: activities, error: activitiesError } = await supabase
+        .from('activities')
+        .select('time_record_id, description')
+        .in('time_record_id', recordIds)
+
+      if (activitiesError) return NextResponse.json({ error: activitiesError.message }, { status: 500 })
+
+      for (const activity of activities ?? []) {
+        const current = activitiesByRecord.get(activity.time_record_id) ?? []
+        current.push(activity.description)
+        activitiesByRecord.set(activity.time_record_id, current)
+      }
+    }
+
+    const { data: allRecords, error: allRecordsError } = await supabase
+      .from('time_records')
+      .select('duration_minutes, status')
+      .eq('intern_id', user.id)
+      .eq('status', 'approved')
+
+    if (allRecordsError) return NextResponse.json({ error: allRecordsError.message }, { status: 500 })
+
+    const approvedRecords = (records ?? []).filter(record => record.status === 'approved')
+    const totalWorkedMinutes = (allRecords ?? []).reduce((total, record) => total + (record.duration_minutes ?? 0), 0)
+    const workloadMinutes = (profile.total_hours_required ?? 0) * 60
+    const remainingMinutes = Math.max(0, workloadMinutes - totalWorkedMinutes)
+    const lateCount = approvedRecords.filter(record => record.is_late).length
+    const onTimeCount = approvedRecords.filter(record => !record.is_late).length
+    const punctualityRate = approvedRecords.length > 0
+      ? Math.round((onTimeCount / approvedRecords.length) * 100)
+      : 100
+
+    const { data: achievements, error: achievementsError } = await supabase
+      .from('achievements')
+      .select('type, unlocked_at')
+      .eq('intern_id', user.id)
+      .order('unlocked_at', { ascending: false })
+
+    if (achievementsError) return NextResponse.json({ error: achievementsError.message }, { status: 500 })
+
+    const service = createSupabaseServiceClient()
+    const { data: allInternPoints, error: rankingError } = await service
+      .from('profiles')
+      .select('id, points')
+      .eq('role', 'intern')
+      .eq('is_active', true)
+      .order('points', { ascending: false })
+
+    if (rankingError) return NextResponse.json({ error: rankingError.message }, { status: 500 })
+
+    const rankingPosition = (allInternPoints ?? []).findIndex(intern => intern.id === user.id) + 1
+    const recordsWithActivities = (records ?? []).map(record => ({
+      ...record,
+      activities: activitiesByRecord.get(record.id) ?? [],
+    }))
+
+    return NextResponse.json({
+      profile,
+      reportType,
+      period: { startDate, endDate, label },
+      records: recordsWithActivities,
+      stats: {
+        totalMinutes: approvedRecords.reduce((total, record) => total + (record.duration_minutes ?? 0), 0),
+        totalSessions: records?.length ?? 0,
+        approvedSessions: approvedRecords.length,
+        lateCount,
+        onTimeCount,
+        punctualityRate,
+        totalWorkedMinutes,
+        remainingMinutes,
+        workloadMinutes,
+      },
+      achievements: achievements ?? [],
+      ranking: { position: rankingPosition, total: allInternPoints?.length ?? 0 },
+    })
+  } catch (err) {
+    logger.error('request failed', err)
+    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
+  }
 }

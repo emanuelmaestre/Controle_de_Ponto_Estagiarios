@@ -65,7 +65,7 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url)
   const { type, startDate, endDate, label } = getDateRange(searchParams)
-  const supabase = createSupabaseServiceClient() as any
+  const supabase = createSupabaseServiceClient()
 
   const { data: interns, error } = await supabase.rpc('get_report_summary', {
     p_start_date: startDate,

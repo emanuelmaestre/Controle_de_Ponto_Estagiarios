@@ -1,0 +1,2 @@
+ALTER TABLE public.time_records
+  ADD COLUMN IF NOT EXISTS is_late BOOLEAN DEFAULT FALSE;

@@ -120,6 +120,7 @@ export type Database = {
           geo_distance: number | null
           geo_status: string | null
           geo_blocked: boolean | null
+          is_late: boolean | null
         }
         Insert: {
           id?: string
@@ -138,6 +139,7 @@ export type Database = {
           geo_distance?: number | null
           geo_status?: string | null
           geo_blocked?: boolean | null
+          is_late?: boolean | null
         }
         Update: {
           clock_out?: string | null
@@ -152,6 +154,7 @@ export type Database = {
           geo_distance?: number | null
           geo_status?: string | null
           geo_blocked?: boolean | null
+          is_late?: boolean | null
         }
         Relationships: []
       }
@@ -374,6 +377,61 @@ export type Database = {
         }
         Relationships: []
       }
+      system_updates: {
+        Row: {
+          id: string
+          title: string
+          description: string
+          type: 'feature' | 'fix' | 'improvement' | 'announcement'
+          module: string | null
+          details: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description: string
+          type?: 'feature' | 'fix' | 'improvement' | 'announcement'
+          module?: string | null
+          details?: string | null
+          created_at?: string
+        }
+        Update: {
+          title?: string
+          description?: string
+          type?: 'feature' | 'fix' | 'improvement' | 'announcement'
+          module?: string | null
+          details?: string | null
+        }
+        Relationships: []
+      }
+      feedback: {
+        Row: {
+          id: string
+          intern_id: string
+          category: 'suggestion' | 'bug' | 'praise' | 'other'
+          message: string
+          status: 'new' | 'read' | 'implemented' | 'archived'
+          admin_reply: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          intern_id: string
+          category?: 'suggestion' | 'bug' | 'praise' | 'other'
+          message: string
+          status?: 'new' | 'read' | 'implemented' | 'archived'
+          admin_reply?: string | null
+          created_at?: string
+        }
+        Update: {
+          category?: 'suggestion' | 'bug' | 'praise' | 'other'
+          message?: string
+          status?: 'new' | 'read' | 'implemented' | 'archived'
+          admin_reply?: string | null
+        }
+        Relationships: []
+      }
       // Views tratadas como tabelas read-only (workaround para supabase-js v2)
       v_today_status: {
         Row: {
@@ -438,6 +496,28 @@ export type Database = {
         Args: Record<string, never>
         Returns: boolean
       }
+      backfill_gamification: {
+        Args: Record<string, never>
+        Returns: Json
+      }
+      get_report_summary: {
+        Args: {
+          p_start_date: string
+          p_end_date: string
+        }
+        Returns: Array<{
+          id: string
+          full_name: string
+          email: string
+          course: string | null
+          nickname: string | null
+          total_minutes: number
+          total_sessions: number
+          approved_sessions: number
+          pending_sessions: number
+          rejected_sessions: number
+        }>
+      }
     }
   }
 }
@@ -453,6 +533,8 @@ export type PushSubscription = Database['public']['Tables']['push_subscriptions'
 export type Notification = Database['public']['Tables']['notifications']['Row']
 export type Settings = Database['public']['Tables']['settings']['Row']
 export type InternSchedule = Database['public']['Tables']['intern_schedules']['Row']
+export type SystemUpdate = Database['public']['Tables']['system_updates']['Row']
+export type Feedback = Database['public']['Tables']['feedback']['Row']
 
 export type TodayStatus = Database['public']['Tables']['v_today_status']['Row']
 export type MonthlyHours = Database['public']['Tables']['v_monthly_hours']['Row']
