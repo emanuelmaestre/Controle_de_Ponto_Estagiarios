@@ -32,6 +32,7 @@ export default function SelfieGate({ hasPhoto, internId, formData, onComplete }:
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
+  const startCameraRef = useRef<((facing: 'user' | 'environment') => Promise<void>) | null>(null)
 
   const [visible, setVisible]           = useState(!hasPhoto)
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null)
@@ -57,13 +58,13 @@ export default function SelfieGate({ hasPhoto, internId, formData, onComplete }:
       // listen for changes (user may unlock while on the page)
       status.onchange = () => {
         setPermState(status.state as PermState)
-        if (status.state === 'granted') startCamera('user')
+        if (status.state === 'granted') startCameraRef.current?.('user')
       }
       return status.state as PermState
     } catch {
       return 'unknown'
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   const startCamera = useCallback(async (facing: 'user' | 'environment') => {
     setCamError(null)
@@ -113,6 +114,10 @@ export default function SelfieGate({ hasPhoto, internId, formData, onComplete }:
       }
     }
   }, [])
+
+  useEffect(() => {
+    startCameraRef.current = startCamera
+  }, [startCamera])
 
   useEffect(() => {
     if (!visible) return
@@ -236,8 +241,8 @@ export default function SelfieGate({ hasPhoto, internId, formData, onComplete }:
         if (onComplete) onComplete()
         else router.refresh()
       }, 1600)
-    } catch (e: any) {
-      const msg = e?.message || String(e) || 'Erro desconhecido'
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e) || 'Erro desconhecido'
       console.error('[SelfieGate upload error]', msg, e)
 
       let userMsg = 'Erro ao salvar foto. Tente novamente.'
@@ -257,7 +262,7 @@ export default function SelfieGate({ hasPhoto, internId, formData, onComplete }:
   }
 
   // ── Browser permission-denied instructions ───────────────
-  const PermissionDeniedCard = () => (
+  const permissionDeniedCard = (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
@@ -452,7 +457,7 @@ export default function SelfieGate({ hasPhoto, internId, formData, onComplete }:
                 </motion.div>
               ) : isDenied ? (
                 /* ── Permission Denied ── */
-                <PermissionDeniedCard />
+                permissionDeniedCard
               ) : (
                 <>
                   {/* Generic error (not permission) */}

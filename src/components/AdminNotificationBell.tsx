@@ -390,7 +390,9 @@ export default function AdminNotificationBell() {
   }, [])
 
   useEffect(() => {
-    fetchNotifications()
+    queueMicrotask(() => {
+      void fetchNotifications()
+    })
     const interval = setInterval(fetchNotifications, 60_000)
     return () => clearInterval(interval)
   }, [fetchNotifications])
@@ -571,7 +573,9 @@ export function AdminNotificationBellMobile() {
   }, [])
 
   useEffect(() => {
-    fetchNotifications()
+    queueMicrotask(() => {
+      void fetchNotifications()
+    })
     const interval = setInterval(fetchNotifications, 60_000)
     return () => clearInterval(interval)
   }, [fetchNotifications])

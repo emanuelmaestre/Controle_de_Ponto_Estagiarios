@@ -70,7 +70,11 @@ export default function InternRankingContent() {
       .catch(() => setLoading(false))
   }, [period, month, year])
 
-  useEffect(() => { fetchRanking(true) }, [fetchRanking])
+  useEffect(() => {
+    queueMicrotask(() => {
+      fetchRanking(true)
+    })
+  }, [fetchRanking])
 
   useEffect(() => {
     const id = setInterval(() => fetchRanking(false), REFRESH_INTERVAL)

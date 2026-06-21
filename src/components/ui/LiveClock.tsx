@@ -14,8 +14,10 @@ export default function LiveClock({ className, style }: { className?: string; st
       setTime(now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
       setSeconds(now.toLocaleTimeString('pt-BR', { second: '2-digit' }))
     }
-    update()
-    setMounted(true)
+    queueMicrotask(() => {
+      update()
+      setMounted(true)
+    })
     const id = setInterval(update, 1000)
     return () => clearInterval(id)
   }, [])

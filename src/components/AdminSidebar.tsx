@@ -54,9 +54,11 @@ export default function AdminSidebar({ fullName, initials }: Props) {
   const [profileOpen, setProfileOpen] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
     const check = () => setIsDesktop(window.innerWidth >= 768)
-    check()
+    queueMicrotask(() => {
+      setMounted(true)
+      check()
+    })
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
   }, [])

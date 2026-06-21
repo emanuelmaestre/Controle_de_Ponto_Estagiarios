@@ -78,7 +78,11 @@ export default function IntegrationsTab() {
     setLoading(false)
   }
 
-  useEffect(() => { check() }, [])
+  useEffect(() => {
+    queueMicrotask(() => {
+      void check()
+    })
+  }, [])
 
   const totalOnline = Object.values(statuses).filter(s => s === 'online').length
 

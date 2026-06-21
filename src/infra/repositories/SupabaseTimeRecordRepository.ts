@@ -1,6 +1,9 @@
 import { TimeRecord } from '@/domain/entities/TimeRecord'
 import type { ITimeRecordRepository } from '@/application/ports/ITimeRecordRepository'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database'
+
+type TimeRecordRow = Database['public']['Tables']['time_records']['Row']
 
 export class SupabaseTimeRecordRepository implements ITimeRecordRepository {
   constructor(private supabase: SupabaseClient) {}
@@ -92,7 +95,7 @@ export class SupabaseTimeRecordRepository implements ITimeRecordRepository {
       .eq('id', record.id)
   }
 
-  private toDomain(row: any): TimeRecord {
+  private toDomain(row: TimeRecordRow): TimeRecord {
     return new TimeRecord(
       row.id,
       row.intern_id,

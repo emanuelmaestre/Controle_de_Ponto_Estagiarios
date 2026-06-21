@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { createSupabaseServiceClient } from '@/infra/supabase/server'
 
+type RankingProfile = {
+  id: string
+  full_name: string
+  photo_url: string | null
+  points: number | null
+  level: number | null
+  streak_days: number | null
+}
+
 function getWeekRange() {
   const now = new Date()
   const day = now.getDay() // 0=Sun
@@ -84,7 +93,7 @@ export async function GET(request: NextRequest) {
     const { data } = await service
       .from('achievements')
       .select('intern_id, type, unlocked_at')
-      .in('intern_id', profiles.map((p: any) => p.id))
+      .in('intern_id', (profiles as RankingProfile[]).map(p => p.id))
     achievementsData = data
   } catch { /* table doesn't exist yet */ }
 
@@ -95,7 +104,7 @@ export async function GET(request: NextRequest) {
     achievementsByIntern.set(a.intern_id, list)
   }
 
-  const ranking = profiles
+  const ranking = (profiles as RankingProfile[])
     .map(p => ({
       internId:      p.id,
       internName:    p.full_name,

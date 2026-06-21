@@ -516,7 +516,11 @@ export default function AdminUpdatesPage() {
     setLoading(false)
   }, [loadUpdates, loadFeedbacks])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    queueMicrotask(() => {
+      void load()
+    })
+  }, [load])
 
   const deleteUpdate = async (id: string) => {
     await fetch('/api/admin/system-updates', {
@@ -584,7 +588,7 @@ export default function AdminUpdatesPage() {
             { key: 'updates',  label: 'Novidades',  icon: <Sparkles size={13} /> },
             { key: 'feedback', label: 'Feedbacks',  icon: <MessageSquare size={13} />, badge: newFeedbacks },
           ].map(t => (
-            <button key={t.key} onClick={() => setTab(t.key as any)}
+            <button key={t.key} onClick={() => setTab(t.key as 'updates' | 'feedback')}
               className="relative flex items-center gap-1.5 px-4 py-2.5 text-xs font-black transition-colors"
               style={{ color: tab === t.key ? '#3fe56c' : 'rgba(255,255,255,0.4)', borderBottom: tab === t.key ? '2px solid #3fe56c' : '2px solid transparent' }}>
               {t.icon} {t.label}
@@ -710,6 +714,7 @@ export default function AdminUpdatesPage() {
                   </motion.div>
                   <div className="text-center">
                     <p className="text-base font-black mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Nenhum feedback ainda</p>
+                    {/* eslint-disable-next-line react/no-unescaped-entities */}
                     <p className="text-sm" style={{ color: 'rgba(255,255,255,0.2)' }}>Os alunos podem enviar sugestões pelo painel deles em "Novidades"</p>
                   </div>
                 </motion.div>

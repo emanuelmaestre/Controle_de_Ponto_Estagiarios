@@ -2,6 +2,9 @@ import { User } from '@/domain/entities/User'
 import { UserRole } from '@/domain/enums/UserRole'
 import type { IUserRepository } from '@/application/ports/IUserRepository'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database'
+
+type ProfileRow = Database['public']['Tables']['profiles']['Row']
 
 export class SupabaseUserRepository implements IUserRepository {
   constructor(private supabase: SupabaseClient) {}
@@ -61,7 +64,7 @@ export class SupabaseUserRepository implements IUserRepository {
       .eq('id', user.id)
   }
 
-  private toDomain(row: any): User {
+  private toDomain(row: ProfileRow): User {
     return new User(
       row.id,
       row.full_name,

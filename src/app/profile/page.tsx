@@ -49,11 +49,11 @@ export default async function ProfilePage({ searchParams }: Props) {
     photo_url: profile?.photo_url ?? null,
   }
 
-  const lvl    = getLevelInfo((profile as any)?.level ?? 1)
+  const lvl    = getLevelInfo(profile?.level ?? 1)
   const gender = detectGender(profile?.full_name ?? '')
   const title  = getLevelTitle(lvl.level, gender)
-  const pts    = (profile as any)?.points ?? 0
-  const streak = (profile as any)?.streak_days ?? 0
+  const pts    = profile?.points ?? 0
+  const streak = profile?.streak_days ?? 0
 
   const { data: achievementsData } = await supabase
     .from('achievements')
@@ -128,7 +128,7 @@ export default async function ProfilePage({ searchParams }: Props) {
             {activeTab === 'conquistas' && (
               <ProfileAchievements
                 points={pts}
-                level={(profile as any)?.level ?? 1}
+                level={profile?.level ?? 1}
                 streakDays={streak}
                 achievements={userAchievements}
                 fullName={profile?.full_name ?? ''}

@@ -136,7 +136,7 @@ export default async function DashboardPage() {
   const openRecordWarning = (() => {
     if (!openRecord) return null
     const clockInDate = openRecord.clock_in.slice(0, 10)
-    const hoursOpen = (Date.now() - new Date(openRecord.clock_in).getTime()) / 3_600_000
+    const hoursOpen = (new Date().getTime() - new Date(openRecord.clock_in).getTime()) / 3_600_000
     if (clockInDate < today) {
       const dayLabel = new Date(clockInDate + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' })
       return `Você esqueceu de registrar a saída de ${dayLabel}. Registre agora para não perder a sessão.`
@@ -154,9 +154,9 @@ export default async function DashboardPage() {
     .eq('intern_id', user.id)
     .order('unlocked_at', { ascending: false })
 
-  const userPoints     = (profile as any)?.points ?? 0
-  const userLevel      = (profile as any)?.level ?? 1
-  const userStreak     = (profile as any)?.streak_days ?? 0
+  const userPoints     = profile?.points ?? 0
+  const userLevel      = profile?.level ?? 1
+  const userStreak     = profile?.streak_days ?? 0
   const lvlInfo        = getLevelInfo(userLevel)
   const userGender     = detectGender(profile?.full_name ?? '')
   const lvlTitle       = getLevelTitle(userLevel, userGender)

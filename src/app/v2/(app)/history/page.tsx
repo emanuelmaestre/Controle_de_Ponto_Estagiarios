@@ -20,11 +20,13 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true)
-    fetch(`/api/records?month=${month}&year=${year}`)
-      .then(r => r.json())
-      .then(data => { setRecords(data.records || []); setLoading(false) })
-      .catch(() => setLoading(false))
+    queueMicrotask(() => {
+      setLoading(true)
+      fetch(`/api/records?month=${month}&year=${year}`)
+        .then(r => r.json())
+        .then(data => { setRecords(data.records || []); setLoading(false) })
+        .catch(() => setLoading(false))
+    })
   }, [month, year])
 
   const totalMinutes = records.reduce((sum, r) => sum + (r.durationMinutes ?? 0), 0)

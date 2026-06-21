@@ -25,7 +25,11 @@ export default function InternsPage() {
     setLoading(false)
   }
 
-  useEffect(() => { loadInterns() }, [])
+  useEffect(() => {
+    queueMicrotask(() => {
+      void loadInterns()
+    })
+  }, [])
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault()

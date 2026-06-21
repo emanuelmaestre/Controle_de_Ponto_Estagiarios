@@ -74,7 +74,11 @@ export default function InternUpdatesPage() {
     setLoading(false)
   }, [])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    queueMicrotask(() => {
+      void load()
+    })
+  }, [load])
 
   const submit = async () => {
     if (message.trim().length < 10) { setFormError('Escreva pelo menos 10 caracteres'); return }
@@ -113,7 +117,7 @@ export default function InternUpdatesPage() {
             { key: 'news',     label: 'Novidades',  icon: <Sparkles size={13} /> },
             { key: 'feedback', label: 'Sugestões',  icon: <MessageSquare size={13} /> },
           ].map(t => (
-            <button key={t.key} onClick={() => setTab(t.key as any)}
+            <button key={t.key} onClick={() => setTab(t.key as 'news' | 'feedback')}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black transition-all"
               style={tab === t.key
                 ? { background: 'rgba(63,229,108,0.12)', color: '#3fe56c', border: '1px solid rgba(63,229,108,0.3)' }

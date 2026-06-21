@@ -84,6 +84,10 @@ function CardTitle({ children }: { children: React.ReactNode }) {
 }
 
 /* ═══════════════════════════════════════════════════════ */
+function storageSafeFileName(value: string) {
+  return value.trim().toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '')
+}
+
 export default function NewInternClient() {
   const router  = useRouter()
   const supabase = createSupabaseBrowserClient()
@@ -114,7 +118,9 @@ export default function NewInternClient() {
     let photoUrl: string | null = null
     if (photoFile) {
       const ext  = photoFile.name.split('.').pop()
-      const path = `avatars/${Date.now()}.${ext}`
+      const safeEmail = storageSafeFileName(data.email)
+      const safeName = storageSafeFileName(photoFile.name)
+      const path = `avatars/${safeEmail}-${safeName || `avatar.${ext ?? 'jpg'}`}`
       const { error: uploadError } = await supabase.storage.from('avatars').upload(path, photoFile, { upsert: true })
       if (!uploadError) {
         const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)

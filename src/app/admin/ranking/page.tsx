@@ -242,7 +242,11 @@ export default function RankingPage() {
       .catch(() => setLoading(false))
   }
 
-  useEffect(() => { fetchRanking(true) }, [period, month, year])
+  useEffect(() => {
+    queueMicrotask(() => {
+      fetchRanking(true)
+    })
+  }, [period, month, year])
 
   // Auto-refresh every 30s
   useEffect(() => {

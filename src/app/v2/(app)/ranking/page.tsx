@@ -19,11 +19,13 @@ export default function RankingPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true)
-    fetch(`/api/ranking?month=${month}&year=${year}`)
-      .then(r => r.json())
-      .then(data => { setRanking(data.ranking || []); setLoading(false) })
-      .catch(() => setLoading(false))
+    queueMicrotask(() => {
+      setLoading(true)
+      fetch(`/api/ranking?month=${month}&year=${year}`)
+        .then(r => r.json())
+        .then(data => { setRanking(data.ranking || []); setLoading(false) })
+        .catch(() => setLoading(false))
+    })
   }, [month, year])
 
   function prevMonth() {

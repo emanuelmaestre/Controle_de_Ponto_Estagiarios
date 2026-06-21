@@ -12,6 +12,11 @@ import { AdminNotificationBellMobile } from '@/components/AdminNotificationBell'
 
 export const dynamic = 'force-dynamic'
 
+type TodayStatusWithGamification = TodayStatus & {
+  level?: number | null
+  points?: number | null
+}
+
 export default async function AdminPage() {
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -21,7 +26,7 @@ export default async function AdminPage() {
     .from('v_today_status')
     .select('*')
     .order('full_name')
-  const interns = internsRaw as TodayStatus[] | null
+  const interns = internsRaw as TodayStatusWithGamification[] | null
 
   const activeCount  = interns?.filter(i => i.today_status === 'ativo').length ?? 0
   const saiuCount    = interns?.filter(i => i.today_status === 'saiu').length ?? 0
@@ -236,7 +241,7 @@ export default async function AdminPage() {
               const cfg = statusCfg[intern.today_status] ?? statusCfg.ausente
               const initials = intern.full_name.split(' ').slice(0, 2).map((w: string) => w[0]).join('')
               const ac = avatarColors[idx % avatarColors.length]
-              const lvl    = getLevelInfo((intern as any).level ?? 1)
+              const lvl    = getLevelInfo(intern.level ?? 1)
               const gender = detectGender(intern.full_name ?? '')
               const title  = getLevelTitle(lvl.level, gender)
               return (
@@ -296,7 +301,7 @@ export default async function AdminPage() {
                         {lvl.icon} {title}
                       </span>
                       <span className="text-[10px] font-bold" style={{ color: 'var(--text-3)' }}>
-                        ⭐ {(intern as any).points ?? 0} pts
+                        ⭐ {intern.points ?? 0} pts
                       </span>
                     </div>
 

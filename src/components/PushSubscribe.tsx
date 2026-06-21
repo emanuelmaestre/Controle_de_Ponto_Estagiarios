@@ -7,7 +7,9 @@ export default function PushSubscribe() {
   const [subscribed, setSubscribed] = useState(false)
 
   useEffect(() => {
-    setSupported('PushManager' in window && 'serviceWorker' in navigator)
+    queueMicrotask(() => {
+      setSupported('PushManager' in window && 'serviceWorker' in navigator)
+    })
     // Verificar se já tem inscrição
     navigator.serviceWorker?.ready.then(reg =>
       reg.pushManager.getSubscription().then(sub => setSubscribed(!!sub))

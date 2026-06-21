@@ -10,12 +10,13 @@ import SelfieGate from '@/components/SelfieGate'
 
 // ── Floating particle ────────────────────────────────
 function Particle({ delay, x, size }: { delay: number; x: number; size: number }) {
+  const duration = 8 + ((delay * 17 + x + size) % 6)
   return (
     <motion.div
       className="absolute rounded-full pointer-events-none"
       style={{ left: `${x}%`, bottom: '-10px', width: size, height: size, background: 'rgba(0,200,83,0.25)' }}
       animate={{ y: [0, -600], opacity: [0, 0.8, 0] }}
-      transition={{ duration: 8 + Math.random() * 6, repeat: Infinity, delay, ease: 'linear' }}
+      transition={{ duration, repeat: Infinity, delay, ease: 'linear' }}
     />
   )
 }
@@ -275,7 +276,7 @@ function RegisterContent() {
             </p>
             <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(251,191,36,0.7)' }}>
               O cadastro pode ser feito aqui, mas a câmera do computador pode ser bloqueada pelo navegador.
-              Se isso acontecer, use a opção <strong style={{ color: '#fbbf24' }}>"Escolher da Galeria"</strong> para enviar uma foto do seu computador.
+              Se isso acontecer, use a opção <strong style={{ color: '#fbbf24' }}>{'"'}Escolher da Galeria{'"'}</strong> para enviar uma foto do seu computador.
             </p>
           </div>
         </motion.div>
@@ -308,7 +309,7 @@ function RegisterContent() {
         <motion.div key={i} className="absolute rounded-full pointer-events-none"
           style={{ width: 6 + i, height: 6 + i, background: `hsl(${130 + i * 10}, 80%, 55%)` }}
           initial={{ x: 0, y: 0, opacity: 1 }}
-          animate={{ x: (Math.random() - 0.5) * 300, y: (Math.random() - 0.5) * 300, opacity: 0, scale: 0 }}
+          animate={{ x: ((i * 73) % 300) - 150, y: ((i * 113) % 300) - 150, opacity: 0, scale: 0 }}
           transition={{ duration: 1.2, delay: 0.3 + i * 0.05 }}
         />
       ))}

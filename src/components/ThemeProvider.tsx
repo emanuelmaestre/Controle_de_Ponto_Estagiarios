@@ -19,15 +19,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
-    const saved = localStorage.getItem('cl-theme')
-    // accept 'lab' as legacy alias for 'green'
-    const resolved: Theme =
-      saved === 'lab' ? 'green'
-      : saved === 'dark' || saved === 'light' || saved === 'green' ? (saved as Theme)
-      : 'green'
-    setThemeState(resolved)
-    document.documentElement.setAttribute('data-theme', resolved)
+    queueMicrotask(() => {
+      setMounted(true)
+      const saved = localStorage.getItem('cl-theme')
+      // accept 'lab' as legacy alias for 'green'
+      const resolved: Theme =
+        saved === 'lab' ? 'green'
+        : saved === 'dark' || saved === 'light' || saved === 'green' ? (saved as Theme)
+        : 'green'
+      setThemeState(resolved)
+      document.documentElement.setAttribute('data-theme', resolved)
+    })
   }, [])
 
   const setTheme = (t: Theme) => {

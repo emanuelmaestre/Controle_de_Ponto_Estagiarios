@@ -1,6 +1,9 @@
 import { Activity } from '@/domain/entities/Activity'
 import type { IActivityRepository } from '@/application/ports/IActivityRepository'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database'
+
+type ActivityRow = Database['public']['Tables']['activities']['Row']
 
 export class SupabaseActivityRepository implements IActivityRepository {
   constructor(private supabase: SupabaseClient) {}
@@ -39,7 +42,7 @@ export class SupabaseActivityRepository implements IActivityRepository {
     return (data ?? []).map(row => this.toDomain(row))
   }
 
-  private toDomain(row: any): Activity {
+  private toDomain(row: ActivityRow): Activity {
     return new Activity(
       row.id,
       row.time_record_id,

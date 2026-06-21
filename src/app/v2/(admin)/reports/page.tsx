@@ -24,11 +24,13 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true)
-    fetch(`/api/reports?month=${month}&year=${year}`)
-      .then(r => r.json())
-      .then(data => { setReport(data.report || []); setLoading(false) })
-      .catch(() => setLoading(false))
+    queueMicrotask(() => {
+      setLoading(true)
+      fetch(`/api/reports?month=${month}&year=${year}`)
+        .then(r => r.json())
+        .then(data => { setReport(data.report || []); setLoading(false) })
+        .catch(() => setLoading(false))
+    })
   }, [month, year])
 
   function prevMonth() {

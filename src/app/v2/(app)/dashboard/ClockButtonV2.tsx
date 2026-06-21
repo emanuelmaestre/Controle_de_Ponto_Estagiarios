@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 interface Props {
@@ -12,7 +12,18 @@ interface Props {
 export default function ClockButtonV2({ hasOpenRecord, openRecordId, clockInTime }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [elapsed, setElapsed] = useState(0)
   const router = useRouter()
+
+  useEffect(() => {
+    if (!hasOpenRecord || !clockInTime) return
+    const updateElapsed = () => {
+      setElapsed(Math.floor((new Date().getTime() - new Date(clockInTime).getTime()) / 60000))
+    }
+    queueMicrotask(updateElapsed)
+    const interval = setInterval(updateElapsed, 60_000)
+    return () => clearInterval(interval)
+  }, [clockInTime, hasOpenRecord])
 
   async function handleClockIn() {
     setLoading(true)
@@ -33,9 +44,6 @@ export default function ClockButtonV2({ hasOpenRecord, openRecordId, clockInTime
   }
 
   if (hasOpenRecord) {
-    const elapsed = clockInTime
-      ? Math.floor((Date.now() - new Date(clockInTime).getTime()) / 60000)
-      : 0
     const h = Math.floor(elapsed / 60)
     const m = elapsed % 60
 
