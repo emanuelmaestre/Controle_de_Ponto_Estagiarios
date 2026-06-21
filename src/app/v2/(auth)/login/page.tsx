@@ -37,7 +37,7 @@ export default function LoginPage() {
       .eq('id', user.id)
       .maybeSingle()
 
-    router.push(profile?.role === 'manager' ? '/v2/admin' : '/v2/dashboard')
+    router.push(profile?.role === 'manager' ? '/v2' : '/v2/dashboard')
   }
 
   return (
