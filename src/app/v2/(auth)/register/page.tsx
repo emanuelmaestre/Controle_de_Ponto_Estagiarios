@@ -63,8 +63,9 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-300 mb-1">Nome completo</label>
+            <label htmlFor="full-name" className="block text-sm text-gray-300 mb-1">Nome completo</label>
             <input
+              id="full-name"
               type="text"
               value={form.fullName}
               onChange={e => update('fullName', e.target.value)}
@@ -75,8 +76,9 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-300 mb-1">Email</label>
+            <label htmlFor="email" className="block text-sm text-gray-300 mb-1">Email</label>
             <input
+              id="email"
               type="email"
               value={form.email}
               onChange={e => update('email', e.target.value)}
@@ -87,8 +89,9 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-300 mb-1">Curso (opcional)</label>
+            <label htmlFor="course" className="block text-sm text-gray-300 mb-1">Curso (opcional)</label>
             <input
+              id="course"
               type="text"
               value={form.course}
               onChange={e => update('course', e.target.value)}
@@ -98,8 +101,9 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-300 mb-1">Senha</label>
+            <label htmlFor="password" className="block text-sm text-gray-300 mb-1">Senha</label>
             <input
+              id="password"
               type="password"
               value={form.password}
               onChange={e => update('password', e.target.value)}
@@ -110,8 +114,9 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-300 mb-1">Confirmar senha</label>
+            <label htmlFor="confirm-password" className="block text-sm text-gray-300 mb-1">Confirmar senha</label>
             <input
+              id="confirm-password"
               type="password"
               value={form.confirmPassword}
               onChange={e => update('confirmPassword', e.target.value)}

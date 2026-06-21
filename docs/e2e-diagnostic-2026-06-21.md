@@ -8,15 +8,17 @@ Premissa de produto: `v2` e considerado o fluxo atual/oficial. Rotas sem prefixo
 
 ## 1. Estado Atual de E2E
 
-Nao existe suite E2E configurada no projeto.
+Suite E2E inicial configurada apos este diagnostico.
 
 Evidencias:
 
-- `package.json` nao possui scripts `test`, `e2e`, `playwright` ou `cypress`.
-- Nao foram encontrados arquivos de teste como `*.spec.*`, `*.test.*`, `playwright.config.*`, `cypress.config.*` ou pasta `tests/e2e`.
-- O projeto possui muitas rotas e fluxos clicaveis, mas a validacao hoje depende de teste manual.
+- `package.json` possui scripts `e2e` e `e2e:prod`.
+- `@playwright/test` foi adicionado como dependencia de desenvolvimento.
+- `playwright.config.ts` define testes desktop e mobile via Edge/Chromium.
+- `tests/e2e/smoke.spec.ts` cobre smoke seguro do fluxo v2 e redirects de rotas protegidas.
+- Artefatos locais do Playwright foram ignorados em `.gitignore`.
 
-Conclusao: o sistema esta pronto para receber E2E, mas ainda nao possui cobertura automatizada de jornada.
+Conclusao: o sistema agora possui uma primeira camada automatizada de E2E nao destrutiva. Ainda falta ampliar para jornadas autenticadas com usuarios seedados e banco de teste.
 
 ## 2. Objetivo do E2E
 
@@ -35,9 +37,9 @@ Validar se o sistema funciona como uma pessoa usuaria real:
 - executar acoes admin;
 - validar mensagens de erro, sucesso, loading e empty state.
 
-## 3. Ferramenta Recomendada
+## 3. Ferramenta Adotada
 
-Recomendacao principal: Playwright.
+Ferramenta adotada: Playwright.
 
 Motivos:
 
@@ -48,6 +50,16 @@ Motivos:
 - gera trace, video e screenshot para diagnostico.
 
 Nao recomendo Cypress como primeira opcao neste projeto porque ha muitos fluxos server-side, auth, redirects e mobile/PWA; Playwright tende a ser mais flexivel para esse tipo de app.
+
+Comandos disponiveis:
+
+- `npm run e2e`
+- `npm run e2e:prod`
+
+Para apontar para outro ambiente:
+
+- PowerShell: `$env:E2E_BASE_URL="http://localhost:3001"; npm run e2e:prod`
+- PowerShell producao: `$env:E2E_BASE_URL="https://controle-de-ponto-estagiarios.vercel.app"; npm run e2e:prod`
 
 ## 4. Ambientes de Teste Necessarios
 
