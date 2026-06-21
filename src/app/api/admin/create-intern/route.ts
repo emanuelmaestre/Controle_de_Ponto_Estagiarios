@@ -2,11 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServiceClient } from '@/lib/supabase/server'
 import { internSchema } from '@/lib/validations'
 import { formatFullName } from '@/lib/utils'
+import { requireManager } from '@/lib/route-auth'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://controle-de-ponto-estagiarios.vercel.app'
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await requireManager()
+    if (!auth.ok) return auth.response
+
     const body: Record<string, unknown> = await request.json()
     const parsed = internSchema.safeParse(body)
     if (!parsed.success) {

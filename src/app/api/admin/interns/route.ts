@@ -1,10 +1,11 @@
-// @ts-nocheck
 import { NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { requireManager } from '@/lib/route-auth'
 
 export async function GET() {
-  const supabase = await createSupabaseServerClient()
-  const { data, error } = await supabase
+  const auth = await requireManager()
+  if (!auth.ok) return auth.response
+
+  const { data, error } = await auth.supabase
     .from('profiles')
     .select('id, full_name')
     .eq('role', 'intern')

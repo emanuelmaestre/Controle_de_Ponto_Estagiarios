@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseServiceClient } from '@/lib/supabase/server'
 import { formatFullName } from '@/lib/utils'
+import { requireManager } from '@/lib/route-auth'
 
 /**
  * POST /api/admin/normalize-names
@@ -9,6 +10,9 @@ import { formatFullName } from '@/lib/utils'
  */
 export async function POST() {
   try {
+    const auth = await requireManager()
+    if (!auth.ok) return auth.response
+
     const supabase = createSupabaseServiceClient()
 
     const { data: profiles, error } = await supabase

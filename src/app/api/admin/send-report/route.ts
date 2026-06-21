@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server'
+import { requireManager } from '@/lib/route-auth'
 
 export async function POST(req: Request) {
   try {
+    const auth = await requireManager()
+    if (!auth.ok) return auth.response
+
     const { month, email, data } = await req.json() as {
       month: string
       email: string

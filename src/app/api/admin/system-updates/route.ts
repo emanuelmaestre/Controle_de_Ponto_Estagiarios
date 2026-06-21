@@ -1,32 +1,52 @@
-// @ts-nocheck
 import { NextResponse } from 'next/server'
-import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+import { createSupabaseServiceClient } from '@/lib/supabase/server'
+import { requireManager } from '@/lib/route-auth'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
-  const authClient = await createSupabaseServerClient()
-  const { data: { user } } = await authClient.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+const systemUpdateSchema = z.object({
+  title: z.string().trim().min(3).max(120),
+  description: z.string().trim().min(3).max(1000),
+  type: z.string().trim().max(40).optional(),
+  module: z.string().trim().max(80).optional().nullable(),
+  details: z.string().trim().max(4000).optional().nullable(),
+})
 
-  const db = createSupabaseServiceClient()
-  const { data } = await db.from('system_updates').select('*').order('created_at', { ascending: false })
+const deleteSystemUpdateSchema = z.object({
+  id: z.string().uuid(),
+})
+
+export async function GET() {
+  const auth = await requireManager()
+  if (!auth.ok) return auth.response
+
+  const db = createSupabaseServiceClient() as any
+  const { data, error } = await db
+    .from('system_updates')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ updates: data ?? [] })
 }
 
 export async function POST(req: Request) {
-  const authClient = await createSupabaseServerClient()
-  const { data: { user } } = await authClient.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  const auth = await requireManager()
+  if (!auth.ok) return auth.response
 
-  const { data: profile } = await authClient.from('profiles').select('role').eq('id', user.id).single()
-  if (profile?.role !== 'manager') return NextResponse.json({ error: 'Acesso negado' }, { status: 403 })
+  const parsed = systemUpdateSchema.safeParse(await req.json())
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Dados invalidos' }, { status: 400 })
+  }
 
-  const body = await req.json()
-  const db = createSupabaseServiceClient()
+  const db = createSupabaseServiceClient() as any
   const { data, error } = await db.from('system_updates').insert({
-    title: body.title, description: body.description, type: body.type ?? 'feature',
-    module: body.module ?? null, details: body.details ?? null,
+    title: parsed.data.title,
+    description: parsed.data.description,
+    type: parsed.data.type ?? 'feature',
+    module: parsed.data.module ?? null,
+    details: parsed.data.details ?? null,
   }).select().single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
@@ -34,15 +54,17 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const authClient = await createSupabaseServerClient()
-  const { data: { user } } = await authClient.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  const auth = await requireManager()
+  if (!auth.ok) return auth.response
 
-  const { data: profile } = await authClient.from('profiles').select('role').eq('id', user.id).single()
-  if (profile?.role !== 'manager') return NextResponse.json({ error: 'Acesso negado' }, { status: 403 })
+  const parsed = deleteSystemUpdateSchema.safeParse(await req.json())
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'ID invalido' }, { status: 400 })
+  }
 
-  const { id } = await req.json()
-  const db = createSupabaseServiceClient()
-  await db.from('system_updates').delete().eq('id', id)
+  const db = createSupabaseServiceClient() as any
+  const { error } = await db.from('system_updates').delete().eq('id', parsed.data.id)
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+
   return NextResponse.json({ ok: true })
 }

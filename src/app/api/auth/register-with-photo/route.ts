@@ -1,44 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createSupabaseServiceClient } from '@/lib/supabase/server'
+import { createLogger } from '@/lib/logger'
+
+const MAX_PHOTO_BYTES = 2 * 1024 * 1024
+const logger = createLogger('api.auth.register-with-photo')
+
+const registerWithPhotoSchema = z.object({
+  full_name: z.string().trim().min(3).max(100),
+  nickname: z.string().trim().max(50).optional().nullable(),
+  email: z.string().trim().email().transform(email => email.toLowerCase()),
+  course: z.string().trim().max(100).optional().nullable(),
+  password: z.string().min(6),
+  photo_base64: z.string().optional().nullable(),
+})
 
 export async function POST(request: NextRequest) {
   try {
-    const { full_name, nickname, email, course, password, photo_base64 } = await request.json()
-
-    if (!full_name || !email || !password) {
-      return NextResponse.json({ error: 'Campos obrigatórios não preenchidos.' }, { status: 400 })
-    }
-    if (password.length < 6) {
-      return NextResponse.json({ error: 'A senha deve ter no mínimo 6 caracteres.' }, { status: 400 })
+    const parsed = registerWithPhotoSchema.safeParse(await request.json())
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Dados invalidos.' }, { status: 400 })
     }
 
+    const { full_name, nickname, email, course, password, photo_base64 } = parsed.data
     const supabaseAdmin = createSupabaseServiceClient()
 
-    // Verificar se email já existe no profiles
     const { data: existing } = await supabaseAdmin
       .from('profiles')
       .select('id')
-      .eq('email', email.toLowerCase())
+      .eq('email', email)
       .maybeSingle()
 
     if (existing) {
-      return NextResponse.json({ error: 'Este e-mail já está cadastrado no sistema.' }, { status: 409 })
+      return NextResponse.json({ error: 'Este e-mail ja esta cadastrado no sistema.' }, { status: 409 })
     }
 
-    // Verificar se email existe em auth.users (usuário órfão sem profile)
-    const { data: authList } = await supabaseAdmin.auth.admin.listUsers()
-    const orphanUser = authList?.users?.find(u => u.email === email.toLowerCase())
-    if (orphanUser) {
-      await supabaseAdmin.auth.admin.deleteUser(orphanUser.id)
-    }
-
-    // Criar usuário no auth
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email: email.toLowerCase(),
+      email,
       password,
       email_confirm: true,
-      // Salva dados do cadastro nos metadados do auth user
-      // Permite recuperar nome/curso se o profile for deletado acidentalmente
       user_metadata: {
         full_name,
         nickname: nickname || null,
@@ -46,19 +46,24 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    if (authError) {
-      return NextResponse.json({ error: `Erro ao criar conta: ${authError.message}` }, { status: 500 })
+    if (authError || !authData.user) {
+      const message = authError?.message.toLowerCase() ?? ''
+      const status = message.includes('already') || message.includes('exists') ? 409 : 500
+      return NextResponse.json({ error: 'Nao foi possivel criar a conta.' }, { status })
     }
 
     const userId = authData.user.id
 
-    // Upload da foto server-side (service role ignora RLS do bucket)
     let photo_url: string | null = null
     if (photo_base64) {
       try {
         const photoBuffer = Buffer.from(photo_base64, 'base64')
-        const fileName = `${userId}/selfie_${Date.now()}.jpg`
+        if (photoBuffer.byteLength > MAX_PHOTO_BYTES) {
+          await supabaseAdmin.auth.admin.deleteUser(userId)
+          return NextResponse.json({ error: 'Foto muito grande.' }, { status: 413 })
+        }
 
+        const fileName = `${userId}/selfie_${Date.now()}.jpg`
         const { error: storageErr } = await supabaseAdmin.storage
           .from('avatars')
           .upload(fileName, photoBuffer, {
@@ -72,20 +77,18 @@ export async function POST(request: NextRequest) {
             .getPublicUrl(fileName)
           photo_url = publicUrl
         } else {
-          console.error('[register-with-photo] storage error:', storageErr.message)
-          // Não bloqueia o cadastro se a foto falhar — profile fica sem foto
+          logger.error('storage upload failed', storageErr)
         }
       } catch (photoErr) {
-        console.error('[register-with-photo] photo processing error:', photoErr)
+        logger.error('photo processing failed', photoErr)
       }
     }
 
-    // Criar profile com photo_url já preenchida
     const { error: profileError } = await supabaseAdmin.from('profiles').upsert({
       id: userId,
       full_name,
       nickname: nickname || null,
-      email: email.toLowerCase(),
+      email,
       course: course || null,
       photo_url,
       role: 'intern',
@@ -94,14 +97,13 @@ export async function POST(request: NextRequest) {
     }, { onConflict: 'id' })
 
     if (profileError) {
-      // Rollback: deletar auth user se profile falhar
       await supabaseAdmin.auth.admin.deleteUser(userId)
       return NextResponse.json({ error: 'Erro ao criar perfil.' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, userId, message: 'Cadastro realizado!' })
   } catch (err) {
-    console.error('[register-with-photo]', err)
+    logger.error('request failed', err)
     return NextResponse.json({ error: 'Erro interno no servidor.' }, { status: 500 })
   }
 }

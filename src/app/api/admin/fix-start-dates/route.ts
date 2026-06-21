@@ -1,38 +1,36 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { requireManager } from '@/lib/route-auth'
 
 export async function POST() {
-  const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
+  const auth = await requireManager()
+  if (!auth.ok) return auth.response
 
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-  if (profile?.role !== 'manager') return NextResponse.json({ error: 'Sem permissão' }, { status: 403 })
-
-  // Busca todos os perfis sem data de início (exceto admin)
-  const { data: profiles, error } = await supabase
+  const { data: profiles, error } = await auth.supabase
     .from('profiles')
     .select('id, full_name, created_at, internship_start')
     .eq('role', 'intern')
     .is('internship_start', null)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  if (!profiles?.length) return NextResponse.json({ updated: 0, message: 'Todos já têm data de início.' })
+  if (!profiles?.length) return NextResponse.json({ updated: 0, message: 'Todos ja tem data de inicio.' })
 
   const results = []
-  for (const p of profiles) {
-    const startDate = p.created_at.slice(0, 10) // yyyy-mm-dd
-    const { error: updateErr } = await supabase
+  for (const profile of profiles) {
+    const startDate = profile.created_at.slice(0, 10)
+    const { error: updateErr } = await auth.supabase
       .from('profiles')
       .update({ internship_start: startDate })
-      .eq('id', p.id)
+      .eq('id', profile.id)
 
     results.push({
-      name: p.full_name,
+      name: profile.full_name,
       date: startDate,
       ok: !updateErr,
     })
   }
 
-  return NextResponse.json({ updated: results.filter(r => r.ok).length, profiles: results })
+  return NextResponse.json({
+    updated: results.filter(result => result.ok).length,
+    profiles: results,
+  })
 }

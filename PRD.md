@@ -6,6 +6,14 @@
 
 ---
 
+## 0. Decisao Oficial de Produto
+
+**Direcao aprovada em 20/06/2026:** o ChronosLab deve seguir como **MVP simples de controle de ponto**, nao como plataforma expandida.
+
+O produto deve priorizar estabilidade operacional, seguranca das rotas, relatorios confiaveis e baixo custo de manutencao. Funcionalidades expandidas como gamificacao profunda, notificacoes complexas, automacoes avancadas, IA, geolocalizacao obrigatoria e fluxos de RH completos ficam fora do escopo principal, salvo decisao futura documentada.
+
+---
+
 ## 1. Visao Geral
 
 Sistema web de controle de ponto para estagiarios de um laboratorio universitario.

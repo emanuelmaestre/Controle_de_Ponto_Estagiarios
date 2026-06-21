@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
 
@@ -12,7 +11,7 @@ export async function GET() {
   const { data: profile } = await authClient.from('profiles').select('role').eq('id', user.id).single()
   if (profile?.role !== 'manager') return NextResponse.json({ error: 'Acesso negado' }, { status: 403 })
 
-  const db = createSupabaseServiceClient()
+  const db = createSupabaseServiceClient() as any
   const { data } = await db
     .from('feedback')
     .select('*, profiles(full_name, photo_url)')
@@ -33,7 +32,7 @@ export async function POST(req: Request) {
   if (!body.message || body.message.trim().length < 10)
     return NextResponse.json({ error: 'Mensagem muito curta (mínimo 10 caracteres)' }, { status: 400 })
 
-  const db = createSupabaseServiceClient()
+  const db = createSupabaseServiceClient() as any
   const { data, error } = await db.from('feedback').insert({
     intern_id: user.id,
     category: body.category ?? 'suggestion',
@@ -54,7 +53,7 @@ export async function PATCH(req: Request) {
   if (profile?.role !== 'manager') return NextResponse.json({ error: 'Acesso negado' }, { status: 403 })
 
   const body = await req.json()
-  const db = createSupabaseServiceClient()
+  const db = createSupabaseServiceClient() as any
 
   // Buscar status anterior para saber se está mudando para 'implemented'
   const { data: existing } = await db.from('feedback').select('status, intern_id').eq('id', body.id).single()

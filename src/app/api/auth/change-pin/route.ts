@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import type { Database } from '@/types/database'
+import { canManageTargetUser } from '@/lib/route-auth'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +14,9 @@ export async function POST(request: NextRequest) {
     if (!user_id) {
       return NextResponse.json({ error: 'Usuário não identificado.' }, { status: 400 })
     }
+
+    const auth = await canManageTargetUser(user_id)
+    if (!auth.ok) return auth.response
 
     const supabaseAdmin = createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,

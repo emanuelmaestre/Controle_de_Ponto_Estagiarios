@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
 
@@ -15,7 +14,7 @@ export async function POST(req: Request) {
   const { id } = await req.json()
   if (!id) return NextResponse.json({ error: 'ID obrigatório' }, { status: 400 })
 
-  const db = createSupabaseServiceClient()
+  const db = createSupabaseServiceClient() as any
 
   // Buscar o feedback para saber o dono e o status atual
   const { data: fb } = await db.from('feedback').select('intern_id, status').eq('id', id).single()

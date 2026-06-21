@@ -1,9 +1,13 @@
-﻿// @ts-nocheck
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
 import { minutesToHours } from '@/lib/utils'
 
 const SP = 3 * 60 * 60 * 1000
+type ReportRecord = Record<string, any>
+
+function list(value: unknown): ReportRecord[] {
+  return Array.isArray(value) ? value : []
+}
 
 function periodFromMonth(month: string) {
   const [year, mon] = month.split('-').map(Number)
@@ -55,7 +59,7 @@ export async function GET(request: Request) {
         { header: 'Pontual',    dataKey: 'pontual' },
         { header: 'Atividades', dataKey: 'atividades' },
       ],
-      rows: (records ?? []).map(r => ({
+      rows: list(records).map(r => ({
         entrada:    fmtDate(r.clock_in),
         saida:      r.clock_out ? fmtDate(r.clock_out) : 'â€”',
         duracao:    r.duration_minutes ? minutesToHours(r.duration_minutes) : 'â€”',
@@ -76,7 +80,7 @@ export async function GET(request: Request) {
       .gte('clock_in', startDate).lt('clock_in', endDate)
       .order('clock_in', { ascending: true })
 
-    const approved = (records ?? []).filter(r => r.status === 'approved')
+    const approved = list(records).filter(r => r.status === 'approved')
     const totalMin = approved.reduce((a, r) => a + (r.duration_minutes ?? 0), 0)
 
     return NextResponse.json({
@@ -87,7 +91,7 @@ export async function GET(request: Request) {
         { header: 'Status',       dataKey: 'status' },
       ],
       rows: [
-        ...(records ?? []).map(r => ({
+        ...list(records).map(r => ({
           data:   new Date(r.clock_in).toLocaleDateString('pt-BR'),
           horas:  r.duration_minutes ? minutesToHours(r.duration_minutes) : 'â€”',
           status: r.status === 'approved' ? 'Aprovado' : r.status === 'pending' ? 'Pendente' : 'Reprovado',
@@ -107,7 +111,7 @@ export async function GET(request: Request) {
       .gte('clock_in', startDate).lt('clock_in', endDate)
       .order('clock_in', { ascending: true })
 
-    const approved = (records ?? []).filter(r => r.status === 'approved')
+    const approved = list(records).filter(r => r.status === 'approved')
     const late = approved.filter(r => r.is_late).length
     const onTime = approved.length - late
     const rate = approved.length > 0 ? Math.round((onTime / approved.length) * 100) : 100
@@ -120,7 +124,7 @@ export async function GET(request: Request) {
         { header: 'Status',   dataKey: 'status' },
       ],
       rows: [
-        ...(records ?? []).map(r => ({
+        ...list(records).map(r => ({
           data:    new Date(r.clock_in).toLocaleDateString('pt-BR'),
           pontual: r.is_late ? 'NÃ£o' : 'Sim',
           status:  r.status === 'approved' ? 'Aprovado' : r.status === 'pending' ? 'Pendente' : 'Reprovado',
@@ -141,7 +145,7 @@ export async function GET(request: Request) {
       .order('clock_in', { ascending: false })
 
     const rows: Record<string, string>[] = []
-    for (const r of records ?? []) {
+    for (const r of list(records)) {
       const acts = Array.isArray(r.activities) ? r.activities : []
       for (const act of acts) {
         rows.push({ data: new Date(r.clock_in).toLocaleDateString('pt-BR'), atividade: act })
@@ -168,7 +172,7 @@ export async function GET(request: Request) {
     const { data: allRec } = await db
       .from('time_records').select('duration_minutes, status, is_late').eq('intern_id', internId)
 
-    const approved = (allRec ?? []).filter(r => r.status === 'approved')
+    const approved = list(allRec).filter(r => r.status === 'approved')
     const totalMin = approved.reduce((a, r) => a + (r.duration_minutes ?? 0), 0)
     const late = approved.filter(r => r.is_late).length
     const rate = approved.length > 0 ? Math.round(((approved.length - late) / approved.length) * 100) : 100
@@ -204,7 +208,7 @@ export async function GET(request: Request) {
     const { data: allRec } = await db
       .from('time_records').select('duration_minutes, status').eq('intern_id', internId).eq('status', 'approved')
 
-    const totalMin = (allRec ?? []).reduce((a, r) => a + (r.duration_minutes ?? 0), 0)
+    const totalMin = list(allRec).reduce((a, r) => a + (r.duration_minutes ?? 0), 0)
     const wlMin = (intern?.workload_hours ?? 0) * 60
     const remainMin = Math.max(0, wlMin - totalMin)
     const pct = wlMin > 0 ? Math.min(100, Math.round((totalMin / wlMin) * 100)) : 0
@@ -231,9 +235,9 @@ export async function GET(request: Request) {
     const { data: records } = await db.from('time_records').select('intern_id, duration_minutes, status, is_late').gte('clock_in', startDate).lt('clock_in', endDate)
 
     const map = new Map<string, { name: string; course: string; min: number; sessions: number; approved: number; late: number }>(
-      (interns ?? []).map(i => [i.id, { name: i.full_name, course: i.course ?? '', min: 0, sessions: 0, approved: 0, late: 0 }])
+      list(interns).map(i => [i.id, { name: i.full_name, course: i.course ?? '', min: 0, sessions: 0, approved: 0, late: 0 }])
     )
-    for (const r of records ?? []) {
+    for (const r of list(records)) {
       const e = map.get(r.intern_id)
       if (e) {
         e.sessions++
@@ -268,8 +272,8 @@ export async function GET(request: Request) {
     const { data: records } = await db.from('time_records').select('intern_id, duration_minutes, status').gte('clock_in', startDate).lt('clock_in', endDate).eq('status', 'approved')
 
     const courseMap = new Map<string, { min: number; count: number }>()
-    const internCourse = new Map((interns ?? []).map(i => [i.id, i.course ?? 'NÃ£o informado']))
-    for (const r of records ?? []) {
+    const internCourse = new Map(list(interns).map(i => [i.id, i.course ?? 'NÃ£o informado']))
+    for (const r of list(records)) {
       const course = internCourse.get(r.intern_id) ?? 'NÃ£o informado'
       const e = courseMap.get(course) ?? { min: 0, count: 0 }
       e.min += r.duration_minutes ?? 0
@@ -295,7 +299,7 @@ export async function GET(request: Request) {
     const { data: records } = await db.from('time_records').select('intern_id, duration_minutes').eq('status', 'approved')
 
     const minMap = new Map<string, number>()
-    for (const r of records ?? []) {
+    for (const r of list(records)) {
       minMap.set(r.intern_id, (minMap.get(r.intern_id) ?? 0) + (r.duration_minutes ?? 0))
     }
 
@@ -308,7 +312,7 @@ export async function GET(request: Request) {
         { header: 'Carga total',  dataKey: 'total' },
         { header: 'ConclusÃ£o',    dataKey: 'pct' },
       ],
-      rows: (interns ?? [])
+      rows: list(interns)
         .map(i => {
           const worked = minMap.get(i.id) ?? 0
           const total = (i.workload_hours ?? 0) * 60
@@ -335,7 +339,7 @@ export async function GET(request: Request) {
         { header: 'NÃ­vel',  dataKey: 'nivel' },
         { header: 'Pontos', dataKey: 'pontos' },
       ],
-      rows: (interns ?? []).map((i, idx) => ({
+      rows: list(interns).map((i, idx) => ({
         pos: String(idx + 1), nome: i.full_name, curso: i.course ?? 'â€”', nivel: String(i.level ?? 1), pontos: String(i.points ?? 0),
       })),
     })
@@ -347,8 +351,8 @@ export async function GET(request: Request) {
     const { data: records } = await db.from('time_records').select('intern_id, is_late, status').gte('clock_in', startDate).lt('clock_in', endDate).eq('status', 'approved')
 
     const map = new Map<string, { name: string; total: number; onTime: number }>()
-    for (const i of interns ?? []) map.set(i.id, { name: i.full_name, total: 0, onTime: 0 })
-    for (const r of records ?? []) {
+    for (const i of list(interns)) map.set(i.id, { name: i.full_name, total: 0, onTime: 0 })
+    for (const r of list(records)) {
       const e = map.get(r.intern_id)
       if (e) { e.total++; if (!r.is_late) e.onTime++ }
     }
@@ -378,8 +382,8 @@ export async function GET(request: Request) {
     const { data: records } = await db.from('time_records').select('intern_id, activities').gte('clock_in', startDate).lt('clock_in', endDate)
 
     const map = new Map<string, { name: string; count: number }>()
-    for (const i of interns ?? []) map.set(i.id, { name: i.full_name, count: 0 })
-    for (const r of records ?? []) {
+    for (const i of list(interns)) map.set(i.id, { name: i.full_name, count: 0 })
+    for (const r of list(records)) {
       const e = map.get(r.intern_id)
       if (e && Array.isArray(r.activities)) e.count += r.activities.length
     }
@@ -405,7 +409,7 @@ export async function GET(request: Request) {
       .from('achievements').select('intern_id')
 
     const achMap = new Map<string, number>()
-    for (const a of achCount ?? []) achMap.set((a as unknown as { intern_id: string }).intern_id, (achMap.get((a as unknown as { intern_id: string }).intern_id) ?? 0) + 1)
+    for (const a of list(achCount)) achMap.set(a.intern_id, (achMap.get(a.intern_id) ?? 0) + 1)
 
     return NextResponse.json({
       columns: [
@@ -416,7 +420,7 @@ export async function GET(request: Request) {
         { header: 'SequÃªncia',  dataKey: 'streak' },
         { header: 'Conquistas', dataKey: 'ach' },
       ],
-      rows: (interns ?? []).map((i, idx) => ({
+      rows: list(interns).map((i, idx) => ({
         pos: String(idx + 1), nome: i.full_name, pontos: String(i.points ?? 0),
         nivel: String(i.level ?? 1), streak: `${i.streak_days ?? 0} dias`, ach: 'â€”',
       })),
