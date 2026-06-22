@@ -5,100 +5,92 @@ export const dynamic = 'force-dynamic'
 
 const PONTOS_POR_ATIVIDADE = 5
 
-// Dicionário de erros comuns em português brasileiro
-// Chave = forma errada (maiúscula), valor = forma correta (maiúscula)
-const CORRECOES: Record<string, string> = {
-  // Limpeza / manutenção
-  'LIMPESA':        'LIMPEZA',
-  'LIMPEZA':        'LIMPEZA',
-  'LINPEZA':        'LIMPEZA',
-  'VASOURA':        'VASSOURA',
-  'VAROURA':        'VASSOURA',
-  'DESINFEÇAO':     'DESINFECÇÃO',
-  'DESINFEÇÃO':     'DESINFECÇÃO',
-  'ORGANIZAÇAO':    'ORGANIZAÇÃO',
-  'ORIGANIZACAO':   'ORGANIZAÇÃO',
-  'ORGANIAZACAO':   'ORGANIZAÇÃO',
-  'RECEPCAO':       'RECEPÇÃO',
-  'RECEPÇAO':       'RECEPÇÃO',
-  'ATENDIMENTO':    'ATENDIMENTO',
-  'ATENDIMETO':     'ATENDIMENTO',
-  'ATEDIMENTO':     'ATENDIMENTO',
-  'DOCUEMENTO':     'DOCUMENTO',
-  'DOCUMETO':       'DOCUMENTO',
-  'DOCUMENTOS':     'DOCUMENTOS',
-  'ARQUIVAMENTO':   'ARQUIVAMENTO',
-  'ARQUIVAMNETO':   'ARQUIVAMENTO',
-  'DIGITAÇAO':      'DIGITAÇÃO',
-  'DIGITACAO':      'DIGITAÇÃO',
-  'IMPRESSAO':      'IMPRESSÃO',
-  'IMPRESÃO':       'IMPRESSÃO',
-  'SEPARAÇAO':      'SEPARAÇÃO',
-  'SEPARACAO':      'SEPARAÇÃO',
-  'CATALOGAÇAO':    'CATALOGAÇÃO',
-  'PLANILHA':       'PLANILHA',
-  'PLANILA':        'PLANILHA',
-  'RELATORIO':      'RELATÓRIO',
-  'REUNIAO':        'REUNIÃO',
-  'PREENCHIMETO':   'PREENCHIMENTO',
-  'PREECHIMENTO':   'PREENCHIMENTO',
-  'PREENCHIMENTO':  'PREENCHIMENTO',
-  'ENVIO':          'ENVIO',
-  'MONITORAMENTO':  'MONITORAMENTO',
-  'MONITORIAMENTO': 'MONITORAMENTO',
-  'CONFERENCIA':    'CONFERÊNCIA',
-  'TRIAGEM':        'TRIAGEM',
-  'TRIAGEN':        'TRIAGEM',
-  'PROTOCOLO':      'PROTOCOLO',
-  'AUXILIANDO':     'AUXILIANDO',
-  'AXILIANDO':      'AUXILIANDO',
-  'ATUALIZAÇAO':    'ATUALIZAÇÃO',
-  'ATUALIZACAO':    'ATUALIZAÇÃO',
-  'INFORMATICA':    'INFORMÁTICA',
-  'INFROMATICA':    'INFORMÁTICA',
-  'XEROX':          'XEROX',
-  'CERIA':          'SERIA',
-  'SECRTARIA':      'SECRETARIA',
-  'SECRETARIA':     'SECRETARIA',
-  'ADMINSTRATIVO':  'ADMINISTRATIVO',
-  'ADMNISTRATIVO':  'ADMINISTRATIVO',
-  'ADMINISTRATIVO': 'ADMINISTRATIVO',
-  'ESTOQUE':        'ESTOQUE',
-  'ESTOKE':         'ESTOQUE',
-  'ETIQUETAGEM':    'ETIQUETAGEM',
-  'ETIQUETAGEN':    'ETIQUETAGEM',
-  'ETIQUETAGM':     'ETIQUETAGEM',
-  'CONFERIR':       'CONFERIR',
-  'CONFERENCIAR':   'CONFERIR',
-  'VERIFIICACAO':   'VERIFICAÇÃO',
-  'VERIFICAÇAO':    'VERIFICAÇÃO',
-  'VERIFICACAO':    'VERIFICAÇÃO',
-  'CLASSFICACAO':   'CLASSIFICAÇÃO',
-  'CLASSIFICAÇAO':  'CLASSIFICAÇÃO',
-  'ENTREGUE':       'ENTREGUE',
-  'ENTREGUA':       'ENTREGUE',
-  'RECEBI':         'RECEBI',
-  'RECEBIMETO':     'RECEBIMENTO',
-  'RECEBIMENTO':    'RECEBIMENTO',
-  'AGENDAMENTO':    'AGENDAMENTO',
-  'AGENDAMETO':     'AGENDAMENTO',
-  'TREINAMENTO':    'TREINAMENTO',
-  'TREINAMNETO':    'TREINAMENTO',
-  'COLABORAÇAO':    'COLABORAÇÃO',
-  'COLABORACAO':    'COLABORAÇÃO',
-  'SUPORTE':        'SUPORTE',
-  'SUPORTRE':       'SUPORTE',
-  'SUPRIMENTOS':    'SUPRIMENTOS',
-  'SUPRIMETNO':     'SUPRIMENTOS',
+// ── Vocabulário correto de referência ────────────────────────────────────────
+// Cada palavra aqui é a forma CERTA. O algoritmo fuzzy encontra a mais próxima.
+const VOCABULARIO: string[] = [
+  // Limpeza / higiene
+  'LIMPEZA', 'VARREDURA', 'VASSOURA', 'HIGIENIZAÇÃO', 'DESINFECÇÃO',
+  'LAVAGEM', 'LIMPANDO', 'LIMPAR', 'VARRENDO',
+  // Organização
+  'ORGANIZAÇÃO', 'ORGANIZANDO', 'ORGANIZAR', 'ARRUMAÇÃO', 'ARRUMANDO',
+  // Recepção / atendimento
+  'RECEPÇÃO', 'ATENDIMENTO', 'ATENDENDO', 'ATENDER',
+  // Documentos / administrativo
+  'DOCUMENTO', 'DOCUMENTOS', 'ARQUIVAMENTO', 'ARQUIVANDO', 'ARQUIVAR',
+  'DIGITAÇÃO', 'DIGITANDO', 'DIGITAR', 'IMPRESSÃO', 'IMPRIMINDO',
+  'SEPARAÇÃO', 'SEPARANDO', 'CATALOGAÇÃO', 'PROTOCOLO', 'PROTOCOLANDO',
+  'PLANILHA', 'PLANILHAS', 'RELATÓRIO', 'RELATÓRIOS',
+  'PREENCHIMENTO', 'PREENCHENDO', 'PREENCHER',
+  'VERIFICAÇÃO', 'VERIFICANDO', 'VERIFICAR', 'CONFERÊNCIA', 'CONFERINDO',
+  'CLASSIFICAÇÃO', 'CLASSIFICANDO', 'TRIAGEM',
+  'RECEBIMENTO', 'RECEBENDO', 'RECEBER', 'ENTREGA', 'ENTREGANDO', 'ENTREGUE',
+  'ENVIO', 'ENVIANDO', 'ENVIAR',
+  // Reunião / treinamento
+  'REUNIÃO', 'REUNINDO', 'TREINAMENTO', 'TREINANDO',
+  // Monitoramento / suporte
+  'MONITORAMENTO', 'MONITORANDO', 'SUPORTE', 'AUXILIANDO', 'AUXILIAR',
+  'COLABORAÇÃO', 'COLABORANDO', 'COLABORAR',
+  // Estoque / materiais
+  'ESTOQUE', 'ETIQUETAGEM', 'ETIQUETANDO', 'SUPRIMENTOS',
+  // Tecnologia / sistema
+  'INFORMÁTICA', 'AGENDAMENTO', 'AGENDANDO', 'ATUALIZAÇÃO', 'ATUALIZANDO',
+  // Secretaria / admin
+  'SECRETARIA', 'ADMINISTRATIVO', 'ADMINISTRATIVA', 'XEROX',
+  // Palavras comuns que NÃO devem ser corrigidas (passam direto)
+  'E', 'O', 'A', 'OS', 'AS', 'DE', 'DO', 'DA', 'DOS', 'DAS',
+  'EM', 'NO', 'NA', 'NOS', 'NAS', 'COM', 'PARA', 'POR', 'AO',
+  'UM', 'UMA', 'AOS', 'SE', 'QUE', 'NA', 'AS',
+  'FOI', 'FUI', 'ERA', 'FORAM', 'SER', 'ESTAR', 'TEM', 'TINHA',
+  'SETOR', 'LOCAL', 'SALA', 'ÁREA', 'MESA', 'COPA',
+  'MANHÃ', 'TARDE', 'DIA', 'SEMANA',
+]
+
+// Distância de Levenshtein (edição mínima entre duas strings)
+function levenshtein(a: string, b: string): number {
+  const m = a.length, n = b.length
+  const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
+    Array.from({ length: n + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0)
+  )
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1]
+        ? dp[i-1][j-1]
+        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
+  return dp[m][n]
 }
 
-// Aplica o dicionário palavra a palavra
+const VOCAB_SET = new Set(VOCABULARIO)
+
+// Corrige uma única palavra por correspondência aproximada
+function corrigirPalavra(palavra: string): string {
+  if (palavra.length <= 2) return palavra          // artigos/preposições: não mexe
+  if (VOCAB_SET.has(palavra)) return palavra       // já está correta
+
+  // Limite de diferença proporcional ao tamanho da palavra
+  const limite = palavra.length <= 5 ? 1 : palavra.length <= 8 ? 2 : 3
+
+  let melhor = palavra
+  let menorDist = Infinity
+
+  for (const ref of VOCABULARIO) {
+    // Poda rápida por diferença de tamanho
+    if (Math.abs(ref.length - palavra.length) > limite) continue
+    const d = levenshtein(palavra, ref)
+    if (d < menorDist) { menorDist = d; melhor = ref }
+    if (d === 0) break // perfeito
+  }
+
+  return menorDist <= limite ? melhor : palavra
+}
+
+// Remove acentos para normalizar antes de comparar no split, mas preserva acentuação final
 function corrigirOrtografia(texto: string): string {
-  return texto
-    .toUpperCase()
-    .split(/\b/)
-    .map(token => CORRECOES[token] ?? token)
-    .join('')
+  const upper = texto.toUpperCase()
+  // Split preservando separadores (espaços, pontuação)
+  return upper.split(/(\s+|[^A-ZÁÉÍÓÚÂÊÎÔÛÃÕÀÈÌÒÙÇ]+)/).map(token => {
+    if (/^[A-ZÁÉÍÓÚÂÊÎÔÛÃÕÀÈÌÒÙÇ]+$/.test(token)) return corrigirPalavra(token)
+    return token
+  }).join('')
 }
 
 const schemaPost = z.object({
