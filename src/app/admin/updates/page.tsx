@@ -222,7 +222,10 @@ function UpdateCard({ u, index, onDelete }: { u: SystemUpdate; index: number; on
   const [hovered, setHovered]   = useState(false)
 
   const bullets = u.details
-    ? u.details.split('\n').map(l => l.replace(/^[-•*]\s*/, '').trim()).filter(Boolean)
+    ? u.details
+        .split('\n')
+        .map(l => l.replace(/^[-•*]\s*/, '').trim())
+        .filter(l => l && !/^\[deploy:[^\]]+\]$/.test(l))
     : []
 
   return (

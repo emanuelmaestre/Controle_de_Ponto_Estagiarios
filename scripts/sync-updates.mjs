@@ -17,18 +17,18 @@ if (!SUPABASE_URL || !SUPABASE_SK) {
   process.exit(0)
 }
 
-// ── Texto fixo e amigável por tipo ────────────────────────────────────────────
-const TEXTOS = {
+// ── Config por tipo ───────────────────────────────────────────────────────────
+const TIPOS = {
   feat: {
     type:        'feature',
     title:       'Novas funcionalidades disponíveis',
-    description: 'O sistema recebeu novidades nesta versão. Explore as melhorias!',
+    description: 'O sistema recebeu novidades nesta versão. Explore o que há de novo!',
     module:      'Sistema',
   },
   fix: {
     type:        'fix',
     title:       'Correções aplicadas',
-    description: 'Problemas identificados foram corrigidos para melhor experiência.',
+    description: 'Problemas identificados foram resolvidos para garantir uma melhor experiência.',
     module:      'Sistema',
   },
   perf: {
@@ -44,6 +44,16 @@ const PREFIXOS_VALIDOS = ['feat', 'fix', 'perf', 'refactor', 'improvement']
 function resolverChave(prefixo) {
   if (['perf', 'refactor', 'improvement'].includes(prefixo)) return 'perf'
   return prefixo // feat | fix
+}
+
+// Remove o prefixo convencional e formata o texto para o usuário
+// "feat: adicionar atividade retroativa" → "Adicionada atividade retroativa no histórico"
+function humanizar(subject) {
+  // Remove prefixo tipo "feat:", "fix(module):", etc.
+  const semPrefixo = subject.replace(/^\w+(\([^)]+\))?!?\s*:\s*/i, '').trim()
+  // Remove hífens/underscores e capitaliza a primeira letra
+  const texto = semPrefixo.replace(/[-_]/g, ' ')
+  return texto.charAt(0).toUpperCase() + texto.slice(1)
 }
 
 async function main() {
@@ -64,11 +74,11 @@ async function main() {
 
   console.log(`[sync-updates] SHA do deploy: ${shaAtual.slice(0, 7)}`)
 
-  // Verifica se este deploy já foi processado
+  // Verifica se este deploy já foi processado (SHA embutido na última linha do details)
   const { data: jaFeito } = await db
     .from('system_updates')
     .select('id')
-    .eq('details', `deploy:${shaAtual}`)
+    .ilike('details', `%[deploy:${shaAtual}]`)
     .limit(1)
 
   if (jaFeito?.length > 0) {
@@ -106,40 +116,50 @@ async function main() {
     return
   }
 
-  // Agrupa por chave (feat / fix / perf)
-  const tiposEncontrados = new Set()
+  // Agrupa commits por chave (feat / fix / perf), com textos humanizados
+  const grupos = {} // { feat: ['Texto A', 'Texto B'], fix: [...] }
   for (const subject of log.split('\n')) {
-    const prefixo = subject.trim().match(/^(\w+)/)?.[1]?.toLowerCase()
-    if (prefixo && PREFIXOS_VALIDOS.includes(prefixo)) {
-      tiposEncontrados.add(resolverChave(prefixo))
-    }
+    const s = subject.trim()
+    if (!s) continue
+    const prefixo = s.match(/^(\w+)/)?.[1]?.toLowerCase()
+    if (!prefixo || !PREFIXOS_VALIDOS.includes(prefixo)) continue
+    const chave = resolverChave(prefixo)
+    if (!grupos[chave]) grupos[chave] = []
+    grupos[chave].push(humanizar(s))
   }
 
-  console.log(`[sync-updates] Tipos detectados: ${[...tiposEncontrados].join(', ') || 'nenhum'}`)
+  const chaves = Object.keys(grupos)
+  console.log(`[sync-updates] Tipos detectados: ${chaves.join(', ') || 'nenhum'}`)
 
-  if (tiposEncontrados.size === 0) {
+  if (chaves.length === 0) {
     console.log('[sync-updates] Nenhum commit publicável neste deploy.')
     return
   }
 
-  // Insere um registro por tipo com details = deploy:SHA (para deduplicação)
+  // Insere um registro por tipo.
+  // - details: lista de commits humanizados + SHA oculto na última linha para deduplicação
+  // - Só o PRIMEIRO registro carrega o SHA (evita checar todos os registros no próximo deploy)
   let primeiro = true
-  for (const chave of tiposEncontrados) {
-    const cfg = TEXTOS[chave]
+  for (const chave of chaves) {
+    const cfg  = TIPOS[chave]
+    const itens = grupos[chave]
+
+    // Monta bullets legíveis + marcador oculto de SHA só no primeiro
+    const linhas = itens.map(t => `• ${t}`)
+    if (primeiro) linhas.push(`[deploy:${shaAtual}]`)
 
     const { error } = await db.from('system_updates').insert({
       title:       cfg.title,
       description: cfg.description,
       type:        cfg.type,
       module:      cfg.module,
-      // Só o primeiro registro carrega o SHA (evita duplicatas no próximo deploy)
-      details:     primeiro ? `deploy:${shaAtual}` : null,
+      details:     linhas.join('\n'),
     })
 
     if (error) {
       console.warn(`[sync-updates] Erro ao inserir "${cfg.title}":`, error.message)
     } else {
-      console.log(`[sync-updates] ✓ "${cfg.title}"`)
+      console.log(`[sync-updates] ✓ "${cfg.title}" (${itens.length} item${itens.length > 1 ? 's' : ''})`)
       primeiro = false
     }
   }
