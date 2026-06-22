@@ -408,10 +408,10 @@ function AddActivityModal({
                 <div className="relative">
                   <textarea
                     value={text}
-                    onChange={e => { setText(e.target.value); setError('') }}
+                    onChange={e => { setText(e.target.value.toUpperCase()); setError('') }}
                     rows={5}
-                    placeholder="Ex: Analisei amostras, preparei meios de cultura, realizei leituras de placa..."
-                    className="w-full px-4 py-3.5 rounded-2xl text-sm resize-none outline-none transition-all"
+                    placeholder="EX: LIMPEZA DO LABORATÓRIO, ANÁLISE DE AMOSTRAS..."
+                    className="w-full px-4 py-3.5 rounded-2xl text-sm resize-none outline-none transition-all uppercase"
                     style={{
                       background: 'var(--bg)',
                       border: `1.5px solid ${error ? 'var(--danger)' : text.length >= 3 ? 'rgba(63,229,108,0.4)' : 'var(--border)'}`,
