@@ -1,10 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
+import Anthropic from '@anthropic-ai/sdk'
 
 export const dynamic = 'force-dynamic'
 
 const PONTOS_POR_ATIVIDADE = 5
+
+// Corrige ortografia em português usando Claude Haiku (barato e rápido)
+async function corrigirOrtografia(texto: string): Promise<string> {
+  const key = process.env.ANTHROPIC_API_KEY
+  if (!key) return texto.toUpperCase() // fallback sem chave
+
+  try {
+    const client = new Anthropic({ apiKey: key })
+    const msg = await client.messages.create({
+      model:      'claude-haiku-4-5-20251001',
+      max_tokens: 256,
+      messages: [{
+        role:    'user',
+        content: `Corrija APENAS os erros ortográficos do texto abaixo em português brasileiro. Mantenha as mesmas palavras, apenas corrija erros de grafia. Retorne SOMENTE o texto corrigido em LETRAS MAIÚSCULAS, sem explicações, sem aspas, sem pontuação extra.\n\nTexto: ${texto}`,
+      }],
+    })
+    const corrigido = (msg.content[0] as { text: string }).text.trim().toUpperCase()
+    return corrigido || texto.toUpperCase()
+  } catch {
+    return texto.toUpperCase()
+  }
+}
 
 const schemaPost = z.object({
   recordId:    z.string().uuid(),
@@ -20,9 +43,9 @@ const schemaDelete = z.object({
   activityId: z.string().uuid(),
 })
 
-// Sempre salva em MAIÚSCULAS
-function normalizar(texto: string): string {
-  return texto.trim().toUpperCase()
+// normalizar agora é async — usa IA para corrigir ortografia + converte para maiúsculas
+async function normalizar(texto: string): Promise<string> {
+  return corrigirOrtografia(texto.trim())
 }
 
 async function getInternId(user: { id: string }, db: ReturnType<typeof createSupabaseServiceClient>) {
@@ -59,7 +82,7 @@ export async function POST(req: NextRequest) {
 
   const { data: activity, error } = await db
     .from('activities')
-    .insert({ time_record_id: recordId, description: normalizar(description) })
+    .insert({ time_record_id: recordId, description: await normalizar(description) })
     .select()
     .single()
 
@@ -104,7 +127,7 @@ export async function PATCH(req: NextRequest) {
 
   const { data: activity, error } = await db
     .from('activities')
-    .update({ description: normalizar(description) })
+    .update({ description: await normalizar(description) })
     .eq('id', activityId)
     .select()
     .single()

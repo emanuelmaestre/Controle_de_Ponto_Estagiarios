@@ -140,7 +140,7 @@ function ActivityItem({
           style={{ background: 'transparent', color: 'var(--text)', lineHeight: 1.6 }}
           spellCheck
           autoCorrect="on"
-          autoCapitalize="characters"
+          autoCapitalize="on"
           autoFocus
         />
         <div className="flex items-center justify-between px-3 pb-2.5 gap-2">
@@ -408,9 +408,9 @@ function AddActivityModal({
                 <div className="relative">
                   <textarea
                     value={text}
-                    onChange={e => { setText(e.target.value.toUpperCase()); setError('') }}
+                    onChange={e => { setText(e.target.value); setError('') }}
                     rows={5}
-                    placeholder="EX: LIMPEZA DO LABORATÓRIO, ANÁLISE DE AMOSTRAS..."
+                    placeholder="Ex: Limpeza do laboratório, análise de amostras..."
                     className="w-full px-4 py-3.5 rounded-2xl text-sm resize-none outline-none transition-all uppercase"
                     style={{
                       background: 'var(--bg)',
