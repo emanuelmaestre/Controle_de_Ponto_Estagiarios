@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/sync-updates.mjs",
     "start": "next start",
     "lint": "eslint",
     "e2e": "playwright test",
@@ -42,6 +42,7 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.105.0",
     "@playwright/test": "^1.51.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
