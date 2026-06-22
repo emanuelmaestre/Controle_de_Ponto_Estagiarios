@@ -1,28 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
-import Anthropic from '@anthropic-ai/sdk'
+import OpenAI from 'openai'
 
 export const dynamic = 'force-dynamic'
 
 const PONTOS_POR_ATIVIDADE = 5
 
-// Corrige ortografia em português usando Claude Haiku (barato e rápido)
+// Corrige ortografia em português usando GPT-4o-mini (barato e rápido)
 async function corrigirOrtografia(texto: string): Promise<string> {
-  const key = process.env.ANTHROPIC_API_KEY
-  if (!key) return texto.toUpperCase() // fallback sem chave
+  const key = process.env.OPENAI_API_KEY
+  if (!key) return texto.toUpperCase()
 
   try {
-    const client = new Anthropic({ apiKey: key })
-    const msg = await client.messages.create({
-      model:      'claude-haiku-4-5-20251001',
+    const client = new OpenAI({ apiKey: key })
+    const res = await client.chat.completions.create({
+      model:      'gpt-4o-mini',
       max_tokens: 256,
-      messages: [{
-        role:    'user',
-        content: `Corrija APENAS os erros ortográficos do texto abaixo em português brasileiro. Mantenha as mesmas palavras, apenas corrija erros de grafia. Retorne SOMENTE o texto corrigido em LETRAS MAIÚSCULAS, sem explicações, sem aspas, sem pontuação extra.\n\nTexto: ${texto}`,
-      }],
+      messages: [
+        {
+          role:    'system',
+          content: 'Você é um corrector ortográfico de português brasileiro. Corrija APENAS erros de grafia, mantendo o mesmo sentido. Retorne SOMENTE o texto corrigido em LETRAS MAIÚSCULAS, sem explicações, sem aspas.',
+        },
+        {
+          role:    'user',
+          content: texto,
+        },
+      ],
     })
-    const corrigido = (msg.content[0] as { text: string }).text.trim().toUpperCase()
+    const corrigido = res.choices[0]?.message?.content?.trim().toUpperCase()
     return corrigido || texto.toUpperCase()
   } catch {
     return texto.toUpperCase()

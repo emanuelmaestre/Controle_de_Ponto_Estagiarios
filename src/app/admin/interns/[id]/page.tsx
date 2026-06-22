@@ -9,14 +9,137 @@ import type { Profile, MonthlyHours, InternSchedule } from '@/types/database'
 import {
   ArrowLeft, GraduationCap, Mail,
   History, CheckCircle2, BarChart2, Settings2, Calendar, Trophy,
+  ChevronDown, Clock, Sparkles, XCircle, Hourglass, CalendarDays,
 } from 'lucide-react'
 import { FadeIn } from '@/components/ui/MotionWrappers'
 import { getLevelInfo, getLevelTitle, getNextLevel, getProgressToNextLevel, ACHIEVEMENTS, LEVELS } from '@/lib/gamification'
 import { detectGender } from '@/lib/detectGender'
 
+// ── Componente de histórico completo para admin ───────────────────────────────
+type FullRecord = { id: string; clock_in: string; clock_out: string | null; status: string; duration_minutes: number | null; rejection_reason: string | null; activities: { id: string; description: string; created_at: string }[] }
+
+function formatMonthAdmin(iso: string) {
+  return new Date(iso).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+}
+
+const STATUS_CFG_ADMIN = {
+  approved: { label: 'Aprovado',  color: '#3fe56c', icon: <CheckCircle2 size={11} /> },
+  pending:  { label: 'Pendente',  color: '#f97316', icon: <Hourglass size={11} /> },
+  rejected: { label: 'Reprovado', color: '#ff5252', icon: <XCircle size={11} /> },
+}
+
+function AdminMonthGroup({ month, records, index }: { month: string; records: FullRecord[]; index: number }) {
+  const totalMin = records.reduce((s, r) => s + (r.duration_minutes ?? 0), 0)
+  const approved = records.filter(r => r.status === 'approved').length
+
+  return (
+    <details className="group rounded-2xl overflow-hidden" style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.12)' }}>
+      <summary className="flex items-center justify-between px-5 py-4 cursor-pointer list-none select-none hover:bg-white/[0.02]">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: 'rgba(63,229,108,0.08)', border: '1px solid rgba(63,229,108,0.2)' }}>
+            <CalendarDays size={15} style={{ color: '#3fe56c' }} />
+          </div>
+          <div>
+            <p className="text-sm font-black capitalize" style={{ color: 'var(--text)' }}>{month}</p>
+            <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              {records.length} sessões · {minutesToHours(totalMin)} · {approved} aprovadas
+            </p>
+          </div>
+        </div>
+        <ChevronDown size={15} className="group-open:rotate-180 transition-transform" style={{ color: 'rgba(255,255,255,0.3)' }} />
+      </summary>
+
+      <div className="px-4 pb-4 space-y-2 border-t" style={{ borderColor: 'rgba(0,200,83,0.1)' }}>
+        {records.map(r => {
+          const cfg = STATUS_CFG_ADMIN[r.status as keyof typeof STATUS_CFG_ADMIN] ?? STATUS_CFG_ADMIN.pending
+          return (
+            <div key={r.id} className="rounded-xl overflow-hidden mt-2"
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <div className="px-4 py-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>{formatDate(r.clock_in)}</p>
+                  <p className="text-[10px] mt-0.5 flex items-center gap-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    <Clock size={9} />
+                    {formatTime(r.clock_in)}
+                    {r.clock_out ? ` → ${formatTime(r.clock_out)}` : ' → em andamento'}
+                    {r.duration_minutes ? ` · ${minutesToHours(r.duration_minutes)}` : ''}
+                  </p>
+                </div>
+                <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-black flex-shrink-0"
+                  style={{ background: `${cfg.color}18`, color: cfg.color, border: `1px solid ${cfg.color}30` }}>
+                  {cfg.icon} {cfg.label}
+                </span>
+              </div>
+              {r.activities.length > 0 && (
+                <div className="px-4 py-2 space-y-1.5 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+                  {r.activities.map((a, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <Sparkles size={10} className="flex-shrink-0 mt-0.5" style={{ color: '#3fe56c', opacity: 0.5 }} />
+                      <p className="text-xs font-bold" style={{ color: 'rgba(255,255,255,0.65)' }}>{a.description}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {r.status === 'rejected' && r.rejection_reason && (
+                <div className="px-4 py-2 border-t" style={{ background: 'rgba(255,82,82,0.06)', borderColor: 'rgba(255,82,82,0.15)' }}>
+                  <p className="text-[9px] font-black mb-0.5" style={{ color: '#ff5252' }}>MOTIVO DA REPROVAÇÃO</p>
+                  <p className="text-xs" style={{ color: 'rgba(255,82,82,0.8)' }}>{r.rejection_reason}</p>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </details>
+  )
+}
+
+function AdminInternHistory({ records, internName }: { records: FullRecord[]; internName: string }) {
+  const grouped: Record<string, FullRecord[]> = {}
+  for (const r of records) {
+    const key = formatMonthAdmin(r.clock_in)
+    if (!grouped[key]) grouped[key] = []
+    grouped[key].push(r)
+  }
+  const entries = Object.entries(grouped)
+  const totalMin = records.reduce((s, r) => s + (r.duration_minutes ?? 0), 0)
+
+  if (entries.length === 0) {
+    return (
+      <div className="flex flex-col items-center py-20 text-center">
+        <History size={44} className="mb-4" style={{ color: 'rgba(255,255,255,0.15)' }} />
+        <p className="font-bold text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>Nenhum registro encontrado</p>
+        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.2)' }}>Este estagiário ainda não possui registros de ponto.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-3">
+      {/* Totalizador */}
+      <div className="rounded-2xl px-5 py-4 flex items-center justify-between"
+        style={{ background: 'rgba(63,229,108,0.06)', border: '1px solid rgba(63,229,108,0.15)' }}>
+        <div>
+          <p className="text-[10px] font-black" style={{ color: 'rgba(63,229,108,0.6)' }}>HISTÓRICO COMPLETO</p>
+          <p className="text-sm font-black mt-0.5" style={{ color: 'var(--text)' }}>{internName}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-2xl font-black" style={{ color: '#3fe56c' }}>{minutesToHours(totalMin)}</p>
+          <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{records.length} sessões no total</p>
+        </div>
+      </div>
+
+      {entries.map(([month, recs], i) => (
+        <AdminMonthGroup key={month} month={month} records={recs} index={i} />
+      ))}
+    </div>
+  )
+}
+
 export const dynamic = 'force-dynamic'
 
-type Tab = 'visao-geral' | 'horario' | 'conquistas' | 'cadastro'
+type Tab = 'visao-geral' | 'horario' | 'conquistas' | 'cadastro' | 'historico'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -73,7 +196,7 @@ function BigRing({ pct, color, size = 192 }: { pct: number; color: string; size?
 export default async function InternDetailPage({ params, searchParams }: Props) {
   const { id }        = await params
   const { tab: tabP } = await searchParams
-  const activeTab = (['visao-geral','horario','conquistas','cadastro'].includes(tabP ?? '') ? tabP : 'visao-geral') as Tab
+  const activeTab = (['visao-geral','horario','conquistas','cadastro','historico'].includes(tabP ?? '') ? tabP : 'visao-geral') as Tab
 
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -107,6 +230,15 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
     .limit(4)
   const recentRecords = (recentRaw ?? []) as RecentRecord[]
 
+  /* All records for the history tab */
+  type FullRecord = { id: string; clock_in: string; clock_out: string | null; status: string; duration_minutes: number | null; rejection_reason: string | null; activities: { id: string; description: string; created_at: string }[] }
+  const { data: allRecordsRaw } = await supabase
+    .from('time_records')
+    .select('id, clock_in, clock_out, status, duration_minutes, rejection_reason, activities!activities_time_record_id_fkey (id, description, created_at)')
+    .eq('intern_id', id)
+    .order('clock_in', { ascending: false })
+  const allRecords = (allRecordsRaw ?? []) as unknown as FullRecord[]
+
   const thisMonth    = hoursRaw?.[0]
   const monthMinutes = thisMonth?.total_minutes ?? 0
   const totalRequired = (intern.total_hours_required ?? 120) * 60
@@ -118,6 +250,7 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'visao-geral',  label: 'Visão Geral',  icon: <BarChart2 size={14} /> },
+    { key: 'historico',    label: 'Histórico',     icon: <History size={14} /> },
     { key: 'horario',      label: 'Horário',       icon: <Calendar size={14} /> },
     { key: 'conquistas',   label: 'Conquistas',    icon: <Trophy size={14} /> },
     { key: 'cadastro',     label: 'Cadastro',      icon: <Settings2 size={14} /> },
@@ -608,6 +741,13 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
                 </div>
 
               </div>
+            </FadeIn>
+          )}
+
+          {/* ════ ABA: HISTÓRICO ════ */}
+          {activeTab === 'historico' && (
+            <FadeIn delay={0.08}>
+              <AdminInternHistory records={allRecords} internName={intern.full_name ?? ''} />
             </FadeIn>
           )}
 

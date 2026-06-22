@@ -7,6 +7,7 @@ import {
   Home, ClipboardList, LogOut, Trophy, User,
   Plus, X, Send, CheckCircle2, Clock, PenLine,
   AlertCircle, Sparkles, Pencil, Save, Trash2,
+  Archive, ChevronRight,
 } from 'lucide-react'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import ProgressRing from '@/components/ui/ProgressRing'
@@ -704,6 +705,33 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
               </div>
             </FadeIn>
           )}
+
+          {/* Botão de acesso ao arquivo de registros antigos */}
+          <FadeIn>
+            <Link href="/history/archive">
+              <motion.div
+                className="rounded-3xl px-5 py-4 flex items-center justify-between gap-3 cursor-pointer"
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+                whileHover={{ borderColor: 'rgba(63,229,108,0.4)', backgroundColor: 'rgba(63,229,108,0.02)' }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.15 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(63,229,108,0.08)', border: '1px solid rgba(63,229,108,0.15)' }}>
+                    <Archive size={18} style={{ color: 'var(--primary)' }} />
+                  </div>
+                  <div>
+                    <p className="font-black text-sm" style={{ color: 'var(--text)' }}>Registros anteriores</p>
+                    <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-3)' }}>
+                      Acesse sessões com mais de 60 dias, organizadas por mês
+                    </p>
+                  </div>
+                </div>
+                <ChevronRight size={16} style={{ color: 'var(--text-3)', flexShrink: 0 }} />
+              </motion.div>
+            </Link>
+          </FadeIn>
         </div>
       </main>
 
