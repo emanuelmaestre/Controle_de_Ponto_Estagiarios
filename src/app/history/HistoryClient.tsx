@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Home, ClipboardList, LogOut, Trophy, User,
   Plus, X, Send, CheckCircle2, Clock, PenLine,
-  AlertCircle, Sparkles,
+  AlertCircle, Sparkles, Pencil, Save,
 } from 'lucide-react'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import ProgressRing from '@/components/ui/ProgressRing'
@@ -37,6 +37,118 @@ type Props = {
   userName: string
 }
 
+// ── Edição inline de uma atividade existente ──────────────────────────────────
+function ActivityItem({
+  activity,
+  onUpdated,
+}: {
+  activity: Activity
+  onUpdated: (updated: Activity) => void
+}) {
+  const [editing, setEditing]   = useState(false)
+  const [text, setText]         = useState(activity.description)
+  const [saving, setSaving]     = useState(false)
+  const [error, setError]       = useState('')
+  const [saved, setSaved]       = useState(false)
+
+  async function save() {
+    if (text.trim().length < 3) { setError('Mínimo 3 caracteres'); return }
+    setSaving(true); setError('')
+    const res = await fetch('/api/intern/activities', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ activityId: activity.id, description: text.trim() }),
+    })
+    setSaving(false)
+    if (res.ok) {
+      const { activity: updated } = await res.json()
+      setSaved(true)
+      onUpdated(updated)
+      setTimeout(() => { setSaved(false); setEditing(false) }, 1000)
+    } else {
+      const j = await res.json()
+      setError(j.error ?? 'Erro ao salvar')
+    }
+  }
+
+  function cancel() {
+    setText(activity.description)
+    setError('')
+    setEditing(false)
+  }
+
+  if (editing) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+        className="rounded-xl overflow-hidden"
+        style={{ border: '1.5px solid rgba(63,229,108,0.35)', background: 'rgba(63,229,108,0.04)' }}
+      >
+        <textarea
+          value={text}
+          onChange={e => { setText(e.target.value); setError('') }}
+          rows={3}
+          className="w-full px-3 py-2.5 text-sm resize-none outline-none"
+          style={{ background: 'transparent', color: 'var(--text)', lineHeight: 1.6 }}
+          spellCheck
+          autoCorrect="on"
+          autoCapitalize="sentences"
+          autoFocus
+        />
+        <div className="flex items-center justify-between px-3 pb-2.5 gap-2">
+          {error
+            ? <p className="text-[10px]" style={{ color: 'var(--danger)' }}>{error}</p>
+            : <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>A ortografia será corrigida automaticamente</p>
+          }
+          <div className="flex gap-1.5">
+            <motion.button onClick={cancel} whileTap={{ scale: 0.94 }}
+              className="px-2.5 py-1 rounded-lg text-[11px] font-bold"
+              style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-3)' }}>
+              Cancelar
+            </motion.button>
+            <motion.button onClick={save} disabled={saving || text.trim().length < 3}
+              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-black disabled:opacity-40"
+              style={{ background: saved ? 'rgba(63,229,108,0.2)' : 'var(--primary)', color: saved ? 'var(--primary)' : '#000' }}>
+              {saved ? <><CheckCircle2 size={11} /> Salvo!</> : saving ? 'Salvando...' : <><Save size={11} /> Salvar</>}
+            </motion.button>
+          </div>
+        </div>
+      </motion.div>
+    )
+  }
+
+  return (
+    <motion.div
+      layout
+      className="flex items-start gap-2.5 group"
+      initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+    >
+      <Sparkles size={11} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--primary)', opacity: 0.7 }} />
+      <div className="min-w-0 flex-1">
+        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
+          {activity.description}
+        </p>
+        {activity.created_at && (
+          <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
+            {formatDateTime(activity.created_at)}
+          </p>
+        )}
+      </div>
+      <motion.button
+        onClick={() => setEditing(true)}
+        className="opacity-0 group-hover:opacity-100 flex-shrink-0 p-1 rounded-lg transition-opacity"
+        style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-3)' }}
+        whileHover={{ scale: 1.1, color: 'var(--primary)' }}
+        whileTap={{ scale: 0.9 }}
+        title="Editar atividade"
+      >
+        <Pencil size={11} />
+      </motion.button>
+    </motion.div>
+  )
+}
+
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString('pt-BR', {
     day: '2-digit', month: '2-digit',
@@ -46,11 +158,12 @@ function formatDateTime(iso: string) {
 
 // ── Modal de adicionar atividade ──────────────────────────────────────────────
 function AddActivityModal({
-  record, onClose, onSaved,
+  record, onClose, onSaved, onUpdatedActivity,
 }: {
   record: TimeRecord
   onClose: () => void
   onSaved: (recordId: string, activity: Activity) => void
+  onUpdatedActivity: (recordId: string, updated: Activity) => void
 }) {
   const [text, setText]       = useState('')
   const [sending, setSending] = useState(false)
@@ -179,26 +292,21 @@ function AddActivityModal({
           {record.activities.length > 0 && (
             <div className="mb-4">
               <p className="text-[10px] font-black mb-2.5 tracking-wide" style={{ color: 'var(--text-3)' }}>
-                JÁ REGISTRADAS
+                JÁ REGISTRADAS — toque no lápis para editar
               </p>
               <div className="space-y-2">
                 {record.activities.map((a, i) => (
                   <motion.div
-                    key={i}
+                    key={a.id}
                     initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.06 }}
-                    className="flex items-start gap-3 rounded-2xl px-3 py-2.5"
+                    className="rounded-2xl px-3 py-2.5"
                     style={{ background: 'rgba(63,229,108,0.05)', border: '1px solid rgba(63,229,108,0.12)' }}
                   >
-                    <CheckCircle2 size={14} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--primary)' }} />
-                    <div className="min-w-0">
-                      <p className="text-sm leading-snug" style={{ color: 'var(--text-2)' }}>{a.description}</p>
-                      {a.created_at && (
-                        <p className="text-[10px] mt-1" style={{ color: 'var(--text-3)' }}>
-                          Registrada em {formatDateTime(a.created_at)}
-                        </p>
-                      )}
-                    </div>
+                    <ActivityItem
+                      activity={a}
+                      onUpdated={updated => onUpdatedActivity(record.id, updated)}
+                    />
                   </motion.div>
                 ))}
               </div>
@@ -247,6 +355,9 @@ function AddActivityModal({
                       color: 'var(--text)',
                       lineHeight: 1.6,
                     }}
+                    spellCheck
+                    autoCorrect="on"
+                    autoCapitalize="sentences"
                     autoFocus
                   />
                   {/* Contador */}
@@ -321,6 +432,19 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
     setRecords(prev => prev.map(r =>
       r.id === recordId ? { ...r, activities: [...r.activities, activity] } : r
     ))
+  }
+
+  function onUpdatedActivity(recordId: string, updated: Activity) {
+    setRecords(prev => prev.map(r =>
+      r.id === recordId
+        ? { ...r, activities: r.activities.map(a => a.id === updated.id ? updated : a) }
+        : r
+    ))
+    // Atualiza também o record ativo no modal se estiver aberto
+    setActive(prev => prev?.id === recordId
+      ? { ...prev, activities: prev.activities.map(a => a.id === updated.id ? updated : a) }
+      : prev
+    )
   }
 
   const pendentes = records.filter(r => r.clock_out && r.activities.length === 0).length
@@ -470,22 +594,14 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
                           <div className="px-4 py-3 space-y-2.5">
                             {record.activities.map((a, i) => (
                               <motion.div
-                                key={i}
+                                key={a.id}
                                 initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: i * 0.04 }}
-                                className="flex items-start gap-2.5"
                               >
-                                <Sparkles size={11} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--primary)', opacity: 0.7 }} />
-                                <div className="min-w-0">
-                                  <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
-                                    {a.description}
-                                  </p>
-                                  {a.created_at && (
-                                    <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
-                                      {formatDateTime(a.created_at)}
-                                    </p>
-                                  )}
-                                </div>
+                                <ActivityItem
+                                  activity={a}
+                                  onUpdated={updated => onUpdatedActivity(record.id, updated)}
+                                />
                               </motion.div>
                             ))}
                           </div>
@@ -551,6 +667,7 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
             record={activeRecord}
             onClose={() => setActive(null)}
             onSaved={onSaved}
+            onUpdatedActivity={onUpdatedActivity}
           />
         )}
       </AnimatePresence>
