@@ -1,38 +1,104 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
-import OpenAI from 'openai'
-
 export const dynamic = 'force-dynamic'
 
 const PONTOS_POR_ATIVIDADE = 5
 
-// Corrige ortografia em português usando GPT-4o-mini (barato e rápido)
-async function corrigirOrtografia(texto: string): Promise<string> {
-  const key = process.env.OPENAI_API_KEY
-  if (!key) return texto.toUpperCase()
+// Dicionário de erros comuns em português brasileiro
+// Chave = forma errada (maiúscula), valor = forma correta (maiúscula)
+const CORRECOES: Record<string, string> = {
+  // Limpeza / manutenção
+  'LIMPESA':        'LIMPEZA',
+  'LIMPEZA':        'LIMPEZA',
+  'LINPEZA':        'LIMPEZA',
+  'VASOURA':        'VASSOURA',
+  'VAROURA':        'VASSOURA',
+  'DESINFEÇAO':     'DESINFECÇÃO',
+  'DESINFEÇÃO':     'DESINFECÇÃO',
+  'ORGANIZAÇAO':    'ORGANIZAÇÃO',
+  'ORIGANIZACAO':   'ORGANIZAÇÃO',
+  'ORGANIAZACAO':   'ORGANIZAÇÃO',
+  'RECEPCAO':       'RECEPÇÃO',
+  'RECEPÇAO':       'RECEPÇÃO',
+  'ATENDIMENTO':    'ATENDIMENTO',
+  'ATENDIMETO':     'ATENDIMENTO',
+  'ATEDIMENTO':     'ATENDIMENTO',
+  'DOCUEMENTO':     'DOCUMENTO',
+  'DOCUMETO':       'DOCUMENTO',
+  'DOCUMENTOS':     'DOCUMENTOS',
+  'ARQUIVAMENTO':   'ARQUIVAMENTO',
+  'ARQUIVAMNETO':   'ARQUIVAMENTO',
+  'DIGITAÇAO':      'DIGITAÇÃO',
+  'DIGITACAO':      'DIGITAÇÃO',
+  'IMPRESSAO':      'IMPRESSÃO',
+  'IMPRESÃO':       'IMPRESSÃO',
+  'SEPARAÇAO':      'SEPARAÇÃO',
+  'SEPARACAO':      'SEPARAÇÃO',
+  'CATALOGAÇAO':    'CATALOGAÇÃO',
+  'PLANILHA':       'PLANILHA',
+  'PLANILA':        'PLANILHA',
+  'RELATORIO':      'RELATÓRIO',
+  'REUNIAO':        'REUNIÃO',
+  'PREENCHIMETO':   'PREENCHIMENTO',
+  'PREECHIMENTO':   'PREENCHIMENTO',
+  'PREENCHIMENTO':  'PREENCHIMENTO',
+  'ENVIO':          'ENVIO',
+  'MONITORAMENTO':  'MONITORAMENTO',
+  'MONITORIAMENTO': 'MONITORAMENTO',
+  'CONFERENCIA':    'CONFERÊNCIA',
+  'TRIAGEM':        'TRIAGEM',
+  'TRIAGEN':        'TRIAGEM',
+  'PROTOCOLO':      'PROTOCOLO',
+  'AUXILIANDO':     'AUXILIANDO',
+  'AXILIANDO':      'AUXILIANDO',
+  'ATUALIZAÇAO':    'ATUALIZAÇÃO',
+  'ATUALIZACAO':    'ATUALIZAÇÃO',
+  'INFORMATICA':    'INFORMÁTICA',
+  'INFROMATICA':    'INFORMÁTICA',
+  'XEROX':          'XEROX',
+  'CERIA':          'SERIA',
+  'SECRTARIA':      'SECRETARIA',
+  'SECRETARIA':     'SECRETARIA',
+  'ADMINSTRATIVO':  'ADMINISTRATIVO',
+  'ADMNISTRATIVO':  'ADMINISTRATIVO',
+  'ADMINISTRATIVO': 'ADMINISTRATIVO',
+  'ESTOQUE':        'ESTOQUE',
+  'ESTOKE':         'ESTOQUE',
+  'ETIQUETAGEM':    'ETIQUETAGEM',
+  'ETIQUETAGEN':    'ETIQUETAGEM',
+  'ETIQUETAGM':     'ETIQUETAGEM',
+  'CONFERIR':       'CONFERIR',
+  'CONFERENCIAR':   'CONFERIR',
+  'VERIFIICACAO':   'VERIFICAÇÃO',
+  'VERIFICAÇAO':    'VERIFICAÇÃO',
+  'VERIFICACAO':    'VERIFICAÇÃO',
+  'CLASSFICACAO':   'CLASSIFICAÇÃO',
+  'CLASSIFICAÇAO':  'CLASSIFICAÇÃO',
+  'ENTREGUE':       'ENTREGUE',
+  'ENTREGUA':       'ENTREGUE',
+  'RECEBI':         'RECEBI',
+  'RECEBIMETO':     'RECEBIMENTO',
+  'RECEBIMENTO':    'RECEBIMENTO',
+  'AGENDAMENTO':    'AGENDAMENTO',
+  'AGENDAMETO':     'AGENDAMENTO',
+  'TREINAMENTO':    'TREINAMENTO',
+  'TREINAMNETO':    'TREINAMENTO',
+  'COLABORAÇAO':    'COLABORAÇÃO',
+  'COLABORACAO':    'COLABORAÇÃO',
+  'SUPORTE':        'SUPORTE',
+  'SUPORTRE':       'SUPORTE',
+  'SUPRIMENTOS':    'SUPRIMENTOS',
+  'SUPRIMETNO':     'SUPRIMENTOS',
+}
 
-  try {
-    const client = new OpenAI({ apiKey: key })
-    const res = await client.chat.completions.create({
-      model:      'gpt-4o-mini',
-      max_tokens: 256,
-      messages: [
-        {
-          role:    'system',
-          content: 'Você é um corrector ortográfico de português brasileiro. Corrija APENAS erros de grafia, mantendo o mesmo sentido. Retorne SOMENTE o texto corrigido em LETRAS MAIÚSCULAS, sem explicações, sem aspas.',
-        },
-        {
-          role:    'user',
-          content: texto,
-        },
-      ],
-    })
-    const corrigido = res.choices[0]?.message?.content?.trim().toUpperCase()
-    return corrigido || texto.toUpperCase()
-  } catch {
-    return texto.toUpperCase()
-  }
+// Aplica o dicionário palavra a palavra
+function corrigirOrtografia(texto: string): string {
+  return texto
+    .toUpperCase()
+    .split(/\b/)
+    .map(token => CORRECOES[token] ?? token)
+    .join('')
 }
 
 const schemaPost = z.object({
@@ -49,8 +115,7 @@ const schemaDelete = z.object({
   activityId: z.string().uuid(),
 })
 
-// normalizar agora é async — usa IA para corrigir ortografia + converte para maiúsculas
-async function normalizar(texto: string): Promise<string> {
+function normalizar(texto: string): string {
   return corrigirOrtografia(texto.trim())
 }
 
@@ -88,7 +153,7 @@ export async function POST(req: NextRequest) {
 
   const { data: activity, error } = await db
     .from('activities')
-    .insert({ time_record_id: recordId, description: await normalizar(description) })
+    .insert({ time_record_id: recordId, description: normalizar(description) })
     .select()
     .single()
 
@@ -133,7 +198,7 @@ export async function PATCH(req: NextRequest) {
 
   const { data: activity, error } = await db
     .from('activities')
-    .update({ description: await normalizar(description) })
+    .update({ description: normalizar(description) })
     .eq('id', activityId)
     .select()
     .single()
