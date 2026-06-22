@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Home, ClipboardList, LogOut, Trophy, User,
   Plus, X, Send, CheckCircle2, Clock, PenLine,
-  AlertCircle, Sparkles, Pencil, Save,
+  AlertCircle, Sparkles, Pencil, Save, Trash2,
 } from 'lucide-react'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import ProgressRing from '@/components/ui/ProgressRing'
@@ -41,15 +41,19 @@ type Props = {
 function ActivityItem({
   activity,
   onUpdated,
+  onDeleted,
 }: {
   activity: Activity
   onUpdated: (updated: Activity) => void
+  onDeleted: (id: string) => void
 }) {
-  const [editing, setEditing]   = useState(false)
-  const [text, setText]         = useState(activity.description)
-  const [saving, setSaving]     = useState(false)
-  const [error, setError]       = useState('')
-  const [saved, setSaved]       = useState(false)
+  const [editing, setEditing]       = useState(false)
+  const [text, setText]             = useState(activity.description)
+  const [saving, setSaving]         = useState(false)
+  const [error, setError]           = useState('')
+  const [saved, setSaved]           = useState(false)
+  const [confirmDelete, setConfirm] = useState(false)
+  const [deleting, setDeleting]     = useState(false)
 
   async function save() {
     if (text.trim().length < 3) { setError('Mínimo 3 caracteres'); return }
@@ -71,12 +75,56 @@ function ActivityItem({
     }
   }
 
+  async function confirmAndDelete() {
+    setDeleting(true)
+    const res = await fetch('/api/intern/activities', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ activityId: activity.id }),
+    })
+    setDeleting(false)
+    if (res.ok) {
+      onDeleted(activity.id)
+    }
+  }
+
   function cancel() {
     setText(activity.description)
     setError('')
     setEditing(false)
   }
 
+  // ── Modo confirmação de exclusão ──────────────────────────────────────────
+  if (confirmDelete) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
+        className="rounded-xl p-3"
+        style={{ background: 'rgba(220,38,38,0.08)', border: '1.5px solid rgba(220,38,38,0.3)' }}
+      >
+        <p className="text-xs font-black mb-1" style={{ color: 'var(--danger)' }}>Excluir esta atividade?</p>
+        <p className="text-[11px] mb-3" style={{ color: 'rgba(220,38,38,0.7)' }}>
+          Você perderá <strong>−5 pontos</strong> no ranking. Esta ação não pode ser desfeita.
+        </p>
+        <div className="flex gap-2">
+          <motion.button onClick={() => setConfirm(false)} whileTap={{ scale: 0.94 }}
+            className="flex-1 py-1.5 rounded-lg text-[11px] font-bold"
+            style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-3)' }}>
+            Cancelar
+          </motion.button>
+          <motion.button onClick={confirmAndDelete} disabled={deleting}
+            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}
+            className="flex-1 py-1.5 rounded-lg text-[11px] font-black flex items-center justify-center gap-1 disabled:opacity-50"
+            style={{ background: 'var(--danger)', color: '#fff' }}>
+            <Trash2 size={11} />
+            {deleting ? 'Excluindo...' : 'Sim, excluir'}
+          </motion.button>
+        </div>
+      </motion.div>
+    )
+  }
+
+  // ── Modo edição ───────────────────────────────────────────────────────────
   if (editing) {
     return (
       <motion.div
@@ -88,17 +136,17 @@ function ActivityItem({
           value={text}
           onChange={e => { setText(e.target.value); setError('') }}
           rows={3}
-          className="w-full px-3 py-2.5 text-sm resize-none outline-none"
+          className="w-full px-3 py-2.5 text-sm resize-none outline-none uppercase"
           style={{ background: 'transparent', color: 'var(--text)', lineHeight: 1.6 }}
           spellCheck
           autoCorrect="on"
-          autoCapitalize="sentences"
+          autoCapitalize="characters"
           autoFocus
         />
         <div className="flex items-center justify-between px-3 pb-2.5 gap-2">
           {error
             ? <p className="text-[10px]" style={{ color: 'var(--danger)' }}>{error}</p>
-            : <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>A ortografia será corrigida automaticamente</p>
+            : <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>Texto salvo em maiúsculas automaticamente</p>
           }
           <div className="flex gap-1.5">
             <motion.button onClick={cancel} whileTap={{ scale: 0.94 }}
@@ -118,6 +166,7 @@ function ActivityItem({
     )
   }
 
+  // ── Modo normal ───────────────────────────────────────────────────────────
   return (
     <motion.div
       layout
@@ -126,7 +175,7 @@ function ActivityItem({
     >
       <Sparkles size={11} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--primary)', opacity: 0.7 }} />
       <div className="min-w-0 flex-1">
-        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
+        <p className="text-xs leading-relaxed font-bold" style={{ color: 'var(--text-2)' }}>
           {activity.description}
         </p>
         {activity.created_at && (
@@ -135,16 +184,28 @@ function ActivityItem({
           </p>
         )}
       </div>
-      <motion.button
-        onClick={() => setEditing(true)}
-        className="flex-shrink-0 p-1.5 rounded-lg"
-        style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-3)' }}
-        whileHover={{ scale: 1.1, backgroundColor: 'rgba(63,229,108,0.15)', color: 'var(--primary)' }}
-        whileTap={{ scale: 0.9 }}
-        title="Editar atividade"
-      >
-        <Pencil size={12} />
-      </motion.button>
+      <div className="flex gap-1 flex-shrink-0">
+        <motion.button
+          onClick={() => setEditing(true)}
+          className="p-1.5 rounded-lg"
+          style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-3)' }}
+          whileHover={{ scale: 1.1, backgroundColor: 'rgba(63,229,108,0.15)', color: 'var(--primary)' }}
+          whileTap={{ scale: 0.9 }}
+          title="Editar"
+        >
+          <Pencil size={12} />
+        </motion.button>
+        <motion.button
+          onClick={() => setConfirm(true)}
+          className="p-1.5 rounded-lg"
+          style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-3)' }}
+          whileHover={{ scale: 1.1, backgroundColor: 'rgba(220,38,38,0.15)', color: 'var(--danger)' }}
+          whileTap={{ scale: 0.9 }}
+          title="Excluir"
+        >
+          <Trash2 size={12} />
+        </motion.button>
+      </div>
     </motion.div>
   )
 }
@@ -158,12 +219,13 @@ function formatDateTime(iso: string) {
 
 // ── Modal de adicionar atividade ──────────────────────────────────────────────
 function AddActivityModal({
-  record, onClose, onSaved, onUpdatedActivity,
+  record, onClose, onSaved, onUpdatedActivity, onDeletedActivity,
 }: {
   record: TimeRecord
   onClose: () => void
   onSaved: (recordId: string, activity: Activity) => void
   onUpdatedActivity: (recordId: string, updated: Activity) => void
+  onDeletedActivity: (recordId: string, activityId: string) => void
 }) {
   const [text, setText]       = useState('')
   const [sending, setSending] = useState(false)
@@ -306,6 +368,7 @@ function AddActivityModal({
                     <ActivityItem
                       activity={a}
                       onUpdated={updated => onUpdatedActivity(record.id, updated)}
+                      onDeleted={id => onDeletedActivity(record.id, id)}
                     />
                   </motion.div>
                 ))}
@@ -440,9 +503,20 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
         ? { ...r, activities: r.activities.map(a => a.id === updated.id ? updated : a) }
         : r
     ))
-    // Atualiza também o record ativo no modal se estiver aberto
     setActive(prev => prev?.id === recordId
       ? { ...prev, activities: prev.activities.map(a => a.id === updated.id ? updated : a) }
+      : prev
+    )
+  }
+
+  function onDeletedActivity(recordId: string, activityId: string) {
+    setRecords(prev => prev.map(r =>
+      r.id === recordId
+        ? { ...r, activities: r.activities.filter(a => a.id !== activityId) }
+        : r
+    ))
+    setActive(prev => prev?.id === recordId
+      ? { ...prev, activities: prev.activities.filter(a => a.id !== activityId) }
       : prev
     )
   }
@@ -601,6 +675,7 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
                                 <ActivityItem
                                   activity={a}
                                   onUpdated={updated => onUpdatedActivity(record.id, updated)}
+                                  onDeleted={id => onDeletedActivity(record.id, id)}
                                 />
                               </motion.div>
                             ))}
@@ -668,6 +743,7 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
             onClose={() => setActive(null)}
             onSaved={onSaved}
             onUpdatedActivity={onUpdatedActivity}
+            onDeletedActivity={onDeletedActivity}
           />
         )}
       </AnimatePresence>
