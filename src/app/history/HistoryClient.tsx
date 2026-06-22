@@ -121,7 +121,7 @@ function ActivityItem({
   return (
     <motion.div
       layout
-      className="flex items-start gap-2.5 group"
+      className="flex items-start gap-2.5"
       initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
     >
       <Sparkles size={11} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--primary)', opacity: 0.7 }} />
@@ -137,13 +137,13 @@ function ActivityItem({
       </div>
       <motion.button
         onClick={() => setEditing(true)}
-        className="opacity-0 group-hover:opacity-100 flex-shrink-0 p-1 rounded-lg transition-opacity"
+        className="flex-shrink-0 p-1.5 rounded-lg"
         style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-3)' }}
-        whileHover={{ scale: 1.1, color: 'var(--primary)' }}
+        whileHover={{ scale: 1.1, backgroundColor: 'rgba(63,229,108,0.15)', color: 'var(--primary)' }}
         whileTap={{ scale: 0.9 }}
         title="Editar atividade"
       >
-        <Pencil size={11} />
+        <Pencil size={12} />
       </motion.button>
     </motion.div>
   )
