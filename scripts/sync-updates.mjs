@@ -1,7 +1,9 @@
 /**
- * sync-updates.mjs
- * Roda no postbuild. Conta commits novos por tipo e insere
- * um registro por tipo na tabela system_updates do Supabase.
+ * sync-updates.mjs — roda automaticamente no postbuild (Vercel + local).
+ *
+ * A cada deploy detecta se já existe um registro deste deploy pelo SHA do
+ * commit (salvo em `details`). Se não existir, insere um registro por tipo
+ * de commit encontrado (feat/fix/perf/refactor) com texto amigável.
  */
 
 import { execSync } from 'child_process'
@@ -15,7 +17,7 @@ if (!SUPABASE_URL || !SUPABASE_SK) {
   process.exit(0)
 }
 
-// Texto fixo e amigável por tipo de commit
+// ── Texto fixo e amigável por tipo ────────────────────────────────────────────
 const TEXTOS = {
   feat: {
     type:        'feature',
@@ -31,112 +33,114 @@ const TEXTOS = {
   },
   perf: {
     type:        'improvement',
-    title:       'Melhorias de desempenho',
-    description: 'O sistema ficou mais rápido e estável nesta versão.',
-    module:      'Sistema',
-  },
-  refactor: {
-    type:        'improvement',
-    title:       'Melhorias internas',
-    description: 'Ajustes e otimizações foram aplicados para melhor funcionamento.',
+    title:       'Melhorias de desempenho e usabilidade',
+    description: 'O sistema ficou mais rápido, estável e agradável de usar.',
     module:      'Sistema',
   },
 }
 
-const PREFIXOS = Object.keys(TEXTOS)
+const PREFIXOS_VALIDOS = ['feat', 'fix', 'perf', 'refactor', 'improvement']
+
+function resolverChave(prefixo) {
+  if (['perf', 'refactor', 'improvement'].includes(prefixo)) return 'perf'
+  return prefixo // feat | fix
+}
 
 async function main() {
-  console.log('[sync-updates] Verificando commits novos...')
+  console.log('[sync-updates] Iniciando...')
 
   const db = createClient(SUPABASE_URL, SUPABASE_SK)
 
-  // Data do último update publicado
-  const { data: ultimo } = await db
+  // SHA do commit atual (injetado pelo Vercel, ou lido do git em local)
+  let shaAtual = process.env.VERCEL_GIT_COMMIT_SHA ?? ''
+  if (!shaAtual) {
+    try { shaAtual = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim() } catch { shaAtual = '' }
+  }
+
+  if (!shaAtual) {
+    console.log('[sync-updates] SHA do commit não encontrado — pulando.')
+    process.exit(0)
+  }
+
+  console.log(`[sync-updates] SHA do deploy: ${shaAtual.slice(0, 7)}`)
+
+  // Verifica se este deploy já foi processado
+  const { data: jaFeito } = await db
+    .from('system_updates')
+    .select('id')
+    .eq('details', `deploy:${shaAtual}`)
+    .limit(1)
+
+  if (jaFeito?.length > 0) {
+    console.log('[sync-updates] Este deploy já foi sincronizado — pulando.')
+    return
+  }
+
+  // Lê commits desde o penúltimo deploy publicado
+  const { data: ultimoPublicado } = await db
     .from('system_updates')
     .select('created_at')
-    .like('details', 'git:%')
+    .like('details', 'deploy:%')
     .order('created_at', { ascending: false })
     .limit(1)
 
-  let filtroGit = '-30'
-  if (ultimo?.length > 0) {
-    const dt = new Date(new Date(ultimo[0].created_at).getTime() - 60_000)
+  let filtroGit = '-50' // fallback: últimos 50 commits
+  if (ultimoPublicado?.length > 0) {
+    const dt = new Date(new Date(ultimoPublicado[0].created_at).getTime() - 120_000)
     filtroGit = `--after="${dt.toISOString()}"`
   }
 
   let log = ''
   try {
     log = execSync(
-      `git log ${filtroGit} --pretty=format:"%H|||%s" --no-merges`,
+      `git log ${filtroGit} --pretty=format:"%s" --no-merges`,
       { encoding: 'utf8' }
     ).trim()
   } catch {
-    console.log('[sync-updates] Não foi possível ler git log.')
+    console.log('[sync-updates] git log indisponível — pulando.')
     process.exit(0)
   }
 
   if (!log) {
-    console.log('[sync-updates] Nenhum commit novo.')
+    console.log('[sync-updates] Sem commits relevantes.')
     return
   }
 
-  // Agrupa commits por tipo
-  const porTipo = {}
-  for (const linha of log.split('\n')) {
-    const [hash, subject] = linha.split('|||')
-    if (!hash || !subject) continue
-
+  // Agrupa por chave (feat / fix / perf)
+  const tiposEncontrados = new Set()
+  for (const subject of log.split('\n')) {
     const prefixo = subject.trim().match(/^(\w+)/)?.[1]?.toLowerCase()
-    if (!PREFIXOS.includes(prefixo)) continue
-
-    // Normaliza perf/refactor → 'perf' para agrupar em "Melhorias"
-    const chave = ['perf', 'refactor'].includes(prefixo) ? 'perf' : prefixo
-
-    if (!porTipo[chave]) porTipo[chave] = []
-    porTipo[chave].push(hash.trim())
+    if (prefixo && PREFIXOS_VALIDOS.includes(prefixo)) {
+      tiposEncontrados.add(resolverChave(prefixo))
+    }
   }
 
-  const tipos = Object.keys(porTipo)
-  console.log(`[sync-updates] Tipos encontrados: ${tipos.join(', ') || 'nenhum'}`)
+  console.log(`[sync-updates] Tipos detectados: ${[...tiposEncontrados].join(', ') || 'nenhum'}`)
 
-  if (tipos.length === 0) {
-    console.log('[sync-updates] Nada a publicar.')
+  if (tiposEncontrados.size === 0) {
+    console.log('[sync-updates] Nenhum commit publicável neste deploy.')
     return
   }
 
-  // Insere um registro por tipo
-  for (const chave of tipos) {
-    const hashes = porTipo[chave]
-    const cfg    = TEXTOS[chave]
-
-    // Verifica se algum hash desse grupo já foi inserido
-    let jaExiste = false
-    for (const hash of hashes) {
-      const { data } = await db
-        .from('system_updates')
-        .select('id')
-        .eq('details', `git:${hash}`)
-        .limit(1)
-      if (data?.length > 0) { jaExiste = true; break }
-    }
-
-    if (jaExiste) {
-      console.log(`[sync-updates] Já publicado: ${cfg.title}`)
-      continue
-    }
+  // Insere um registro por tipo com details = deploy:SHA (para deduplicação)
+  let primeiro = true
+  for (const chave of tiposEncontrados) {
+    const cfg = TEXTOS[chave]
 
     const { error } = await db.from('system_updates').insert({
       title:       cfg.title,
       description: cfg.description,
       type:        cfg.type,
       module:      cfg.module,
-      details:     `git:${hashes[0]}`, // hash representativo do grupo
+      // Só o primeiro registro carrega o SHA (evita duplicatas no próximo deploy)
+      details:     primeiro ? `deploy:${shaAtual}` : null,
     })
 
     if (error) {
       console.warn(`[sync-updates] Erro ao inserir "${cfg.title}":`, error.message)
     } else {
-      console.log(`[sync-updates] ✓ "${cfg.title}" publicado.`)
+      console.log(`[sync-updates] ✓ "${cfg.title}"`)
+      primeiro = false
     }
   }
 
@@ -145,5 +149,5 @@ async function main() {
 
 main().catch(e => {
   console.error('[sync-updates] Erro:', e.message)
-  process.exit(0)
+  process.exit(0) // nunca quebra o build
 })
