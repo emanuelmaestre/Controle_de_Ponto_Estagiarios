@@ -3,7 +3,11 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Home, ClipboardList, LogOut, Trophy, User, Plus, X, Send, CheckCircle2, Clock, PenLine } from 'lucide-react'
+import {
+  Home, ClipboardList, LogOut, Trophy, User,
+  Plus, X, Send, CheckCircle2, Clock, PenLine,
+  AlertCircle, Sparkles,
+} from 'lucide-react'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { formatDate, formatTime, minutesToHours } from '@/lib/utils'
@@ -35,15 +39,14 @@ type Props = {
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString('pt-BR', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
+    day: '2-digit', month: '2-digit',
     hour: '2-digit', minute: '2-digit',
   })
 }
 
+// ── Modal de adicionar atividade ──────────────────────────────────────────────
 function AddActivityModal({
-  record,
-  onClose,
-  onSaved,
+  record, onClose, onSaved,
 }: {
   record: TimeRecord
   onClose: () => void
@@ -53,6 +56,8 @@ function AddActivityModal({
   const [sending, setSending] = useState(false)
   const [error, setError]     = useState('')
   const [done, setDone]       = useState(false)
+
+  const semAtividade = record.activities.length === 0
 
   async function submit() {
     if (text.trim().length < 3) { setError('Descreva ao menos 3 caracteres'); return }
@@ -66,7 +71,7 @@ function AddActivityModal({
     if (res.ok) {
       const { activity } = await res.json()
       setDone(true)
-      setTimeout(() => { onSaved(record.id, activity); onClose() }, 1200)
+      setTimeout(() => { onSaved(record.id, activity); onClose() }, 1600)
     } else {
       const j = await res.json()
       setError(j.error ?? 'Erro ao salvar')
@@ -75,131 +80,233 @@ function AddActivityModal({
 
   return (
     <motion.div
-      className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-4"
+      className="fixed inset-0 z-[200] flex items-end justify-center"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
     >
       {/* Overlay */}
       <motion.div
         className="absolute inset-0"
-        style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}
+        style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
         onClick={onClose}
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       />
 
-      {/* Modal */}
+      {/* Drawer de baixo */}
       <motion.div
-        className="relative w-full max-w-md rounded-3xl overflow-hidden flex flex-col"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)', maxHeight: '90dvh' }}
-        initial={{ y: 60, opacity: 0, scale: 0.97 }}
-        animate={{ y: 0,  opacity: 1, scale: 1 }}
-        exit={{   y: 60, opacity: 0, scale: 0.97 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+        className="relative w-full max-w-lg flex flex-col"
+        style={{
+          background: 'var(--surface)',
+          borderRadius: '28px 28px 0 0',
+          border: '1px solid var(--border)',
+          borderBottom: 'none',
+          maxHeight: '88dvh',
+          boxShadow: '0 -24px 64px rgba(0,0,0,0.5)',
+        }}
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', stiffness: 380, damping: 38 }}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 flex-shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
-          <div className="flex items-center gap-2">
-            <PenLine size={16} style={{ color: 'var(--primary)' }} />
-            <p className="font-black text-sm" style={{ color: 'var(--text)' }}>Adicionar Atividade</p>
-          </div>
-          <button onClick={onClose} className="opacity-50 hover:opacity-100 transition-opacity">
-            <X size={18} style={{ color: 'var(--text)' }} />
-          </button>
+        {/* Drag handle */}
+        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="w-10 h-1 rounded-full" style={{ background: 'var(--border)' }} />
         </div>
 
-        {/* Resumo do registro */}
-        <div className="px-5 py-3 flex-shrink-0" style={{ background: 'rgba(0,200,83,0.04)', borderBottom: '1px solid var(--border)' }}>
-          <div className="flex items-center gap-4">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 pb-3 pt-1 flex-shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div
+              className="w-8 h-8 rounded-xl flex items-center justify-center"
+              style={{ background: semAtividade ? 'rgba(249,115,22,0.15)' : 'rgba(63,229,108,0.12)' }}
+            >
+              <PenLine size={15} style={{ color: semAtividade ? '#f97316' : 'var(--primary)' }} />
+            </div>
             <div>
-              <p className="text-xs font-black" style={{ color: 'var(--text)' }}>{formatDate(record.clock_in)}</p>
-              <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-3)' }}>
-                <Clock size={10} className="inline mr-1" />
-                {formatTime(record.clock_in)}
-                {record.clock_out && <> → {formatTime(record.clock_out)}</>}
-                {record.duration_minutes && <> · {minutesToHours(record.duration_minutes)}</>}
+              <p className="font-black text-sm leading-tight" style={{ color: 'var(--text)' }}>
+                {semAtividade ? 'Adicionar Atividade' : 'Nova Atividade'}
+              </p>
+              <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+                {formatDate(record.clock_in)} · {formatTime(record.clock_in)}
+                {record.clock_out ? ` → ${formatTime(record.clock_out)}` : ''}
               </p>
             </div>
           </div>
+          <motion.button
+            onClick={onClose}
+            className="w-8 h-8 rounded-xl flex items-center justify-center"
+            style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-3)' }}
+            whileHover={{ scale: 1.08, background: 'rgba(255,255,255,0.1)' }}
+            whileTap={{ scale: 0.94 }}
+          >
+            <X size={15} />
+          </motion.button>
         </div>
 
-        {/* Atividades já cadastradas */}
-        {record.activities.length > 0 && (
-          <div className="px-5 py-3 flex-shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
-            <p className="text-[10px] font-black mb-2" style={{ color: 'var(--text-3)' }}>ATIVIDADES JÁ REGISTRADAS</p>
-            <div className="space-y-1.5">
-              {record.activities.map((a, i) => (
-                <div key={i} className="flex items-start gap-2">
-                  <CheckCircle2 size={12} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--primary)' }} />
-                  <div className="min-w-0">
-                    <p className="text-xs leading-snug" style={{ color: 'var(--text-2)' }}>{a.description}</p>
-                    {a.created_at && (
-                      <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
-                        Adicionada em {formatDateTime(a.created_at)}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
+        {/* Info do registro — entrada/saída/duração */}
+        <div className="mx-5 mb-3 flex-shrink-0 rounded-2xl px-4 py-3 flex items-center gap-3"
+          style={{ background: 'rgba(0,200,83,0.06)', border: '1px solid rgba(0,200,83,0.15)' }}>
+          <Clock size={14} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+          <div className="flex gap-4 text-xs">
+            <div>
+              <p className="text-[10px] font-bold mb-0.5" style={{ color: 'var(--text-3)' }}>ENTRADA</p>
+              <p className="font-black" style={{ color: 'var(--text)' }}>{formatTime(record.clock_in)}</p>
             </div>
+            {record.clock_out && (
+              <>
+                <div style={{ width: 1, background: 'var(--border)' }} />
+                <div>
+                  <p className="text-[10px] font-bold mb-0.5" style={{ color: 'var(--text-3)' }}>SAÍDA</p>
+                  <p className="font-black" style={{ color: 'var(--text)' }}>{formatTime(record.clock_out)}</p>
+                </div>
+              </>
+            )}
+            {record.duration_minutes && (
+              <>
+                <div style={{ width: 1, background: 'var(--border)' }} />
+                <div>
+                  <p className="text-[10px] font-bold mb-0.5" style={{ color: 'var(--text-3)' }}>DURAÇÃO</p>
+                  <p className="font-black" style={{ color: 'var(--primary)' }}>{minutesToHours(record.duration_minutes)}</p>
+                </div>
+              </>
+            )}
           </div>
-        )}
+        </div>
 
-        {/* Formulário */}
-        <div className="px-5 py-4 flex-1 overflow-y-auto">
-          {done ? (
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-              className="flex flex-col items-center gap-3 py-6"
-            >
-              <CheckCircle2 size={40} style={{ color: 'var(--primary)' }} />
-              <p className="font-black text-sm" style={{ color: 'var(--primary)' }}>Atividade salva!</p>
-            </motion.div>
-          ) : (
-            <>
-              <p className="text-[11px] font-bold mb-2" style={{ color: 'var(--text-3)' }}>NOVA ATIVIDADE</p>
-              <textarea
-                value={text}
-                onChange={e => { setText(e.target.value); setError('') }}
-                rows={4}
-                placeholder="Descreva a atividade realizada neste período..."
-                className="w-full px-4 py-3 rounded-2xl text-sm resize-none outline-none"
-                style={{
-                  background: 'var(--bg)',
-                  border: `1px solid ${error ? 'var(--danger)' : 'var(--border)'}`,
-                  color: 'var(--text)',
-                }}
-                autoFocus
-              />
-              <div className="flex items-center justify-between mt-1">
-                {error
-                  ? <p className="text-xs" style={{ color: 'var(--danger)' }}>{error}</p>
-                  : <span />
-                }
-                <p className="text-[10px]" style={{ color: text.length >= 3 ? 'var(--primary)' : 'var(--text-3)' }}>
-                  {text.length < 3 ? `${text.length}/3 mín` : `${text.length} ✓`}
-                </p>
+        {/* Corpo scrollável */}
+        <div className="flex-1 overflow-y-auto px-5 pb-6" style={{ scrollbarWidth: 'none' }}>
+
+          {/* Atividades já cadastradas */}
+          {record.activities.length > 0 && (
+            <div className="mb-4">
+              <p className="text-[10px] font-black mb-2.5 tracking-wide" style={{ color: 'var(--text-3)' }}>
+                JÁ REGISTRADAS
+              </p>
+              <div className="space-y-2">
+                {record.activities.map((a, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.06 }}
+                    className="flex items-start gap-3 rounded-2xl px-3 py-2.5"
+                    style={{ background: 'rgba(63,229,108,0.05)', border: '1px solid rgba(63,229,108,0.12)' }}
+                  >
+                    <CheckCircle2 size={14} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--primary)' }} />
+                    <div className="min-w-0">
+                      <p className="text-sm leading-snug" style={{ color: 'var(--text-2)' }}>{a.description}</p>
+                      {a.created_at && (
+                        <p className="text-[10px] mt-1" style={{ color: 'var(--text-3)' }}>
+                          Registrada em {formatDateTime(a.created_at)}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-
-              <motion.button
-                onClick={submit}
-                disabled={sending || text.trim().length < 3}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-black text-sm mt-3 transition-all disabled:opacity-40"
-                style={{ background: 'var(--primary)', color: '#000' }}
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-              >
-                <Send size={14} />
-                {sending ? 'Salvando...' : 'Salvar atividade'}
-              </motion.button>
-            </>
+              <div className="my-4 h-px" style={{ background: 'var(--border)' }} />
+            </div>
           )}
+
+          {/* Formulário ou sucesso */}
+          <AnimatePresence mode="wait">
+            {done ? (
+              <motion.div
+                key="done"
+                initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.85, opacity: 0 }}
+                className="flex flex-col items-center gap-4 py-10"
+              >
+                <motion.div
+                  animate={{ scale: [1, 1.15, 1] }}
+                  transition={{ duration: 0.4 }}
+                  className="w-16 h-16 rounded-3xl flex items-center justify-center"
+                  style={{ background: 'rgba(63,229,108,0.15)', border: '2px solid rgba(63,229,108,0.3)' }}
+                >
+                  <CheckCircle2 size={32} style={{ color: 'var(--primary)' }} />
+                </motion.div>
+                <div className="text-center">
+                  <p className="font-black text-base" style={{ color: 'var(--primary)' }}>Atividade salva!</p>
+                  <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>O registro foi atualizado com sucesso.</p>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <p className="text-[10px] font-black mb-2.5 tracking-wide" style={{ color: 'var(--text-3)' }}>
+                  {record.activities.length > 0 ? 'ADICIONAR OUTRA' : 'O QUE VOCÊ FEZ?'}
+                </p>
+
+                <div className="relative">
+                  <textarea
+                    value={text}
+                    onChange={e => { setText(e.target.value); setError('') }}
+                    rows={5}
+                    placeholder="Ex: Analisei amostras, preparei meios de cultura, realizei leituras de placa..."
+                    className="w-full px-4 py-3.5 rounded-2xl text-sm resize-none outline-none transition-all"
+                    style={{
+                      background: 'var(--bg)',
+                      border: `1.5px solid ${error ? 'var(--danger)' : text.length >= 3 ? 'rgba(63,229,108,0.4)' : 'var(--border)'}`,
+                      color: 'var(--text)',
+                      lineHeight: 1.6,
+                    }}
+                    autoFocus
+                  />
+                  {/* Contador */}
+                  <span
+                    className="absolute bottom-3 right-3 text-[10px] font-bold pointer-events-none"
+                    style={{ color: text.length >= 3 ? 'rgba(63,229,108,0.6)' : 'var(--text-3)' }}
+                  >
+                    {text.length >= 3 ? `${text.length} ✓` : `${text.length}/3`}
+                  </span>
+                </div>
+
+                <AnimatePresence>
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                      className="flex items-center gap-1.5 mt-2"
+                    >
+                      <AlertCircle size={12} style={{ color: 'var(--danger)' }} />
+                      <p className="text-xs" style={{ color: 'var(--danger)' }}>{error}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <motion.button
+                  onClick={submit}
+                  disabled={sending || text.trim().length < 3}
+                  className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-black text-sm mt-4 transition-all disabled:opacity-40"
+                  style={{ background: 'var(--primary)', color: '#000' }}
+                  whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(63,229,108,0.3)' }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  {sending ? (
+                    <>
+                      <motion.div
+                        className="w-4 h-4 rounded-full border-2 border-black border-t-transparent"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
+                      />
+                      Salvando...
+                    </>
+                  ) : (
+                    <>
+                      <Send size={14} />
+                      Salvar atividade
+                    </>
+                  )}
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.div>
     </motion.div>
   )
 }
 
+// ── Página principal ──────────────────────────────────────────────────────────
 export default function HistoryClient({ records: initialRecords, monthMinutes, approvedSessions, totalHoursRequired }: Props) {
-  const [records, setRecords]       = useState<TimeRecord[]>(initialRecords)
-  const [activeRecord, setActive]   = useState<TimeRecord | null>(null)
+  const [records, setRecords]     = useState<TimeRecord[]>(initialRecords)
+  const [activeRecord, setActive] = useState<TimeRecord | null>(null)
 
   const pct      = totalHoursRequired > 0 ? Math.min(100, Math.round((monthMinutes / (totalHoursRequired * 60)) * 100)) : 0
   const pctColor = pct >= 80 ? 'var(--success)' : pct >= 40 ? 'var(--primary)' : 'var(--warning)'
@@ -212,23 +319,38 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
 
   function onSaved(recordId: string, activity: Activity) {
     setRecords(prev => prev.map(r =>
-      r.id === recordId
-        ? { ...r, activities: [...r.activities, activity] }
-        : r
+      r.id === recordId ? { ...r, activities: [...r.activities, activity] } : r
     ))
   }
 
+  const pendentes = records.filter(r => r.clock_out && r.activities.length === 0).length
+
   return (
     <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
+
+      {/* Header */}
       <header className="flex-shrink-0 shadow-lg" style={{ background: 'var(--nav-bg)' }}>
         <div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-4">
           <Link href="/dashboard" className="text-sm font-bold hover:opacity-70" style={{ color: 'var(--nav-muted)' }}>
             &larr;
           </Link>
-          <div>
+          <div className="flex-1">
             <h1 className="font-bold text-base" style={{ color: 'var(--nav-fg)' }}>MEU HISTÓRICO</h1>
             <p className="text-[10px]" style={{ color: 'var(--nav-muted)' }}>ÚLTIMOS 60 DIAS DE REGISTROS</p>
           </div>
+          {/* Badge de sessões sem atividade */}
+          {pendentes > 0 && (
+            <motion.div
+              initial={{ scale: 0 }} animate={{ scale: 1 }}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
+              style={{ background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.3)' }}
+            >
+              <AlertCircle size={11} style={{ color: '#f97316' }} />
+              <span className="text-[10px] font-black" style={{ color: '#f97316' }}>
+                {pendentes} sem atividade
+              </span>
+            </motion.div>
+          )}
         </div>
       </header>
 
@@ -269,75 +391,102 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
                   const semAtividade = record.clock_out && record.activities.length === 0
                   return (
                     <StaggerItem key={record.id} className="relative">
-                      <div
+                      {/* Dot na timeline */}
+                      <motion.div
                         className="absolute -left-[28px] top-4 w-3 h-3 rounded-full border-2 flex-shrink-0"
                         style={{ background: statusDot[record.status] ?? 'var(--text-3)', borderColor: 'var(--bg)' }}
+                        animate={semAtividade ? { scale: [1, 1.25, 1] } : {}}
+                        transition={{ duration: 1.8, repeat: Infinity }}
                       />
-                      <div
+
+                      <motion.div
                         className="rounded-2xl overflow-hidden"
                         style={{
                           background: 'var(--surface)',
-                          border: `1px solid ${semAtividade ? 'rgba(249,115,22,0.3)' : 'var(--border)'}`,
-                          boxShadow: 'var(--card-shadow)',
+                          border: `1px solid ${semAtividade ? 'rgba(249,115,22,0.35)' : 'var(--border)'}`,
+                          boxShadow: semAtividade ? '0 0 0 3px rgba(249,115,22,0.06)' : 'var(--card-shadow)',
                         }}
+                        whileHover={{ y: -1 }}
+                        transition={{ duration: 0.15 }}
                       >
-                        {/* Linha principal */}
+                        {/* Linha de entrada/saída + botão */}
                         <div
                           className="px-4 py-3 flex items-center justify-between gap-3"
-                          style={{ borderBottom: (record.activities.length > 0 || record.rejection_reason || semAtividade) ? '1px solid var(--border)' : 'none' }}
+                          style={{
+                            borderBottom: (record.activities.length > 0 || record.rejection_reason || semAtividade)
+                              ? '1px solid var(--border)' : 'none',
+                          }}
                         >
                           <div className="min-w-0">
-                            <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>{formatDate(record.clock_in)}</p>
-                            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
+                            <p className="font-bold text-sm" style={{ color: 'var(--text)' }}>
+                              {formatDate(record.clock_in)}
+                            </p>
+                            <p className="text-[11px] mt-0.5 flex items-center gap-1" style={{ color: 'var(--text-3)' }}>
+                              <Clock size={10} />
                               {formatTime(record.clock_in)}
                               {record.clock_out
                                 ? <> → {formatTime(record.clock_out)}</>
                                 : <span style={{ color: 'var(--success)' }}> → em andamento</span>}
-                              {record.duration_minutes && <> · {minutesToHours(record.duration_minutes)}</>}
+                              {record.duration_minutes && (
+                                <span style={{ color: 'var(--primary)' }}>· {minutesToHours(record.duration_minutes)}</span>
+                              )}
                             </p>
                           </div>
 
-                          {/* Botão adicionar atividade — só aparece se já saiu */}
+                          {/* Botão — só se tiver saída registrada */}
                           {record.clock_out && (
                             <motion.button
                               onClick={() => setActive(record)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black flex-shrink-0 transition-all"
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black flex-shrink-0"
                               style={semAtividade
-                                ? { background: 'rgba(249,115,22,0.12)', color: '#f97316', border: '1px solid rgba(249,115,22,0.3)' }
+                                ? { background: 'rgba(249,115,22,0.14)', color: '#f97316', border: '1px solid rgba(249,115,22,0.35)' }
                                 : { background: 'rgba(63,229,108,0.08)', color: 'var(--primary)', border: '1px solid rgba(63,229,108,0.2)' }
                               }
-                              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                              whileHover={{ scale: 1.06 }}
+                              whileTap={{ scale: 0.94 }}
                             >
                               <Plus size={11} />
-                              {semAtividade ? 'Adicionar' : 'Editar'}
+                              {semAtividade ? 'Adicionar' : '+ Atividade'}
                             </motion.button>
                           )}
                         </div>
 
-                        {/* Aviso sem atividade */}
+                        {/* Banner de alerta sem atividade */}
                         {semAtividade && (
-                          <div className="px-4 py-2.5" style={{ background: 'rgba(249,115,22,0.06)' }}>
-                            <p className="text-[10px]" style={{ color: '#f97316' }}>
-                              ⚠ Nenhuma atividade registrada nesta sessão. Toque em "Adicionar" para complementar.
+                          <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                            className="px-4 py-2 flex items-center gap-2"
+                            style={{ background: 'rgba(249,115,22,0.07)' }}
+                          >
+                            <AlertCircle size={12} style={{ color: '#f97316', flexShrink: 0 }} />
+                            <p className="text-[11px]" style={{ color: '#f97316' }}>
+                              Sessão sem atividade registrada — toque em <strong>Adicionar</strong> para complementar
                             </p>
-                          </div>
+                          </motion.div>
                         )}
 
-                        {/* Atividades */}
+                        {/* Lista de atividades */}
                         {record.activities.length > 0 && (
-                          <div className="px-4 py-3 space-y-2">
+                          <div className="px-4 py-3 space-y-2.5">
                             {record.activities.map((a, i) => (
-                              <div key={i} className="flex items-start gap-2">
-                                <div className="w-1 h-1 rounded-full mt-1.5 flex-shrink-0" style={{ background: 'var(--text-3)' }} />
+                              <motion.div
+                                key={i}
+                                initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: i * 0.04 }}
+                                className="flex items-start gap-2.5"
+                              >
+                                <Sparkles size={11} className="flex-shrink-0 mt-0.5" style={{ color: 'var(--primary)', opacity: 0.7 }} />
                                 <div className="min-w-0">
-                                  <p className="text-xs leading-snug" style={{ color: 'var(--text-2)' }}>{a.description}</p>
+                                  <p className="text-xs leading-relaxed" style={{ color: 'var(--text-2)' }}>
+                                    {a.description}
+                                  </p>
                                   {a.created_at && (
                                     <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-3)' }}>
                                       {formatDateTime(a.created_at)}
                                     </p>
                                   )}
                                 </div>
-                              </div>
+                              </motion.div>
                             ))}
                           </div>
                         )}
@@ -349,7 +498,7 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
                             <p className="text-xs" style={{ color: 'var(--danger)', opacity: 0.85 }}>{record.rejection_reason}</p>
                           </div>
                         )}
-                      </div>
+                      </motion.div>
                     </StaggerItem>
                   )
                 })}
@@ -370,17 +519,32 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
       {/* Bottom nav */}
       <nav className="flex-shrink-0 border-t" style={{ background: 'var(--surface)', borderColor: 'var(--border)', boxShadow: '0 -4px 20px rgba(0,0,0,0.08)' }}>
         <div className="max-w-lg mx-auto flex">
-          <Link href="/dashboard"     className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}><Home size={18} /><span className="text-[10px] font-bold">INICIO</span></Link>
-          <Link href="/history"       className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--primary)' }}><ClipboardList size={18} /><span className="text-[10px] font-bold">HISTÓRICO</span></Link>
-          <Link href="/intern-ranking" className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}><Trophy size={18} /><span className="text-[10px] font-bold">RANKING</span></Link>
-          <Link href="/profile"       className="flex-1 flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}><User size={18} /><span className="text-[10px] font-bold">PERFIL</span></Link>
+          {[
+            { href: '/dashboard',     icon: <Home size={18} />,          label: 'INICIO',    active: false },
+            { href: '/history',       icon: <ClipboardList size={18} />, label: 'HISTÓRICO', active: true  },
+            { href: '/intern-ranking', icon: <Trophy size={18} />,        label: 'RANKING',   active: false },
+            { href: '/profile',       icon: <User size={18} />,          label: 'PERFIL',    active: false },
+          ].map(item => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex-1 flex flex-col items-center gap-1 py-3"
+              style={{ color: item.active ? 'var(--primary)' : 'var(--text-3)' }}
+            >
+              {item.icon}
+              <span className="text-[10px] font-bold">{item.label}</span>
+            </Link>
+          ))}
           <form action="/api/auth/signout" method="POST" className="flex-1">
-            <button type="submit" className="w-full flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}><LogOut size={18} /><span className="text-[10px] font-bold">SAIR</span></button>
+            <button type="submit" className="w-full flex flex-col items-center gap-1 py-3" style={{ color: 'var(--text-3)' }}>
+              <LogOut size={18} />
+              <span className="text-[10px] font-bold">SAIR</span>
+            </button>
           </form>
         </div>
       </nav>
 
-      {/* Modal de atividade */}
+      {/* Drawer de atividade */}
       <AnimatePresence>
         {activeRecord && (
           <AddActivityModal
