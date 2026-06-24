@@ -9,7 +9,7 @@ import type { Profile, MonthlyHours, InternSchedule } from '@/types/database'
 import {
   ArrowLeft, GraduationCap, Mail,
   History, CheckCircle2, BarChart2, Settings2, Calendar, Trophy,
-  ChevronDown, Clock, Sparkles, XCircle, Hourglass, CalendarDays, FileDown,
+  ChevronDown, Clock, Sparkles, XCircle, Hourglass, CalendarDays, FileDown, FileText,
 } from 'lucide-react'
 import { FadeIn } from '@/components/ui/MotionWrappers'
 import { getLevelInfo, getLevelTitle, getNextLevel, getProgressToNextLevel, ACHIEVEMENTS, LEVELS } from '@/lib/gamification'
@@ -241,6 +241,12 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
 
   const thisMonth    = hoursRaw?.[0]
   const monthMinutes = thisMonth?.total_minutes ?? 0
+
+  // Atividades documentadas no mês atual
+  const nowMonth = new Date().toISOString().slice(0, 7) // "2026-06"
+  const activitiesThisMonth = allRecords
+    .filter(r => r.clock_in.startsWith(nowMonth))
+    .reduce((acc, r) => acc + (r.activities?.length ?? 0), 0)
   const totalRequired = (intern.total_hours_required ?? 120) * 60
   const pct = totalRequired > 0 ? Math.min(100, Math.round((monthMinutes / totalRequired) * 100)) : 0
   const remainingMins = Math.max(0, totalRequired - monthMinutes)
@@ -423,7 +429,7 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
                 <div className="lg:col-span-8 space-y-6">
 
                   {/* Metric cards row */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Total de Sessões */}
                     <div
                       className="rounded-xl p-6 hover:border-green-500/40 transition-colors"
@@ -474,6 +480,24 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
                           background: '#48e1a6',
                         }} />
                       </div>
+                    </div>
+                    {/* Atividades Documentadas */}
+                    <div
+                      className="rounded-xl p-6 hover:border-green-500/40 transition-colors"
+                      style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <span className="text-[10px] font-bold tracking-wider" style={{ color: 'var(--text-3)' }}>
+                          ATIVIDADES DOCUMENTADAS
+                        </span>
+                        <FileText size={18} style={{ color: '#a78bfa' }} />
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-5xl font-bold" style={{ color: 'var(--text)' }}>
+                          {activitiesThisMonth}
+                        </span>
+                      </div>
+                      <p className="text-xs mt-2" style={{ color: 'var(--text-3)' }}>Registradas este mês</p>
                     </div>
                   </div>
 
