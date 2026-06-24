@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
   const db = createSupabaseServiceClient()
 
   const { data: profile } = await db
-    .from('profiles').select('full_name, course, internship_start, level, gender').eq('id', user.id).maybeSingle()
+    .from('profiles').select('full_name, course, internship_start, level').eq('id', user.id).maybeSingle()
 
   let query = db
     .from('time_records')
@@ -58,9 +58,7 @@ export async function GET(req: NextRequest) {
     ? new Date(startDate + 'T12:00:00').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
     : undefined
 
-  const levelNum  = (profile as any)?.level  ?? 1
-  const gender    = (profile as any)?.gender ?? null
-  const rankTitle = getLevelTitle(levelNum, gender === 'female' ? 'F' : gender === 'male' ? 'M' : null)
+  const rankTitle = getLevelTitle((profile as any)?.level ?? 1, 'M')
 
   const pdf = React.createElement(FrequenciaIndividual as any, {
     studentName:      profile?.full_name ?? 'Estagiário',
