@@ -733,7 +733,7 @@ export async function GET(request: Request) {
     const { data: interns } = await db
       .from('profiles').select('id, full_name').eq('role', 'intern').eq('is_active', true)
     const { data: records } = await db
-      .from('time_records').select('intern_id, activities')
+      .from('time_records').select('intern_id, activities!activities_time_record_id_fkey(id)')
       .gte('clock_in', startDate).lt('clock_in', endDate)
 
     const map = new Map<string, { name: string; count: number }>()
@@ -741,14 +741,14 @@ export async function GET(request: Request) {
     for (const r of list(records)) {
       if (!r.intern_id) continue
       const e = map.get(r.intern_id)
-      if (e && Array.isArray(r.activities)) e.count += r.activities.length
+      if (e && Array.isArray((r as any).activities)) e.count += (r as any).activities.length
     }
 
     const rows = Array.from(map.values())
       .sort((a, b) => b.count - a.count)
       .map((e, idx) => ({
         pos:   `${idx + 1}º`,
-        nome:  e.name,
+        nome:  e.name.toUpperCase(),
         count: String(e.count),
       }))
 
@@ -760,9 +760,9 @@ export async function GET(request: Request) {
         { label: 'Mais Ativo', value: rows[0]?.nome?.split(' ')[0] ?? '—', colorKey: 'blue' },
       ],
       columns: [
-        { header: '#',          dataKey: 'pos',   width: 12 },
-        { header: 'Nome',       dataKey: 'nome',  width: 80 },
-        { header: 'Atividades', dataKey: 'count', width: 30 },
+        { header: '#',          dataKey: 'pos',   width: 28 },
+        { header: 'Nome',       dataKey: 'nome' },
+        { header: 'Atividades', dataKey: 'count', width: 65 },
       ],
       rows,
     })
