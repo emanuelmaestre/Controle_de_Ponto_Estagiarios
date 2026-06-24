@@ -492,15 +492,6 @@ function ReportCard({ report, index, interns }: { report: ReportDef; index: numb
 
       {/* Buttons */}
       <div className="flex gap-2 mt-auto">
-        <button onClick={handleExcel} disabled={isLoading}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-black transition-all disabled:opacity-40 hover:brightness-110"
-          style={{ background: 'rgba(149,214,154,0.08)', border: '1px solid rgba(149,214,154,0.35)', color: '#95d69a' }}
-        >
-          {loadingExcel
-            ? <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
-            : <Download size={12} />}
-          Excel
-        </button>
         <button onClick={handlePdf} disabled={isLoading}
           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-black transition-all disabled:opacity-40 hover:brightness-110"
           style={{ background: 'rgba(255,82,82,0.08)', border: '1px solid rgba(255,82,82,0.35)', color: '#ff8a80' }}
