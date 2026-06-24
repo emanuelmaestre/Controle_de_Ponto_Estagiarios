@@ -46,7 +46,10 @@ export async function GET(req: NextRequest) {
     institutionName,
     supervisorName:  data.supervisor,
     internName:      data.internName,
-    summaryCards:    data.summaryCards?.map((c: any) => ({ label: c.label, value: String(c.value) })),
+    summaryCards:    data.summaryCards?.map((c: any) => ({
+      label: c.label, value: String(c.value), colorKey: c.colorKey,
+    })),
+    progressBar:     data.progressBar,
     columns:         data.columns ?? [],
     rows:            data.rows ?? [],
     totals:          data.totals,
