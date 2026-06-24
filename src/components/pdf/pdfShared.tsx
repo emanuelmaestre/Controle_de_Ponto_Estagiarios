@@ -202,9 +202,23 @@ export function PageHeader({
 
         {/* Bloco de info à direita */}
         <View style={{ width: 115, alignItems: 'flex-end' }}>
-          <Text style={{ fontSize: 8.5, fontWeight: 700, color: C.text }}>
-            {institutionName}
-          </Text>
+          {/* "Chronos Lab" → verde + vermelho, igual à logo */}
+          <View style={{ flexDirection: 'row' }}>
+            {institutionName.includes(' Lab') ? (
+              <>
+                <Text style={{ fontSize: 8.5, fontWeight: 700, color: C.green }}>
+                  {institutionName.replace(' Lab', '')}
+                </Text>
+                <Text style={{ fontSize: 8.5, fontWeight: 700, color: C.red }}>
+                  {' Lab'}
+                </Text>
+              </>
+            ) : (
+              <Text style={{ fontSize: 8.5, fontWeight: 700, color: C.text }}>
+                {institutionName}
+              </Text>
+            )}
+          </View>
           {supervisorName ? (
             <Text style={{ fontSize: 7.5, color: C.textSub, marginTop: 2 }}>
               {supervisorName}
