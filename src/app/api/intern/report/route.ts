@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   const db = createSupabaseServiceClient()
 
   const { data: profile } = await db
-    .from('profiles').select('full_name, course').eq('id', user.id).maybeSingle()
+    .from('profiles').select('full_name, course, internship_start').eq('id', user.id).maybeSingle()
 
   let query = db
     .from('time_records')
@@ -53,14 +53,22 @@ export async function GET(req: NextRequest) {
   const fmtDate = (d: string | null) =>
     d ? new Date(d).toLocaleDateString('pt-BR') : '—'
 
+  const periodLabel = startDate
+    ? new Date(startDate + 'T12:00:00').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+    : undefined
+
   const pdf = React.createElement(FrequenciaIndividual as any, {
     studentName:      profile?.full_name ?? 'Estagiário',
-    course:           profile?.course ?? undefined,
+    course:           (profile as any)?.course ?? undefined,
+    internshipStart:  (profile as any)?.internship_start
+                        ? fmtDate((profile as any).internship_start) : undefined,
     period:           { start: fmtDate(startDate), end: fmtDate(endDate) },
+    periodLabel,
     records,
     totalHours:       minutesToHours(totalMin),
     totalSessions:    records.length,
     approvedSessions: approved,
+    institutionName:  'Controle de Ponto',
   })
 
   const buffer = Buffer.from(await renderToBuffer(pdf as any))

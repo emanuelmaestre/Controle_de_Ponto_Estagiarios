@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
 
   // Dados do estagiário
   const { data: intern } = await db
-    .from('profiles').select('full_name').eq('id', internId).maybeSingle()
+    .from('profiles').select('full_name, course, internship_start').eq('id', internId).maybeSingle()
 
   // Registros do período
   let query = db
@@ -64,14 +64,24 @@ export async function GET(req: NextRequest) {
   const fmtDate = (d: string | null) =>
     d ? new Date(d).toLocaleDateString('pt-BR') : '—'
 
+  // "Junho de 2026"
+  const periodLabel = startDate
+    ? new Date(startDate + 'T12:00:00').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+    : undefined
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pdf = React.createElement(FrequenciaIndividual as any, {
     studentName:      intern?.full_name ?? 'Estagiário',
+    course:           (intern as any)?.course ?? undefined,
+        internshipStart:  (intern as any)?.internship_start
+                        ? fmtDate((intern as any).internship_start) : undefined,
     period:           { start: fmtDate(startDate), end: fmtDate(endDate) },
+    periodLabel,
     records,
     totalHours:       minutesToHours(totalMin),
     totalSessions,
     approvedSessions: approved,
+    institutionName:  'Controle de Ponto',
   })
 
   const buffer = Buffer.from(await renderToBuffer(pdf as any))
