@@ -704,7 +704,7 @@ export async function GET(request: Request) {
       .sort((a, b) => (b.onTime / b.total) - (a.onTime / a.total))
       .map((e, idx) => ({
         pos:    `${idx + 1}º`,
-        nome:   e.name,
+        nome:   e.name.toUpperCase(),
         ontime: String(e.onTime),
         late:   String(e.total - e.onTime),
         taxa:   `${Math.round((e.onTime / e.total) * 100)}%`,
@@ -718,11 +718,11 @@ export async function GET(request: Request) {
         { label: 'Mais Pontual', value: rows[0]?.nome?.split(' ')[0] ?? '—', colorKey: 'green' },
       ],
       columns: [
-        { header: '#',        dataKey: 'pos',    width: 24 },
+        { header: '#',        dataKey: 'pos',    width: 28 },
         { header: 'Nome',     dataKey: 'nome' },
-        { header: 'Pontuais', dataKey: 'ontime', width: 60 },
-        { header: 'Atrasos',  dataKey: 'late',   width: 55 },
-        { header: 'Taxa',     dataKey: 'taxa',   width: 50 },
+        { header: 'Pontuais', dataKey: 'ontime', width: 62 },
+        { header: 'Atrasos',  dataKey: 'late',   width: 58 },
+        { header: 'Taxa',     dataKey: 'taxa',   width: 46 },
       ],
       rows,
     })
