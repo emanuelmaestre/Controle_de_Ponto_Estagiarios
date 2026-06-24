@@ -235,7 +235,10 @@ function InternCard({
         >
           {lvl.icon} {title}
         </span>
-        <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+        <span className="flex items-center gap-1 text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          <span style={{ color: '#fbbf24', letterSpacing: '-1px' }}>
+            {'★'.repeat(lvl.level)}{'☆'.repeat(6 - lvl.level)}
+          </span>
           {intern.points ?? 0} pts
         </span>
       </div>

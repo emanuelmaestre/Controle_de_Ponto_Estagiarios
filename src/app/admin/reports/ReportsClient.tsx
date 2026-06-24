@@ -10,7 +10,6 @@ import {
   Gauge, TrendingUp, BookOpen, GraduationCap, AlertTriangle,
   Medal, Star, Crown, Activity,
 } from 'lucide-react'
-import { exportPDF } from '@/lib/pdfExport'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type Category = 'intern' | 'general' | 'ranking'
@@ -341,12 +340,55 @@ function ReportCard({ report, index }: { report: ReportDef; index: number }) {
     if (report.needsIntern && !internId) { setError('Selecione um estagiário'); return }
     setLoadingExcel(true); setError('')
     try {
-      const data = await fetchData()
-      const XLSX = await import('xlsx')
-      const wb = XLSX.utils.book_new()
-      const ws = XLSX.utils.json_to_sheet(data.rows ?? [])
+      const data   = await fetchData()
+      const XLSX   = await import('xlsx')
+      const wb     = XLSX.utils.book_new()
+      const period = data.period ?? monthOptions.find(o => o.value === month)?.label ?? month
+      const cols   = (data.columns ?? []) as { header: string; dataKey: string; width?: number }[]
+      const rows   = (data.rows ?? []) as Record<string, string | number>[]
+
+      const aoa: (string | number)[][] = []
+
+      // Title rows
+      aoa.push([`${data.labName ?? 'Chronos Lab'} — ${report.title}`])
+      aoa.push([`Período: ${period}`])
+      if (data.internName) aoa.push([`Estagiário: ${data.internName}`])
+      if (data.supervisor) aoa.push([`Supervisor: ${data.supervisor}`])
+      aoa.push([`Gerado em: ${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}`])
+      aoa.push([])
+
+      // Summary cards as key/value pairs
+      if (data.summaryCards?.length) {
+        for (const card of data.summaryCards) {
+          aoa.push([card.label, card.value])
+        }
+        aoa.push([])
+      }
+
+      // Column headers
+      aoa.push(cols.map(c => c.header))
+
+      // Data rows
+      for (const row of rows) {
+        aoa.push(cols.map(c => row[c.dataKey] ?? ''))
+      }
+
+      // Totals
+      if (data.totals?.length) {
+        aoa.push([])
+        for (const t of data.totals) aoa.push([t.label, t.value])
+      }
+
+      const ws = XLSX.utils.aoa_to_sheet(aoa)
+
+      // Column widths
+      const colCount = Math.max(...aoa.map(r => r.length))
+      ws['!cols'] = Array.from({ length: colCount }, (_, i) => {
+        const customW = cols[i]?.width
+        return { wch: customW ? Math.round(customW / 2.5) : 22 }
+      })
+
       XLSX.utils.book_append_sheet(wb, ws, 'Dados')
-      const period = monthOptions.find(o => o.value === month)?.label ?? month
       XLSX.writeFile(wb, `${report.title.toLowerCase().replace(/\s+/g, '-')}-${period}.xlsx`)
       setSuccess('Excel gerado!'); setTimeout(() => setSuccess(''), 2500)
     } catch { setError('Erro ao gerar Excel') }
@@ -357,12 +399,21 @@ function ReportCard({ report, index }: { report: ReportDef; index: number }) {
     if (report.needsIntern && !internId) { setError('Selecione um estagiário'); return }
     setLoadingPdf(true); setError('')
     try {
-      const data = await fetchData()
-      const period = monthOptions.find(o => o.value === month)?.label ?? month
-      await exportPDF({
-        title: report.title, subtitle: data.internName ?? undefined,
-        period, columns: data.columns ?? [], rows: data.rows ?? [],
-      })
+      const [year, mon] = month.split('-')
+      const start = `${year}-${mon}-01`
+      const lastDay = new Date(Number(year), Number(mon), 0).getDate()
+      const end = `${year}-${mon}-${String(lastDay).padStart(2, '0')}`
+      const params = new URLSearchParams({ start, end })
+      if (internId) params.set('intern', internId)
+      const res = await fetch(`/api/admin/report?${params}`)
+      if (!res.ok) throw new Error('Erro ao gerar PDF')
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `frequencia-${month}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
       setSuccess('PDF gerado!'); setTimeout(() => setSuccess(''), 2500)
     } catch { setError('Erro ao gerar PDF') }
     finally { setLoadingPdf(false) }

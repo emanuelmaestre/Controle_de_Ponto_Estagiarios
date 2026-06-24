@@ -6,7 +6,6 @@ import {
   Download, FileText, AlertCircle, CheckCircle2, ChevronDown, CalendarDays,
   Calendar, Timer, Clock, ClipboardList, FolderOpen, Gauge, Trophy, Award,
 } from 'lucide-react'
-import { exportPDF } from '@/lib/pdfExport'
 
 const monthOptions = Array.from({ length: 12 }, (_, i) => {
   const d = new Date()
@@ -242,8 +241,19 @@ function ReportCard({ report, index }: { report: ReportDef; index: number }) {
   const handlePdf = async () => {
     setLoadingPdf(true); setError('')
     try {
-      const { columns, rows, period } = await fetchData()
-      await exportPDF({ title: report.title, period, columns, rows })
+      const [year, mon] = month.split('-')
+      const start = `${year}-${mon}-01`
+      const lastDay = new Date(Number(year), Number(mon), 0).getDate()
+      const end = `${year}-${mon}-${String(lastDay).padStart(2, '0')}`
+      const res = await fetch(`/api/intern/report?start=${start}&end=${end}`)
+      if (!res.ok) throw new Error()
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `frequencia-${month}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
       setSuccess('PDF gerado!'); setTimeout(() => setSuccess(''), 2500)
     } catch { setError('Erro ao gerar') }
     finally { setLoadingPdf(false) }
