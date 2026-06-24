@@ -9,7 +9,7 @@ import type { Profile, MonthlyHours, InternSchedule } from '@/types/database'
 import {
   ArrowLeft, GraduationCap, Mail,
   History, CheckCircle2, BarChart2, Settings2, Calendar, Trophy,
-  ChevronDown, Clock, Sparkles, XCircle, Hourglass, CalendarDays,
+  ChevronDown, Clock, Sparkles, XCircle, Hourglass, CalendarDays, FileDown,
 } from 'lucide-react'
 import { FadeIn } from '@/components/ui/MotionWrappers'
 import { getLevelInfo, getLevelTitle, getNextLevel, getProgressToNextLevel, ACHIEVEMENTS, LEVELS } from '@/lib/gamification'
@@ -290,12 +290,21 @@ export default async function InternDetailPage({ params, searchParams }: Props) 
           >
             <ArrowLeft size={16} />
           </Link>
-          <div>
+          <div className="flex-1">
             <p className="text-xs" style={{ color: 'var(--text-3)' }}>Estagiários</p>
             <h2 className="text-base font-semibold leading-none" style={{ color: 'var(--text)' }}>
               {intern.full_name}
             </h2>
           </div>
+          <a
+            href={`/api/admin/report?intern=${intern.id}`}
+            target="_blank"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-opacity hover:opacity-80"
+            style={{ background: 'rgba(63,229,108,0.1)', color: '#3fe56c', border: '1px solid rgba(63,229,108,0.25)' }}
+          >
+            <FileDown size={14} />
+            Exportar PDF
+          </a>
         </header>
       </FadeIn>
 
