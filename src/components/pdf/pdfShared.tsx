@@ -119,16 +119,16 @@ export const shared = StyleSheet.create({
   },
   thCell: {
     fontSize: 8, fontWeight: 700, color: C.secText,
-    textTransform: 'uppercase', letterSpacing: 0.5,
+    textTransform: 'uppercase', letterSpacing: 0.5, paddingRight: 6,
   },
   tableRow: {
     flexDirection: 'row', paddingVertical: 6, paddingHorizontal: 6,
     borderTopWidth: 1, borderColor: C.borderCard,
     alignItems: 'flex-start',
   },
-  td:      { fontSize: 8.5, color: C.text },
-  tdSub:   { fontSize: 8,   color: C.textSub },
-  tdMuted: { fontSize: 8,   color: C.textMuted },
+  td:      { fontSize: 8.5, color: C.text,     paddingRight: 6 },
+  tdSub:   { fontSize: 8,   color: C.textSub,  paddingRight: 6 },
+  tdMuted: { fontSize: 8,   color: C.textMuted, paddingRight: 6 },
 
   // Totais
   totalsBox: {
