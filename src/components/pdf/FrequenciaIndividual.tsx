@@ -18,7 +18,7 @@ export type ActivityRecord = {
 export type FrequenciaProps = {
   studentName:      string
   course?:          string
-  semester?:        string
+  title?:           string
   internshipStart?: string
   period:           { start: string; end: string }
   records:          ActivityRecord[]
@@ -96,7 +96,7 @@ const s = StyleSheet.create({
 export function FrequenciaIndividual({
   studentName,
   course,
-  semester,
+  title,
   internshipStart,
   period,
   records,
@@ -123,12 +123,12 @@ export function FrequenciaIndividual({
   const barLabel = `${pct}% · ${totalHours} de ${requiredHours}`
 
   const CARDS = [
-    { num: requiredHours,         label: 'Horas Previstas',  color: C.gray   },
-    { num: compactH(totalHours),  label: 'Horas Realizadas', color: C.green  },
-    { num: compactH(pendStr),     label: 'Horas Pendentes',  color: C.red    },
-    { num: compactH(excessHours), label: 'Horas Excedentes', color: C.yellow },
-    { num: `${totalSessions}`,    label: 'Dias Registrados', color: C.blue   },
-    { num: `${inconsistencies}`,  label: 'Inconsistências',  color: C.orange },
+    { num: requiredHours,         label: 'HORAS PREVISTAS',   color: C.gray   },
+    { num: compactH(totalHours),  label: 'HORAS REALIZADAS',  color: C.green  },
+    { num: compactH(pendStr),     label: 'HORAS PENDENTES',   color: C.red    },
+    { num: compactH(excessHours), label: 'HORAS EXCEDENTES',  color: C.yellow },
+    { num: `${totalSessions}`,    label: 'DIAS REGISTRADOS',  color: C.blue   },
+    { num: `${inconsistencies}`,  label: 'INCONSISTÊNCIAS',   color: C.orange },
   ]
 
   return (
@@ -164,8 +164,8 @@ export function FrequenciaIndividual({
               <Text style={s.infoValue}>{course ?? '—'}</Text>
             </View>
             <View style={[s.infoCell, s.infoCellLast]}>
-              <Text style={s.infoLabel}>SEMESTRE</Text>
-              <Text style={s.infoValue}>{semester ?? '—'}</Text>
+              <Text style={s.infoLabel}>TÍTULO</Text>
+              <Text style={s.infoValue}>{title ?? '—'}</Text>
             </View>
           </View>
         </View>
@@ -191,11 +191,11 @@ export function FrequenciaIndividual({
         </View>
         <View style={shared.tableWrap}>
           <View style={shared.tableHead}>
-            <Text style={[shared.thCell, s.cDate]}>Data</Text>
-            <Text style={[shared.thCell, s.cDay]}>Dia</Text>
-            <Text style={[shared.thCell, s.cTime]}>Entrada / Saída</Text>
-            <Text style={[shared.thCell, s.cDur]}>Total</Text>
-            <Text style={[shared.thCell, s.cAct]}>Atividade</Text>
+            <Text style={[shared.thCell, s.cDate]}>DATA</Text>
+            <Text style={[shared.thCell, s.cDay]}>DIA</Text>
+            <Text style={[shared.thCell, s.cTime]}>ENTRADA / SAÍDA</Text>
+            <Text style={[shared.thCell, s.cDur]}>TOTAL</Text>
+            <Text style={[shared.thCell, s.cAct]}>ATIVIDADE</Text>
           </View>
           {records.map((r, i) => (
             <View key={i} wrap={false}
@@ -240,12 +240,14 @@ export function FrequenciaIndividual({
             Este relatório foi gerado automaticamente pelo sistema {institutionName} com base nos
             registros de entrada e saída do estagiário no período indicado. Registros sem marcação
             de ponto devem ser verificados pelo supervisor responsável.
+            As informações contidas neste documento são de caráter oficial e devem ser assinadas
+            pelo responsável e pelo estagiário para fins de comprovação.
           </Text>
           <View style={s.sigWrap}>
             <View style={s.sigBox}>
               <SigLine />
               <Text style={s.sigName}>{supervisorName || 'Supervisor / Responsável'}</Text>
-              <Text style={s.sigRole}>Supervisor / Responsável</Text>
+              <Text style={s.sigRole}>Supervisor(a) / Responsável</Text>
             </View>
             <View style={s.sigBox}>
               <SigLine />
