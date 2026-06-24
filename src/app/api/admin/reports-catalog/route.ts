@@ -389,7 +389,7 @@ export async function GET(request: Request) {
         ? { pct, label: `${pct}% · ${mh(totalMin)} de ${intern?.total_hours_required ?? 0}h cumpridas` }
         : undefined,
       columns: [
-        { header: 'Campo', dataKey: 'campo', width: 55 },
+        { header: 'Campo', dataKey: 'campo', width: 120 },
         { header: 'Valor', dataKey: 'valor' },
       ],
       rows: [
