@@ -38,7 +38,7 @@ export const C = {
   borderCard: '#e5e7eb',
   rowAlt:     '#f4f8f4',
   text:       '#111827',
-  textSub:    '#374151',
+  textSub:    '#1f2937',
   textMuted:  '#4b5563',
   footerBg:   '#eef4ee',
 }
@@ -215,7 +215,7 @@ export function PageHeader({
               Período: {periodLabel}
             </Text>
           ) : null}
-          <Text style={{ fontSize: 7.5, color: C.textMuted, marginTop: 2 }}>
+          <Text style={{ fontSize: 7.5, color: C.textSub, marginTop: 2 }}>
             Emissão: {today}
           </Text>
         </View>
