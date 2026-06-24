@@ -91,7 +91,7 @@ async function baseMeta(authClient: any, db: any, userId: string, label: string)
   const { data: admin }    = await authClient.from('profiles').select('full_name').eq('id', userId).single()
   const { data: settings } = await db.from('settings').select('lab_name').single()
   return {
-    supervisor: admin?.full_name ?? 'Supervisor',
+    supervisor: 'Prof. Milton Antônio Naves',
     labName:    settings?.lab_name ?? 'Laboratório Chronos Lab',
     period:     label,
   }
@@ -307,7 +307,7 @@ export async function GET(request: Request) {
 
     const { data: rawRec } = await db
       .from('time_records')
-      .select('clock_in, activities')
+      .select('clock_in, activities!activities_time_record_id_fkey(description)')
       .eq('intern_id', internId)
       .gte('clock_in', startDate).lt('clock_in', endDate)
       .order('clock_in', { ascending: false })
@@ -315,11 +315,11 @@ export async function GET(request: Request) {
     const rows: Record<string, string>[] = []
     let total = 0
     for (const r of list(rawRec)) {
-      const acts = Array.isArray(r.activities) ? r.activities : []
+      const acts = Array.isArray((r as any).activities) ? (r as any).activities : []
       for (const act of acts) {
         rows.push({
           data:      r.clock_in ? fmtDate(r.clock_in) : '—',
-          atividade: act,
+          atividade: typeof act === 'string' ? act : (act?.description ?? '—'),
         })
         total++
       }
