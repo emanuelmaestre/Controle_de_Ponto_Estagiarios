@@ -621,11 +621,11 @@ export async function GET(request: Request) {
         const remaining = Math.max(0, total - worked)
         const pct       = total > 0 ? Math.round((worked / total) * 100) : 0
         return {
-          nome:     i.full_name ?? '—',
-          curso:    i.course ?? '—',
-          cumprido: mh(worked),
-          restante: mh(remaining),
-          total:    `${i.total_hours_required ?? 0}h`,
+          nome:     (i.full_name ?? '—').toUpperCase(),
+          curso:    (i.course ?? '—').toUpperCase(),
+          cumprido: mh(worked).toUpperCase(),
+          restante: mh(remaining).toUpperCase(),
+          total:    `${i.total_hours_required ?? 0}H`,
           pct:      `${pct}%`,
           _pct:     pct,
         }
@@ -642,11 +642,11 @@ export async function GET(request: Request) {
       ],
       columns: [
         { header: 'Estagiário',  dataKey: 'nome' },
-        { header: 'Curso',       dataKey: 'curso',    width: 110 },
-        { header: 'Cumprido',    dataKey: 'cumprido', width: 55 },
-        { header: 'Restante',    dataKey: 'restante', width: 55 },
-        { header: 'Carga Total', dataKey: 'total',    width: 55 },
-        { header: 'Conclusão',   dataKey: 'pct',      width: 55 },
+        { header: 'Curso',       dataKey: 'curso',    width: 120 },
+        { header: 'Cumprido',    dataKey: 'cumprido', width: 68 },
+        { header: 'Restante',    dataKey: 'restante', width: 60 },
+        { header: 'Carga Total', dataKey: 'total',    width: 52 },
+        { header: 'Conclusão',   dataKey: 'pct',      width: 50 },
       ],
       rows,
     })
