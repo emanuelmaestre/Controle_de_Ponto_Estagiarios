@@ -232,10 +232,11 @@ export function FrequenciaIndividual({
         </View>
 
         {/* OBSERVAÇÕES E VALIDAÇÃO */}
-        <View style={shared.secBar} wrap={false}>
+        <View wrap={false}>
+        <View style={shared.secBar}>
           <Text style={shared.secBarText}>OBSERVAÇÕES E VALIDAÇÃO</Text>
         </View>
-        <View wrap={false} style={{ borderWidth: 1, borderTopWidth: 0, borderColor: C.borderCard }}>
+        <View style={{ borderWidth: 1, borderTopWidth: 0, borderColor: C.borderCard }}>
           <Text style={s.obsText}>
             Este relatório foi gerado automaticamente pelo sistema {institutionName} com base nos
             registros de entrada e saída do estagiário no período indicado. Registros sem marcação
@@ -255,6 +256,7 @@ export function FrequenciaIndividual({
               <Text style={s.sigRole}>Estagiário(a)</Text>
             </View>
           </View>
+        </View>
         </View>
 
         {/* FOOTER fixo */}
