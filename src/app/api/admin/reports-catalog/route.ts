@@ -776,10 +776,10 @@ export async function GET(request: Request) {
 
     const rows = list(interns).map((i, idx) => ({
       pos:    `${idx + 1}º`,
-      nome:   i.full_name ?? '—',
+      nome:   (i.full_name ?? '—').toUpperCase(),
       pontos: String(i.points ?? 0),
       nivel:  String(i.level ?? 1),
-      streak: `${i.streak_days ?? 0} dias`,
+      streak: `${i.streak_days ?? 0} DIAS`,
     }))
 
     return NextResponse.json({
@@ -791,11 +791,11 @@ export async function GET(request: Request) {
         { label: 'Maior Pontuação', value: rows[0]?.pontos ? `${rows[0].pontos} pts` : '—', colorKey: 'green' },
       ],
       columns: [
-        { header: '#',         dataKey: 'pos',    width: 24 },
+        { header: '#',         dataKey: 'pos',    width: 28 },
         { header: 'Nome',      dataKey: 'nome' },
-        { header: 'Pontos',    dataKey: 'pontos', width: 60 },
-        { header: 'Nível',     dataKey: 'nivel',  width: 40 },
-        { header: 'Sequência', dataKey: 'streak', width: 65 },
+        { header: 'Pontos',    dataKey: 'pontos', width: 55 },
+        { header: 'Nível',     dataKey: 'nivel',  width: 38 },
+        { header: 'Sequência', dataKey: 'streak', width: 62 },
       ],
       rows,
     })
