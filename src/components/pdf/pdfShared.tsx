@@ -244,7 +244,7 @@ export function PageFooter({ institutionName }: { institutionName: string }) {
 export function SigLine() {
   return (
     <Svg width="180" height="2" viewBox="0 0 180 2">
-      <Line x1="0" y1="1" x2="180" y2="1" stroke={C.borderCard} strokeWidth="1" />
+      <Line x1="0" y1="1" x2="180" y2="1" stroke={C.textSub} strokeWidth="1" />
     </Svg>
   )
 }
