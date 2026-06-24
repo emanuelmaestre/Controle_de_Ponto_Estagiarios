@@ -59,7 +59,7 @@ const s = StyleSheet.create({
     fontSize: 6, fontWeight: 600, color: C.textMuted,
     textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 3,
   },
-  infoValue: { fontSize: 11, fontWeight: 600, color: C.text },
+  infoValue: { fontSize: 11, fontWeight: 600, color: C.text, textTransform: 'uppercase' },
 
   // Cards (6, fiel ao reference)
   cardsWrap: {
