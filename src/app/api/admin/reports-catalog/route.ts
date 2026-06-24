@@ -676,8 +676,8 @@ export async function GET(request: Request) {
         { header: '#',      dataKey: 'pos',    width: 28 },
         { header: 'Nome',   dataKey: 'nome' },
         { header: 'Curso',  dataKey: 'curso',  width: 150 },
-        { header: 'Nível',  dataKey: 'nivel',  width: 36 },
-        { header: 'Pontos', dataKey: 'pontos', width: 44 },
+        { header: 'Nível',  dataKey: 'nivel',  width: 36,  align: 'center' },
+        { header: 'Pontos', dataKey: 'pontos', width: 44,  align: 'center' },
       ],
       rows,
     })

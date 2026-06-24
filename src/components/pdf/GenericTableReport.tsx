@@ -5,7 +5,7 @@ import {
   PageHeader, PageFooter, ProgressBar, SigLine, compactH,
 } from './pdfShared'
 
-export type GenericColumn = { header: string; dataKey: string; width?: number }
+export type GenericColumn = { header: string; dataKey: string; width?: number; align?: 'left' | 'center' | 'right' }
 export type SummaryCard   = { label: string; value: string; colorKey?: string }
 export type TotalLine     = { label: string; value: string }
 
@@ -177,7 +177,7 @@ export function GenericTableReport({
             {columns.map((col, i) => (
               <Text
                 key={i}
-                style={[shared.thCell, col.width ? { width: col.width } : { flex: 1 }]}
+                style={[shared.thCell, col.width ? { width: col.width } : { flex: 1 }, col.align ? { textAlign: col.align } : {}]}
               >
                 {col.header}
               </Text>
@@ -196,7 +196,7 @@ export function GenericTableReport({
               {columns.map((col, ci) => (
                 <Text
                   key={ci}
-                  style={[shared.td, col.width ? { width: col.width } : { flex: 1 }]}
+                  style={[shared.td, col.width ? { width: col.width } : { flex: 1 }, col.align ? { textAlign: col.align } : {}]}
                 >
                   {String(row[col.dataKey] ?? '—')}
                 </Text>
