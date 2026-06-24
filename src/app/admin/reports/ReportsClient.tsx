@@ -399,23 +399,34 @@ function ReportCard({ report, index }: { report: ReportDef; index: number }) {
     if (report.needsIntern && !internId) { setError('Selecione um estagiário'); return }
     setLoadingPdf(true); setError('')
     try {
-      const [year, mon] = month.split('-')
-      const start = `${year}-${mon}-01`
-      const lastDay = new Date(Number(year), Number(mon), 0).getDate()
-      const end = `${year}-${mon}-${String(lastDay).padStart(2, '0')}`
-      const params = new URLSearchParams({ start, end })
-      if (internId) params.set('intern', internId)
-      const res = await fetch(`/api/admin/report?${params}`)
-      if (!res.ok) throw new Error('Erro ao gerar PDF')
+      let url: string
+      // Frequência Individual usa rota dedicada com design completo
+      if (report.id === 'attendance' && internId) {
+        const [year, mon] = month.split('-')
+        const start = `${year}-${mon}-01`
+        const lastDay = new Date(Number(year), Number(mon), 0).getDate()
+        const end = `${year}-${mon}-${String(lastDay).padStart(2, '0')}`
+        url = `/api/admin/report?intern=${internId}&start=${start}&end=${end}`
+      } else {
+        // Todos os outros relatórios usam PDF genérico de tabela
+        const params = new URLSearchParams({ report: report.id, month })
+        if (internId) params.set('internId', internId)
+        url = `/api/admin/report-table?${params}`
+      }
+      const res = await fetch(url)
+      if (!res.ok) {
+        const msg = await res.text().catch(() => '')
+        throw new Error(msg || 'Erro ao gerar PDF')
+      }
       const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
+      const objUrl = URL.createObjectURL(blob)
       const a = document.createElement('a')
-      a.href = url
-      a.download = `frequencia-${month}.pdf`
+      a.href = objUrl
+      a.download = `${report.id}-${month}.pdf`
       a.click()
-      URL.revokeObjectURL(url)
+      URL.revokeObjectURL(objUrl)
       setSuccess('PDF gerado!'); setTimeout(() => setSuccess(''), 2500)
-    } catch { setError('Erro ao gerar PDF') }
+    } catch (e: any) { setError(e?.message ?? 'Erro ao gerar PDF') }
     finally { setLoadingPdf(false) }
   }
 
