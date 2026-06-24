@@ -659,8 +659,8 @@ export async function GET(request: Request) {
 
     const rows = list(interns).map((i, idx) => ({
       pos:    `${idx + 1}º`,
-      nome:   i.full_name ?? '—',
-      curso:  i.course ?? '—',
+      nome:   (i.full_name ?? '—').toUpperCase(),
+      curso:  (i.course ?? '—').toUpperCase(),
       nivel:  String(i.level ?? 1),
       pontos: String(i.points ?? 0),
     }))
@@ -673,11 +673,11 @@ export async function GET(request: Request) {
         { label: '1º Lugar',               value: rows[0]?.nome?.split(' ')[0] ?? '—', colorKey: 'orange' },
       ],
       columns: [
-        { header: '#',      dataKey: 'pos',    width: 24 },
+        { header: '#',      dataKey: 'pos',    width: 28 },
         { header: 'Nome',   dataKey: 'nome' },
-        { header: 'Curso',  dataKey: 'curso',  width: 130 },
-        { header: 'Nível',  dataKey: 'nivel',  width: 40 },
-        { header: 'Pontos', dataKey: 'pontos', width: 50 },
+        { header: 'Curso',  dataKey: 'curso',  width: 150 },
+        { header: 'Nível',  dataKey: 'nivel',  width: 36 },
+        { header: 'Pontos', dataKey: 'pontos', width: 44 },
       ],
       rows,
     })
