@@ -201,7 +201,7 @@ export function FrequenciaIndividual({
             <View key={i} wrap={false}
               style={[shared.tableRow, i % 2 !== 0 ? { backgroundColor: C.rowAlt } : {}]}>
               <Text style={[shared.td, s.cDate]}>{r.date.length > 5 ? r.date.slice(0, 5) : r.date}</Text>
-              <Text style={[shared.tdSub, s.cDay]}>{dowFromBr(r.date)}</Text>
+              <Text style={[shared.tdSub, s.cDay, { textTransform: 'uppercase' }]}>{dowFromBr(r.date)}</Text>
               <View style={s.cTime}>
                 <Text style={shared.td}>
                   {r.clockIn && r.clockIn !== '—'
