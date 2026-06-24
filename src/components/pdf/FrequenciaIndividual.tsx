@@ -138,7 +138,6 @@ export function FrequenciaIndividual({
         {/* HEADER fixo — repete em todas as páginas */}
         <PageHeader
           title="RELATÓRIO DE FREQUÊNCIA"
-          subtitle="Controle de Ponto · Sistema de Controle de Ponto"
           institutionName={institutionName}
           supervisorName={supervisorName || undefined}
           periodLabel={pLabel}

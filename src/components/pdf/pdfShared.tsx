@@ -156,13 +156,11 @@ export const shared = StyleSheet.create({
 // ── Header fixo (repete em todas as páginas) ──────────────────────────────────
 export function PageHeader({
   title,
-  subtitle,
   institutionName,
   supervisorName,
   periodLabel,
 }: {
   title:           string
-  subtitle?:       string
   institutionName: string
   supervisorName?: string
   periodLabel?:    string
@@ -200,11 +198,6 @@ export function PageHeader({
           <Text style={{ fontSize: 17, fontWeight: 700, color: C.text, letterSpacing: 0.2 }}>
             {title}
           </Text>
-          {subtitle ? (
-            <Text style={{ fontSize: 7, color: C.textMuted, marginTop: 2 }}>
-              {subtitle}
-            </Text>
-          ) : null}
         </View>
 
         {/* Bloco de info à direita */}

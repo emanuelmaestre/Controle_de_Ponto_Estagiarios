@@ -81,7 +81,6 @@ export function GenericTableReport({
         {/* HEADER fixo */}
         <PageHeader
           title={title}
-          subtitle={internName ? `Estagiário: ${internName}` : undefined}
           institutionName={institutionName}
           supervisorName={supervisorName}
           periodLabel={period}
