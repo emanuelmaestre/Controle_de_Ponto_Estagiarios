@@ -576,11 +576,11 @@ export async function GET(request: Request) {
 
     const rows = Array.from(courseMap.entries())
       .map(([curso, e]) => ({
-        curso,
-        horas:      mh(e.min),
-        sessoes:    String(e.count),
+        curso:       curso.toUpperCase(),
+        horas:       mh(e.min).toUpperCase(),
+        sessoes:     String(e.count),
         estagiarios: String(e.interns.size),
-        _min:       e.min,
+        _min:        e.min,
       }))
       .sort((a, b) => b._min - a._min)
       .map(({ _min: _, ...rest }) => rest)
@@ -593,9 +593,9 @@ export async function GET(request: Request) {
       ],
       columns: [
         { header: 'Curso',        dataKey: 'curso' },
-        { header: 'Horas',        dataKey: 'horas',        width: 60 },
-        { header: 'Sessões',      dataKey: 'sessoes',      width: 60 },
-        { header: 'Estagiários',  dataKey: 'estagiarios',  width: 70 },
+        { header: 'Horas',        dataKey: 'horas',        width: 72 },
+        { header: 'Sessões',      dataKey: 'sessoes',      width: 55 },
+        { header: 'Estagiários',  dataKey: 'estagiarios',  width: 65 },
       ],
       rows,
     })
