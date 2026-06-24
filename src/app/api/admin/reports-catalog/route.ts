@@ -762,7 +762,7 @@ export async function GET(request: Request) {
       columns: [
         { header: '#',          dataKey: 'pos',   width: 28 },
         { header: 'Nome',       dataKey: 'nome' },
-        { header: 'Atividades', dataKey: 'count', width: 65 },
+        { header: 'Atividades', dataKey: 'count', width: 65, align: 'center' },
       ],
       rows,
     })
