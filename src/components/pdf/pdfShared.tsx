@@ -1,8 +1,12 @@
 import React from 'react'
-import { Font, View, Text, Svg, Rect, Circle, Line, StyleSheet } from '@react-pdf/renderer'
+import {
+  Font, View, Text, Svg,
+  Path, Circle, Line, G,
+  StyleSheet,
+} from '@react-pdf/renderer'
 import path from 'path'
 
-// ── Fontes (registrado UMA VEZ aqui) ────────────────────────────────────────
+// ── Fontes ────────────────────────────────────────────────────────────────────
 const FONT_DIR = path.join(process.cwd(), 'src/components/pdf/fonts')
 Font.register({
   family: 'Poppins',
@@ -15,16 +19,17 @@ Font.register({
 })
 Font.registerHyphenationCallback(w => [w])
 
-// ── Paleta ───────────────────────────────────────────────────────────────────
+// ── Paleta ────────────────────────────────────────────────────────────────────
 export const C = {
   white:      '#ffffff',
   pageBg:     '#ffffff',
   secBar:     '#122216',
   secText:    '#3fe56c',
-  green:      '#1a9c45',
+  green:      '#1E6B35',   // verde oficial da logo
+  greenAccent:'#1a9c45',
   greenLight: '#eaf7ee',
   greenMid:   '#c6ecd2',
-  red:        '#c0392b',
+  red:        '#C0392B',   // vermelho oficial da logo
   blue:       '#2563eb',
   orange:     '#d97706',
   yellow:     '#ca8a04',
@@ -38,37 +43,74 @@ export const C = {
   footerBg:   '#eef4ee',
 }
 
-export const M = 14  // margem horizontal da página
+export const M       = 14   // margem horizontal da página
+export const HEADER_H = 66  // altura reservada para o header fixo (pt)
+
+// ── Logo oficial (Flask + Cronômetro + Molécula — /public/logo.svg) ───────────
+export function Logo() {
+  // viewBox original: "0 0 280 80" — usamos só a parte icônica (0 0 108 84)
+  return (
+    <Svg width="54" height="42" viewBox="0 0 108 84">
+
+      {/* Flask — translate(4, 4) */}
+      <G transform="translate(4, 4)">
+        <Path
+          d="M18 6 L18 28 L8 46 Q6 50 8 53 Q10 56 14 56 L34 56 Q38 56 40 53 Q42 50 40 46 L30 28 L30 6 Z"
+          fill="none" stroke={C.green} strokeWidth="2.5" strokeLinejoin="round"
+        />
+        <Path
+          d="M10 46 L12 42 L36 42 L38 46 Q40 50 38 53 Q36 56 32 56 L16 56 Q12 56 10 53 Q8 50 10 46 Z"
+          fill={C.red} opacity="0.85"
+        />
+        <Circle cx="17" cy="47" r="2.5" fill="white" opacity="0.6" />
+        <Circle cx="24" cy="51" r="1.5" fill="white" opacity="0.5" />
+        <Circle cx="29" cy="47" r="1.8" fill="white" opacity="0.5" />
+        <Line x1="18" y1="6" x2="30" y2="6" stroke={C.green} strokeWidth="2.5" strokeLinecap="round" />
+      </G>
+
+      {/* Cronômetro — translate(28, 2) */}
+      <G transform="translate(28, 2)">
+        <Circle cx="24" cy="30" r="22" fill="none" stroke={C.green} strokeWidth="2.5" />
+        <Path d="M18 8 L30 8" stroke={C.green} strokeWidth="2.5" strokeLinecap="round" />
+        <Line x1="24" y1="8"  x2="24" y2="4"  stroke={C.green} strokeWidth="2.5" strokeLinecap="round" />
+        <Line x1="24" y1="30" x2="24" y2="16" stroke={C.green} strokeWidth="2"   strokeLinecap="round" />
+        <Line x1="24" y1="30" x2="33" y2="24" stroke={C.red}   strokeWidth="2.5" strokeLinecap="round" />
+        <Circle cx="24" cy="30" r="2.5" fill={C.green} />
+        <Line x1="24" y1="10" x2="24" y2="12" stroke={C.green} strokeWidth="1.5" strokeLinecap="round" />
+        <Line x1="24" y1="48" x2="24" y2="50" stroke={C.green} strokeWidth="1.5" strokeLinecap="round" />
+        <Line x1="4"  y1="30" x2="6"  y2="30" stroke={C.green} strokeWidth="1.5" strokeLinecap="round" />
+        <Line x1="42" y1="30" x2="44" y2="30" stroke={C.green} strokeWidth="1.5" strokeLinecap="round" />
+      </G>
+
+      {/* Molécula — translate(68, 20) */}
+      <G transform="translate(68, 20)">
+        <Circle cx="18" cy="8"  r="4" fill={C.red} />
+        <Circle cx="8"  cy="22" r="3" fill="none" stroke={C.green} strokeWidth="2" />
+        <Circle cx="22" cy="28" r="3" fill="none" stroke={C.green} strokeWidth="2" />
+        <Circle cx="4"  cy="38" r="4" fill={C.red} />
+        <Line x1="18" y1="8"  x2="8"  y2="22" stroke={C.green} strokeWidth="1.8" />
+        <Line x1="8"  y1="22" x2="22" y2="28" stroke={C.green} strokeWidth="1.8" />
+        <Line x1="8"  y1="22" x2="4"  y2="38" stroke={C.green} strokeWidth="1.8" />
+      </G>
+
+    </Svg>
+  )
+}
 
 // ── Estilos compartilhados ────────────────────────────────────────────────────
 export const shared = StyleSheet.create({
-  topStrip: {
-    height: 3, backgroundColor: C.green,
-    position: 'absolute', top: 0, left: 0, right: 0,
-  },
-  headerWrap: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingTop: 7, paddingBottom: 8, paddingHorizontal: M,
-    borderBottomWidth: 1, borderColor: C.borderCard,
-  },
-  logoBox: { width: 40, alignItems: 'center', justifyContent: 'center' },
-  titleBox: { flex: 1, alignItems: 'center', paddingHorizontal: 8 },
-  headerTitle: { fontSize: 18, fontWeight: 700, color: C.text, letterSpacing: 0.3 },
-  headerSub:   { fontSize: 7.5, color: C.textMuted, marginTop: 2 },
-  rightBox: { width: 105, alignItems: 'flex-end' },
-  rightLab:    { fontSize: 8.5, fontWeight: 700, color: C.text },
-  rightSup:    { fontSize: 7.5, color: C.textSub, marginTop: 2 },
-  rightPeriod: { fontSize: 7.5, color: C.green,   marginTop: 2 },
-  rightEmit:   { fontSize: 7.5, color: C.textMuted, marginTop: 2 },
-
+  // Barra de seção
   secBar: {
     backgroundColor: C.secBar,
     marginHorizontal: -M,
     paddingHorizontal: M,
     paddingVertical: 6,
   },
-  secBarText: { fontSize: 8.5, fontWeight: 700, color: C.secText, letterSpacing: 0.8 },
+  secBarText: {
+    fontSize: 8.5, fontWeight: 700, color: C.secText, letterSpacing: 0.8,
+  },
 
+  // Tabela
   tableWrap: { borderWidth: 1, borderColor: C.borderCard, marginBottom: 10 },
   tableHead: {
     flexDirection: 'row',
@@ -88,6 +130,18 @@ export const shared = StyleSheet.create({
   tdSub:   { fontSize: 8,   color: C.textSub },
   tdMuted: { fontSize: 8,   color: C.textMuted },
 
+  // Totais
+  totalsBox: {
+    backgroundColor: C.greenLight,
+    borderTopWidth: 1, borderColor: C.greenMid,
+    paddingHorizontal: 12, paddingVertical: 10,
+  },
+  totalLine:     { flexDirection: 'row', marginBottom: 5 },
+  totalLineLast: { flexDirection: 'row' },
+  totalLabel:    { fontSize: 9, fontWeight: 700, color: C.textSub, width: 130 },
+  totalValue:    { fontSize: 9, fontWeight: 700, color: C.greenAccent },
+
+  // Footer
   footer: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
     backgroundColor: C.footerBg,
@@ -97,63 +151,82 @@ export const shared = StyleSheet.create({
   },
   footerLeft:  { fontSize: 6.5, color: C.textMuted },
   footerRight: { fontSize: 8,   fontWeight: 700, color: C.red },
-
-  totalsBox: {
-    backgroundColor: C.greenLight,
-    borderTopWidth: 1, borderColor: C.greenMid,
-    padding: 12,
-  },
-  totalLine: { flexDirection: 'row', marginBottom: 5 },
-  totalLineLast: { flexDirection: 'row' },
-  totalLabel: { fontSize: 9, fontWeight: 700, color: C.textSub, width: 130 },
-  totalValue: { fontSize: 9, fontWeight: 700, color: C.green },
 })
 
-// ── Logo SVG ──────────────────────────────────────────────────────────────────
-export function Logo() {
-  const r = 11, cx = 13, cy = 13
-  return (
-    <Svg width="36" height="36" viewBox="0 0 36 36">
-      <Rect x="1" y="1" width="34" height="34" rx="7" fill={C.greenLight} stroke={C.green} strokeWidth="0.8" />
-      <Circle cx={cx} cy={cy} r={r} fill={C.white} stroke={C.green} strokeWidth="1.2" />
-      <Line x1={cx} y1={cy} x2={cx} y2={cy - 7} stroke={C.green}   strokeWidth="1.4" strokeLinecap="round" />
-      <Line x1={cx} y1={cy} x2={cx + 5} y2={cy + 2} stroke={C.red} strokeWidth="1.6" strokeLinecap="round" />
-      <Circle cx={cx} cy={cy} r="1.5" fill={C.green} />
-      <Line x1={cx} y1={cy - r + 1}   x2={cx}       y2={cy - r + 3}   stroke={C.green} strokeWidth="0.8" />
-      <Line x1={cx + r - 1} y1={cy}   x2={cx + r - 3} y2={cy}         stroke={C.green} strokeWidth="0.8" />
-      <Line x1={cx} y1={cy + r - 1}   x2={cx}       y2={cy + r - 3}   stroke={C.green} strokeWidth="0.8" />
-      <Line x1={cx - r + 1} y1={cy}   x2={cx - r + 3} y2={cy}         stroke={C.green} strokeWidth="0.8" />
-      <Line x1={cx - 3} y1={cy - r - 0.5} x2={cx + 3} y2={cy - r - 0.5} stroke={C.green} strokeWidth="0.8" />
-      <Line x1={cx}     y1={cy - r - 0.5} x2={cx}     y2={cy - r - 2.5} stroke={C.green} strokeWidth="0.8" />
-    </Svg>
-  )
-}
-
 // ── Header fixo (repete em todas as páginas) ──────────────────────────────────
-export const HEADER_H = 68  // altura total do header em pt
-
 export function PageHeader({
-  title, subtitle, institutionName, supervisorName, periodLabel,
+  title,
+  subtitle,
+  institutionName,
+  supervisorName,
+  periodLabel,
 }: {
-  title: string; subtitle?: string
-  institutionName: string; supervisorName?: string; periodLabel?: string
+  title:           string
+  subtitle?:       string
+  institutionName: string
+  supervisorName?: string
+  periodLabel?:    string
 }) {
   const today = new Date().toLocaleDateString('pt-BR')
+
   return (
-    <View fixed style={{ position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: C.white }}>
-      <View style={shared.topStrip} />
-      <View style={[shared.headerWrap, { marginTop: 3 }]}>
-        <View style={shared.logoBox}><Logo /></View>
-        <View style={shared.titleBox}>
-          <Text style={shared.headerTitle}>{title}</Text>
-          {subtitle ? <Text style={shared.headerSub}>{subtitle}</Text> : null}
+    <View
+      fixed
+      style={{
+        position: 'absolute', top: 0, left: 0, right: 0,
+        backgroundColor: C.white,
+        borderBottomWidth: 1, borderColor: C.borderCard,
+      }}
+    >
+      {/* Faixa verde no topo */}
+      <View style={{ height: 3, backgroundColor: C.greenAccent }} />
+
+      {/* Linha principal: Logo | Título | Info */}
+      <View style={{
+        flexDirection: 'row',
+        alignItems:    'center',
+        paddingHorizontal: M,
+        paddingTop: 8,
+        paddingBottom: 9,
+      }}>
+
+        {/* Logo oficial */}
+        <View style={{ width: 56, alignItems: 'flex-start', justifyContent: 'center' }}>
+          <Logo />
         </View>
-        <View style={shared.rightBox}>
-          <Text style={shared.rightLab}>{institutionName}</Text>
-          {supervisorName ? <Text style={shared.rightSup}>{supervisorName}</Text> : null}
-          {periodLabel    ? <Text style={shared.rightPeriod}>Período: {periodLabel}</Text> : null}
-          <Text style={shared.rightEmit}>Emissão: {today}</Text>
+
+        {/* Título central */}
+        <View style={{ flex: 1, alignItems: 'center', paddingHorizontal: 6 }}>
+          <Text style={{ fontSize: 17, fontWeight: 700, color: C.text, letterSpacing: 0.2 }}>
+            {title}
+          </Text>
+          {subtitle ? (
+            <Text style={{ fontSize: 7, color: C.textMuted, marginTop: 2 }}>
+              {subtitle}
+            </Text>
+          ) : null}
         </View>
+
+        {/* Bloco de info à direita */}
+        <View style={{ width: 115, alignItems: 'flex-end' }}>
+          <Text style={{ fontSize: 8.5, fontWeight: 700, color: C.text }}>
+            {institutionName}
+          </Text>
+          {supervisorName ? (
+            <Text style={{ fontSize: 7.5, color: C.textSub, marginTop: 2 }}>
+              {supervisorName}
+            </Text>
+          ) : null}
+          {periodLabel ? (
+            <Text style={{ fontSize: 7.5, color: C.greenAccent, marginTop: 2 }}>
+              Período: {periodLabel}
+            </Text>
+          ) : null}
+          <Text style={{ fontSize: 7.5, color: C.textMuted, marginTop: 2 }}>
+            Emissão: {today}
+          </Text>
+        </View>
+
       </View>
     </View>
   )
@@ -177,34 +250,34 @@ export function PageFooter({ institutionName }: { institutionName: string }) {
 // ── Linha de assinatura ───────────────────────────────────────────────────────
 export function SigLine() {
   return (
-    <Svg width="180" height="1" viewBox="0 0 180 1">
-      <Line x1="0" y1="0" x2="180" y2="0" stroke={C.borderCard} strokeWidth="1" />
+    <Svg width="180" height="2" viewBox="0 0 180 2">
+      <Line x1="0" y1="1" x2="180" y2="1" stroke={C.borderCard} strokeWidth="1" />
     </Svg>
   )
 }
 
-// ── Barra de progresso (View puro, sem SVG text) ─────────────────────────────
+// ── Barra de progresso (View puro — sem SVG text) ─────────────────────────────
 export function ProgressBar({ pct, label }: { pct: number; label: string }) {
   const filled = Math.max(2, Math.min(100, pct))
   return (
     <View style={{ height: 22, position: 'relative', marginBottom: 10 }}>
-      {/* Fundo */}
       <View style={{
         position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
         backgroundColor: C.greenMid,
       }} />
-      {/* Preenchimento */}
       <View style={{
         position: 'absolute', top: 0, left: 0, bottom: 0,
         width: `${filled}%`,
-        backgroundColor: C.green,
+        backgroundColor: C.greenAccent,
       }} />
-      {/* Texto centralizado */}
       <View style={{
         position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
         alignItems: 'center', justifyContent: 'center',
       }}>
-        <Text style={{ fontSize: 9, fontWeight: 700, color: C.white, letterSpacing: 0.3 }}>
+        <Text style={{
+          fontSize: 9, fontWeight: 700, color: C.white,
+          letterSpacing: 0.3, fontFamily: 'Poppins',
+        }}>
           {label}
         </Text>
       </View>
@@ -217,9 +290,9 @@ export function compactH(h: string): string {
   return h.replace(/\s+(\d+)min/, '$1')
 }
 
-// ── Dia da semana ─────────────────────────────────────────────────────────────
+// ── Dia da semana a partir de "dd/mm/yyyy" ────────────────────────────────────
 const WEEKDAY: Record<number, string> = {
-  0: 'Dom', 1: 'Seg', 2: 'Ter', 3: 'Qua', 4: 'Qui', 5: 'Sex', 6: 'Sáb'
+  0: 'Dom', 1: 'Seg', 2: 'Ter', 3: 'Qua', 4: 'Qui', 5: 'Sex', 6: 'Sáb',
 }
 export function dowFromBr(dateStr: string): string {
   const [d, m, y] = dateStr.split('/')
