@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
 import { minutesToHours } from '@/lib/utils'
+import { getLevelTitle } from '@/lib/gamification'
 
 const SP = 3 * 60 * 60 * 1000
 
@@ -150,7 +151,7 @@ export async function GET(request: Request) {
         nome:       intern?.full_name ?? '—',
         curso:      intern?.course    ?? '—',
         dataInicio: intern?.internship_start ? fmtDate(intern.internship_start) : '—',
-        semestre:   '—',
+        titulo:     getLevelTitle((intern as any)?.level ?? 1, 'M'),
       },
       summaryCards: [
         { label: 'Horas Previstas',   value: expH,            colorKey: 'gray'   },
@@ -191,7 +192,7 @@ export async function GET(request: Request) {
   // ── hours: horas trabalhadas ───────────────────────────────────────────────
   if (report === 'hours') {
     const { data: intern } = await db
-      .from('profiles').select('full_name, course, internship_start').eq('id', internId).single()
+      .from('profiles').select('full_name, course, internship_start, level').eq('id', internId).single()
 
     const { data: rawRec } = await db
       .from('time_records')
@@ -216,7 +217,7 @@ export async function GET(request: Request) {
         nome:       intern?.full_name ?? '—',
         curso:      intern?.course    ?? '—',
         dataInicio: intern?.internship_start ? fmtDate(intern.internship_start) : '—',
-        semestre:   '—',
+        titulo:     getLevelTitle((intern as any)?.level ?? 1, 'M'),
       },
       summaryCards: [
         { label: 'Total Aprovado',   value: mh(totalMin),          colorKey: 'green'  },
@@ -249,7 +250,7 @@ export async function GET(request: Request) {
   // ── punctuality: pontualidade ──────────────────────────────────────────────
   if (report === 'punctuality') {
     const { data: intern } = await db
-      .from('profiles').select('full_name, course, internship_start').eq('id', internId).single()
+      .from('profiles').select('full_name, course, internship_start, level').eq('id', internId).single()
 
     const { data: rawRec } = await db
       .from('time_records')
@@ -273,7 +274,7 @@ export async function GET(request: Request) {
         nome:       intern?.full_name ?? '—',
         curso:      intern?.course    ?? '—',
         dataInicio: intern?.internship_start ? fmtDate(intern.internship_start) : '—',
-        semestre:   '—',
+        titulo:     getLevelTitle((intern as any)?.level ?? 1, 'M'),
       },
       summaryCards: [
         { label: 'Taxa de Pontualidade', value: `${rate}%`,         colorKey: rate >= 80 ? 'green' : 'orange' },
@@ -302,7 +303,7 @@ export async function GET(request: Request) {
   // ── activities: atividades realizadas ─────────────────────────────────────
   if (report === 'activities') {
     const { data: intern } = await db
-      .from('profiles').select('full_name, course, internship_start').eq('id', internId).single()
+      .from('profiles').select('full_name, course, internship_start, level').eq('id', internId).single()
 
     const { data: rawRec } = await db
       .from('time_records')
@@ -333,7 +334,7 @@ export async function GET(request: Request) {
         nome:       intern?.full_name ?? '—',
         curso:      intern?.course    ?? '—',
         dataInicio: intern?.internship_start ? fmtDate(intern.internship_start) : '—',
-        semestre:   '—',
+        titulo:     getLevelTitle((intern as any)?.level ?? 1, 'M'),
       },
       summaryCards: [
         { label: 'Total de Atividades', value: String(total), colorKey: 'green' },
@@ -374,7 +375,7 @@ export async function GET(request: Request) {
         nome:       intern?.full_name ?? '—',
         curso:      intern?.course    ?? '—',
         dataInicio: intern?.internship_start ? fmtDate(intern.internship_start) : '—',
-        semestre:   '—',
+        titulo:     getLevelTitle((intern as any)?.level ?? 1, 'M'),
       },
       summaryCards: [
         { label: 'Horas Cumpridas',     value: mh(totalMin),           colorKey: 'green'  },
@@ -431,7 +432,7 @@ export async function GET(request: Request) {
         nome:       intern?.full_name ?? '—',
         curso:      intern?.course    ?? '—',
         dataInicio: intern?.internship_start ? fmtDate(intern.internship_start) : '—',
-        semestre:   '—',
+        titulo:     getLevelTitle((intern as any)?.level ?? 1, 'M'),
       },
       summaryCards: [
         { label: 'Carga Total',      value: `${intern?.total_hours_required ?? 0}h`, colorKey: 'gray'   },

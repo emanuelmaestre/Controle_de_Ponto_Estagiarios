@@ -9,6 +9,13 @@ export type GenericColumn = { header: string; dataKey: string; width?: number }
 export type SummaryCard   = { label: string; value: string; colorKey?: string }
 export type TotalLine     = { label: string; value: string }
 
+export type InternInfo = {
+  nome:       string
+  curso?:     string
+  dataInicio?: string
+  titulo?:    string
+}
+
 export type GenericTableReportProps = {
   title:           string
   tableTitle?:     string
@@ -16,6 +23,7 @@ export type GenericTableReportProps = {
   institutionName: string
   supervisorName?: string
   internName?:     string
+  internInfo?:     InternInfo
   summaryCards?:   SummaryCard[]
   progressBar?:    { pct: number; label: string }
   columns:         GenericColumn[]
@@ -61,6 +69,17 @@ const s = StyleSheet.create({
   },
 })
 
+// Estilos do grid de info (igual ao FrequenciaIndividual)
+const ig = StyleSheet.create({
+  grid:         { borderWidth: 1, borderColor: C.borderCard, marginBottom: 10 },
+  row:          { flexDirection: 'row', borderBottomWidth: 1, borderColor: C.borderCard },
+  rowLast:      { flexDirection: 'row' },
+  cell:         { flex: 1, paddingHorizontal: 10, paddingVertical: 9, borderRightWidth: 1, borderColor: C.borderCard },
+  cellLast:     { borderRightWidth: 0 },
+  label:        { fontSize: 6, fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: 0.7, marginBottom: 3 },
+  value:        { fontSize: 11, fontWeight: 600, color: C.text, textTransform: 'uppercase' },
+})
+
 export function GenericTableReport({
   title,
   tableTitle,
@@ -68,6 +87,7 @@ export function GenericTableReport({
   institutionName,
   supervisorName,
   internName,
+  internInfo,
   summaryCards,
   progressBar,
   columns,
@@ -85,6 +105,37 @@ export function GenericTableReport({
           supervisorName={supervisorName}
           periodLabel={period}
         />
+
+        {/* INFORMAÇÕES DO ESTAGIÁRIO */}
+        {internInfo && (
+          <>
+            <View style={shared.secBar}>
+              <Text style={shared.secBarText}>INFORMAÇÕES DO ESTAGIÁRIO</Text>
+            </View>
+            <View style={ig.grid}>
+              <View style={ig.row}>
+                <View style={[ig.cell, { flex: 2 }]}>
+                  <Text style={ig.label}>NOME{'\n'}COMPLETO</Text>
+                  <Text style={ig.value}>{internInfo.nome}</Text>
+                </View>
+                <View style={[ig.cell, ig.cellLast]}>
+                  <Text style={ig.label}>DATA DE INÍCIO</Text>
+                  <Text style={ig.value}>{internInfo.dataInicio ?? '—'}</Text>
+                </View>
+              </View>
+              <View style={ig.rowLast}>
+                <View style={[ig.cell, { flex: 2 }]}>
+                  <Text style={ig.label}>CURSO</Text>
+                  <Text style={ig.value}>{internInfo.curso ?? '—'}</Text>
+                </View>
+                <View style={[ig.cell, ig.cellLast]}>
+                  <Text style={ig.label}>TÍTULO</Text>
+                  <Text style={ig.value}>{internInfo.titulo ?? '—'}</Text>
+                </View>
+              </View>
+            </View>
+          </>
+        )}
 
         {/* RESUMO */}
         {summaryCards && summaryCards.length > 0 && (

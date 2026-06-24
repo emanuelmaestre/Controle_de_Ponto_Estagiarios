@@ -44,8 +44,9 @@ export async function GET(req: NextRequest) {
     tableTitle:      data.tableTitle,
     period:          data.period ?? month,
     institutionName,
-    supervisorName:  data.supervisor,
+    supervisorName:  data.supervisor ?? 'Prof. Milton Antônio Naves',
     internName:      data.internName,
+    internInfo:      data.internInfo,
     summaryCards:    data.summaryCards?.map((c: any) => ({
       label: c.label, value: String(c.value), colorKey: c.colorKey,
     })),
