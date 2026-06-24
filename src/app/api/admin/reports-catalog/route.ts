@@ -394,7 +394,7 @@ export async function GET(request: Request) {
       ],
       rows: [
         { campo: 'NOME COMPLETO',      valor: (intern?.full_name ?? '—').toUpperCase() },
-        { campo: 'E-MAIL',             valor: intern?.email ?? '—' },
+        { campo: 'E-MAIL',             valor: (intern?.email ?? '—').toUpperCase() },
         { campo: 'CURSO',              valor: (intern?.course ?? '—').toUpperCase() },
         { campo: 'APELIDO',            valor: (intern?.nickname ?? '—').toUpperCase() },
         { campo: 'INÍCIO DO ESTÁGIO',  valor: intern?.internship_start ? fmtDate(intern.internship_start) : '—' },
@@ -443,15 +443,15 @@ export async function GET(request: Request) {
       ],
       progressBar: { pct, label: `${pct}% concluído · ${mh(totalMin)} de ${intern?.total_hours_required ?? 0}h` },
       columns: [
-        { header: 'Métrica', dataKey: 'metrica', width: 70 },
+        { header: 'Métrica', dataKey: 'metrica', width: 140 },
         { header: 'Valor',   dataKey: 'valor' },
       ],
       rows: [
-        { metrica: 'Carga horária total',   valor: `${intern?.total_hours_required ?? 0}h` },
-        { metrica: 'Horas cumpridas',       valor: mh(totalMin) },
-        { metrica: 'Horas restantes',       valor: mh(remainMin) },
-        { metrica: 'Percentual concluído',  valor: `${pct}%` },
-        { metrica: 'Sessões aprovadas',     valor: String(allRec?.length ?? 0) },
+        { metrica: 'CARGA HORÁRIA TOTAL',   valor: `${intern?.total_hours_required ?? 0}H` },
+        { metrica: 'HORAS CUMPRIDAS',       valor: mh(totalMin).toUpperCase() },
+        { metrica: 'HORAS RESTANTES',       valor: mh(remainMin).toUpperCase() },
+        { metrica: 'PERCENTUAL CONCLUÍDO',  valor: `${pct}%` },
+        { metrica: 'SESSÕES APROVADAS',     valor: String(allRec?.length ?? 0) },
       ],
     })
   }
