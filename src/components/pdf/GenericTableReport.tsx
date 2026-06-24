@@ -2,7 +2,7 @@ import React from 'react'
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'
 import {
   C, M, HEADER_H, shared,
-  PageHeader, PageFooter, ProgressBar, compactH,
+  PageHeader, PageFooter, ProgressBar, SigLine, compactH,
 } from './pdfShared'
 
 export type GenericColumn = { header: string; dataKey: string; width?: number }
@@ -67,6 +67,11 @@ const s = StyleSheet.create({
     textTransform: 'uppercase', letterSpacing: 0.4,
     textAlign: 'center', marginTop: 3, paddingHorizontal: 2,
   },
+  obsText: { fontSize: 8.5, color: C.textSub, lineHeight: 1.65, padding: 12 },
+  sigWrap: { flexDirection: 'row', gap: 24, paddingHorizontal: 10, paddingTop: 24, paddingBottom: 16 },
+  sigBox:  { flex: 1, alignItems: 'center' },
+  sigName: { fontSize: 9, fontWeight: 700, color: C.text, marginTop: 5 },
+  sigRole: { fontSize: 7.5, color: C.textSub, marginTop: 2 },
 })
 
 // Estilos do grid de info (igual ao FrequenciaIndividual)
@@ -210,6 +215,34 @@ export function GenericTableReport({
               ))}
             </View>
           )}
+        </View>
+
+        {/* OBSERVAÇÕES E VALIDAÇÃO */}
+        <View wrap={false}>
+          <View style={shared.secBar}>
+            <Text style={shared.secBarText}>OBSERVAÇÕES E VALIDAÇÃO</Text>
+          </View>
+          <View style={{ borderWidth: 1, borderTopWidth: 0, borderColor: C.borderCard }}>
+            <Text style={s.obsText}>
+              Este relatório foi gerado automaticamente pelo sistema {institutionName} com base nos
+              registros do período indicado. As informações contidas neste documento são de caráter
+              oficial e devem ser assinadas pelo responsável e pelo estagiário para fins de comprovação.
+            </Text>
+            <View style={s.sigWrap}>
+              <View style={s.sigBox}>
+                <SigLine />
+                <Text style={s.sigName}>{supervisorName || 'Supervisor / Responsável'}</Text>
+                <Text style={s.sigRole}>Supervisor(a) / Responsável</Text>
+              </View>
+              {internInfo && (
+                <View style={s.sigBox}>
+                  <SigLine />
+                  <Text style={s.sigName}>{internInfo.nome}</Text>
+                  <Text style={s.sigRole}>Estagiário(a)</Text>
+                </View>
+              )}
+            </View>
+          </View>
         </View>
 
         {/* FOOTER fixo */}
