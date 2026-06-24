@@ -72,6 +72,9 @@ export async function GET(req: NextRequest) {
 
   const rankTitle = getLevelTitle((intern as any)?.level ?? 1, 'M')
 
+  const { data: settings } = await db.from('settings').select('lab_name').single()
+  const institutionName = (settings as any)?.lab_name ?? 'Controle de Ponto'
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pdf = React.createElement(FrequenciaIndividual as any, {
     studentName:      intern?.full_name ?? 'Estagiário',
@@ -85,7 +88,8 @@ export async function GET(req: NextRequest) {
     totalHours:       minutesToHours(totalMin),
     totalSessions,
     approvedSessions: approved,
-    institutionName:  'Controle de Ponto',
+    institutionName,
+    supervisorName:   'Prof. Milton Antônio Naves',
   })
 
   const buffer = Buffer.from(await renderToBuffer(pdf as any))

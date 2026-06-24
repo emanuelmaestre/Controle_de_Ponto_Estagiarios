@@ -73,6 +73,7 @@ export async function GET(req: NextRequest) {
     totalSessions:    records.length,
     approvedSessions: approved,
     institutionName:  'Controle de Ponto',
+    supervisorName:   'Prof. Milton Antônio Naves',
   })
 
   const buffer = Buffer.from(await renderToBuffer(pdf as any))
