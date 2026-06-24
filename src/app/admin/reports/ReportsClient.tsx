@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -139,17 +139,12 @@ const DROPDOWN_STYLE = {
 }
 
 // ── Intern selector ────────────────────────────────────────────────────────────
-interface InternOption { id: string; full_name: string }
+interface InternOption { id: string; name: string }
 
-function InternSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const [interns, setInterns] = useState<InternOption[]>([])
-  const [open, setOpen]       = useState(false)
-  const [pos, setPos]         = useState<React.CSSProperties>({})
-  const btnRef                = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    fetch('/api/admin/interns').then(r => r.json()).then(j => setInterns(j.interns ?? []))
-  }, [])
+function InternSelect({ value, onChange, interns }: { value: string; onChange: (v: string) => void; interns: InternOption[] }) {
+  const [open, setOpen] = useState(false)
+  const [pos, setPos]   = useState<React.CSSProperties>({})
+  const btnRef          = useRef<HTMLButtonElement>(null)
 
   const toggle = () => {
     if (open) { setOpen(false); return }
@@ -157,7 +152,7 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
     setOpen(true)
   }
 
-  const selected  = interns.find(i => i.id === value)
+  const selected = interns.find(i => i.id === value)
   const listRef2  = useRef<HTMLDivElement>(null)
   const scroll2   = (dir: 'up' | 'down') => {
     listRef2.current?.scrollBy({ top: dir === 'down' ? 80 : -80, behavior: 'smooth' })
@@ -197,7 +192,7 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(63,229,108,0.05)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = intern.id === value ? 'rgba(63,229,108,0.08)' : 'transparent' }}
                 >
-                  {intern.full_name}
+                  {intern.name}
                 </button>
               ))}
             </div>
@@ -225,7 +220,7 @@ function InternSelect({ value, onChange }: { value: string; onChange: (v: string
           color: value ? '#3fe56c' : 'rgba(255,255,255,0.4)',
         }}>
         <Users size={11} />
-        <span className="flex-1 text-left truncate">{selected?.full_name ?? 'Selecionar estagiário'}</span>
+        <span className="flex-1 text-left truncate">{selected?.name ?? 'Selecionar estagiário'}</span>
         <ChevronDown size={11} />
       </button>
       {typeof document !== 'undefined' && createPortal(dropdown, document.body)}
@@ -316,7 +311,7 @@ function MonthSelect({ value, onChange }: { value: string; onChange: (v: string)
 }
 
 // ── Report Card ────────────────────────────────────────────────────────────────
-function ReportCard({ report, index }: { report: ReportDef; index: number }) {
+function ReportCard({ report, index, interns }: { report: ReportDef; index: number; interns: InternOption[] }) {
   const [month, setMonth] = useState(getCurrentMonth())
   const [internId, setInternId] = useState('')
   const [loadingExcel, setLoadingExcel] = useState(false)
@@ -475,7 +470,7 @@ function ReportCard({ report, index }: { report: ReportDef; index: number }) {
 
       {/* Selectors */}
       <div className="space-y-2">
-        {report.needsIntern && <InternSelect value={internId} onChange={setInternId} />}
+        {report.needsIntern && <InternSelect value={internId} onChange={setInternId} interns={interns} />}
         <MonthSelect value={month} onChange={setMonth} />
       </div>
 
@@ -522,7 +517,7 @@ function ReportCard({ report, index }: { report: ReportDef; index: number }) {
 
 
 // ── Main ──────────────────────────────────────────────────────────────────────
-export default function ReportsClient() {
+export default function ReportsClient({ interns = [] }: { interns?: InternOption[] }) {
   const [activeCategory, setActiveCategory] = useState<Category>('intern')
 
   const filtered = REPORTS.filter(r => r.category === activeCategory)
@@ -615,7 +610,7 @@ export default function ReportsClient() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filtered.map((report, i) => (
-                  <ReportCard key={report.id} report={report} index={i} />
+                  <ReportCard key={report.id} report={report} index={i} interns={interns} />
                 ))}
               </div>
             </motion.div>
