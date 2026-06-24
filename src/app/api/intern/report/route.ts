@@ -4,6 +4,7 @@ import React from 'react'
 import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
 import { FrequenciaIndividual } from '@/components/pdf/FrequenciaIndividual'
 import { minutesToHours, formatDate, formatTime } from '@/lib/utils'
+import { getLevelTitle } from '@/lib/gamification'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
   const db = createSupabaseServiceClient()
 
   const { data: profile } = await db
-    .from('profiles').select('full_name, course, internship_start').eq('id', user.id).maybeSingle()
+    .from('profiles').select('full_name, course, internship_start, level, gender').eq('id', user.id).maybeSingle()
 
   let query = db
     .from('time_records')
@@ -57,9 +58,14 @@ export async function GET(req: NextRequest) {
     ? new Date(startDate + 'T12:00:00').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
     : undefined
 
+  const levelNum  = (profile as any)?.level  ?? 1
+  const gender    = (profile as any)?.gender ?? null
+  const rankTitle = getLevelTitle(levelNum, gender === 'female' ? 'F' : gender === 'male' ? 'M' : null)
+
   const pdf = React.createElement(FrequenciaIndividual as any, {
     studentName:      profile?.full_name ?? 'Estagiário',
     course:           (profile as any)?.course ?? undefined,
+    title:            rankTitle,
     internshipStart:  (profile as any)?.internship_start
                         ? fmtDate((profile as any).internship_start) : undefined,
     period:           { start: fmtDate(startDate), end: fmtDate(endDate) },
