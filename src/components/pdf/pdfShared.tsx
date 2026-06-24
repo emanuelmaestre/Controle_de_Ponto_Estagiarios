@@ -195,7 +195,10 @@ export function PageHeader({
 
         {/* Título central */}
         <View style={{ flex: 1, alignItems: 'center', paddingHorizontal: 6 }}>
-          <Text style={{ fontSize: 17, fontWeight: 700, color: C.text, letterSpacing: 0.2 }}>
+          <Text style={{
+            fontSize: title.length > 38 ? 13 : title.length > 28 ? 15 : 17,
+            fontWeight: 700, color: C.text, letterSpacing: 0.2, textAlign: 'center',
+          }}>
             {title}
           </Text>
         </View>
