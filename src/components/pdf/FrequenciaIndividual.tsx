@@ -78,10 +78,10 @@ const s = StyleSheet.create({
   },
 
   // Colunas tabela
-  cDate: { width: '9%' },
-  cDay:  { width: '7%' },
-  cTime: { width: '21%' },
-  cDur:  { width: '9%' },
+  cDate: { width: '10%' },
+  cDay:  { width: '9%' },
+  cTime: { width: '22%' },
+  cDur:  { width: '10%' },
   cAct:  { flex: 1 },
 
   // Assinaturas
