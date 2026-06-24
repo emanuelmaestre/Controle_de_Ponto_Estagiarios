@@ -525,13 +525,13 @@ export async function GET(request: Request) {
 
     const nameMap = new Map(withId(interns).map(i => [i.id, i.full_name ?? '—']))
     const rows = list(records).map(r => ({
-      nome:    nameMap.get(r.intern_id ?? '') ?? '—',
+      nome:    (nameMap.get(r.intern_id ?? '') ?? '—').toUpperCase(),
       data:    r.clock_in ? fmtDate(r.clock_in) : '—',
-      dia:     r.clock_in ? dayName(r.clock_in) : '—',
+      dia:     r.clock_in ? dayName(r.clock_in).toUpperCase() : '—',
       entrada: r.clock_in  ? fmtTime(r.clock_in)  : '—',
       saida:   r.clock_out ? fmtTime(r.clock_out) : '—',
-      duracao: r.duration_minutes ? mh(r.duration_minutes) : '—',
-      status:  r.status === 'approved' ? 'Aprovado' : r.status === 'pending' ? 'Pendente' : 'Reprovado',
+      duracao: r.duration_minutes ? mh(r.duration_minutes).toUpperCase() : '—',
+      status:  r.status === 'approved' ? 'APROVADO' : r.status === 'pending' ? 'PENDENTE' : 'REPROVADO',
     }))
 
     return NextResponse.json({
