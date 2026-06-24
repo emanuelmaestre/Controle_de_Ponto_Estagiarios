@@ -72,7 +72,7 @@ const s = StyleSheet.create({
   cardAccent: { height: 3, alignSelf: 'stretch', marginBottom: 8 },
   cardNum:    { fontSize: 18, fontWeight: 700, lineHeight: 1.1 },
   cardLabel:  {
-    fontSize: 6, fontWeight: 400, color: C.textMuted,
+    fontSize: 6, fontWeight: 600, color: C.textSub,
     textTransform: 'uppercase', letterSpacing: 0.4,
     textAlign: 'center', marginTop: 3, paddingHorizontal: 2,
   },
