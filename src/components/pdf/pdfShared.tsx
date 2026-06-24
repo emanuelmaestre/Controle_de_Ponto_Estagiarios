@@ -39,7 +39,7 @@ export const C = {
   rowAlt:     '#f4f8f4',
   text:       '#111827',
   textSub:    '#374151',
-  textMuted:  '#9ca3af',
+  textMuted:  '#4b5563',
   footerBg:   '#eef4ee',
 }
 
