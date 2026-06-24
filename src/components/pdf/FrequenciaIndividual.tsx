@@ -88,7 +88,7 @@ const s = StyleSheet.create({
   sigWrap: { flexDirection: 'row', gap: 24, paddingHorizontal: 10, paddingTop: 24, paddingBottom: 16 },
   sigBox:  { flex: 1, alignItems: 'center' },
   sigName: { fontSize: 9, fontWeight: 700, color: C.text, marginTop: 5 },
-  sigRole: { fontSize: 7.5, color: C.textMuted, marginTop: 2 },
+  sigRole: { fontSize: 7.5, color: C.textSub, marginTop: 2 },
   obsText: { fontSize: 8.5, color: C.textSub, lineHeight: 1.65, padding: 12 },
 })
 

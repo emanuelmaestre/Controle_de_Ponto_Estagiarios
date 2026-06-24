@@ -149,7 +149,7 @@ export const shared = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: M, paddingVertical: 5,
   },
-  footerLeft:  { fontSize: 6.5, color: C.textMuted },
+  footerLeft:  { fontSize: 6.5, color: C.textSub },
   footerRight: { fontSize: 8,   fontWeight: 700, color: C.red },
 })
 
