@@ -5,10 +5,6 @@ import type { Settings } from '@/types/database'
 import SettingsForm from './SettingsForm'
 import ChangePinForm from './ChangePinForm'
 import IntegrationsTab from './IntegrationsTab'
-import NormalizeNamesButton from './NormalizeNamesButton'
-import FixStartDatesButton from './FixStartDatesButton'
-import SyncProfilesButton from './SyncProfilesButton'
-import RecalcGamificationButton from './RecalcGamificationButton'
 import { FadeIn } from '@/components/ui/MotionWrappers'
 
 export const dynamic = 'force-dynamic'
@@ -106,16 +102,16 @@ export default async function SettingsPage({ searchParams }: Props) {
                 {/* Sidebar — 4 cols */}
                 <div className="md:col-span-4">
                   <div
-                    className="rounded-xl p-5 space-y-3"
+                    className="rounded-xl p-5"
                     style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
                   >
-                    <p className="text-[10px] font-bold tracking-widest mb-1" style={{ color: 'var(--text-3)' }}>
-                      UTILITÁRIOS
+                    <p className="text-[10px] font-bold tracking-widest mb-2" style={{ color: 'var(--text-3)' }}>
+                      MANUTENÇÃO AUTOMÁTICA
                     </p>
-                    <NormalizeNamesButton />
-                    <FixStartDatesButton />
-                    <SyncProfilesButton />
-                    <RecalcGamificationButton />
+                    <p className="text-xs" style={{ color: 'var(--text-3)' }}>
+                      O sistema executa tarefas de manutenção automaticamente toda madrugada às 03h:
+                      correção ortográfica das atividades e normalização dos nomes dos estagiários.
+                    </p>
                   </div>
                 </div>
               </div>

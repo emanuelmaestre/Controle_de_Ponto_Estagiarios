@@ -1,15 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
-import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase/server'
-export const dynamic = 'force-dynamic'
+import { NextResponse } from 'next/server'
+import { createSupabaseServiceClient } from '@/lib/supabase/server'
+import { requireManager } from '@/lib/route-auth'
 
-const PONTOS_POR_ATIVIDADE = 5
-
-// ── Vocabulário correto de referência ────────────────────────────────────────
-// Cada palavra aqui é a forma CERTA. O algoritmo fuzzy encontra a mais próxima.
 const VOCABULARIO: string[] = [
-
-  // ── LIMPEZA / HIGIENE ────────────────────────────────────────────────────────
   'LIMPEZA', 'LIMPEZAS', 'LIMPAR', 'LIMPANDO', 'LIMPEI', 'LIMPO',
   'VARREDURA', 'VARRER', 'VARRENDO', 'VARRI',
   'VASSOURA', 'VASSOURAS',
@@ -20,8 +13,6 @@ const VOCABULARIO: string[] = [
   'FAXINA', 'FAXINANDO',
   'DESCARTE', 'DESCARTANDO', 'DESCARTAR', 'DESCARTEI',
   'RESÍDUO', 'RESÍDUOS', 'LIXO',
-
-  // ── ORGANIZAÇÃO / ARRUMAÇÃO ──────────────────────────────────────────────────
   'ORGANIZAÇÃO', 'ORGANIZAR', 'ORGANIZANDO', 'ORGANIZEI',
   'ARRUMAÇÃO', 'ARRUMAR', 'ARRUMANDO', 'ARRUMEI',
   'ORDENAÇÃO', 'ORDENAR', 'ORDENANDO', 'ORDENEI',
@@ -32,8 +23,6 @@ const VOCABULARIO: string[] = [
   'EMPILHAMENTO', 'EMPILHAR', 'EMPILHANDO',
   'ARMAZENAMENTO', 'ARMAZENAR', 'ARMAZENANDO', 'ARMAZENEI',
   'DISPOSIÇÃO', 'DISPOR',
-
-  // ── RECEPÇÃO / ATENDIMENTO ───────────────────────────────────────────────────
   'RECEPÇÃO', 'RECEPCIONAR', 'RECEPCIONANDO', 'RECEPCIONEI',
   'ATENDIMENTO', 'ATENDER', 'ATENDENDO', 'ATENDI',
   'ACOLHIMENTO', 'ACOLHER', 'ACOLHENDO',
@@ -41,8 +30,6 @@ const VOCABULARIO: string[] = [
   'ORIENTAÇÃO', 'ORIENTAR', 'ORIENTANDO', 'ORIENTEI',
   'ENCAMINHAMENTO', 'ENCAMINHAR', 'ENCAMINHANDO', 'ENCAMINHEI',
   'SUPORTE', 'APOIO',
-
-  // ── DOCUMENTOS / ADMINISTRATIVO ─────────────────────────────────────────────
   'DOCUMENTO', 'DOCUMENTOS', 'DOCUMENTAÇÃO', 'DOCUMENTAR', 'DOCUMENTANDO',
   'ARQUIVAMENTO', 'ARQUIVAR', 'ARQUIVANDO', 'ARQUIVEI',
   'ARQUIVO', 'ARQUIVOS',
@@ -70,8 +57,6 @@ const VOCABULARIO: string[] = [
   'XEROX', 'XEROCAR',
   'DIGITALIZAÇÃO', 'DIGITALIZAR', 'DIGITALIZANDO', 'DIGITALIZEI',
   'ESCANEAMENTO', 'ESCANEAR', 'ESCANEANDO', 'ESCANEEI',
-
-  // ── REUNIÃO / TREINAMENTO / CAPACITAÇÃO ─────────────────────────────────────
   'REUNIÃO', 'REUNIÕES', 'REUNIR', 'REUNINDO', 'REUNI',
   'TREINAMENTO', 'TREINAMENTOS', 'TREINAR', 'TREINANDO', 'TREINEI',
   'CAPACITAÇÃO', 'CAPACITAR', 'CAPACITANDO', 'CAPACITEI',
@@ -80,8 +65,6 @@ const VOCABULARIO: string[] = [
   'APRESENTAÇÃO', 'APRESENTAR', 'APRESENTANDO', 'APRESENTEI',
   'WORKSHOP',
   'INSTRUÇÃO', 'INSTRUIR', 'INSTRUINDO',
-
-  // ── MONITORAMENTO / SUPORTE / COLABORAÇÃO ───────────────────────────────────
   'MONITORAMENTO', 'MONITORAR', 'MONITORANDO', 'MONITOREI',
   'ACOMPANHAMENTO', 'ACOMPANHAR', 'ACOMPANHANDO', 'ACOMPANHEI',
   'SUPERVISÃO', 'SUPERVISIONAR', 'SUPERVISIONANDO',
@@ -89,8 +72,6 @@ const VOCABULARIO: string[] = [
   'AUXILIAR', 'AUXILIANDO', 'AUXILIEI',
   'AJUDAR', 'AJUDANDO', 'AJUDEI',
   'APOIAR', 'APOIANDO', 'APOIEI',
-
-  // ── ESTOQUE / MATERIAIS / ALMOXARIFADO ──────────────────────────────────────
   'ESTOQUE', 'ESTOCAR', 'ESTOCANDO', 'ESTOQUEI',
   'MATERIAL', 'MATERIAIS',
   'SUPRIMENTO', 'SUPRIMENTOS',
@@ -102,8 +83,6 @@ const VOCABULARIO: string[] = [
   'ETIQUETAGEM', 'ETIQUETAR', 'ETIQUETANDO', 'ETIQUETEI',
   'ETIQUETA', 'ETIQUETAS',
   'CONTAGEM', 'CONTAR', 'CONTANDO', 'CONTEI',
-
-  // ── TECNOLOGIA / INFORMÁTICA / SISTEMAS ─────────────────────────────────────
   'INFORMÁTICA',
   'COMPUTADOR', 'COMPUTADORES',
   'SISTEMA', 'SISTEMAS',
@@ -118,10 +97,7 @@ const VOCABULARIO: string[] = [
   'CADASTRAMENTO',
   'BACKUP', 'BACKUPS',
   'REDE', 'REDES',
-  'SUPORTE',
   'HARDWARE', 'SOFTWARE',
-
-  // ── LABORATÓRIO / CIÊNCIAS ───────────────────────────────────────────────────
   'LABORATÓRIO', 'LABORATÓRIOS',
   'ANÁLISE', 'ANÁLISES', 'ANALISAR', 'ANALISANDO', 'ANALISEI',
   'AMOSTRA', 'AMOSTRAS',
@@ -137,14 +113,11 @@ const VOCABULARIO: string[] = [
   'SOLUÇÃO', 'SOLUÇÕES',
   'REAGENTE', 'REAGENTES',
   'VIDRARIA', 'VIDRARIAS',
-  'MICROSCÓPIO', 'CENTRÍFUGA', 'AUTOCLAVE',
   'RESULTADO', 'RESULTADOS',
   'LAUDO', 'LAUDOS',
   'EXAME', 'EXAMES',
   'INSPEÇÃO', 'INSPECIONAR', 'INSPECIONANDO', 'INSPECIONEI',
   'VISTORIA', 'VISTORIAR', 'VISTORIANDO', 'VISTORIEI',
-
-  // ── AÇÕES GERAIS / VERBOS COMUNS ────────────────────────────────────────────
   'REALIZAR', 'REALIZANDO', 'REALIZEI', 'REALIZAÇÃO',
   'EXECUTAR', 'EXECUTANDO', 'EXECUTEI', 'EXECUÇÃO',
   'DESENVOLVER', 'DESENVOLVENDO', 'DESENVOLVI', 'DESENVOLVIMENTO',
@@ -170,31 +143,22 @@ const VOCABULARIO: string[] = [
   'CONTATAR', 'CONTATANDO', 'CONTATEI',
   'RESPONDER', 'RESPONDENDO', 'RESPONDI', 'RESPOSTA',
   'REDIGIR', 'REDIGINDO', 'REDIGI',
-  'TRANSCREVER', 'TRANSCREVENDO', 'TRANSCREVI',
   'INSERIR', 'INSERINDO', 'INSERI',
   'LANÇAR', 'LANÇANDO', 'LANCEI',
-  'ATUALIZAR', 'ATUALIZANDO', 'ATUALIZEI',
-  'IMPLANTAR', 'IMPLANTANDO', 'IMPLANTEI',
   'REPARAR', 'REPARANDO', 'REPAREI', 'REPARO',
   'CONSERTAR', 'CONSERTANDO', 'CONSERTEI', 'CONSERTO',
   'SUBSTITUIR', 'SUBSTITUINDO', 'SUBSTITUÍ',
   'MOVIMENTAR', 'MOVIMENTANDO', 'MOVIMENTEI',
   'TRANSPORTAR', 'TRANSPORTANDO', 'TRANSPORTEI',
-  'DESLOCAR', 'DESLOCANDO', 'DESLOQUEI',
   'PROVIDENCIAR', 'PROVIDENCIANDO', 'PROVIDENCIEI',
   'CHECAR', 'CHECANDO', 'CHEQUEI',
   'ANOTAR', 'ANOTANDO', 'ANOTEI', 'ANOTAÇÃO',
-  'REGISTRAR', 'REGISTRANDO', 'REGISTREI',
-  'LEITURA', 'LER', 'LENDO', 'LI',
+  'LEITURA', 'LER', 'LENDO',
   'ESTUDAR', 'ESTUDANDO', 'ESTUDEI', 'ESTUDO',
-
-  // ── SECRETARIA / ADMINISTRATIVA ──────────────────────────────────────────────
   'SECRETARIA',
   'ADMINISTRATIVO', 'ADMINISTRATIVA',
   'GERÊNCIA', 'GERENCIAR', 'GERENCIANDO',
   'COORDENAÇÃO', 'COORDENAR', 'COORDENANDO',
-
-  // ── LOCAIS / SETORES ────────────────────────────────────────────────────────
   'SETOR', 'SETORES',
   'SALA', 'SALAS',
   'ÁREA', 'ÁREAS',
@@ -202,20 +166,11 @@ const VOCABULARIO: string[] = [
   'CORREDOR', 'CORREDORES',
   'BANHEIRO', 'BANHEIROS',
   'ALMOXARIFADO',
-  'RECEPÇÃO',
   'ESCRITÓRIO',
-  'ESTACIONAMENTO',
   'DEPÓSITO',
-
-  // ── TEMPO / TURNO ────────────────────────────────────────────────────────────
   'MANHÃ', 'TARDE', 'NOITE',
-  'DIA', 'DIAS',
-  'SEMANA', 'SEMANAS',
-  'MÊS', 'MESES',
-  'TURNO', 'TURNOS',
-  'PERÍODO', 'PERÍODOS',
-
-  // ── ARTIGOS / PREPOSIÇÕES / CONJUNÇÕES (passam sem correção) ─────────────────
+  'DIA', 'DIAS', 'SEMANA', 'SEMANAS',
+  'TURNO', 'TURNOS', 'PERÍODO', 'PERÍODOS',
   'E', 'O', 'A', 'OS', 'AS',
   'DE', 'DO', 'DA', 'DOS', 'DAS',
   'EM', 'NO', 'NA', 'NOS', 'NAS',
@@ -227,15 +182,12 @@ const VOCABULARIO: string[] = [
   'SEU', 'SUA', 'SEUS', 'SUAS',
   'ESTE', 'ESTA', 'ESTES', 'ESTAS',
   'ESSE', 'ESSA', 'ESSES', 'ESSAS',
-  'AQUELE', 'AQUELA', 'AQUELES', 'AQUELAS',
-  'MAIS', 'MENOS', 'MUITO', 'POUCO',
   'TODO', 'TODA', 'TODOS', 'TODAS',
   'OUTRO', 'OUTRA', 'OUTROS', 'OUTRAS',
   'NOVO', 'NOVA', 'NOVOS', 'NOVAS',
   'LOCAL', 'MESA',
 ]
 
-// Distância de Levenshtein (edição mínima entre duas strings)
 function levenshtein(a: string, b: string): number {
   const m = a.length, n = b.length
   const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
@@ -251,181 +203,69 @@ function levenshtein(a: string, b: string): number {
 
 const VOCAB_SET = new Set(VOCABULARIO)
 
-// Corrige uma única palavra por correspondência aproximada
 function corrigirPalavra(palavra: string): string {
-  if (palavra.length <= 2) return palavra          // artigos/preposições: não mexe
-  if (VOCAB_SET.has(palavra)) return palavra       // já está correta
-
-  // Limite de diferença proporcional ao tamanho da palavra
+  if (palavra.length <= 2) return palavra
+  if (VOCAB_SET.has(palavra)) return palavra
   const limite = palavra.length <= 5 ? 1 : palavra.length <= 8 ? 2 : 3
-
-  let melhor = palavra
-  let menorDist = Infinity
-
+  let melhor = palavra, menorDist = Infinity
   for (const ref of VOCABULARIO) {
-    // Poda rápida por diferença de tamanho
     if (Math.abs(ref.length - palavra.length) > limite) continue
     const d = levenshtein(palavra, ref)
     if (d < menorDist) { menorDist = d; melhor = ref }
-    if (d === 0) break // perfeito
+    if (d === 0) break
   }
-
   return menorDist <= limite ? melhor : palavra
 }
 
-// Remove acentos para normalizar antes de comparar no split, mas preserva acentuação final
 function corrigirOrtografia(texto: string): string {
   const upper = texto.toUpperCase()
-  // Split preservando separadores (espaços, pontuação)
   return upper.split(/(\s+|[^A-ZÁÉÍÓÚÂÊÎÔÛÃÕÀÈÌÒÙÇ]+)/).map(token => {
     if (/^[A-ZÁÉÍÓÚÂÊÎÔÛÃÕÀÈÌÒÙÇ]+$/.test(token)) return corrigirPalavra(token)
     return token
   }).join('')
 }
 
-const schemaPost = z.object({
-  recordId:    z.string().uuid(),
-  description: z.string().trim().min(3, 'Descreva ao menos 3 caracteres').max(1000),
-})
-
-const schemaPatch = z.object({
-  activityId:  z.string().uuid(),
-  description: z.string().trim().min(3, 'Descreva ao menos 3 caracteres').max(1000),
-})
-
-const schemaDelete = z.object({
-  activityId: z.string().uuid(),
-})
-
 function normalizar(texto: string): string {
   return corrigirOrtografia(texto.trim())
 }
 
-async function getInternId(user: { id: string }, db: ReturnType<typeof createSupabaseServiceClient>) {
-  return user.id
-}
+export async function POST() {
+  try {
+    const auth = await requireManager()
+    if (!auth.ok) return auth.response
 
-export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
+    const db = createSupabaseServiceClient()
 
-  const parsed = schemaPost.safeParse(await req.json())
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
+    const { data: activities, error } = await db
+      .from('activities')
+      .select('id, description')
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (!activities?.length) return NextResponse.json({ updated: 0, message: 'Nenhuma atividade encontrada.' })
+
+    const toUpdate = activities
+      .map(a => ({ id: a.id, original: a.description, corrected: normalizar(a.description) }))
+      .filter(a => a.original !== a.corrected)
+
+    if (!toUpdate.length) {
+      return NextResponse.json({ updated: 0, message: 'Todas as atividades já estão corretas.' })
+    }
+
+    const results = await Promise.all(
+      toUpdate.map(({ id, corrected }) =>
+        db.from('activities').update({ description: corrected }).eq('id', id)
+      )
+    )
+
+    const errors = results.filter(r => r.error).map(r => r.error?.message)
+    if (errors.length) return NextResponse.json({ error: errors.join(', ') }, { status: 500 })
+
+    return NextResponse.json({
+      updated: toUpdate.length,
+      corrections: toUpdate.map(a => `"${a.original}" → "${a.corrected}"`),
+    })
+  } catch (err) {
+    console.error('[fix-activities-spelling]', err)
+    return NextResponse.json({ error: 'Erro interno.' }, { status: 500 })
   }
-
-  const { recordId, description } = parsed.data
-  const db = createSupabaseServiceClient()
-
-  const { data: record, error: recErr } = await db
-    .from('time_records')
-    .select('id, clock_out, intern_id')
-    .eq('id', recordId)
-    .eq('intern_id', user.id)
-    .maybeSingle()
-
-  if (recErr || !record) {
-    return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 })
-  }
-
-  if (!record.clock_out) {
-    return NextResponse.json({ error: 'Só é possível adicionar atividade após registrar a saída' }, { status: 400 })
-  }
-
-  const { data: activity, error } = await db
-    .from('activities')
-    .insert({ time_record_id: recordId, description: normalizar(description) })
-    .select()
-    .single()
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-  // Concede +5 pontos ao aluno
-  const { data: profile } = await db.from('profiles').select('points').eq('id', user.id).maybeSingle()
-  if (profile) {
-    await db.from('profiles').update({ points: (profile.points ?? 0) + PONTOS_POR_ATIVIDADE }).eq('id', user.id)
-  }
-
-  return NextResponse.json({ activity })
-}
-
-export async function PATCH(req: NextRequest) {
-  const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
-
-  const parsed = schemaPatch.safeParse(await req.json())
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
-  }
-
-  const { activityId, description } = parsed.data
-  const db = createSupabaseServiceClient()
-
-  const { data: existing, error: findErr } = await db
-    .from('activities')
-    .select('id, time_record_id, time_records!inner(intern_id)')
-    .eq('id', activityId)
-    .maybeSingle()
-
-  if (findErr || !existing) {
-    return NextResponse.json({ error: 'Atividade não encontrada' }, { status: 404 })
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if ((existing.time_records as any)?.intern_id !== user.id) {
-    return NextResponse.json({ error: 'Sem permissão' }, { status: 403 })
-  }
-
-  const { data: activity, error } = await db
-    .from('activities')
-    .update({ description: normalizar(description) })
-    .eq('id', activityId)
-    .select()
-    .single()
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-  return NextResponse.json({ activity })
-}
-
-export async function DELETE(req: NextRequest) {
-  const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
-
-  const parsed = schemaDelete.safeParse(await req.json())
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
-  }
-
-  const { activityId } = parsed.data
-  const db = createSupabaseServiceClient()
-
-  const { data: existing, error: findErr } = await db
-    .from('activities')
-    .select('id, time_record_id, time_records!inner(intern_id)')
-    .eq('id', activityId)
-    .maybeSingle()
-
-  if (findErr || !existing) {
-    return NextResponse.json({ error: 'Atividade não encontrada' }, { status: 404 })
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if ((existing.time_records as any)?.intern_id !== user.id) {
-    return NextResponse.json({ error: 'Sem permissão' }, { status: 403 })
-  }
-
-  const { error } = await db.from('activities').delete().eq('id', activityId)
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-  // Deduz -5 pontos ao excluir
-  const { data: profile } = await db.from('profiles').select('points').eq('id', user.id).maybeSingle()
-  if (profile) {
-    await db.from('profiles').update({ points: Math.max(0, (profile.points ?? 0) - PONTOS_POR_ATIVIDADE) }).eq('id', user.id)
-  }
-
-  return NextResponse.json({ ok: true, pontosDebitados: PONTOS_POR_ATIVIDADE })
 }
