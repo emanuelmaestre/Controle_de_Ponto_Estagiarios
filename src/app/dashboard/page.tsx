@@ -12,6 +12,7 @@ import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/MotionWrappers'
 import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell, AlertTriangle, User, Flame, Star, Bell } from 'lucide-react'
 import LiveClock from '@/components/ui/LiveClock'
+import OnboardingTour from '@/components/OnboardingTour'
 import type { RecordStatus } from '@/types/database'
 import { getLevelInfo, getLevelTitle, getNextLevel, getProgressToNextLevel, ACHIEVEMENTS } from '@/lib/gamification'
 import { detectGender } from '@/lib/detectGender'
@@ -188,8 +189,11 @@ export default async function DashboardPage() {
       {/* Foto opcional no dashboard — só abre se não tiver foto E o usuário ainda não dispensou */}
       <SelfieGate hasPhoto={true} internId={user.id} />
 
+      {/* ── Onboarding tour ─────────────────────────── */}
+      <OnboardingTour userId={user.id} />
+
       {/* ── Header ─────────────────────────────────────── */}
-      <header className="flex-shrink-0" style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
+      <header data-tour="tour-header" className="flex-shrink-0" style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
         <div className="max-w-lg mx-auto px-4 sm:px-5 py-3 sm:py-4 flex items-center justify-between gap-3">
           {/* Avatar + nome (toque abre o perfil) */}
           <Link href="/profile" className="flex items-center gap-3 min-w-0">
@@ -248,6 +252,7 @@ export default async function DashboardPage() {
         {/* ── Hero: Anel de progresso ─────────────────── */}
         <FadeIn delay={0}>
           <div
+            data-tour="tour-progress"
             className="rounded-3xl p-4 sm:p-6"
             style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)', boxShadow: 'var(--card-shadow-md)' }}
           >
@@ -304,7 +309,7 @@ export default async function DashboardPage() {
         </FadeIn>
 
         {/* ── Stats row ───────────────────────────────── */}
-        <div className="grid grid-cols-2 gap-3">
+        <div data-tour="tour-stats" className="grid grid-cols-2 gap-3">
           {[
             {
               icon: <Calendar size={22} />,
@@ -336,6 +341,7 @@ export default async function DashboardPage() {
         <FadeIn delay={0.13}>
           <Link href="/intern-ranking">
             <div
+              data-tour="tour-gamification"
               className="rounded-2xl px-4 py-3.5"
               style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.15)' }}
             >
@@ -437,7 +443,9 @@ export default async function DashboardPage() {
 
 {/* ── Botao de ponto ──────────────────────────── */}
         <ScaleIn delay={0.2}>
-          <ClockButton openRecord={openRecord ?? null} geoExempt={isGeoExemptEmail(user.email)} />
+          <div data-tour="tour-clock">
+            <ClockButton openRecord={openRecord ?? null} geoExempt={isGeoExemptEmail(user.email)} />
+          </div>
         </ScaleIn>
 
         {/* ── Registros de hoje ───────────────────────── */}
@@ -496,6 +504,7 @@ export default async function DashboardPage() {
 
       {/* ── Bottom nav ──────────────────────────────────── */}
       <nav
+        data-tour="tour-nav"
         className="flex-shrink-0 border-t"
         style={{ background: 'var(--nav-bg)', borderColor: 'rgba(0,200,83,0.12)', boxShadow: '0 -4px 20px rgba(0,0,0,0.25)', paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
