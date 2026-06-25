@@ -475,9 +475,13 @@ export default async function DashboardPage() {
                             : <span style={{ color: 'var(--success)', fontWeight: 400 }}> &rarr; em andamento</span>
                           }
                         </p>
-                        {r.duration_minutes && (
-                          <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>{minutesToHours(r.duration_minutes)}</p>
-                        )}
+                        <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+                          {r.duration_minutes != null
+                            ? r.duration_minutes < 1
+                              ? 'menos de 1 min'
+                              : minutesToHours(r.duration_minutes)
+                            : '–'}
+                        </p>
                       </div>
                       {/* Badge de status removido — sem fluxo de aprovação */}
                     </div>
