@@ -41,6 +41,7 @@ const internBase = z.object({
   internship_start: z.string().optional(),
   internship_end: z.string().optional(),
   is_active: z.boolean(),
+  geo_exempt: z.boolean(),
 })
 
 export const internSchema = internBase.refine(
