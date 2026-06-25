@@ -267,18 +267,8 @@ export default function AdminSidebar({ fullName, initials }: Props) {
           className="flex items-center justify-between px-4 flex-shrink-0 z-40"
           style={{ height: 52, background: 'var(--nav-bg)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}
         >
-          <div className="flex items-center gap-2">
-            <div className="relative w-7 h-7 flex-shrink-0">
-              <Image src="/logo.svg" alt="Chronos" fill className="object-contain" />
-            </div>
-            <div>
-              <p className="text-[11px] font-black leading-none tracking-widest" style={{ color: '#3fe56c' }}>
-                CHRONOS <span style={{ color: '#C0392B' }}>LAB</span>
-              </p>
-              <p className="text-[8px] leading-none" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                CONTROLE DE PONTO
-              </p>
-            </div>
+          <div className="relative h-9 w-36">
+            <Image src="/logo.svg" alt="Chronos Lab" fill className="object-contain object-left" />
           </div>
         </div>
       )}
@@ -412,45 +402,66 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                 {/* Header do drawer */}
                 <div className="flex items-center justify-between px-5 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
                   <div className="flex items-center gap-3">
+                    {/* Avatar admin — igual ao desktop */}
                     <div
-                      className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-                      style={{ background: `${avatarColor(fullName)}22`, border: `1px solid ${avatarColor(fullName)}55`, color: avatarColor(fullName) }}
+                      className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 relative"
+                      style={{ background: 'linear-gradient(135deg,#f97316,#fbbf24)', boxShadow: '0 0 12px rgba(249,115,22,0.45)' }}
                     >
-                      {initials}
+                      <Shield size={18} style={{ color: '#fff' }} />
+                      <span className="absolute -top-0.5 -right-0.5 text-[10px] leading-none">👑</span>
                     </div>
                     <div>
-                      <p className="text-sm font-bold leading-tight" style={{ color: 'white' }}>{fullName}</p>
-                      <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.4)' }}>ADMIN</p>
+                      <p className="text-base font-bold leading-tight" style={{ color: 'white' }}>
+                        {fullName.split(' ')[0]}
+                      </p>
+                      <p className="text-[11px] font-black mt-0.5" style={{ color: '#f97316' }}>ADMINISTRADOR</p>
                     </div>
                   </div>
-                  <button onClick={() => setProfileOpen(false)} style={{ color: 'rgba(255,255,255,0.4)' }}>
-                    <X size={18} />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <AdminNotificationBellMobile />
+                    <button
+                      onClick={() => setProfileOpen(false)}
+                      className="p-1.5 rounded-lg"
+                      style={{ color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)' }}
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Opções */}
                 <div className="p-3 space-y-1">
                   <Link
+                    href="/profile"
+                    onClick={() => setProfileOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"
+                    style={{ color: '#3fe56c', background: 'rgba(63,229,108,0.07)', border: '1px solid rgba(63,229,108,0.15)' }}
+                  >
+                    <Shield size={17} style={{ color: '#3fe56c' }} />
+                    Ver meu perfil
+                  </Link>
+
+                  <Link
                     href="/admin/settings"
                     onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"
                     style={{ color: 'var(--text-3)', background: 'rgba(255,255,255,0.04)' }}
                   >
-                    <Settings size={18} style={{ color: 'var(--text-3)' }} />
+                    <Settings size={17} style={{ color: 'var(--text-3)' }} />
                     Configurações
                   </Link>
 
                   <form action="/api/auth/signout" method="POST">
                     <button
                       type="submit"
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold"
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all"
                       style={{
                         color: '#ff5252',
                         background: 'rgba(255,82,82,0.08)',
                         border: '1px solid rgba(255,82,82,0.20)',
                       }}
                     >
-                      <LogOut size={18} />
+                      <LogOut size={17} />
                       Sair da conta
                     </button>
                   </form>
@@ -483,7 +494,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
                   >
                     <Icon size={20} style={{ color: active ? '#3fe56c' : 'var(--text-3)' }} />
                   </motion.div>
-                  <span className="text-[9px] font-bold leading-none" style={{ color: active ? '#4ade80' : 'rgba(255,255,255,0.4)' }}>
+                  <span className="text-[10px] font-bold leading-none" style={{ color: active ? '#4ade80' : 'rgba(255,255,255,0.4)' }}>
                     {item.label}
                   </span>
                   {active && (
@@ -516,7 +527,7 @@ export default function AdminSidebar({ fullName, initials }: Props) {
               >
                 {initials}
               </motion.div>
-              <span className="text-[9px] font-bold leading-none" style={{ color: profileOpen ? '#4ade80' : 'rgba(255,255,255,0.4)' }}>
+              <span className="text-[10px] font-bold leading-none" style={{ color: profileOpen ? '#4ade80' : 'rgba(255,255,255,0.4)' }}>
                 Eu
               </span>
               {profileOpen && (

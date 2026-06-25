@@ -355,7 +355,7 @@ export default function RankingPage() {
 
       {/* ── Content ── */}
       <main className="flex-1 overflow-y-auto">
-        <div style={{ maxWidth: 760, margin: '0 auto', padding: '1.5rem 1rem' }}>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
 
           <AnimatePresence mode="wait">
             {loading ? (
@@ -365,10 +365,10 @@ export default function RankingPage() {
               >
                 {/* Skeleton podium */}
                 <div className="flex items-end justify-center gap-5 mb-6 pt-4">
-                  {[{ h: 84, w: 96 }, { h: 124, w: 96 }, { h: 64, w: 96 }].map((b, i) => (
-                    <div key={i} className="flex flex-col items-center gap-2">
+                  {[{ h: 84 }, { h: 124 }, { h: 64 }].map((b, i) => (
+                    <div key={i} className="flex flex-col items-center gap-2 flex-1 max-w-[96px]">
                       <div className="rounded-full animate-pulse" style={{ width: 44, height: 44, background: 'rgba(255,255,255,0.06)' }} />
-                      <div className="rounded-t-2xl animate-pulse" style={{ width: b.w, height: b.h, background: 'rgba(255,255,255,0.04)' }} />
+                      <div className="w-full rounded-t-2xl animate-pulse" style={{ height: b.h, background: 'rgba(255,255,255,0.04)' }} />
                     </div>
                   ))}
                 </div>
@@ -435,7 +435,7 @@ export default function RankingPage() {
                         initial={{ opacity: 0, x: -16 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.045, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl group transition-all"
+                        className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl group transition-all"
                         whileHover={{ scale: 1.005 }}
                         style={{
                           background: 'var(--surface-card, #0f2318)',
@@ -445,9 +445,9 @@ export default function RankingPage() {
                         }}
                       >
                         {/* Position medal */}
-                        <div className="w-7 flex-shrink-0 flex items-center justify-center">
+                        <div className="w-6 sm:w-7 flex-shrink-0 flex items-center justify-center">
                           {i < 3 ? (
-                            <span className="text-lg">{['🥇','🥈','🥉'][i]}</span>
+                            <span className="text-base sm:text-lg">{['🥇','🥈','🥉'][i]}</span>
                           ) : (
                             <span className="text-xs font-black" style={{ color: 'var(--text-3)' }}>
                               {entry.position}º
@@ -456,9 +456,9 @@ export default function RankingPage() {
                         </div>
 
                         <div className="relative flex-shrink-0">
-                          <Avatar name={entry.internName} photo={entry.photoUrl} size={38} />
+                          <Avatar name={entry.internName} photo={entry.photoUrl} size={34} />
                           {entry.isActive && (
-                            <motion.div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full"
+                            <motion.div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full"
                               style={{ background: '#00c853', border: '2px solid var(--surface-card, #0f2318)' }}
                               animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
                               transition={{ duration: 1.5, repeat: Infinity }} />
@@ -467,16 +467,20 @@ export default function RankingPage() {
 
                         {/* Name + level + bar */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="text-sm font-bold truncate" style={{ color: 'var(--text)' }}>
+                          {/* Name row */}
+                          <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                            <p className="text-[13px] sm:text-sm font-bold truncate" style={{ color: 'var(--text)' }}>
                               {entry.internName}
                             </p>
-                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
+                            {/* Level badge — desktop only */}
+                            <span className="hidden sm:inline-flex text-[9px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
                               style={{ background: `${lvl.color}18`, color: lvl.color, border: `1px solid ${lvl.color}30` }}>
                               {lvl.icon} {title}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2">
+
+                          {/* Progress bar — desktop only */}
+                          <div className="hidden sm:flex items-center gap-2">
                             <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
                               <motion.div className="h-full rounded-full"
                                 initial={{ width: 0 }}
@@ -488,13 +492,32 @@ export default function RankingPage() {
                               Nv.{entry.level}
                             </span>
                           </div>
+
+                          {/* Mobile subrow: level + hours + streak */}
+                          <div className="flex sm:hidden items-center gap-1.5">
+                            <span className="text-[9px] font-bold px-1 py-0.5 rounded-full flex-shrink-0"
+                              style={{ background: `${lvl.color}18`, color: lvl.color, border: `1px solid ${lvl.color}30` }}>
+                              {lvl.icon} {title}
+                            </span>
+                            <span className="text-[9px] tabular-nums" style={{ color: 'var(--text-3)' }}>
+                              {minutesToDisplay(entry.periodMinutes)}
+                            </span>
+                            {entry.streakDays > 0 && (
+                              <span className="flex items-center gap-0.5">
+                                <Flame size={10} style={{ color: entry.streakDays >= 7 ? '#f97316' : '#fbbf24' }} />
+                                <span className="text-[9px] font-black tabular-nums" style={{ color: entry.streakDays >= 7 ? '#f97316' : '#fbbf24' }}>
+                                  {entry.streakDays}d
+                                </span>
+                              </span>
+                            )}
+                          </div>
                         </div>
 
                         {/* Right side stats */}
-                        <div className="flex items-center gap-3 flex-shrink-0">
-                          {/* Streak */}
+                        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                          {/* Streak — desktop only */}
                           {entry.streakDays > 0 && (
-                            <motion.div className="flex items-center gap-1"
+                            <motion.div className="hidden sm:flex items-center gap-1"
                               animate={entry.streakDays >= 7 ? { scale: [1, 1.12, 1] } : {}}
                               transition={{ duration: 1.5, repeat: Infinity }}>
                               <Flame size={13} style={{ color: entry.streakDays >= 7 ? '#f97316' : '#fbbf24' }} />
@@ -504,22 +527,25 @@ export default function RankingPage() {
                             </motion.div>
                           )}
 
-                          {/* Points — destaque principal */}
+                          {/* Points */}
                           <div className="text-right">
                             <div className="flex items-center gap-0.5 justify-end">
                               <Star size={11} style={{ color: '#3fe56c' }} />
-                              <p className="text-xs font-black tabular-nums" style={{ color: 'var(--text)' }}>
+                              <p className="text-[11px] sm:text-xs font-black tabular-nums" style={{ color: 'var(--text)' }}>
                                 {entry.points} pts
                               </p>
                             </div>
-                            <p className="text-[9px] tabular-nums" style={{ color: 'var(--text-3)' }}>
+                            {/* Hours — desktop only */}
+                            <p className="hidden sm:block text-[9px] tabular-nums" style={{ color: 'var(--text-3)' }}>
                               {minutesToDisplay(entry.periodMinutes)}
                             </p>
                           </div>
 
-                          {/* Badges */}
+                          {/* Badges — desktop only */}
                           {entry.achievements.length > 0 && (
-                            <AchievementBurst achievements={entry.achievements} visibleCount={3} size="md" />
+                            <div className="hidden sm:flex">
+                              <AchievementBurst achievements={entry.achievements} visibleCount={3} size="md" />
+                            </div>
                           )}
                         </div>
                       </motion.div>

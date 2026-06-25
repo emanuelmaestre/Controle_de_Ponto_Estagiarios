@@ -545,8 +545,8 @@ export default function ReportsClient({ interns = [] }: { interns?: InternOption
 
           {/* ── Category tabs ── */}
           <div
-            className="flex p-1 rounded-xl overflow-x-auto"
-            style={{ background: 'rgba(15,35,24,0.7)', border: '1px solid rgba(0,200,83,0.12)', scrollbarWidth: 'none' }}
+            className="flex p-1 rounded-xl overflow-x-auto scrollbar-hide"
+            style={{ background: 'rgba(15,35,24,0.7)', border: '1px solid rgba(0,200,83,0.12)' }}
           >
             {CATEGORIES.map(cat => {
               const isActive = activeCategory === cat.key

@@ -341,7 +341,7 @@ export default async function WorkloadPage() {
                       </div>
 
                       {/* Nome + Badge */}
-                      <div className="flex-shrink-0 w-[30%] lg:w-[22%] min-w-0">
+                      <div className="flex-shrink-0 w-[35%] lg:w-[25%] min-w-0 max-w-[200px]">
                         <p className="font-bold text-base preserve-case leading-tight mb-1.5 line-clamp-2"
                           style={{ color: 'var(--text)' }}>
                           {r.full_name}

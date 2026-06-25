@@ -190,7 +190,7 @@ export default async function DashboardPage() {
 
       {/* ── Header ─────────────────────────────────────── */}
       <header className="flex-shrink-0" style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
-        <div className="max-w-lg mx-auto px-5 py-4 flex items-center justify-between gap-3">
+        <div className="max-w-lg mx-auto px-4 sm:px-5 py-3 sm:py-4 flex items-center justify-between gap-3">
           {/* Avatar + nome (toque abre o perfil) */}
           <Link href="/profile" className="flex items-center gap-3 min-w-0">
             {profile?.photo_url ? (
@@ -243,7 +243,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-lg mx-auto w-full px-4 py-4 space-y-3 pb-24">
+      <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}><div className="max-w-lg mx-auto w-full px-3 sm:px-4 py-3 sm:py-4 space-y-3 pb-24">
 
         {/* ── Hero: Anel de progresso ─────────────────── */}
         <FadeIn delay={0}>
@@ -264,7 +264,7 @@ export default async function DashboardPage() {
 
             {/* Ring + info */}
             <div className="flex items-center gap-4 sm:gap-6">
-              <ProgressRing pct={pct} size={100} strokeWidth={10} color={status.color}>
+              <ProgressRing pct={pct} size={88} strokeWidth={9} color={status.color}>
                 <div className="text-center">
                   <p className="text-2xl font-black leading-none" style={{ color: status.color }}>{pct}%</p>
                   <p className="text-[9px] font-bold mt-0.5" style={{ color: 'var(--text-3)' }}>cumprido</p>

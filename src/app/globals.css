@@ -258,6 +258,15 @@ code, pre,
   letter-spacing: normal !important;
 }
 
+/* Ocultar scrollbar mantendo o scroll funcional */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 [data-email],
 .email-display {
   text-transform: none !important;

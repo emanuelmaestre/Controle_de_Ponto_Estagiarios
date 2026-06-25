@@ -162,7 +162,7 @@ export default function InternRankingContent() {
               {top3.length >= 2 && (
                 <div className="rounded-2xl mb-3 overflow-hidden"
                   style={{ background: 'var(--surface-card, #0f2318)', border: '1px solid rgba(0,200,83,0.12)' }}>
-                  <div className="flex items-end justify-center gap-3 pt-5 px-4">
+                  <div className="flex items-end justify-center gap-2 sm:gap-3 pt-4 sm:pt-5 px-3 sm:px-4">
                     {PODIUM_SLOTS.map(slot => {
                       const entry = top3[slot.idx]
                       if (!entry) return null

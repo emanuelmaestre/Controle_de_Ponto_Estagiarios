@@ -69,7 +69,7 @@ export default async function ProfilePage({ searchParams }: Props) {
 
         {/* Header */}
         <header className="flex-shrink-0" style={{ background: 'var(--nav-bg)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}>
-          <div className="max-w-lg mx-auto px-5 py-4 flex items-center gap-3">
+          <div className="max-w-lg mx-auto px-4 sm:px-5 py-3 sm:py-4 flex items-center gap-2 sm:gap-3">
             <Link href="/dashboard" className="flex-shrink-0" style={{ color: 'rgba(255,255,255,0.6)' }}>
               <ArrowLeft size={20} />
             </Link>
@@ -78,20 +78,20 @@ export default async function ProfilePage({ searchParams }: Props) {
               <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.4)' }}>Edite seus dados e foto</p>
             </div>
             {/* Level badge */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
               {streak > 0 && (
-                <span className="text-xs font-bold" style={{ color: '#f97316' }}>🔥 {streak}d</span>
+                <span className="text-[10px] sm:text-xs font-bold" style={{ color: '#f97316' }}>🔥 {streak}d</span>
               )}
-              <span className="flex items-center gap-1 text-[11px] font-black px-2.5 py-1 rounded-full"
+              <span className="flex items-center gap-1 text-[10px] sm:text-[11px] font-black px-2 sm:px-2.5 py-1 rounded-full"
                 style={{ background: `${lvl.color}18`, border: `1px solid ${lvl.color}35`, color: lvl.color }}>
-                {lvl.icon} {title}
+                {lvl.icon} <span className="hidden xs:inline sm:inline">{title}</span>
               </span>
-              <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>⭐{pts}</span>
+              <span className="text-[10px] font-bold hidden sm:inline" style={{ color: 'rgba(255,255,255,0.4)' }}>⭐{pts}</span>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="max-w-lg mx-auto flex px-5" style={{ borderTop: '1px solid rgba(0,200,83,0.08)' }}>
+          <div className="max-w-lg mx-auto flex overflow-x-auto scrollbar-hide" style={{ borderTop: '1px solid rgba(0,200,83,0.08)' }}>
             {[
               { key: 'dados',       label: 'Dados',       icon: '👤' },
               { key: 'conquistas',  label: 'Conquistas',  icon: '🏆' },
@@ -101,7 +101,7 @@ export default async function ProfilePage({ searchParams }: Props) {
               <Link
                 key={t.key}
                 href={`/profile?tab=${t.key}`}
-                className="flex items-center gap-1.5 text-xs font-black py-3 pr-5 transition-colors"
+                className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs font-black py-3 px-3 sm:px-4 whitespace-nowrap transition-colors flex-shrink-0"
                 style={activeTab === t.key
                   ? { color: '#3fe56c', borderBottom: '2px solid #3fe56c', marginBottom: -1 }
                   : { color: 'rgba(255,255,255,0.3)' }
@@ -121,7 +121,7 @@ export default async function ProfilePage({ searchParams }: Props) {
 
         {/* Conteúdo */}
         <main className="flex-1 min-h-0 overflow-y-auto">
-          <div className="max-w-lg mx-auto px-5 py-5">
+          <div className="max-w-lg mx-auto px-4 sm:px-5 py-4 sm:py-5">
             {activeTab === 'dados' && <ProfileForm initial={initialData} />}
             {activeTab === 'relatorios' && <ProfileReports />}
             {activeTab === 'novidades' && <ProfileUpdates />}

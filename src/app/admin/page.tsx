@@ -236,7 +236,7 @@ export default async function AdminPage() {
         </FadeIn>
 
         {interns && interns.length > 0 ? (
-          <StaggerContainer className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 pb-4">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 pb-4">
             {interns.map((intern, idx) => {
               const cfg = statusCfg[intern.today_status] ?? statusCfg.ausente
               const initials = intern.full_name.split(' ').slice(0, 2).map((w: string) => w[0]).join('')

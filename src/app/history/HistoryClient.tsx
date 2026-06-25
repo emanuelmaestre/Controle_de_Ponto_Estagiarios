@@ -529,7 +529,7 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
 
       {/* Header */}
       <header className="flex-shrink-0 shadow-lg" style={{ background: 'var(--nav-bg)' }}>
-        <div className="max-w-2xl mx-auto px-5 py-4 flex items-center gap-4">
+        <div className="max-w-2xl mx-auto px-4 sm:px-5 py-3 sm:py-4 flex items-center gap-3 sm:gap-4">
           <Link href="/dashboard" className="text-sm font-bold hover:opacity-70" style={{ color: 'var(--nav-muted)' }}>
             &larr;
           </Link>
@@ -554,7 +554,7 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
       </header>
 
       <main className="flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
-        <div className="max-w-2xl mx-auto w-full px-4 py-4 space-y-3 pb-4">
+        <div className="max-w-2xl mx-auto w-full px-3 sm:px-4 py-3 sm:py-4 space-y-3 pb-4">
 
           {/* Resumo do mês */}
           <FadeIn>
@@ -584,15 +584,15 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
           {/* Lista de registros */}
           {records.length > 0 ? (
             <div className="relative">
-              <div className="absolute left-[19px] top-2 bottom-2 w-px" style={{ background: 'var(--border)' }} />
-              <StaggerContainer className="space-y-3 pl-11">
+              <div className="absolute left-[15px] sm:left-[19px] top-2 bottom-2 w-px" style={{ background: 'var(--border)' }} />
+              <StaggerContainer className="space-y-3 pl-9 sm:pl-11">
                 {records.map(record => {
                   const semAtividade = record.clock_out && record.activities.length === 0
                   return (
                     <StaggerItem key={record.id} className="relative">
                       {/* Dot na timeline */}
                       <motion.div
-                        className="absolute -left-[28px] top-4 w-3 h-3 rounded-full border-2 flex-shrink-0"
+                        className="absolute -left-[22px] sm:-left-[28px] top-4 w-3 h-3 rounded-full border-2 flex-shrink-0"
                         style={{ background: statusDot[record.status] ?? 'var(--text-3)', borderColor: 'var(--bg)' }}
                         animate={semAtividade ? { scale: [1, 1.25, 1] } : {}}
                         transition={{ duration: 1.8, repeat: Infinity }}

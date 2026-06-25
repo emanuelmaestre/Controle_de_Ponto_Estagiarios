@@ -41,36 +41,36 @@ export default async function InternsPage() {
       {/* ── TopAppBar ──────────────────────────────── */}
       <FadeIn delay={0}>
         <header
-          className="flex items-center justify-between px-6 h-16 flex-shrink-0"
+          className="flex items-center justify-between px-4 sm:px-6 h-14 sm:h-16 flex-shrink-0"
           style={{ background: 'var(--bg)', borderBottom: '1px solid rgba(0,200,83,0.15)' }}
         >
-          <h2 className="text-2xl font-semibold" style={{ color: 'var(--text)' }}>
+          <h2 className="text-xl sm:text-2xl font-semibold" style={{ color: 'var(--text)' }}>
             Estagiários
           </h2>
         </header>
       </FadeIn>
 
       {/* ── Main content ───────────────────────────── */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-6" style={{ maxWidth: 1400, margin: '0 auto', width: '100%' }}>
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6" style={{ maxWidth: 1400, margin: '0 auto', width: '100%' }}>
 
         {/* Header */}
         <FadeIn delay={0.04}>
-          <div className="flex items-start sm:items-center justify-between gap-4 mb-8">
+          <div className="flex items-start sm:items-center justify-between gap-3 mb-6 sm:mb-8">
             <div>
-              <h3 className="text-2xl sm:text-3xl font-semibold" style={{ color: 'var(--text)' }}>
+              <h3 className="text-xl sm:text-3xl font-semibold" style={{ color: 'var(--text)' }}>
                 Lista de Estagiários
               </h3>
-              <p className="text-sm sm:text-base mt-1 preserve-case" style={{ color: 'var(--text-3)' }}>
+              <p className="text-xs sm:text-base mt-1 preserve-case" style={{ color: 'var(--text-3)' }}>
                 {active.length} ativo{active.length !== 1 ? 's' : ''} &middot; {inactive.length} inativo{inactive.length !== 1 ? 's' : ''}
               </p>
             </div>
             <Link
               href="/admin/interns/new"
-              className="flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded font-bold text-sm transition-all hover:opacity-90 active:scale-[0.98] flex-shrink-0"
+              className="flex items-center gap-2 px-3 sm:px-6 py-2 sm:py-2.5 rounded font-bold text-xs sm:text-sm transition-all hover:opacity-90 active:scale-[0.98] flex-shrink-0"
               style={{ background: '#00c853', color: '#003912' }}
             >
-              <UserPlus size={16} />
-              <span className="hidden xs:inline sm:inline">Novo Estagiário</span>
+              <UserPlus size={15} />
+              <span className="hidden sm:inline">Novo Estagiário</span>
               <span className="sm:hidden">Novo</span>
             </Link>
           </div>
@@ -99,7 +99,7 @@ export default async function InternsPage() {
               </div>
             </FadeIn>
           ) : (
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-stretch">
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 items-stretch">
               {active.map((intern, idx) => (
                 <StaggerItem key={intern.id} className="h-full">
                   <InternCard intern={intern} colorIdx={idx} isActive />
@@ -121,7 +121,7 @@ export default async function InternsPage() {
                 <div className="flex-1 h-px" style={{ background: 'rgba(0,200,83,0.15)' }} />
               </div>
             </FadeIn>
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 opacity-60 items-stretch">
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 opacity-60 items-stretch">
               {inactive.map((intern, idx) => (
                 <StaggerItem key={intern.id} className="h-full">
                   <InternCard intern={intern} colorIdx={active.length + idx} isActive={false} />
