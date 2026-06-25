@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   MapPin, CheckCircle2, XCircle, AlertTriangle,
-  Navigation, Loader2, Lock, WifiOff, Clock
+  Navigation, Loader2, Lock, WifiOff, Clock, StopCircle
 } from 'lucide-react'
 import { formatTime } from '@/lib/utils'
 
@@ -343,7 +343,7 @@ export default function ClockButton({ openRecord, geoExempt = false }: Props) {
     if (isActive) {
       return (
         <>
-          <span className="text-xl">⏹</span>
+          <StopCircle size={22} />
           <span>Registrar Saída</span>
         </>
       )
