@@ -32,14 +32,5 @@ const nextConfig: NextConfig = {
 export default withSentryConfig(nextConfig, {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
-
-  // Não sobe source maps automaticamente (requer SENTRY_AUTH_TOKEN)
   silent: true,
-  disableLogger: true,
-
-  // Sem tunelamento — usa o endpoint padrão do Sentry
-  tunnelRoute: undefined,
-
-  // Desativa tree-shaking de logs para manter o logger funcionando
-  hideSourceMaps: true,
 })
