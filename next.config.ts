@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
   // Permite imagens do Supabase Storage e avatares externos
@@ -26,9 +27,19 @@ const nextConfig: NextConfig = {
       },
     ]
   },
-
-  // Habilita output standalone para Docker (opcional)
-  // output: 'standalone',
 }
 
-export default nextConfig
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+
+  // Não sobe source maps automaticamente (requer SENTRY_AUTH_TOKEN)
+  silent: true,
+  disableLogger: true,
+
+  // Sem tunelamento — usa o endpoint padrão do Sentry
+  tunnelRoute: undefined,
+
+  // Desativa tree-shaking de logs para manter o logger funcionando
+  hideSourceMaps: true,
+})

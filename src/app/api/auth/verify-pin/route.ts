@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
 
     const isValid = await bcrypt.compare(pin, profile.pin)
     if (!isValid) {
+      logger.security('pin verification failed', { email, user_id: profile.id })
       return NextResponse.json({ error: INVALID_CREDENTIALS }, { status: 401 })
     }
 
