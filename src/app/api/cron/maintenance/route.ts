@@ -241,8 +241,8 @@ async function normalizeProfileNames(db: ReturnType<typeof createSupabaseService
   const { data: profiles } = await db.from('profiles').select('id, full_name')
   if (!profiles?.length) return 0
   const toUpdate = profiles
-    .map(p => ({ id: p.id, formatted: formatFullName(p.full_name) }))
-    .filter(p => p.formatted !== p.full_name)
+    .map(p => ({ id: p.id, original: p.full_name, formatted: formatFullName(p.full_name) }))
+    .filter(p => p.formatted !== p.original)
   if (!toUpdate.length) return 0
   await Promise.all(toUpdate.map(({ id, formatted }) =>
     db.from('profiles').update({ full_name: formatted }).eq('id', id)
