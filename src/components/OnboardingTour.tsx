@@ -168,22 +168,32 @@ export default function OnboardingTour({ userId }: { userId: string }) {
     }
     setTargetRect(rect)
 
-    const tooltipW = Math.min(300, vw - 32)
+    const tooltipW  = Math.min(300, vw - 32)
+    const tooltipH  = 190  // altura estimada do card
     const pos = STEPS[stepIndex].position
     let top: number
 
-    const belowTop  = rect.top + rect.height + TOOLTIP_OFFSET
-    const aboveTop  = rect.top - TOOLTIP_OFFSET - 170
+    const belowTop = rect.top + rect.height + TOOLTIP_OFFSET
+    const aboveTop = rect.top - TOOLTIP_OFFSET - tooltipH
 
-    if (pos === 'bottom') top = belowTop + 170 > vh ? aboveTop : belowTop
-    else if (pos === 'top') top = aboveTop < 8 ? belowTop : aboveTop
-    else top = vh / 2 - 85
+    if (pos === 'bottom') {
+      // prefere abaixo; se não couber, vai acima
+      top = belowTop + tooltipH > vh - 16 ? aboveTop : belowTop
+    } else if (pos === 'top') {
+      // prefere acima; se não couber, vai abaixo
+      top = aboveTop < 8 ? belowTop : aboveTop
+    } else {
+      top = vh / 2 - tooltipH / 2
+    }
+
+    // Garante que o tooltip nunca saia da tela verticalmente
+    top = Math.max(8, Math.min(top, vh - tooltipH - 8))
 
     let left = rect.left + rect.width / 2 - tooltipW / 2
     left = Math.max(16, Math.min(left, vw - tooltipW - 16))
 
     const arrowLeft = Math.max(16, Math.min(rect.left + rect.width / 2 - left - 8, tooltipW - 32))
-    const isAbove   = top < rect.top
+    const isAbove   = top < rect.top - PADDING
 
     setTooltipStyle({ top, left, width: tooltipW })
     setArrowStyle({
@@ -196,19 +206,21 @@ export default function OnboardingTour({ userId }: { userId: string }) {
 
   useEffect(() => {
     if (phase !== 'tour') return
-    if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    rafRef.current = requestAnimationFrame(() => measureTarget(step))
-  }, [phase, step, measureTarget])
 
-  useEffect(() => {
-    if (phase !== 'tour') return
     const target = STEPS[step]?.target
     const el = document.querySelector(`[data-tour="${target}"]`) as HTMLElement | null
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-      const t = setTimeout(() => measureTarget(step), 350)
-      return () => clearTimeout(t)
-    }
+    if (!el) return
+
+    // Scroll instantâneo para garantir que o elemento esteja visível antes de medir
+    el.scrollIntoView({ behavior: 'instant', block: 'center' })
+
+    // Mede imediatamente após o scroll (instantâneo não precisa de delay)
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    rafRef.current = requestAnimationFrame(() => {
+      measureTarget(step)
+      // Segunda medição após 100ms para garantir que o layout estabilizou
+      setTimeout(() => measureTarget(step), 100)
+    })
   }, [phase, step, measureTarget])
 
   const nextStep = useCallback(() => {
