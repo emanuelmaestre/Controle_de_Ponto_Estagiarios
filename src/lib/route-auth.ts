@@ -22,11 +22,11 @@ export async function requireManager() {
 
   const { data: profile, error } = await auth.supabase
     .from('profiles')
-    .select('role')
+    .select('role, is_active')
     .eq('id', auth.user.id)
     .maybeSingle()
 
-  if (error || profile?.role !== 'manager') {
+  if (error || profile?.role !== 'manager' || profile?.is_active === false) {
     return {
       ok: false as const,
       response: NextResponse.json({ error: 'Acesso negado' }, { status: 403 }),
