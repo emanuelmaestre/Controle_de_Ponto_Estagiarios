@@ -228,8 +228,8 @@ async function fixActivitiesSpelling(db: ReturnType<typeof createSupabaseService
   const { data: activities } = await db.from('activities').select('id, description')
   if (!activities?.length) return 0
   const toUpdate = activities
-    .map(a => ({ id: a.id, corrected: corrigirOrtografia(a.description.trim()) }))
-    .filter(a => a.corrected !== a.description)
+    .map(a => ({ id: a.id, original: a.description, corrected: corrigirOrtografia(a.description.trim()) }))
+    .filter(a => a.corrected !== a.original)
   if (!toUpdate.length) return 0
   await Promise.all(toUpdate.map(({ id, corrected }) =>
     db.from('activities').update({ description: corrected }).eq('id', id)
