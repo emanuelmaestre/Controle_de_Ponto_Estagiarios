@@ -28,6 +28,7 @@ export type Database = {
           pin: string | null
           role: 'intern' | 'manager'
           is_active: boolean
+          geo_exempt: boolean
           created_at: string
           total_hours_required: number | null
           points: number
@@ -47,6 +48,7 @@ export type Database = {
           pin?: string | null
           role?: 'intern' | 'manager'
           is_active?: boolean
+          geo_exempt?: boolean
           created_at?: string
           total_hours_required?: number | null
           points?: number
@@ -65,6 +67,7 @@ export type Database = {
           pin?: string | null
           role?: 'intern' | 'manager'
           is_active?: boolean
+          geo_exempt?: boolean
           total_hours_required?: number | null
           points?: number
           level?: number

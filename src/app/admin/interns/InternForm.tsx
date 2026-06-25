@@ -9,7 +9,7 @@ import imageCompression from 'browser-image-compression'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import {
   CheckCircle2, AlertTriangle, Loader2, Camera,
-  Lock, Save, RotateCcw, Upload, X, Send,
+  Lock, Save, RotateCcw, Upload, X, Send, MapPinOff,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { internSchema } from '@/lib/validations'
@@ -32,6 +32,7 @@ type InternFormValues = {
   internship_start?: string
   internship_end?: string
   is_active: boolean
+  geo_exempt: boolean
 }
 
 interface Props {
@@ -137,11 +138,13 @@ export default function InternForm({ mode, intern }: Props) {
           internship_start: intern.internship_start ?? '',
           internship_end:   intern.internship_end ?? '',
           is_active:        intern.is_active,
+          geo_exempt:       intern.geo_exempt ?? false,
         }
-      : { is_active: true, internship_start: new Date().toISOString().slice(0, 10) },
+      : { is_active: true, geo_exempt: false, internship_start: new Date().toISOString().slice(0, 10) },
   })
 
-  const isActive = watch('is_active')
+  const isActive  = watch('is_active')
+  const geoExempt = watch('geo_exempt')
 
   const handleFileSelected = (file: File) => {
     setPhotoError(null)
@@ -219,6 +222,7 @@ export default function InternForm({ mode, intern }: Props) {
         internship_start: data.internship_start || null,
         internship_end:   data.internship_end   || null,
         is_active:        data.is_active,
+        geo_exempt:       data.geo_exempt,
         ...(photoUrl !== null ? { photo_url: photoUrl } : {}),
       }).eq('id', intern.id)
 
@@ -447,6 +451,35 @@ export default function InternForm({ mode, intern }: Props) {
             </div>
             <Controller
               name="is_active"
+              control={control}
+              render={({ field }) => (
+                <Toggle checked={field.value} onChange={field.onChange} />
+              )}
+            />
+          </div>
+
+          {/* Isento de Geolocalização */}
+          <div
+            className="flex items-center justify-between p-4 rounded-lg"
+            style={{
+              background: geoExempt ? 'rgba(249,115,22,0.08)' : 'rgba(0,0,0,0.2)',
+              border: geoExempt ? '1px solid rgba(249,115,22,0.25)' : '1px solid rgba(0,200,83,0.12)',
+              transition: 'all 0.2s',
+            }}
+          >
+            <div className="flex items-center gap-4">
+              <MapPinOff size={20} style={{ color: geoExempt ? '#f97316' : 'rgba(255,255,255,0.3)', flexShrink: 0 }} />
+              <div>
+                <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>Isento de Geolocalização</p>
+                <p className="text-xs" style={{ color: 'var(--text-3)' }}>
+                  {geoExempt
+                    ? 'Ponto liberado sem validação de distância do laboratório'
+                    : 'Validação de localização aplicada normalmente'}
+                </p>
+              </div>
+            </div>
+            <Controller
+              name="geo_exempt"
               control={control}
               render={({ field }) => (
                 <Toggle checked={field.value} onChange={field.onChange} />

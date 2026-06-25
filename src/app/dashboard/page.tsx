@@ -75,7 +75,7 @@ export default async function DashboardPage() {
 
   let { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, total_hours_required, role, photo_url, points, level, streak_days')
+    .select('full_name, total_hours_required, role, photo_url, points, level, streak_days, geo_exempt')
     .eq('id', user.id)
     .maybeSingle()
 
@@ -444,7 +444,7 @@ export default async function DashboardPage() {
 {/* ── Botao de ponto ──────────────────────────── */}
         <ScaleIn delay={0.2}>
           <div data-tour="tour-clock">
-            <ClockButton openRecord={openRecord ?? null} geoExempt={isGeoExemptEmail(user.email)} />
+            <ClockButton openRecord={openRecord ?? null} geoExempt={!!(profile?.geo_exempt) || isGeoExemptEmail(user.email)} />
           </div>
         </ScaleIn>
 
