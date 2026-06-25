@@ -90,7 +90,6 @@ function MonthSelect({ value, onChange }: { value: string; onChange: (v: string)
 
 function ReportCard({ report, index }: { report: ReportDef; index: number }) {
   const [month, setMonth] = useState(getCurrentMonth())
-  const [loadingExcel, setLoadingExcel] = useState(false)
   const [loadingPdf, setLoadingPdf] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -259,7 +258,6 @@ function ReportCard({ report, index }: { report: ReportDef; index: number }) {
     finally { setLoadingPdf(false) }
   }
 
-  const isLoading = loadingExcel || loadingPdf
 
   return (
     <motion.div
@@ -313,16 +311,7 @@ function ReportCard({ report, index }: { report: ReportDef; index: number }) {
       </AnimatePresence>
 
       <div className="flex gap-2">
-        <button onClick={handleExcel} disabled={isLoading}
-          className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-[10px] font-black transition-all disabled:opacity-40"
-          style={{ background: 'rgba(149,214,154,0.07)', border: '1px solid rgba(149,214,154,0.3)', color: '#95d69a' }}
-        >
-          {loadingExcel
-            ? <span className="w-2.5 h-2.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-            : <Download size={10} />}
-          Excel
-        </button>
-        <button onClick={handlePdf} disabled={isLoading}
+        <button onClick={handlePdf} disabled={loadingPdf}
           className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-[10px] font-black transition-all disabled:opacity-40"
           style={{ background: 'rgba(255,82,82,0.07)', border: '1px solid rgba(255,82,82,0.3)', color: '#ff8a80' }}
         >
@@ -363,7 +352,7 @@ export default function ProfileReports() {
           <div>
             <p className="text-sm font-black" style={{ color: '#3fe56c' }}>Seus Relatórios</p>
             <p className="text-[10px] mt-0.5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>
-              Baixe os relatórios dos seus próprios dados em Excel ou PDF.
+              Baixe os relatórios dos seus próprios dados em PDF.
             </p>
           </div>
         </div>
