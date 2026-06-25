@@ -264,11 +264,11 @@ export default function AdminSidebar({ fullName, initials }: Props) {
           ════════════════════════════════════════════ */}
       {!isDesktop && (
         <div
-          className="flex items-center justify-between px-4 flex-shrink-0 z-40"
+          className="flex items-center justify-center px-4 flex-shrink-0 z-40"
           style={{ height: 52, background: 'var(--nav-bg)', borderBottom: '1px solid rgba(0,200,83,0.12)' }}
         >
-          <div className="relative h-9 w-36">
-            <Image src="/logo.svg" alt="Chronos Lab" fill className="object-contain object-left" />
+          <div className="relative h-9 w-40">
+            <Image src="/logo.svg" alt="Chronos Lab" fill className="object-contain object-center" />
           </div>
         </div>
       )}

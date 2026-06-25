@@ -229,15 +229,15 @@ export default function InternRankingContent() {
                       const e = top3[slot.idx]
                       if (!e) return <div key={ci} />
                       return (
-                        <div key={e.internId} className="flex flex-col items-center py-2 gap-0.5"
+                        <div key={e.internId} className="flex flex-col items-center py-2 gap-0.5 px-2 overflow-hidden"
                           style={{ borderRight: ci < 2 ? '1px solid rgba(0,200,83,0.08)' : 'none' }}>
-                          <div className="flex items-center gap-1">
-                            <Star size={10} style={{ color: '#3fe56c' }} />
-                            <span className="text-xs font-black" style={{ color: slot.color }}>
+                          <div className="flex items-center gap-1 min-w-0">
+                            <Star size={10} className="flex-shrink-0" style={{ color: '#3fe56c' }} />
+                            <span className="text-[11px] font-black tabular-nums truncate" style={{ color: slot.color }}>
                               {e.points} pts
                             </span>
                           </div>
-                          <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                          <span className="text-[9px] tabular-nums" style={{ color: 'rgba(255,255,255,0.3)' }}>
                             {minutesToDisplay(e.periodMinutes)}
                           </span>
                         </div>
