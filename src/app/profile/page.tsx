@@ -8,6 +8,7 @@ import ProfileForm from './ProfileForm'
 import ProfileAchievements from './ProfileAchievements'
 import ProfileReports from './ProfileReports'
 import ProfileUpdates from './ProfileUpdates'
+import ResetOnboardingButton from './ResetOnboardingButton'
 import { getLevelInfo, getLevelTitle } from '@/lib/gamification'
 import { detectGender } from '@/lib/detectGender'
 
@@ -122,7 +123,12 @@ export default async function ProfilePage({ searchParams }: Props) {
         {/* Conteúdo */}
         <main className="flex-1 min-h-0 overflow-y-auto">
           <div className="max-w-lg mx-auto px-4 sm:px-5 py-4 sm:py-5">
-            {activeTab === 'dados' && <ProfileForm initial={initialData} />}
+            {activeTab === 'dados' && (
+              <div className="space-y-5">
+                <ProfileForm initial={initialData} />
+                <ResetOnboardingButton userId={user.id} />
+              </div>
+            )}
             {activeTab === 'relatorios' && <ProfileReports />}
             {activeTab === 'novidades' && <ProfileUpdates />}
             {activeTab === 'conquistas' && (
