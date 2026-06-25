@@ -63,7 +63,7 @@ export default function ProfileUpdates() {
   const load = useCallback(async () => {
     setLoading(true)
     const [u, f] = await Promise.all([
-      fetch('/api/admin/system-updates').then(r => r.json()),
+      fetch('/api/intern/updates').then(r => r.json()),
       fetch('/api/intern/feedback').then(r => r.json()),
     ])
     setUpdates(u.updates ?? [])
