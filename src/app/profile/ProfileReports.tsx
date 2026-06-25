@@ -221,22 +221,6 @@ function ReportCard({ report, index }: { report: ReportDef; index: number }) {
     return { columns: [], rows: [], period }
   }
 
-  const handleExcel = async () => {
-    setLoadingExcel(true); setError('')
-    try {
-      const { columns, rows, period } = await fetchData()
-      const XLSX = await import('xlsx')
-      const headers = columns.map((c: { header: string; dataKey: string }) => c.header)
-      const data = rows.map((r: Record<string, string>) => columns.map((c: { dataKey: string }) => r[c.dataKey] ?? ''))
-      const ws = XLSX.utils.aoa_to_sheet([headers, ...data])
-      const wb = XLSX.utils.book_new()
-      XLSX.utils.book_append_sheet(wb, ws, 'Dados')
-      XLSX.writeFile(wb, `${report.id}-${period}.xlsx`)
-      setSuccess('Excel gerado!'); setTimeout(() => setSuccess(''), 2500)
-    } catch { setError('Erro ao gerar') }
-    finally { setLoadingExcel(false) }
-  }
-
   const handlePdf = async () => {
     setLoadingPdf(true); setError('')
     try {
