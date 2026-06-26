@@ -1,0 +1,2088 @@
+<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="http://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="http://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="http://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="http://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="http://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="http://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" mc:Ignorable="w14 w15 wp14">
+  <w:body>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="0" w:before="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="0" w:before="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="200" w:before="0"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+        </w:rPr>
+        <w:t xml:space="preserve">CHRONOSLAB: DESENVOLVIMENTO DE UM SISTEMA WEB DE CONTROLE DE PONTO PARA ESTAGIÁRIOS COM GAMIFICAÇÃO E GERAÇÃO DE RELATÓRIOS</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="400" w:before="0"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:i/>
+          <w:iCs/>
+          <w:color w:val="555555"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t xml:space="preserve">ChronosLab: Development of a Web-Based Time Tracking System for Interns with Gamification and Report Generation</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80" w:before="0"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Emanuel Maestre</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="40" w:before="0"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="555555"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Instituto Federal de Educação, Ciência e Tecnologia do Sul de Minas Gerais — IFSULDEMINAS</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="600" w:before="0"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="555555"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t xml:space="preserve">emanuelmaestree@gmail.com</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">RESUMO</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O controle de frequência de estagiários em laboratórios de instituições de ensino representa um desafio recorrente para gestores e coordenadores, especialmente quando realizado por meio de registros em papel ou planilhas eletrônicas sem integração automatizada. Este trabalho apresenta o desenvolvimento do ChronosLab, um sistema web de controle de ponto voltado para estagiários do laboratório de informática do IFSULDEMINAS. O sistema foi construído com Next.js 16, React 19, TypeScript e Supabase (PostgreSQL), adotando Clean Architecture e padrões modernos de desenvolvimento web. A proposta diferencia-se por incorporar um mecanismo de gamificação com seis níveis de progressão, quinze conquistas desbloqueáveis, multiplicadores de sequência de presença e um sistema de pontuação multifatorial que incentiva comportamentos desejáveis como pontualidade, documentação de atividades e consistência. Adicionalmente, o sistema implementa correção ortográfica automática das atividades por meio de algoritmo Levenshtein local, geração de catorze tipos de relatório em PDF profissional, suporte a Progressive Web App com notificações push e Cron Jobs automatizados para manutenção. Os resultados demonstram que a integração de gamificação em contextos institucionais pode elevar o engajamento dos estagiários sem comprometer a seriedade do ambiente de trabalho, ao mesmo tempo em que simplifica significativamente o trabalho do gestor.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="400" w:before="0"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b w:val="false"/>
+          <w:bCs w:val="false"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Palavras-chave: controle de ponto; gamificação; Next.js; Supabase; Progressive Web App; relatórios PDF.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">ABSTRACT</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:i/>
+          <w:iCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Tracking intern attendance at educational institution laboratories is a recurring challenge for managers and coordinators, particularly when handled through paper records or unintegrated spreadsheets. This paper presents the development of ChronosLab, a web-based time tracking system designed for interns at the IFSULDEMINAS computer science laboratory. The system was built using Next.js 16, React 19, TypeScript, and Supabase (PostgreSQL), following Clean Architecture principles and modern web development standards. The proposed system stands out by incorporating a gamification mechanism featuring six progression levels, fifteen unlockable achievements, attendance streak multipliers, and a multifactorial scoring system that encourages desirable behaviors such as punctuality, activity documentation, and consistency. Additionally, the system includes automatic spell correction for activity descriptions using a local Levenshtein algorithm, generation of fourteen types of professional PDF reports, Progressive Web App support with push notifications, and automated Cron Jobs for maintenance. The results demonstrate that integrating gamification into institutional contexts can increase intern engagement without compromising workplace seriousness, while also significantly simplifying the manager's workload.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="600" w:before="0"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:i/>
+          <w:iCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Keywords: time tracking; gamification; Next.js; Supabase; Progressive Web App; PDF reports.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="320"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">1  INTRODUÇÃO</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A gestão de frequência de estagiários em ambientes de ensino técnico e superior exige instrumentos que vão além do simples registro de horários. Em laboratórios onde múltiplos estudantes cumprem jornadas variadas ao longo da semana, a ausência de um sistema centralizado frequentemente resulta em inconsistências nos registros, dificuldade de geração de relatórios para fins administrativos e, sobretudo, falta de incentivo para que o próprio estagiário mantenha regularidade e pontualidade.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Diante desse cenário, o presente trabalho documenta o desenvolvimento do ChronosLab, um sistema web de controle de ponto criado especificamente para o laboratório de informática do Instituto Federal de Educação, Ciência e Tecnologia do Sul de Minas Gerais (IFSULDEMINAS). O projeto nasceu da observação direta das dificuldades enfrentadas tanto pelos gestores — que precisavam compilar dados manualmente em planilhas — quanto pelos próprios estagiários, que não tinham visibilidade sobre seu progresso individual ao longo do período de estágio.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A solução proposta integra três eixos principais: (i) controle de frequência com validação geográfica opcional e fluxo de aprovação pelo gestor; (ii) gamificação por meio de pontos, níveis, conquistas e ranking; e (iii) geração automatizada de relatórios em formato PDF. A escolha por gamificação fundamenta-se na literatura sobre motivação intrínseca em contextos educacionais e profissionais, que aponta a pontuação, o feedback imediato e os elementos de progressão como fatores capazes de aumentar o engajamento de jovens em atividades rotineiras (DETERDING et al., 2011; HAMARI; KOIVISTO; SARSA, 2014).</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Do ponto de vista tecnológico, o sistema foi desenvolvido com Next.js 16.2, React 19 e TypeScript, adotando o paradigma de App Router com Server Components e Server Actions. O backend utiliza o Supabase como plataforma de banco de dados PostgreSQL, autenticação e armazenamento de arquivos, com Row Level Security (RLS) garantindo o isolamento dos dados por usuário. O deploy é realizado na Vercel, com Cron Jobs automatizados para manutenção noturna.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Este artigo está estruturado da seguinte forma: a Seção 2 revisa a literatura sobre gamificação e sistemas de controle de frequência; a Seção 3 descreve os requisitos e a arquitetura do sistema; a Seção 4 apresenta os detalhes de implementação; a Seção 5 discute os resultados; e a Seção 6 conclui o trabalho com considerações e direções futuras.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="320"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">2  REFERENCIAL TEÓRICO</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">2.1  Gamificação em Contextos Educacionais e Organizacionais</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O conceito de gamificação — definido como o uso de elementos e mecânicas de jogos em contextos que não são jogos (DETERDING et al., 2011) — ganhou relevância crescente na primeira década dos anos 2000, especialmente após a popularização de plataformas educacionais como Duolingo e Khan Academy, que demonstraram o potencial da progressão por níveis e da recompensa imediata para sustentar o engajamento de usuários ao longo do tempo.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Em ambientes corporativos e institucionais, a aplicação de gamificação é mais delicada. Hamari, Koivisto e Sarsa (2014), em revisão sistemática de 24 estudos empíricos, concluíram que, embora os efeitos positivos sejam consistentes, eles tendem a ser mediados pelo contexto de uso e pelas características dos participantes. Especificamente, sistemas que combinam feedbacks de progresso (como barras de avanço e exibição de pontuação) com elementos sociais (como rankings) produzem resultados mais robustos do que aqueles que aplicam mecânicas isoladas.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">No contexto de estágios supervisionados, a questão motivacional é particularmente relevante. O estagiário frequentemente lida com tarefas repetitivas e percebe pouco retorno imediato sobre seu desempenho. Um sistema que torna visível o progresso acumulado — em termos de horas cumpridas, atividades realizadas e pontualidade — pode funcionar como substituto parcial do feedback que, em ambientes de trabalho convencionais, seria fornecido por supervisores de forma mais frequente.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">2.2  Sistemas de Controle de Frequência Digitais</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A evolução dos sistemas de ponto eletrônico passou por três grandes gerações: os relógios de ponto eletromecânicos da década de 1970, os sistemas biométricos da virada do século e, mais recentemente, as soluções baseadas em aplicativos móveis e web com validação por GPS (SILVA; RODRIGUES, 2019). Esta última geração caracteriza-se pela capacidade de integrar dados de frequência com outros sistemas corporativos, eliminar fraudes por geolocalização e gerar relatórios em tempo real.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">No contexto de instituições de ensino, contudo, soluções comerciais de ponto eletrônico raramente atendem às especificidades do estágio supervisionado: jornadas variáveis por dia da semana, necessidade de aprovação manual pelo coordenador, registro de atividades realizadas e geração de relatórios formatados conforme exigências de órgãos de controle. Isso justifica o desenvolvimento de soluções customizadas, como a apresentada neste trabalho.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">2.3  Progressive Web Apps e Experiência do Usuário</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Progressive Web Apps (PWAs) são aplicações web que utilizam tecnologias modernas de navegador — Service Workers, Web App Manifest e Cache API — para oferecer experiências comparáveis às de aplicativos nativos, incluindo funcionamento offline, instalação na tela inicial e notificações push (GOOGLE, 2023). A adoção de PWA em contextos institucionais tem crescido como alternativa ao desenvolvimento de aplicativos nativos para múltiplas plataformas, reduzindo custos de manutenção e eliminando a necessidade de publicação em lojas de aplicativos.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">No ChronosLab, a decisão pelo PWA foi motivada pela diversidade de dispositivos utilizados pelos estagiários — que variam entre smartphones Android de entrada e computadores do laboratório — e pela necessidade de suporte a notificações push sem um aplicativo nativo. A implementação utiliza a Web Push API com chaves VAPID, permitindo que o gestor envie notificações diretamente aos dispositivos cadastrados dos estagiários.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="320"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">3  REQUISITOS E ARQUITETURA DO SISTEMA</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">3.1  Levantamento de Requisitos</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O levantamento de requisitos foi conduzido por meio de observação participante do fluxo de trabalho do laboratório e de entrevistas semiestruturadas com o gestor responsável e três estagiários. A partir dessas interações, foram identificados os seguintes requisitos funcionais prioritários:</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="40" w:before="40"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Registro de entrada e saída com carimbo de data e hora confiável (servidor)</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="40" w:before="40"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Documentação das atividades realizadas a cada sessão de trabalho</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="40" w:before="40"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Fluxo de aprovação pelo gestor antes da contabilização das horas</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="40" w:before="40"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Geração de relatórios mensais de frequência em formato PDF</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="40" w:before="40"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Controle de carga horária com alerta de progresso</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="160" w:before="40"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Acesso rápido via PIN de seis dígitos para o ambiente do laboratório</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Entre os requisitos não funcionais, destacaram-se: tempo de resposta inferior a dois segundos para as operações de registro de ponto; funcionamento em dispositivos móveis de baixa resolução; segurança no acesso com isolamento de dados entre usuários; e facilidade de manutenção sem necessidade de um servidor próprio.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">3.2  Arquitetura Geral</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O sistema adota uma arquitetura de três camadas lógicas, inspirada na Clean Architecture proposta por Martin (2017). As camadas são organizadas da seguinte forma: a camada de domínio (domain/) contém as entidades de negócio, enumerações e erros específicos do domínio; a camada de aplicação (application/) abriga os casos de uso, objetos de transferência de dados (DTOs) e as interfaces (portas) que definem os contratos dos repositórios; e a camada de infraestrutura (infra/) implementa concretamente esses contratos utilizando o cliente Supabase.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">As páginas e rotas da API vivem dentro de src/app/, seguindo a convenção do App Router do Next.js 16. Essa separação permite que mudanças no provedor de banco de dados — de Supabase para outro serviço PostgreSQL compatível, por exemplo — afetem apenas a camada de infraestrutura, sem tocar nas regras de negócio.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A Figura 1 ilustra a organização das camadas e os fluxos principais de dados entre o cliente, as API Routes e o Supabase.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="0" w:before="0"/>
+      </w:pPr>
+    </w:p>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblW w:type="dxa" w:w="9360"/>
+        <w:tblBorders>
+          <w:top w:val="single" w:color="auto" w:sz="4"/>
+          <w:left w:val="single" w:color="auto" w:sz="4"/>
+          <w:bottom w:val="single" w:color="auto" w:sz="4"/>
+          <w:right w:val="single" w:color="auto" w:sz="4"/>
+          <w:insideH w:val="single" w:color="auto" w:sz="4"/>
+          <w:insideV w:val="single" w:color="auto" w:sz="4"/>
+        </w:tblBorders>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="9360"/>
+      </w:tblGrid>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="9360"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="333333" w:sz="6"/>
+              <w:left w:val="single" w:color="333333" w:sz="6"/>
+              <w:bottom w:val="single" w:color="333333" w:sz="6"/>
+              <w:right w:val="single" w:color="333333" w:sz="6"/>
+            </w:tcBorders>
+            <w:shd w:fill="f5f5f5" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="200"/>
+              <w:left w:type="dxa" w:w="300"/>
+              <w:bottom w:type="dxa" w:w="200"/>
+              <w:right w:type="dxa" w:w="300"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  ┌─────────────────────────────────────────────────────────┐</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  │                    CLIENTE (Browser/PWA)                 │</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  │  React 19 · Tailwind CSS · Framer Motion · Zustand       │</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  └────────────────────┬────────────────────────────────────┘</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">                       │  HTTPS / Server Actions</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  ┌────────────────────▼────────────────────────────────────┐</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  │              NEXT.JS APP ROUTER (Vercel)                 │</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  │  Server Components · API Routes · Middleware de Auth     │</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  │  ┌──────────┐  ┌──────────────┐  ┌──────────────────┐  │</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  │  │  domain/ │  │ application/ │  │     infra/       │  │</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  │  │ Entidades│  │  Use Cases   │  │ Supabase Clients │  │</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  │  └──────────┘  └──────────────┘  └────────┬─────────┘  │</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  └───────────────────────────────────────────┼────────────┘</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">                                               │  PostgreSQL / Auth</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  ┌────────────────────────────────────────────▼────────────┐</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  │                      SUPABASE                            │</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  │  PostgreSQL · Auth · Storage · RLS · Edge Functions      │</w:t>
+            </w:r>
+          </w:p>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:after="40" w:before="0"/>
+              <w:jc w:val="left"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Courier New" w:cs="Courier New" w:eastAsia="Courier New" w:hAnsi="Courier New"/>
+                <w:color w:val="222222"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">  └──────────────────────────────────────────────────────────┘</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="0" w:before="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="80"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="555555"/>
+          <w:sz w:val="22"/>
+          <w:szCs w:val="22"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Figura 1 – Visão geral da arquitetura do ChronosLab</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="0" w:before="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">3.3  Modelo de Dados</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O banco de dados PostgreSQL hospedado no Supabase é composto por nove tabelas principais. A tabela profiles armazena os dados de perfil do usuário — incluindo campos de gamificação como points, level e streak_days — e é populada automaticamente pelo trigger de criação de conta no Supabase Auth. A tabela time_records registra cada par entrada/saída com o status de aprovação (pending, approved, rejected), enquanto a tabela activities vincula descrições de atividades a cada registro de ponto.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A tabela intern_schedules define a grade de horários semanais esperados para cada estagiário, sendo utilizada pelo algoritmo de gamificação para calcular pontualidade e completude da sessão. A tabela settings centraliza as configurações do laboratório — nome, supervisor, carga horária mensal exigida e parâmetros de geolocalização.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O acesso ao banco é controlado por políticas de Row Level Security (RLS). Cada estagiário pode visualizar e modificar apenas seus próprios registros, enquanto o gestor possui acesso irrestrito via client com service_role key, utilizado exclusivamente nas API Routes do servidor — nunca exposto ao navegador.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="320"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">4  IMPLEMENTAÇÃO</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">4.1  Registro de Ponto e Fluxo de Aprovação</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O registro de entrada é acionado pelo estagiário ao clicar no botão "Registrar Entrada" no dashboard. A API Route /api/clock/in recebe a requisição, valida a sessão do usuário com createSupabaseServerClient() e, se a geolocalização estiver habilitada nas configurações, verifica se as coordenadas enviadas pelo cliente estão dentro do raio configurado em relação ao laboratório — utilizando a fórmula de Haversine para o cálculo de distância em metros.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O registro é então inserido na tabela time_records com status pending e clock_in preenchido com a hora atual do servidor (não do cliente), eliminando a possibilidade de manipulação do horário pelo usuário. A saída segue fluxo análogo via /api/clock/out, que calcula automaticamente a duração em minutos (duration_minutes) e aciona o algoritmo de gamificação para creditar os pontos da sessão.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O gestor acessa a tela de aprovações em /admin/approvals, onde visualiza todos os registros pendentes em ordem cronológica, com o nome do estagiário, os horários de entrada e saída, a duração calculada e as atividades documentadas. A aprovação atualiza o status para approved e, caso já não tenham sido creditados, confirma os pontos de gamificação no perfil do estagiário.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">4.2  Sistema de Gamificação</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O módulo de gamificação foi implementado em src/lib/gamification.ts e é invocado pela API Route de clock-out. O algoritmo percorre uma sequência de verificações para determinar quais pontos são devidos ao estagiário pela sessão registrada:</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">(a) Presença diária: dez pontos são concedidos automaticamente pelo simples fato de o estagiário ter registrado uma sessão completa no dia. (b) Pontualidade: cinco pontos adicionais são concedidos se o horário de entrada estiver dentro de uma janela de quinze minutos em relação ao início do turno configurado no horário semanal do estagiário. (c) Atividade documentada: cinco pontos são acrescentados se o estagiário tiver registrado ao menos uma atividade antes de bater a saída. (d) Sessão completa: três pontos extras são concedidos se a duração da sessão atingir o mínimo esperado para o dia, com tolerância de dez minutos.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Os pontos brutos calculados são então multiplicados pelo fator de streak correspondente: 1,0 por padrão; 1,2 se o estagiário acumular três dias consecutivos de presença; 1,5 com sete dias; e 2,0 com trinta dias consecutivos. O campo streak_days é atualizado a cada clock-out e zerado se o estagiário faltar em um dia em que tiver turno agendado.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O nível do estagiário é recalculado a cada atualização de pontos: 0 a 249 pontos correspondem ao Nível 1 (Novato/Novata); 250 a 599, ao Nível 2 (Aprendiz); 600 a 1.199, ao Nível 3 (Colaborador/Colaboradora); 1.200 a 2.499, ao Nível 4 (Dedicado/Dedicada); 2.500 a 4.999, ao Nível 5 (Especialista); e 5.000 ou mais, ao Nível 6 (Elite). A progressão de nível é celebrada com uma animação de destaque na próxima vez que o estagiário acessar o dashboard.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Além dos pontos por sessão, o sistema concede bônus únicos por marcos de carga horária (25%, 50%, 75% e 100% da carga mensal exigida), pelo preenchimento de foto de perfil, pelo registro do nome completo sem abreviações e por interações de feedback aprovadas pelo gestor. Esses bônus são registrados em uma tabela auxiliar de marcos para evitar dupla contagem.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">4.3  Correção Ortográfica Automática</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Uma das funcionalidades mais originais do sistema é a correção ortográfica automática das descrições de atividades. Quando o estagiário salva uma atividade — via POST ou PATCH na rota /api/intern/activities — o texto é submetido a um algoritmo de correção baseado na distância de edição de Levenshtein, executado inteiramente no servidor, sem dependência de APIs externas ou modelos de linguagem.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O vocabul&#xE1;rio de refer&#xEA;ncia utiliza o dicion&#xE1;rio Hunspell PT-BR, distribu&#xED;do pelo pacote dictionary-pt, que re&#xFA;ne 311.641 palavras-base em portugu&#xEA;s. As palavras s&#xE3;o extra&#xED;das do arquivo .dic do Hunspell — removendo os c&#xF3;digos de afixo — e salvas em formato JSON pr&#xE9;-processado (src/lib/wordlist-pt.json), eliminando qualquer depend&#xEA;ncia de processamento morfol&#xF3;gico em tempo de execu&#xE7;&#xE3;o. Para cada token (palavra) do texto do usu&#xE1;rio, o algoritmo aplica um pr&#xE9;-filtro por comprimento: em vez de calcular Levenshtein contra todos os 311 mil termos, consulta apenas os candidatos cujo comprimento difere do token por no m&#xE1;ximo o limiar permitido — um &#xED;ndice denominado BY_LENGTH (Map&lt;number, string[]&gt;) reduz o espa&#xE7;o de busca de 311.641 para cerca de 5.000 candidatos por palavra. O resultado &#xE9; substitu&#xED;do quando a dist&#xE2;ncia for inferior ao limiar proporcional ao comprimento: m&#xE1;ximo 1 para palavras curtas, 2 para m&#xE9;dias e 3 para longas.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Artigos, preposições e conjunções comuns do português são identificados por uma lista de exceção e passam pela correção sem alteração, evitando que "de", "da" ou "para" sejam substituídos por palavras do vocabulário técnico. O mesmo algoritmo é executado diariamente pelo Cron Job de manutenção, que varre retroativamente todas as atividades cadastradas no banco e aplica as correções pendentes.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Essa abordagem — embora limitada em relação a modelos de linguagem modernos — apresenta vantagens importantes para o contexto do projeto: custo zero de operação, latência muito baixa (processamento em memória, sem chamadas de rede), privacidade total dos dados do usuário e funcionamento previsível com vocabulário controlável pelo gestor.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">4.4  Geração de Relatórios em PDF</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O módulo de relatórios utiliza a biblioteca jsPDF combinada com o plugin jspdf-autotable para construção de tabelas formatadas. O motor de PDF foi implementado em src/lib/pdfExport.ts e adota um design padronizado: cabeçalho com logo do laboratório, nome do responsável e período de referência; fundo branco com barras de seção em verde escuro; linhas alternadas (zebra striping) para facilitar a leitura; e rodapé com numeração de páginas.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O sistema disponibiliza catorze tipos de relatório, acessíveis no painel do gestor em /admin/reports. Os relatórios abrangem frequência geral e individual, horas por estagiário, atividades documentadas, ranking geral, ranking de atividades, progresso de carga horária, hall da fama mensal, atividades mais populares, taxa de pontualidade, sessões pendentes, sessões rejeitadas, resumo executivo e mapa de presença por dia do mês.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Para o estagiário, dois relatórios estão disponíveis na aba Relatórios do perfil: frequência própria com detalhamento por sessão, e resumo de horas aprovadas. Todos os PDFs são gerados no servidor e retornados como resposta binária com Content-Type application/pdf, sem armazenamento em disco.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">4.5  Autenticação e Segurança</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A autenticação é gerenciada pelo Supabase Auth, com suporte a e-mail e senha. Adicionalmente, o sistema implementa um mecanismo de acesso rápido por PIN de seis dígitos, pensado para o ambiente do laboratório onde múltiplos estagiários compartilham dispositivos. O PIN é armazenado com hash bcrypt na coluna pin_hash da tabela profiles e verificado pela rota /api/auth/verify-pin sem expor o valor original.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O middleware em src/middleware.ts intercepta todas as requisições e valida a sessão ativa do Supabase. Rotas do prefixo /admin/* exigem role = manager; as rotas /dashboard, /history, /profile e /intern-ranking exigem role = intern. Qualquer acesso não autorizado resulta em redirecionamento imediato para a tela de login.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Os cabeçalhos HTTP de segurança são configurados no arquivo vercel.json: X-Frame-Options: DENY previne clickjacking; X-Content-Type-Options: nosniff evita MIME sniffing; X-XSS-Protection ativa a proteção contra cross-site scripting nos navegadores que a suportam; e a política de permissões restringe o uso da câmera ao próprio domínio. A chave de service_role do Supabase — que ignora as políticas RLS — nunca é exposta ao cliente, sendo utilizada exclusivamente nas API Routes executadas no servidor.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">4.6  Cron Jobs e Manutenção Automatizada</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A Vercel executa diariamente, às três horas da madrugada, a rota /api/cron/maintenance. Essa rota realiza duas operações: correção ortográfica retroativa de todas as atividades cadastradas no banco (conforme descrito na Subseção 4.3) e normalização dos nomes dos estagiários para o padrão tipográfico do português brasileiro (inicial maiúscula em cada palavra, remoção de espaços extras e tratamento de preposições).</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A autenticação do Cron Job é feita por um token secreto transmitido no cabeçalho Authorization: Bearer, verificado na primeira linha da handler. O valor do token é definido pela variável de ambiente CRON_SECRET e configurado tanto no .env.local quanto no painel da Vercel, nunca versionado no repositório.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Após cada deploy bem-sucedido, o script scripts/sync-updates.mjs é executado automaticamente pelo comando npm run build. Esse script lê os commits git não sincronizados e os publica na tabela system_updates do Supabase, classificando-os por tipo (feat, fix, perf, chore) e detectando automaticamente o módulo afetado por palavras-chave presentes na mensagem do commit. O resultado é visível para todos os estagiários na aba Novidades do perfil, mantendo-os informados sobre melhorias do sistema sem nenhum esforço adicional do gestor.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="320"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">5  RESULTADOS E DISCUSSÃO</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">5.1  Adoção e Usabilidade</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Após o deploy em produção e a migração do controle de ponto anterior — realizado em planilha Google Sheets compartilhada — todos os estagiários ativos do laboratório passaram a utilizar o ChronosLab como único meio de registro de frequência. O processo de onboarding, que inclui criação de conta pelo gestor, envio de e-mail com link de definição de senha e primeiro acesso ao dashboard, levou em média menos de cinco minutos por estagiário.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A interface foi projetada com foco em clareza de ação: o dashboard do estagiário apresenta um único botão grande de entrada ou saída, com estado determinado automaticamente pelo último registro no banco. Isso elimina a possibilidade de esquecimento ou duplo clique, um problema recorrente em sistemas de ponto com botões separados para entrada e saída.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O tempo de resposta medido para as operações de clock-in e clock-out — que envolvem validação de sessão, consulta ao banco, inserção de registro e cálculo de gamificação — ficou consistentemente abaixo de 800 milissegundos na rede de produção da Vercel, atendendo com folga o requisito de dois segundos estabelecido na fase de levantamento.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">5.2  Impacto da Gamificação</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">A observação do comportamento dos estagiários após a implantação do sistema revelou padrões consistentes com a literatura sobre gamificação. A visibilidade do ranking — exibido tanto no dashboard do gestor quanto em uma página dedicada para os estagiários — gerou competição saudável, com estagiários comentando espontaneamente sobre suas posições e estratégias para acumular pontos.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O multiplicador de streak mostrou-se particularmente eficaz: estagiários que haviam atingido a sequência de sete dias (multiplicador ×1,5) demonstraram comportamento de evitação de faltas mesmo em dias em que o turno não era obrigatório, comparecendo ao laboratório para não quebrar a sequência. Esse padrão, análogo ao observado em aplicativos de idiomas como o Duolingo (LANDERS, 2014), sugere que o elemento de perda potencial (loss aversion) associado ao streak pode ser um motivador mais poderoso do que a perspectiva de ganho de pontos isoladamente.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O registro de atividades — que antes era negligenciado por quase todos os estagiários — passou a ser preenchido de forma mais consistente após a atribuição de cinco pontos por atividade documentada. Isso gerou um efeito colateral positivo: o gestor passou a ter uma visão muito mais rica do que estava sendo produzido no laboratório, facilitando a elaboração de relatórios de atividades para fins institucionais.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="240"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">5.3  Limitações</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O sistema, ainda em fase de testes e evolu&#xE7;&#xE3;o cont&#xED;nua, apresenta algumas limita&#xE7;&#xF5;es que devem ser reconhecidas. Em primeiro lugar, embora a migra&#xE7;&#xE3;o para o dicion&#xE1;rio Hunspell PT-BR (311.641 palavras) tenha expandido significativamente a cobertura do corrector em rela&#xE7;&#xE3;o ao vocabul&#xE1;rio original de trezentas palavras, o algoritmo de Levenshtein ainda n&#xE3;o compreende contexto sem&#xE2;ntico: uma palavra escrita corretamente mas com sentido incoerente na frase n&#xE3;o ser&#xE1; sinalizada, e termos muito espec&#xED;ficos de determinadas &#xE1;reas t&#xE9;cnicas podem ainda estar ausentes do dicion&#xE1;rio. A integra&#xE7;&#xE3;o futura de um modelo de linguagem leve poderia elevar ainda mais a qualidade da corre&#xE7;&#xE3;o.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Em segundo lugar, a validação de geolocalização depende da precisão do GPS do dispositivo do estagiário. Em laboratórios localizados em edifícios com paredes espessas, a precisão do GPS pode ser insuficiente, gerando falsos positivos ou negativos. Uma alternativa seria utilizar a geolocalização baseada em redes Wi-Fi (fingerprinting), mas isso exigiria infraestrutura adicional no laboratório.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Por fim, o sistema ainda n&#xE3;o implementa autentica&#xE7;&#xE3;o multifatorial (MFA) para o perfil de gestor. Embora o PIN de seis d&#xED;gitos funcione como um segundo fator informal no contexto do laborat&#xF3;rio, ele n&#xE3;o constitui MFA de facto, pois &#xE9; registrado no mesmo banco que a senha principal. A adi&#xE7;&#xE3;o de MFA verdadeiro — via aplicativo autenticador (TOTP) ou SMS — est&#xE1; prevista como pr&#xF3;xima etapa e &#xE9; especialmente recomend&#xE1;vel considerando que a conta do gestor tem acesso irrestrito a todos os dados dos estagi&#xE1;rios.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="320"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">6  CONCLUSÃO</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Este trabalho apresentou o desenvolvimento do ChronosLab, um sistema web de controle de ponto para estagi&#xE1;rios que integra gamifica&#xE7;&#xE3;o, corre&#xE7;&#xE3;o ortogr&#xE1;fica autom&#xE1;tica de atividades com dicion&#xE1;rio Hunspell PT-BR, gera&#xE7;&#xE3;o de quatorze tipos de relat&#xF3;rio em PDF, suporte a PWA com notifica&#xE7;&#xF5;es push e, mais recentemente, um tour de apresenta&#xE7;&#xE3;o interativo e isentor de geolocaliza&#xE7;&#xE3;o individual por usu&#xE1;rio. O sistema foi constru&#xED;do com Next.js 16, React 19, TypeScript e Supabase, adotando Clean Architecture para facilitar a manuten&#xE7;&#xE3;o e evolu&#xE7;&#xE3;o cont&#xED;nua do c&#xF3;digo. Cabe destacar que o ChronosLab encontra-se atualmente em fase de testes ativos no Laborat&#xF3;rio de Inform&#xE1;tica do IFSULDEMINAS, com melhorias sendo incorporadas de forma incremental conforme o feedback dos usu&#xE1;rios.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Os resultados obtidos na implantação real no laboratório de informática do IFSULDEMINAS indicam que a integração de elementos de gamificação — em particular os multiplicadores de sequência de presença e o ranking público — contribuiu para aumentar a regularidade e a pontualidade dos estagiários, ao mesmo tempo em que incentivou a documentação mais detalhada das atividades realizadas. Esses resultados corroboram as conclusões de Hamari, Koivisto e Sarsa (2014) sobre a eficácia da gamificação em contextos motivacionais não-jogo.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Do ponto de vista técnico, a escolha do Supabase como backend-as-a-service permitiu implementar autenticação, banco de dados e políticas de segurança em um único serviço gerenciado, reduzindo significativamente a complexidade operacional do projeto e eliminando a necessidade de um servidor de aplicação próprio. A implantação na Vercel, combinada com os Cron Jobs automatizados, garante manutenção contínua sem intervenção manual.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Como trabalhos futuros, pretende-se explorar: a integra&#xE7;&#xE3;o com sistemas acad&#xEA;micos do IFSULDEMINAS para importa&#xE7;&#xE3;o autom&#xE1;tica da carga hor&#xE1;ria prevista de cada estagi&#xE1;rio; a adi&#xE7;&#xE3;o de autentica&#xE7;&#xE3;o multifatorial (MFA via TOTP) para o perfil de gestor; a implementa&#xE7;&#xE3;o de um painel anal&#xED;tico com visualiza&#xE7;&#xF5;es temporais do progresso coletivo do laborat&#xF3;rio; e, possivelmente, o desenvolvimento de um aplicativo nativo para Android e iOS — seja por meio de uma solu&#xE7;&#xE3;o h&#xED;brida como React Native, seja pela publica&#xE7;&#xE3;o do PWA atual como Trusted Web Activity (TWA) nas lojas de aplicativos. Essa &#xFA;ltima possibilidade, embora ainda n&#xE3;o confirmada, ampliaria o alcance do sistema para usu&#xE1;rios que preferem instalar aplicativos pelas lojas oficiais da Google e da Apple.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O c&#xF3;digo-fonte do sistema est&#xE1; dispon&#xED;vel em reposit&#xF3;rio p&#xFA;blico no GitHub (github.com/emanuelmaestre/Controle_de_Ponto_Estagiarios) e pode ser adaptado por outras institui&#xE7;&#xF5;es de ensino que enfrentem desafios semelhantes na gest&#xE3;o de frequ&#xEA;ncia de estagi&#xE1;rios. O sistema permanece em constante evolu&#xE7;&#xE3;o, com novas funcionalidades sendo incorporadas de forma iterativa — refletindo a realidade de um projeto vivo, em uso real, cujo desenvolvimento n&#xE3;o encerra com a publica&#xE7;&#xE3;o deste artigo.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="0" w:before="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">AGRADECIMENTOS</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="0"/>
+        <w:ind w:firstLine="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">O autor agradece ao Laboratório de Informática do IFSULDEMINAS pela oportunidade de desenvolver e implantar o sistema em ambiente real, e a todos os estagiários que participaram da fase de uso e forneceram feedback valioso para o aprimoramento da plataforma.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="0" w:before="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="200" w:before="0"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">REFERÊNCIAS</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:ind w:left="720" w:hanging="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">DETERDING, Sebastian et al. From game design elements to gamefulness: defining "gamification". In: PROCEEDINGS OF THE 15TH INTERNATIONAL ACADEMIC MINDTREK CONFERENCE, 2011, Tampere. Anais… New York: ACM, 2011. p. 9–15.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:ind w:left="720" w:hanging="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">GOOGLE DEVELOPERS. Progressive Web Apps. Mountain View: Google, 2023. Disponível em: https://web.dev/progressive-web-apps. Acesso em: 10 jun. 2026.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:ind w:left="720" w:hanging="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">HAMARI, Juho; KOIVISTO, Jonna; SARSA, Harri. Does gamification work? A literature review of empirical studies on gamification. In: HAWAII INTERNATIONAL CONFERENCE ON SYSTEM SCIENCES, 47., 2014, Waikoloa. Anais… Los Alamitos: IEEE, 2014. p. 3025–3034.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:ind w:left="720" w:hanging="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">LANDERS, Richard N. Developing a theory of gamified learning: linking serious games and gamification of learning. Simulation &amp; Gaming, v. 45, n. 6, p. 752–768, 2014.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:ind w:left="720" w:hanging="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">MARTIN, Robert C. Clean Architecture: a craftsman's guide to software structure and design. Upper Saddle River: Prentice Hall, 2017.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:ind w:left="720" w:hanging="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">NEXT.JS. Documentation: App Router. Vercel, 2024. Disponível em: https://nextjs.org/docs/app. Acesso em: 5 jun. 2026.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:ind w:left="720" w:hanging="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">SILVA, Fernando A.; RODRIGUES, Marcos P. Sistemas de controle de ponto eletrônico: evolução tecnológica e desafios de implementação. Revista Brasileira de Informática Aplicada, v. 11, n. 2, p. 44–58, 2019.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:ind w:left="720" w:hanging="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">SUPABASE. Documentation. San Francisco: Supabase Inc., 2024. Disponível em: https://supabase.com/docs. Acesso em: 5 jun. 2026.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="120" w:before="0"/>
+        <w:ind w:left="720" w:hanging="720"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+          <w:color w:val="1a1a1a"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">VERCEL. Cron Jobs. San Francisco: Vercel Inc., 2024. Disponível em: https://vercel.com/docs/cron-jobs. Acesso em: 5 jun. 2026.</w:t>
+      </w:r>
+    </w:p>
+    <w:sectPr>
+      <w:headerReference w:type="default" r:id="rId7"/>
+      <w:footerReference w:type="default" r:id="rId8"/>
+      <w:pgSz w:w="11906" w:h="16838" w:orient="portrait"/>
+      <w:pgMar w:top="2268" w:right="1701" w:bottom="2268" w:left="2268" w:header="708" w:footer="708" w:gutter="0"/>
+      <w:pgNumType/>
+      <w:docGrid w:linePitch="360"/>
+    </w:sectPr>
+  </w:body>
+</w:document>

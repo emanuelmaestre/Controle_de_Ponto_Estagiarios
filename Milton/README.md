@@ -28,9 +28,10 @@ Funciona como **PWA instalável** em celular e desktop, com suporte a notificaç
 ## Funcionalidades
 
 ### Estagiário
-- Registro de entrada e saída com validação de geolocalização (opcional)
+- Tour de apresentação interativo no primeiro acesso (slides de todos os módulos + tooltips guiados com spotlight)
+- Registro de entrada e saída com validação de geolocalização (opcional e configurável individualmente pelo gestor)
 - Documentação de atividades realizadas a cada sessão
-- Correção ortográfica automática das atividades (algoritmo Levenshtein, sem API externa)
+- Correção ortográfica automática das atividades (dicionário Hunspell PT-BR com 311.641 palavras, sem API externa)
 - Histórico completo dos últimos 60 dias + arquivo por mês
 - Perfil com nível, pontos, conquistas e progresso de carga horária
 - Ranking entre os estagiários do laboratório
@@ -42,9 +43,10 @@ Funciona como **PWA instalável** em celular e desktop, com suporte a notificaç
 - Dashboard em tempo real: quem está presente, horas do mês, ranking rápido
 - Aprovação ou rejeição de registros de ponto com atividades detalhadas
 - Gestão completa de estagiários (cadastro, edição, horários, desativação)
+- Configuração de isenção de geolocalização individual por estagiário
 - 14 tipos de relatório exportáveis em PDF profissional
 - Hall da Fama com campeões mensais por pontos
-- Publicação de novidades e atualizações do sistema
+- Publicação de novidades e atualizações do sistema (sincronizadas automaticamente a cada deploy)
 - Resposta a feedbacks dos estagiários
 - Configurações do laboratório, geolocalização e integrações
 
@@ -56,10 +58,11 @@ Funciona como **PWA instalável** em celular e desktop, com suporte a notificaç
 |--------|-------------|
 | **Frontend** | Next.js 16.2 (App Router, Turbopack), React 19, TypeScript 5, Tailwind CSS 4 |
 | **Animações** | Framer Motion 12, Lucide React |
-| **Backend** | Next.js API Routes, Supabase (PostgreSQL + Auth + RLS + Storage) |
-| **PDF** | jsPDF + jspdf-autotable |
-| **Excel** | SheetJS (xlsx) |
-| **Deploy** | Vercel (CDN global + Cron Jobs) |
+| **Backend** | Next.js API Routes (serverless), Supabase (PostgreSQL + Auth + RLS + Storage) |
+| **PDF** | @react-pdf/renderer v4.5 — componentes React tipados renderizados no servidor |
+| **Validação** | Zod — schemas tipados em 100% das API Routes |
+| **Segurança** | bcryptjs (PIN, salt 12), JWT via Supabase Auth, Sentry (monitoramento em produção) |
+| **Deploy** | Vercel (CDN global + Cron Jobs + proteção DDoS de borda) |
 | **Notificações** | Web Push API (VAPID) |
 | **Testes** | Playwright (E2E) |
 
@@ -171,7 +174,7 @@ Funciona como **PWA instalável** em celular e desktop, com suporte a notificaç
 | 5 | Especialista | 2.500 pts |
 | 6 | Elite | 5.000 pts |
 
-**Ganhe pontos por:** presença diária (+10), pontualidade (+5), atividades documentadas (+5), marcos de carga horária (+50 a +250), feedback implementado (+25) e muito mais.
+**Ganhe pontos por:** presença diária (+10), pontualidade (+5), atividades documentadas (+5), sessão completa (+3), feedback implementado (+25) e muito mais.
 
 **Multiplicadores de streak:** 3 dias consecutivos (×1,2) · 7 dias (×1,5) · 30 dias (×2,0)
 
@@ -195,11 +198,24 @@ src/
 │       ├── admin/         # Gestão, relatórios, configurações
 │       └── cron/          # Manutenção automática diária
 ├── components/            # Componentes reutilizáveis
-├── lib/                   # Utilitários (gamificação, PDF, auth)
+│   └── pdf/               # Componentes @react-pdf/renderer
+├── lib/                   # Utilitários (gamificação, auth, logger+Sentry)
 ├── domain/                # Entidades e erros de domínio
 ├── application/           # Use cases e DTOs
 └── infra/                 # Implementações Supabase
 ```
+
+---
+
+## Segurança
+
+- **Autenticação:** JWT via Supabase Auth + PIN com bcrypt (salt 12)
+- **Cookies:** httpOnly + secure + sameSite=lax (proteção XSS e CSRF)
+- **Banco de dados:** Row Level Security — estagiário acessa apenas seus dados
+- **Validação:** Zod em 100% das API Routes com limites de tamanho e tipos estritos
+- **Autorização:** `requireManager()` verifica role e `is_active` a cada requisição admin
+- **Monitoramento:** Sentry captura erros com 90 dias de persistência e registra eventos de segurança com tag `security_event=true`
+- **DDoS:** Vercel CDN global com anycast e throttling automático serverless
 
 ---
 
@@ -215,7 +231,7 @@ npm install
 
 # 3. Configurar variáveis de ambiente
 cp .env.example .env.local
-# Preencher com suas chaves do Supabase
+# Preencher com suas chaves
 
 # 4. Rodar em desenvolvimento
 npm run dev
@@ -230,6 +246,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 CRON_SECRET=
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
+NEXT_PUBLIC_SENTRY_DSN=
 ```
 
 ---
@@ -249,3 +266,4 @@ O build executa automaticamente o script `scripts/sync-updates.mjs`, que sincron
 ## Licença
 
 Desenvolvido por **Emanuel Maestre** para o Laboratório de Informática — IFSULDEMINAS.
+Orientador: **Prof. Milton Antônio Naves**

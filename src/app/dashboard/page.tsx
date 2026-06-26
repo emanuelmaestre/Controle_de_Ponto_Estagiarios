@@ -10,9 +10,10 @@ import SelfieGate from '@/components/SelfieGate'
 import StatusBadge from '@/components/StatusBadge'
 import ProgressRing from '@/components/ui/ProgressRing'
 import { FadeIn, StaggerContainer, StaggerItem, ScaleIn } from '@/components/ui/MotionWrappers'
-import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell, AlertTriangle, User, Flame, Star, Bell } from 'lucide-react'
+import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, Trophy, Rocket, Zap, Target, Dumbbell, AlertTriangle, User, Flame, Star } from 'lucide-react'
 import LiveClock from '@/components/ui/LiveClock'
 import OnboardingTour from '@/components/OnboardingTour'
+import InternNotificationBell from '@/components/InternNotificationBell'
 import type { RecordStatus } from '@/types/database'
 import { getLevelInfo, getLevelTitle, getNextLevel, getProgressToNextLevel, getLevelForPoints, ACHIEVEMENTS } from '@/lib/gamification'
 import { detectGender } from '@/lib/detectGender'
@@ -221,17 +222,20 @@ export default async function DashboardPage() {
               </div>
             </div>
           </Link>
-          {/* Sair */}
-          <form action="/api/auth/signout" method="POST" className="flex-shrink-0">
-            <button
-              type="submit"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wider transition-all"
-              style={{ color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)' }}
-            >
-              <LogOut size={13} />
-              SAIR
-            </button>
-          </form>
+          {/* Notificações + Sair */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <InternNotificationBell />
+            <form action="/api/auth/signout" method="POST">
+              <button
+                type="submit"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wider transition-all"
+                style={{ color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)' }}
+              >
+                <LogOut size={13} />
+                SAIR
+              </button>
+            </form>
+          </div>
         </div>
       </header>
 

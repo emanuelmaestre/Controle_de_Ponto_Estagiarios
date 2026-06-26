@@ -5,6 +5,7 @@ import type { Settings } from '@/types/database'
 import SettingsForm from './SettingsForm'
 import ChangePinForm from './ChangePinForm'
 import IntegrationsTab from './IntegrationsTab'
+import ResetAdminTourButton from './ResetAdminTourButton'
 import { FadeIn } from '@/components/ui/MotionWrappers'
 
 export const dynamic = 'force-dynamic'
@@ -113,6 +114,8 @@ export default async function SettingsPage({ searchParams }: Props) {
                       correção ortográfica das atividades e normalização dos nomes dos estagiários.
                     </p>
                   </div>
+
+                  <ResetAdminTourButton userId={user.id} />
                 </div>
               </div>
             )}
