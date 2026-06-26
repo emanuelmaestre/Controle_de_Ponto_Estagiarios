@@ -14,7 +14,7 @@ import { Home, ClipboardList, LogOut, Clock, TrendingUp, Calendar, CheckCircle, 
 import LiveClock from '@/components/ui/LiveClock'
 import OnboardingTour from '@/components/OnboardingTour'
 import type { RecordStatus } from '@/types/database'
-import { getLevelInfo, getLevelTitle, getNextLevel, getProgressToNextLevel, ACHIEVEMENTS } from '@/lib/gamification'
+import { getLevelInfo, getLevelTitle, getNextLevel, getProgressToNextLevel, getLevelForPoints, ACHIEVEMENTS } from '@/lib/gamification'
 import { detectGender } from '@/lib/detectGender'
 
 export const dynamic = 'force-dynamic'
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
 
   let { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, total_hours_required, role, photo_url, points, level, streak_days, geo_exempt')
+    .select('full_name, total_hours_required, role, photo_url, points, level, streak_days, geo_exempt, course_duration_years')
     .eq('id', user.id)
     .maybeSingle()
 
@@ -155,14 +155,15 @@ export default async function DashboardPage() {
     .eq('intern_id', user.id)
     .order('unlocked_at', { ascending: false })
 
-  const userPoints     = profile?.points ?? 0
-  const userLevel      = profile?.level ?? 1
-  const userStreak     = profile?.streak_days ?? 0
-  const lvlInfo        = getLevelInfo(userLevel)
-  const userGender     = detectGender(profile?.full_name ?? '')
-  const lvlTitle       = getLevelTitle(userLevel, userGender)
-  const nextLvl        = getNextLevel(userLevel)
-  const lvlProgress    = getProgressToNextLevel(userPoints, userLevel)
+  const userPoints         = profile?.points ?? 0
+  const userCourseDuration = profile?.course_duration_years ?? 5
+  const userLevel          = getLevelForPoints(userPoints, userCourseDuration)
+  const userStreak         = profile?.streak_days ?? 0
+  const lvlInfo            = getLevelInfo(userLevel)
+  const userGender         = detectGender(profile?.full_name ?? '')
+  const lvlTitle           = getLevelTitle(userLevel, userGender)
+  const nextLvl            = getNextLevel(userLevel)
+  const lvlProgress        = getProgressToNextLevel(userPoints, userLevel, userCourseDuration)
   const userAchievements = achievementsData ?? []
 
   const todayMinutes = todayRecords?.reduce((acc, r) => acc + (r.duration_minutes ?? 0), 0) ?? 0

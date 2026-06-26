@@ -38,6 +38,7 @@ const internBase = z.object({
   nickname: z.string().max(50).optional(),
   email: z.string().email('E-mail inválido'),
   course: z.string().max(100, 'Curso muito longo').optional(),
+  course_duration_years: z.number().int().min(1, 'Duração mínima: 1 ano').max(10),
   internship_start: z.string().optional(),
   internship_end: z.string().optional(),
   is_active: z.boolean(),

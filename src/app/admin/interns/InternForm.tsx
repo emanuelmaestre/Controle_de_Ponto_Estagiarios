@@ -29,6 +29,7 @@ type InternFormValues = {
   email: string
   nickname?: string
   course?: string
+  course_duration_years: number
   internship_start?: string
   internship_end?: string
   is_active: boolean
@@ -131,16 +132,17 @@ export default function InternForm({ mode, intern }: Props) {
     resolver: zodResolver(internSchema),
     defaultValues: intern
       ? {
-          full_name:        intern.full_name,
-          email:            intern.email,
-          nickname:         intern.nickname ?? '',
-          course:           intern.course ?? '',
-          internship_start: intern.internship_start ?? '',
-          internship_end:   intern.internship_end ?? '',
-          is_active:        intern.is_active,
-          geo_exempt:       intern.geo_exempt ?? false,
+          full_name:             intern.full_name,
+          email:                 intern.email,
+          nickname:              intern.nickname ?? '',
+          course:                intern.course ?? '',
+          course_duration_years: (intern as any).course_duration_years ?? 4,
+          internship_start:      intern.internship_start ?? '',
+          internship_end:        intern.internship_end ?? '',
+          is_active:             intern.is_active,
+          geo_exempt:            intern.geo_exempt ?? false,
         }
-      : { is_active: true, geo_exempt: false, internship_start: new Date().toISOString().slice(0, 10) },
+      : { is_active: true, geo_exempt: false, course_duration_years: 4, internship_start: new Date().toISOString().slice(0, 10) },
   })
 
   const isActive  = watch('is_active')
@@ -214,17 +216,19 @@ export default function InternForm({ mode, intern }: Props) {
       setSuccess('Estagiário cadastrado! Um e-mail de boas-vindas foi enviado.')
       setTimeout(() => router.push('/admin/interns'), 1500)
     } else if (intern) {
-      const { error: updateError } = await supabase.from('profiles').update({
-        full_name:        formatFullName(data.full_name),
-        email:            data.email,
-        nickname:         data.nickname || null,
-        course:           data.course   || null,
-        internship_start: data.internship_start || null,
-        internship_end:   data.internship_end   || null,
-        is_active:        data.is_active,
-        geo_exempt:       data.geo_exempt,
+      const updatePayload = {
+        full_name:             formatFullName(data.full_name),
+        email:                 data.email,
+        nickname:              data.nickname || null,
+        course:                data.course   || null,
+        course_duration_years: data.course_duration_years,
+        internship_start:      data.internship_start || null,
+        internship_end:        data.internship_end   || null,
+        is_active:             data.is_active,
+        geo_exempt:            data.geo_exempt,
         ...(photoUrl !== null ? { photo_url: photoUrl } : {}),
-      }).eq('id', intern.id)
+      }
+      const { error: updateError } = await supabase.from('profiles').update(updatePayload as any).eq('id', intern.id)
 
       if (updateError) { setError('Erro ao salvar alterações.'); toast.error('Erro ao salvar alterações.') }
       else { setSuccess('Dados atualizados com sucesso!'); toast.success('Perfil salvo com sucesso!'); router.refresh() }
@@ -402,6 +406,29 @@ export default function InternForm({ mode, intern }: Props) {
               name="course"
               control={control}
               render={({ field }) => <CourseSelect value={field.value ?? ''} onChange={field.onChange} />}
+            />
+          </Field>
+
+          <Field label="Duração do Curso (anos)" error={(errors as any).course_duration_years?.message}>
+            <Controller
+              name="course_duration_years"
+              control={control}
+              render={({ field }) => (
+                <select
+                  value={field.value}
+                  onChange={e => field.onChange(Number(e.target.value))}
+                  style={{
+                    width: '100%', padding: '8px 12px', borderRadius: 8, fontSize: 13,
+                    background: 'var(--surface-input)', border: '1px solid var(--border)',
+                    color: 'var(--text-1)', outline: 'none',
+                  }}
+                >
+                  <option value={2}>2 anos — Mestrado / Pós-graduação</option>
+                  <option value={3}>3 anos — Técnico</option>
+                  <option value={4}>4 anos — Licenciatura</option>
+                  <option value={5}>5 anos — Bacharelado</option>
+                </select>
+              )}
             />
           </Field>
 

@@ -29,6 +29,7 @@ export type Database = {
           role: 'intern' | 'manager'
           is_active: boolean
           geo_exempt: boolean
+          course_duration_years: number
           created_at: string
           total_hours_required: number | null
           points: number
@@ -49,6 +50,7 @@ export type Database = {
           role?: 'intern' | 'manager'
           is_active?: boolean
           geo_exempt?: boolean
+          course_duration_years?: number
           created_at?: string
           total_hours_required?: number | null
           points?: number
@@ -68,6 +70,7 @@ export type Database = {
           role?: 'intern' | 'manager'
           is_active?: boolean
           geo_exempt?: boolean
+          course_duration_years?: number
           total_hours_required?: number | null
           points?: number
           level?: number

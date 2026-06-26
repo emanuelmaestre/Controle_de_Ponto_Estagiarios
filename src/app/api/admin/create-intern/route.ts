@@ -45,12 +45,13 @@ export async function POST(request: NextRequest) {
         email: data.email.toLowerCase(),
         nickname: nickname,
         course: data.course || null,
+        course_duration_years: data.course_duration_years ?? 4,
         internship_start: data.internship_start || new Date().toISOString().slice(0, 10),
         internship_end: data.internship_end || null,
         is_active: data.is_active ?? true,
         role: 'intern',
         ...(photoUrl ? { photo_url: photoUrl } : {}),
-      })
+      } as any)
 
     if (profileError) {
       await supabaseAdmin.auth.admin.deleteUser(userId)

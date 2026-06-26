@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { createSupabaseServiceClient } from '@/infra/supabase/server'
+import { getLevelForPoints } from '@/lib/gamification'
 
 type RankingProfile = {
   id: string
@@ -9,6 +10,7 @@ type RankingProfile = {
   points: number | null
   level: number | null
   streak_days: number | null
+  course_duration_years: number | null
 }
 
 function getWeekRange() {
@@ -105,21 +107,30 @@ export async function GET(request: NextRequest) {
   }
 
   const ranking = (profiles as RankingProfile[])
-    .map(p => ({
-      internId:      p.id,
-      internName:    p.full_name,
-      photoUrl:      p.photo_url,
-      points:        p.points ?? 0,
-      level:         p.level ?? 1,
-      streakDays:    p.streak_days ?? 0,
-      periodMinutes: minutesByIntern.get(p.id) ?? 0,
-      achievements:  achievementsByIntern.get(p.id) ?? [],
-      isActive:      activeInternIds.has(p.id),
-      position:      0,
-    }))
-    // Ranking = pontos totais (refletem presença + pontualidade + streak)
+    .map(p => {
+      const points        = p.points ?? 0
+      const durationYears = p.course_duration_years ?? 4
+      // Índice de eficiência: pontos por mês de duração do curso
+      // Normaliza a competição entre cursos de durações diferentes
+      const efficiencyIndex = points / (durationYears * 12)
+      return {
+        internId:       p.id,
+        internName:     p.full_name,
+        photoUrl:       p.photo_url,
+        points,
+        level:          getLevelForPoints(points, durationYears),
+        streakDays:     p.streak_days ?? 0,
+        periodMinutes:  minutesByIntern.get(p.id) ?? 0,
+        achievements:   achievementsByIntern.get(p.id) ?? [],
+        isActive:       activeInternIds.has(p.id),
+        efficiencyIndex,
+        courseDurationYears: durationYears,
+        position:       0,
+      }
+    })
+    // Ranking = índice de eficiência (pts / meses de curso) — proporcional à duração
     // Desempate: horas no período → nome
-    .sort((a, b) => b.points - a.points || b.periodMinutes - a.periodMinutes || a.internName.localeCompare(b.internName))
+    .sort((a, b) => b.efficiencyIndex - a.efficiencyIndex || b.periodMinutes - a.periodMinutes || a.internName.localeCompare(b.internName))
 
   ranking.forEach((r, i) => { r.position = i + 1 })
 

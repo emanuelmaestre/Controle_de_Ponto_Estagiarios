@@ -9,7 +9,7 @@ import ProfileAchievements from './ProfileAchievements'
 import ProfileReports from './ProfileReports'
 import ProfileUpdates from './ProfileUpdates'
 import ResetOnboardingButton from './ResetOnboardingButton'
-import { getLevelInfo, getLevelTitle } from '@/lib/gamification'
+import { getLevelInfo, getLevelTitle, getLevelForPoints } from '@/lib/gamification'
 import { detectGender } from '@/lib/detectGender'
 
 interface Props {
@@ -26,7 +26,7 @@ export default async function ProfilePage({ searchParams }: Props) {
 
   let { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, nickname, email, course, photo_url, role, points, level, streak_days')
+    .select('full_name, nickname, email, course, photo_url, role, points, level, streak_days, course_duration_years')
     .eq('id', user.id)
     .maybeSingle()
 
@@ -34,7 +34,7 @@ export default async function ProfilePage({ searchParams }: Props) {
     await ensureProfile(user.id, user.email ?? null)
     const { data: reloaded } = await supabase
       .from('profiles')
-      .select('full_name, nickname, email, course, photo_url, role, points, level, streak_days')
+      .select('full_name, nickname, email, course, photo_url, role, points, level, streak_days, course_duration_years')
       .eq('id', user.id)
       .maybeSingle()
     profile = reloaded
@@ -50,11 +50,13 @@ export default async function ProfilePage({ searchParams }: Props) {
     photo_url: profile?.photo_url ?? null,
   }
 
-  const lvl    = getLevelInfo(profile?.level ?? 1)
-  const gender = detectGender(profile?.full_name ?? '')
-  const title  = getLevelTitle(lvl.level, gender)
-  const pts    = profile?.points ?? 0
-  const streak = profile?.streak_days ?? 0
+  const pts             = profile?.points ?? 0
+  const courseDuration  = profile?.course_duration_years ?? 5
+  const effectiveLevel  = getLevelForPoints(pts, courseDuration)
+  const lvl             = getLevelInfo(effectiveLevel)
+  const gender          = detectGender(profile?.full_name ?? '')
+  const title           = getLevelTitle(lvl.level, gender)
+  const streak          = profile?.streak_days ?? 0
 
   const { data: achievementsData } = await supabase
     .from('achievements')
@@ -134,7 +136,7 @@ export default async function ProfilePage({ searchParams }: Props) {
             {activeTab === 'conquistas' && (
               <ProfileAchievements
                 points={pts}
-                level={profile?.level ?? 1}
+                level={effectiveLevel}
                 streakDays={streak}
                 achievements={userAchievements}
                 fullName={profile?.full_name ?? ''}

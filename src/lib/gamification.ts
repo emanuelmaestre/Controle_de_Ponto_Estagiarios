@@ -40,6 +40,32 @@ export const LEVELS = [
 
 export type LevelEntry = typeof LEVELS[number]
 
+// Duração base para normalização (Bacharelado 5 anos = referência)
+const BASE_DURATION_YEARS = 5
+
+/**
+ * Retorna os thresholds de nível escalados proporcionalmente à duração do curso.
+ * Bacharelado 5 anos = thresholds originais.
+ * Técnico 3 anos = thresholds × (3/5) = mais fácil de atingir.
+ */
+export function getScaledLevels(courseDurationYears = BASE_DURATION_YEARS) {
+  const factor = courseDurationYears / BASE_DURATION_YEARS
+  return LEVELS.map(l => ({ ...l, minPoints: Math.round(l.minPoints * factor) }))
+}
+
+/**
+ * Retorna o nível atual do aluno considerando a duração do curso.
+ * Pontos são comparados contra thresholds escalados.
+ */
+export function getLevelForPoints(points: number, courseDurationYears = BASE_DURATION_YEARS): number {
+  const scaled = getScaledLevels(courseDurationYears)
+  let level = 1
+  for (const l of scaled) {
+    if (points >= l.minPoints) level = l.level
+  }
+  return level
+}
+
 /** Retorna o objeto do nível. Use getLevelTitle() para obter o título com gênero. */
 export function getLevelInfo(level: number): LevelEntry & { title: string } {
   const lvl = LEVELS.find(l => l.level === level) ?? LEVELS[0]
@@ -52,16 +78,20 @@ export function getLevelTitle(level: number, gender: 'F' | 'M' | null): string {
   return gender === 'F' ? lvl.titleF : lvl.titleM
 }
 
-
 export function getNextLevel(level: number): (LevelEntry & { title: string }) | null {
   const lvl = LEVELS.find(l => l.level === level + 1) ?? null
   if (!lvl) return null
   return { ...lvl, title: lvl.titleM }
 }
 
-export function getProgressToNextLevel(points: number, level: number): number {
-  const current = LEVELS.find(l => l.level === level)
-  const next    = LEVELS.find(l => l.level === level + 1)
+/**
+ * Progresso percentual até o próximo nível.
+ * Aceita courseDurationYears para usar thresholds proporcionais.
+ */
+export function getProgressToNextLevel(points: number, level: number, courseDurationYears = BASE_DURATION_YEARS): number {
+  const scaled  = getScaledLevels(courseDurationYears)
+  const current = scaled.find(l => l.level === level)
+  const next    = scaled.find(l => l.level === level + 1)
   if (!current || !next) return 100
   const range = next.minPoints - current.minPoints
   const done  = points - current.minPoints
