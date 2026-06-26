@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/MotionWrappers'
 import ProgressRing from '@/components/ui/ProgressRing'
+import InternNotificationBell from '@/components/InternNotificationBell'
 import { formatDate, formatTime, minutesToHours } from '@/lib/utils'
 
 type Activity = {
@@ -550,6 +551,7 @@ export default function HistoryClient({ records: initialRecords, monthMinutes, a
               </span>
             </motion.div>
           )}
+          <InternNotificationBell />
         </div>
       </header>
 

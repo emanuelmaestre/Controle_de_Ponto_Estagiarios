@@ -4,6 +4,7 @@ import { Home, ClipboardList, Trophy, LogOut, ArrowLeft, User } from 'lucide-rea
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { ensureProfile } from '@/lib/ensureProfile'
 import MobileOnlyGuard from '@/components/MobileOnlyGuard'
+import InternNotificationBell from '@/components/InternNotificationBell'
 import ProfileForm from './ProfileForm'
 import ProfileAchievements from './ProfileAchievements'
 import ProfileReports from './ProfileReports'
@@ -80,8 +81,9 @@ export default async function ProfilePage({ searchParams }: Props) {
               <h1 className="text-base font-black" style={{ color: 'white' }}>MEU PERFIL</h1>
               <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.4)' }}>Edite seus dados e foto</p>
             </div>
-            {/* Level badge */}
+            {/* Notificações + Level badge */}
             <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+              <InternNotificationBell />
               {streak > 0 && (
                 <span className="text-[10px] sm:text-xs font-bold" style={{ color: '#f97316' }}>🔥 {streak}d</span>
               )}
