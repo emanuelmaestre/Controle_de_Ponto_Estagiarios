@@ -5,13 +5,18 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Check, Sprout, Tractor, Dna, FlaskConical, Microscope, Trees } from 'lucide-react'
 
 const COURSES = [
-  { value: 'BACHARELADO EM AGRONOMIA',                     label: 'Bacharelado em Agronomia',                     icon: Sprout,       color: '#4ade80', bg: 'rgba(74,222,128,0.12)'  },
-  { value: 'TÉCNICO EM AGROPECUÁRIA',                      label: 'Técnico em Agropecuária',                      icon: Tractor,      color: '#fb923c', bg: 'rgba(251,146,60,0.12)'  },
-  { value: 'LICENCIATURA EM CIÊNCIAS BIOLÓGICAS',          label: 'Lic. em Ciências Biológicas',                  icon: Dna,          color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
-  { value: 'MESTRADO EM PROTEÇÃO DE PLANTAS',              label: 'Mestrado em Proteção de Plantas',              icon: FlaskConical, color: '#38bdf8', bg: 'rgba(56,189,248,0.12)'  },
-  { value: 'TÉCNICO EM BIOTECNOLOGIA',                     label: 'Técnico em Biotecnologia',                     icon: Microscope,   color: '#f472b6', bg: 'rgba(244,114,182,0.12)' },
-  { value: 'CONSERVAÇÃO DOS RECURSOS NATURAIS DO CERRADO', label: 'Conservação dos Recursos Naturais do Cerrado', icon: Trees,        color: '#86efac', bg: 'rgba(134,239,172,0.12)' },
+  { value: 'BACHARELADO EM AGRONOMIA',                     label: 'Bacharelado em Agronomia',                     duration: 5, icon: Sprout,       color: '#4ade80', bg: 'rgba(74,222,128,0.12)'  },
+  { value: 'TÉCNICO EM AGROPECUÁRIA',                      label: 'Técnico em Agropecuária',                      duration: 3, icon: Tractor,      color: '#fb923c', bg: 'rgba(251,146,60,0.12)'  },
+  { value: 'LICENCIATURA EM CIÊNCIAS BIOLÓGICAS',          label: 'Lic. em Ciências Biológicas',                  duration: 4, icon: Dna,          color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
+  { value: 'MESTRADO EM PROTEÇÃO DE PLANTAS',              label: 'Mestrado em Proteção de Plantas',              duration: 2, icon: FlaskConical, color: '#38bdf8', bg: 'rgba(56,189,248,0.12)'  },
+  { value: 'TÉCNICO EM BIOTECNOLOGIA',                     label: 'Técnico em Biotecnologia',                     duration: 3, icon: Microscope,   color: '#f472b6', bg: 'rgba(244,114,182,0.12)' },
+  { value: 'CONSERVAÇÃO DOS RECURSOS NATURAIS DO CERRADO', label: 'Conservação dos Recursos Naturais do Cerrado', duration: 2, icon: Trees,        color: '#86efac', bg: 'rgba(134,239,172,0.12)' },
 ]
+
+/** Mapa curso → duração em anos — usado pelo formulário para preenchimento automático */
+export const COURSE_DURATION: Record<string, number> = Object.fromEntries(
+  COURSES.map(c => [c.value, c.duration])
+)
 
 interface Props { value: string; onChange: (val: string) => void }
 
@@ -112,6 +117,9 @@ export default function CourseSelect({ value, onChange }: Props) {
                     <Icon size={14} style={{ color: course.color }} />
                   </span>
                   <span style={{ flex: 1 }}>{course.label}</span>
+                  <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 6, background: course.bg, color: course.color, flexShrink: 0, marginRight: isSel ? 6 : 0 }}>
+                    {course.duration} anos
+                  </span>
                   {isSel && <Check size={13} style={{ color: course.color, flexShrink: 0 }} />}
                 </button>
               )

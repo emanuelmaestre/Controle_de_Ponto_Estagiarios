@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -16,7 +16,7 @@ import { internSchema } from '@/lib/validations'
 import { formatFullName } from '@/lib/utils'
 import type { Profile } from '@/types/database'
 import DatePicker from '@/components/ui/DatePicker'
-import CourseSelect from '@/components/ui/CourseSelect'
+import CourseSelect, { COURSE_DURATION } from '@/components/ui/CourseSelect'
 import ImageCropModal from '@/components/ui/ImageCropModal'
 import WebcamModal from '@/components/ui/WebcamModal'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -145,8 +145,16 @@ export default function InternForm({ mode, intern }: Props) {
       : { is_active: true, geo_exempt: false, course_duration_years: 4, internship_start: new Date().toISOString().slice(0, 10) },
   })
 
-  const isActive  = watch('is_active')
-  const geoExempt = watch('geo_exempt')
+  const isActive   = watch('is_active')
+  const geoExempt  = watch('geo_exempt')
+  const courseValue = watch('course')
+
+  // Preenche course_duration_years automaticamente ao selecionar o curso
+  useEffect(() => {
+    if (courseValue && COURSE_DURATION[courseValue]) {
+      setValue('course_duration_years', COURSE_DURATION[courseValue])
+    }
+  }, [courseValue, setValue])
 
   const handleFileSelected = (file: File) => {
     setPhotoError(null)
@@ -406,29 +414,6 @@ export default function InternForm({ mode, intern }: Props) {
               name="course"
               control={control}
               render={({ field }) => <CourseSelect value={field.value ?? ''} onChange={field.onChange} />}
-            />
-          </Field>
-
-          <Field label="Duração do Curso (anos)" error={(errors as any).course_duration_years?.message}>
-            <Controller
-              name="course_duration_years"
-              control={control}
-              render={({ field }) => (
-                <select
-                  value={field.value}
-                  onChange={e => field.onChange(Number(e.target.value))}
-                  style={{
-                    width: '100%', padding: '8px 12px', borderRadius: 8, fontSize: 13,
-                    background: 'var(--surface-input)', border: '1px solid var(--border)',
-                    color: 'var(--text-1)', outline: 'none',
-                  }}
-                >
-                  <option value={2}>2 anos — Mestrado / Pós-graduação</option>
-                  <option value={3}>3 anos — Técnico</option>
-                  <option value={4}>4 anos — Licenciatura</option>
-                  <option value={5}>5 anos — Bacharelado</option>
-                </select>
-              )}
             />
           </Field>
 
