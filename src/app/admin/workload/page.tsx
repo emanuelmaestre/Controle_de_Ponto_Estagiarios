@@ -134,7 +134,7 @@ export default async function WorkloadPage() {
     }
   })
 
-  rows.sort((a, b) => a.pct - b.pct)
+  rows.sort((a, b) => b.pct - a.pct)
 
   const completedCount = rows.filter(r => r.pct >= 100).length
   const attentionCount = rows.filter(r => r.pct < 40).length
