@@ -104,7 +104,45 @@ export async function GET() {
     }
   }
 
-  // ── 4. Feedback respondido / implementado pelo admin ───────────────────
+  // ── 4. Registro fechado automaticamente por geofence (atividades pendentes) ─
+  const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()
+  const { data: autoClosedRecords } = await db
+    .from('time_records')
+    .select('id, clock_out')
+    .eq('intern_id', user.id)
+    .eq('notes', 'auto_close_geo')
+    .not('clock_out', 'is', null)
+    .gte('clock_out', fortyEightHoursAgo)
+    .order('clock_out', { ascending: false })
+    .limit(5)
+
+  if (autoClosedRecords && autoClosedRecords.length > 0) {
+    const autoClosedIds = autoClosedRecords.map(r => r.id)
+    const { data: existingActivities } = await db
+      .from('activities')
+      .select('time_record_id')
+      .in('time_record_id', autoClosedIds)
+
+    const recordsWithActivities = new Set((existingActivities ?? []).map(a => a.time_record_id))
+
+    for (const r of autoClosedRecords) {
+      if (recordsWithActivities.has(r.id)) continue
+      const closedAt = r.clock_out as string
+      const dateLabel = new Date(closedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      notifications.push({
+        id: `auto_geo_${r.id}`,
+        type: 'alert',
+        title: 'Atividades pendentes',
+        description: `Seu registro das ${dateLabel} foi fechado automaticamente porque você saiu do laboratório. Acesse o Histórico e registre as atividades realizadas.`,
+        href: '/history',
+        persistent: true,
+        createdAt: closedAt,
+        priority: 1,
+      })
+    }
+  }
+
+  // ── 5. Feedback respondido / implementado pelo admin ──────────────────
   const { data: feedbacks } = await db
     .from('feedback')
     .select('id, message, status, admin_reply, created_at')

@@ -6,6 +6,7 @@ import { isGeoExemptEmail } from '@/lib/geoExempt'
 import MobileOnlyGuard from '@/components/MobileOnlyGuard'
 import { formatTime, minutesToHours } from '@/lib/utils'
 import ClockButton from '@/components/ClockButton'
+import GeofenceWatcher from '@/components/GeofenceWatcher'
 import SelfieGate from '@/components/SelfieGate'
 import StatusBadge from '@/components/StatusBadge'
 import ProgressRing from '@/components/ui/ProgressRing'
@@ -96,6 +97,12 @@ export default async function DashboardPage() {
     .select('id, clock_in')
     .eq('intern_id', user.id)
     .is('clock_out', null)
+    .maybeSingle()
+
+  const { data: labSettings } = await supabase
+    .from('settings')
+    .select('geo_lat, geo_lng')
+    .limit(1)
     .maybeSingle()
 
   const today = new Date().toISOString().slice(0, 10)
@@ -190,6 +197,14 @@ export default async function DashboardPage() {
     <div className="flex flex-col" style={{ height: '100dvh', overflow: 'hidden', background: 'var(--bg)' }}>
       {/* Foto opcional no dashboard — só abre se não tiver foto E o usuário ainda não dispensou */}
       <SelfieGate hasPhoto={true} internId={user.id} />
+
+      {/* ── Monitoramento de geofence (fecha ponto se sair do raio) ─── */}
+      <GeofenceWatcher
+        openRecordId={openRecord?.id ?? null}
+        geoExempt={!!(profile?.geo_exempt) || isGeoExemptEmail(user.email)}
+        labLat={labSettings?.geo_lat ?? null}
+        labLng={labSettings?.geo_lng ?? null}
+      />
 
       {/* ── Onboarding tour ─────────────────────────── */}
       <OnboardingTour userId={user.id} />
