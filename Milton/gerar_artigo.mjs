@@ -269,13 +269,6 @@ const sec4 = [
     ],
   }),
   espaço(),
-  h2art('4.4 Limitações Identificadas'),
-  p([t('A implementação atual apresenta algumas limitações que representam oportunidades de evolução:')], { indent: 720 }),
-  bullet('Ausência de rate limiting customizado nas rotas de autenticação — proteção depende da camada de borda da Vercel'),
-  bullet('PIN de 6 dígitos sem bloqueio após tentativas consecutivas incorretas'),
-  bullet('Content-Security-Policy (CSP) não configurado — risco de XSS em cenários de injeção'),
-  bullet('Sem segundo fator de autenticação (TOTP) para o gestor'),
-  bullet('Título de nível sem distinção de gênero por ausência da coluna gender na tabela profiles'),
 ]
 
 // ── 5. CONCLUSÃO ─────────────────────────────────────
@@ -284,7 +277,7 @@ const sec5 = [
   p([t('O ChronosLab demonstrou que é possível desenvolver um sistema de gestão de frequência robusto, seguro e engajador utilizando exclusivamente tecnologias open-source e infraestrutura de nuvem gratuita ou de baixo custo. A combinação de Next.js 16 com Supabase permitiu construir uma aplicação full-stack tipada com deploy automático, sem necessidade de servidores dedicados.')], { indent: 720 }),
   p([t('A gamificação aplicada ao controle de ponto mostrou-se eficaz como estímulo à pontualidade e à documentação de atividades, transformando uma obrigação burocrática em uma experiência com retorno imediato e visível. O tour de onboarding interativo e a correção ortográfica automática reforçam a proposta de um sistema que reduz a fricção do usuário final.')], { indent: 720 }),
   p([t('As funcionalidades de segurança — RLS, cookies httpOnly, validação Zod, bcrypt, Sentry — garantem proteção de dados adequada para o contexto educacional, com rastreabilidade de eventos críticos em produção.')], { indent: 720 }),
-  p([t('Como trabalhos futuros, destacam-se: implementação de rate limiting com Upstash Redis nas rotas de autenticação, adição de TOTP como segundo fator para o gestor, configuração de Content-Security-Policy e bloqueio de conta após falhas consecutivas de PIN. A arquitetura modular facilita a incorporação dessas melhorias sem refatorações amplas.')], { indent: 720 }),
+  p([t('Como trabalhos futuros, vislumbram-se expansões que ampliam ainda mais o valor da plataforma: dashboards analíticos com insights de frequência gerados por inteligência artificial, integração com calendários acadêmicos, notificações push mais ricas e contextuais, e ampliação do catálogo de relatórios institucionais. A arquitetura modular em Clean Architecture facilita a incorporação dessas evoluções sem refatorações amplas, consolidando o ChronosLab como uma base sólida e extensível para a gestão de estágios.')], { indent: 720 }),
 ]
 
 // ── REFERÊNCIAS ───────────────────────────────────────
