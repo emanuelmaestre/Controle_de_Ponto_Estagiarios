@@ -30,10 +30,12 @@ Funciona como **PWA instalável** em celular e desktop, com suporte a notificaç
 ### Estagiário
 - Tour de apresentação interativo no primeiro acesso (slides de todos os módulos + tooltips guiados com spotlight)
 - Registro de entrada e saída com validação de geolocalização (opcional e configurável individualmente pelo gestor)
+- **Geofence auto-checkout:** ao sair a mais de 200 m do laboratório com ponto em aberto, o registro é fechado automaticamente com notificação de atividades pendentes
+- Sino de notificações em todas as páginas: ponto em aberto, atividades pendentes (auto-checkout), feedbacks respondidos, conquistas e metas de horas
 - Documentação de atividades realizadas a cada sessão
 - Correção ortográfica automática das atividades (dicionário Hunspell PT-BR com 311.641 palavras, sem API externa)
 - Histórico completo dos últimos 60 dias + arquivo por mês
-- Perfil com nível, pontos, conquistas e progresso de carga horária
+- Perfil com nível, pontos, conquistas e progresso de carga horária (níveis proporcionais à duração do curso)
 - Ranking entre os estagiários do laboratório
 - Envio de feedback ao gestor (+10 pts)
 - Notificações push no celular
